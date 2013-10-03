@@ -1,0 +1,33 @@
+GET_FILENAME_COMPONENT(CMAKE_INSTALL_PREFIX "${LUA_BINDIR}" PATH)
+
+SET(Torch_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+
+FILE(RELATIVE_PATH Torch_INSTALL_BIN_SUBDIR "${CMAKE_INSTALL_PREFIX}" "${LUA_BINDIR}")
+
+SET(Torch_INSTALL_MAN_SUBDIR "share/man" CACHE PATH
+  "Install dir for man pages (relative to Torch_INSTALL_PREFIX)")
+
+FILE(RELATIVE_PATH Torch_INSTALL_LIB_SUBDIR "${CMAKE_INSTALL_PREFIX}" "${LUA_LIBDIR}")
+
+SET(Torch_INSTALL_SHARE_SUBDIR "share" CACHE PATH
+  "Install dir for data (relative to Torch_INSTALL_PREFIX)")
+
+FILE(RELATIVE_PATH Torch_INSTALL_INCLUDE_SUBDIR "${CMAKE_INSTALL_PREFIX}" "${LUA_INCDIR}")
+
+#SET(Torch_INSTALL_DOK_SUBDIR "share/torch/dok" CACHE PATH
+#  "Install dir for dokuwiki files (relative to Torch_INSTALL_PREFIX)")
+
+#SET(Torch_INSTALL_DOKMEDIA_SUBDIR "share/torch/dokmedia" CACHE PATH
+#  "Install dir for dokuwiki media files (relative to Torch_INSTALL_PREFIX)")
+
+#SET(Torch_INSTALL_HTML_SUBDIR "share/torch/html" CACHE PATH
+#  "Install dir for .html files (relative to Torch_INSTALL_PREFIX)")
+
+SET(Torch_INSTALL_CMAKE_SUBDIR "share/cmake/torch" CACHE PATH
+  "Install dir for .cmake files (relative to Torch_INSTALL_PREFIX)")
+
+FILE(RELATIVE_PATH Torch_INSTALL_LUA_PATH_SUBDIR "${CMAKE_INSTALL_PREFIX}" "${LUADIR}")
+FILE(RELATIVE_PATH Torch_INSTALL_LUA_CPATH_SUBDIR "${CMAKE_INSTALL_PREFIX}" "${LIBDIR}")
+
+
+#SET(Torch_INSTALL_LUA_PKG_PATH_SUBDIR "${Torch_INSTALL_LUA_PATH_SUBDIR}")
