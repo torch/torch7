@@ -23,6 +23,7 @@ SET(CMAKE_INSTALL_PREFIX "${Torch_INSTALL_PREFIX}") # override
 
 INCLUDE(TorchPathsInit)
 INCLUDE(TorchPackage)
+INCLUDE(TorchWrap)
 
 # Define Torch basic targets
 INCLUDE(TorchExports)
