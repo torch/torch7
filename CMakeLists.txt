@@ -8,6 +8,7 @@ INCLUDE(TorchPaths)
 INCLUDE(TorchPathsInit)
 INCLUDE(TorchPackage)
 INCLUDE(TorchWrap)
+INCLUDE(TorchExports)
 
 # Torch libraries
 ADD_SUBDIRECTORY(lib)
