@@ -2,7 +2,7 @@
 # Tester #
 
 This class provides a generic unit testing framework. It is already 
-being used in [nn](..:nn:index) package to verify the correctness of classes.
+being used in [nn](../nn/index.md) package to verify the correctness of classes.
 
 The framework is generally used as follows.
 

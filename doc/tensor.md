@@ -4,14 +4,14 @@
 The `Tensor` class is probably the most important class in
 `Torch`. Almost every package depends on this class. It is *__the__*
 class for handling numeric data. As with   pretty much anything in
-[Torch7](.:..:index), tensors are
-[serializable](File#torch.File.serialization).
+[Torch7](./../index.md), tensors are
+[serializable](file.md#torch.File.serialization).
 
 __Multi-dimensional matrix__
 
 A `Tensor` is a potentially multi-dimensional matrix. The number of
 dimensions is unlimited that can be created using
-[LongStorage](Storage) with more dimensions.
+[LongStorage](storage.md) with more dimensions.
 
 Example:
 ```lua
@@ -26,7 +26,7 @@ Example:
 The number of dimensions of a `Tensor` can be queried by
 [nDimension()](#torch.Tensor.nDimension) or
 [dim()](#torch.Tensor.dim). Size of the `i-th` dimension is
-returned by [size(i)](#torch.Tensor.size). A [LongStorage](Storage)
+returned by [size(i)](#torch.Tensor.size). A [LongStorage](storage.md)
 containing all the dimensions can be returned by
 [size()](#torch.Tensor.size).
 
@@ -46,7 +46,7 @@ containing all the dimensions can be returned by
 __Internal data representation__
 
 The actual data of a `Tensor` is contained into a
-[Storage](Storage). It can be accessed using
+[Storage](storage.md). It can be accessed using
 [`storage()`](#torch.Tensor.storage). While the memory of a
 `Tensor` has to be contained in this unique `Storage`, it might
 not be contiguous: the first position used in the `Storage` is given
@@ -133,7 +133,7 @@ a call like
 ```lua
 torch.setdefaulttensortype('torch.FloatTensor')
 ```
-See [torch.setdefaulttensortype](Utility#torch.setdefaulttensortype) for more details.
+See [torch.setdefaulttensortype](utility.md#torch.setdefaulttensortype) for more details.
 By default, the alias "points" on `torch.DoubleTensor`.
 
 __Efficient memory management__
@@ -197,7 +197,7 @@ Returns a new tensor which reference the same
 [storage offset](#torch.Tensor.storageOffset) are the same than the
 given tensor.
 
-The new `Tensor` is now going to "view" the same [storage](Storage)
+The new `Tensor` is now going to "view" the same [storage](storage.md)
 as the given `tensor`. As a result, any modification in the elements
 of the `Tensor` will have a impact on the elements of the given
 `tensor`, and vice-versa. No memory copy!
@@ -235,8 +235,8 @@ Create a tensor up to 4 dimensions. The tensor size will be `sz1 x sz2 x sx3 x s
 ### torch.Tensor(sizes, [strides]) ###
 
 Create a tensor of any number of dimensions. The
-[LongStorage](Storage) `sizes` gives the size in each dimension of
-the tensor. The optional [LongStorage](Storage) `strides` gives the
+[LongStorage](storage.md) `sizes` gives the size in each dimension of
+the tensor. The optional [LongStorage](storage.md) `strides` gives the
 jump necessary to go from one element to the next one in the each
 dimension. Of course, `sizes` and `strides` must have the same
 number of elements. If not given, or if some elements of `strides`
@@ -268,16 +268,16 @@ the right stride such that the Tensor is contiguous in memory//.
 <a name="torch.Tensor"/>
 ### torch.Tensor(storage, [storageOffset, sizes, [strides]]) ###
 
-Returns a tensor which uses the existing [Storage](Storage)
+Returns a tensor which uses the existing [Storage](storage.md)
 `storage`, starting at position `storageOffset` (>=1).  The size
 of each dimension of the tensor is given by the
-[LongStorage](Storage) `sizes`.
+[LongStorage](storage.md) `sizes`.
 
 If only `storage` is provided, it will create a 1D Tensor viewing
 the all Storage.
 
 The jump necessary to go from one element to the next one in each
-dimension is given by the optional argument [LongStorage](Storage)
+dimension is given by the optional argument [LongStorage](storage.md)
 `strides`. If not given, or if some elements of `strides` are
 negative, the [stride()](#torch.Tensor.stride) will be computed such
 that the tensor is as contiguous as possible in memory.
@@ -592,7 +592,7 @@ Returns the size of the specified dimension `dim`. Example:
 <a name="torch.Tensor.size"/>
 ### [LongStorage] size() ###
 
-Returns a [LongStorage](Storage) containing the size of each dimension
+Returns a [LongStorage](storage.md) containing the size of each dimension
 of the tensor.
 ```lua
 > x = torch.Tensor(4,5):zero()
@@ -669,7 +669,7 @@ are contiguous in memory for a matrix [tensor].
 <a name="torch.Tensor.storage"/>
 ### [Storage] storage() ###
 
-Returns the [Storage](Storage) used to store all the elements of the `Tensor`.
+Returns the [Storage](storage.md) used to store all the elements of the `Tensor`.
 Basically, a `Tensor` is a particular way of _viewing_ a `Storage`.
 ```lua
 > x = torch.Tensor(4,5)
@@ -737,7 +737,7 @@ If `index` is a table, the table must contain _n_ numbers, where
 _n_ is the [number of dimensions](#torch.Tensor.nDimension) of the
 Tensor. It will return the element at the given position.
 
-In the same spirit, `index` might be a [LongStorage](Storage),
+In the same spirit, `index` might be a [LongStorage](storage.md),
 specifying the position (in the Tensor) of the element to be
 retrieved.
 
@@ -773,8 +773,8 @@ Example:
 <a name="torch.Tensor.set"/>
 ## Referencing a tensor to an existing tensor or chunk of memory ##
 
-A `Tensor` being a way of _viewing_ a [Storage](Storage), it is
-possible to "set" a `Tensor` such that it views an existing [Storage](Storage).
+A `Tensor` being a way of _viewing_ a [Storage](storage.md), it is
+possible to "set" a `Tensor` such that it views an existing [Storage](storage.md).
 
 Note that if you want to perform a set on an empty `Tensor` like
 ```lua
@@ -823,7 +823,7 @@ vice-versa. This is an efficient method, as there is no memory copy!
 ### [self] set(storage, [storageOffset, sizes, [strides]]) ###
 
 The `Tensor` is now going to "view" the given
-[`storage`](Storage), starting at position `storageOffset` (>=1)
+[`storage`](storage.md), starting at position `storageOffset` (>=1)
 with the given [dimension `sizes`](#torch.Tensor.size) and the optional given
 [`strides`](#torch.Tensor.stride). As the result, any modification in the
 elements of the `Storage` will have a impact on the elements of the
@@ -929,7 +929,7 @@ Fill the tensor with zeros.
 <a name="torch.Tensor.resize.dok"/>
 ## Resizing ##
 
-__When resizing to a larger size__, the underlying [Storage](Storage) is resized to fit
+__When resizing to a larger size__, the underlying [Storage](storage.md) is resized to fit
 all the elements of the `Tensor`. 
 
 __When resizing to a smaller size__, the underlying [Storage](#Storage) is not resized.
@@ -945,7 +945,7 @@ Resize the `tensor` as the given `tensor` (of the same type).
 <a name="torch.Tensor.resize"/>
 ### [self] resize(sizes) ###
 
-Resize the `tensor` according to the given [LongStorage](Storage) `size`.
+Resize the `tensor` according to the given [LongStorage](storage.md) `size`.
 
 <a name="torch.Tensor.resize"/>
 ### [self] resize(sz1 [,sz2 [,sz3 [,sz4]]]]) ###

@@ -26,13 +26,13 @@ x = torch.IntStorage(10):fill(1)
 y = torch.DoubleStorage(10):copy(x)
 ```
 
-[Classical storages](#torch.Storage) are [serializable](File#torch.File.serialization).
+[Classical storages](#torch.Storage) are [serializable](file.md#torch.File.serialization).
 [Storages mapping a file](#__torch.StorageMap) are also [serializable](#FileSerialization),
 but _will be saved as a normal storage_.
 
 An alias `torch.Storage()` is made over your preferred Storage type,
 controlled by the
-[torch.setdefaulttensortype](utility#torch.setdefaulttensortype)
+[torch.setdefaulttensortype](utility.md#torch.setdefaulttensortype)
 function. By default, this "points" on `torch.DoubleStorage`.
 
 ## Constructors and Access Methods ##

@@ -1,14 +1,14 @@
 <a name="torch.DiskFile.dok"/>
 # DiskFile #
 
-Parent classes: [File](File)
+Parent classes: [File](file.md)
 
 A `DiskFile` is a particular `File` which is able to perform basic read/write operations
-on a file stored on disk. It implements all methods described in [File](File), and
+on a file stored on disk. It implements all methods described in [File](file.md), and
 some additional methods relative to _endian_ encoding.
 
-By default, a `DiskFile` is in [ASCII](File#torch.File.binary) mode. If changed to
-the [binary](File#torch.File.binary) mode, the default endian encoding is the native
+By default, a `DiskFile` is in [ASCII](file.md#torch.File.binary) mode. If changed to
+the [binary](file.md#torch.File.binary) mode, the default endian encoding is the native
 computer one.
 
 The file might be open in read, write, or read-write mode, depending on the parameter
@@ -27,12 +27,12 @@ exists, it will be positionned at the beginning of the file after opening.
 If (and only if) `quiet` is `true`, no error will be raised in case of
 problem opening the file: instead `nil` will be returned.
 
-The file is opened in [ASCII](File#torch.File.ascii) mode by default.
+The file is opened in [ASCII](file.md#torch.File.ascii) mode by default.
 
 <a name="torch.DiskFile.bigEndianEncoding"/>
 ### bigEndianEncoding() ###
 
-In [binary](file#torch.File.binary) mode, force encoding in _big endian_. 
+In [binary](file.md#torch.File.binary) mode, force encoding in _big endian_. 
 (_big end first_: decreasing numeric significance with increasing memory
 addresses)
 
@@ -53,13 +53,13 @@ memory addresses.
 <a name="torch.DiskFile.littleEndianEncoding"/>
 ### littleEndianEncoding() ###
 
-In [binary](file#torch.File.binary) mode, force encoding in _little endian_.
+In [binary](file.md#torch.File.binary) mode, force encoding in _little endian_.
 (_little end first_: increasing numeric significance with increasing memory
 addresses)
 
 <a name="torch.DiskFile.nativeEndianEncoding"/>
 ### nativeEndianEncoding() ###
 
-In [binary](file#torch.File.binary) mode, force encoding in _native endian_.
+In [binary](file.md#torch.File.binary) mode, force encoding in _native endian_.
 
 

@@ -152,7 +152,7 @@ A Torch class is a class created with [torch.class()](#torch.class) or
 [torch.newmetatable()](#torch.newmetatable).
 
 A factory function is able to return a new (empty) object of its corresponding class. This is helpful for
-[object serialization](File#torch.File.serialization).
+[object serialization](file.md#torch.File.serialization).
 
 <a name="torch.getmetatable"/>
 ### [table] torch.getmetatable(string) ###

@@ -2,8 +2,8 @@
 # File #
 
 This is an _abstract_ class. It defines most methods implemented by its
-child classes, like [DiskFile](DiskFile),
-[MemoryFile](MemoryFile) and [PipeFile](PipeFile).
+child classes, like [DiskFile](diskfile.md),
+[MemoryFile](memoryfile.md) and [PipeFile](pipefile.md).
 
 Methods defined here are intended for basic read/write functionalities.
 Read/write methods might write in [ASCII](#torch.File.ascii) mode or
@@ -60,7 +60,7 @@ If no parameter is given, one element is returned. This element is
 converted to a `Lua` number when reading.
 
 If `n` is given, `n` values of the specified type are read
-and returned in a new [Storage](Storage) of that particular type.
+and returned in a new [Storage](storage.md) of that particular type.
 The storage size corresponds to the number of elements actually read.
 
 If a `Storage` is given, the method will attempt to read a number of elements
@@ -128,7 +128,7 @@ of objects), then objects appearing several times in this tree will be
 _saved only once_. This saves disk space, speedup loading/saving and
 respect the dependencies between objects.
 
-Interestingly, if the `File` is a [MemoryFile](MemoryFile), it allows
+Interestingly, if the `File` is a [MemoryFile](memoryfile.md), it allows
 the user to easily make a _clone_ of any serializable object:
 ```lua
 file = torch.MemoryFile() -- creates a file in memory
@@ -225,7 +225,7 @@ options [autoSpacing()](#torch.File.autoSpacing) and
 ### autoSpacing() [default] ###
 
 In [ASCII](#torch.File.ascii) mode, write additional spaces around the elements
-written on disk: if writing a [Storage](Storage), a space will be
+written on disk: if writing a [Storage](storage.md), a space will be
 generated between each _element_ and a _return line_ after the last
 element. If only writing one element, a _return line_ will be generated
 after this element.

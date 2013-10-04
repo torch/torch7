@@ -11,19 +11,19 @@ useful utilities.
 ## Torch Packages ##
 
   * Tensor Library
-    * [Tensor](Tensor) defines the _all powerful_ tensor object that prvides multi-dimensional numerical arrays with type templating.
-    * [Mathematical operations](maths) that are defined for the tensor object types.
-    * [Storage](Storage) defines a simple storage interface that controls the underlying storage for any tensor object.
+    * [Tensor](tensor.md) defines the _all powerful_ tensor object that prvides multi-dimensional numerical arrays with type templating.
+    * [Mathematical operations](maths.md) that are defined for the tensor object types.
+    * [Storage](storage.md) defines a simple storage interface that controls the underlying storage for any tensor object.
   * File I/O Interface Library
-    * [File](File) is an abstract interface for common file operations.
-    * [Disk File](DiskFile) defines operations on files stored on disk.
-    * [Memory File](MemoryFile) defines operations on stored in RAM.
-    * [Pipe File](PipeFile) defines operations for using piped commands.
-    * [High-Level File operations](serialization) defines higher-level serialization functions.
+    * [File](file.md) is an abstract interface for common file operations.
+    * [Disk File](diskfile.md) defines operations on files stored on disk.
+    * [Memory File](memoryfile.md) defines operations on stored in RAM.
+    * [Pipe File](pipefile.md) defines operations for using piped commands.
+    * [High-Level File operations](serialization.md) defines higher-level serialization functions.
   * Useful Utilities
-    * [Timer](Timer) provides functionality for _measuring time_.
-    * [Tester](Tester) is a generic tester framework.
-    * [CmdLine](CmdLine) is a command line argument parsing utility.
-    * [Random](Random) defines a random number generator package with various distributions.
-    * Finally useful [utility](Utility) functions are provided for easy handling of torch tensor types and class inheritance.
+    * [Timer](timer.md) provides functionality for _measuring time_.
+    * [Tester](tester.md) is a generic tester framework.
+    * [CmdLine](cmdline.md) is a command line argument parsing utility.
+    * [Random](random.md) defines a random number generator package with various distributions.
+    * Finally useful [utility](utility.md) functions are provided for easy handling of torch tensor types and class inheritance.
 
