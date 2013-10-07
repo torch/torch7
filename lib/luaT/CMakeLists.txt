@@ -1,4 +1,7 @@
 INCLUDE_DIRECTORIES(${LUA_INCDIR})
+IF(LUALIB)
+  LINK_DIRECTORIES(${LUA_LIBDIR}) # note: must be done before defining target
+ENDIF()
 
 ADD_LIBRARY(luaT SHARED luaT.h luaT.c)
 
@@ -8,8 +11,7 @@ IF(APPLE)
 ENDIF()
 
 IF(LUALIB)
-  LINK_DIRECTORIES(${LUA_LIBDIR})
-  TARGET_LINK_LIBRARIES(luaT ${LUALIB})
+  TARGET_LINK_LIBRARIES(luaT ${LUALIB}) # must be done after ;)
 ENDIF()
 
 INSTALL(TARGETS luaT
