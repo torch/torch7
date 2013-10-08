@@ -29,5 +29,9 @@ ADD_TORCH_PACKAGE(torch "${src}" "${luasrc}")
 
 TARGET_LINK_LIBRARIES(torch luaT TH)
 
+IF(LUALIB)
+  TARGET_LINK_LIBRARIES(torch ${LUALIB})
+ENDIF()
+
 #INSTALL(FILES generic/Storage.c generic/Tensor.c
 #  DESTINATION "${Torch_INSTALL_LUA_PATH_SUBDIR}/torch/generic")
