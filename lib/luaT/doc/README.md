@@ -52,9 +52,9 @@ according to the class inheritance. Multiple inheritance is not supported.
 ### Operator overloading ###
 
 The metatable of a `luaT` object contains `Lua` operators like
-`%%__index%%`, `%%__newindex%%`, `%%__tostring%%`, `%%__add%%`
+`__index`, `%%__newindex%%`, `%%__tostring%%`, `%%__add%%`
 (etc...). These operators will respectively look for `%%__index__%%`,
-`%%__newindex__%%`, `%%__tostring__%%`, `%%__add__%%` (etc...) in the
+`__newindex__`, `%%__tostring__%%`, `%%__add__%%` (etc...) in the
 metatable. If found, the corresponding function or value will be returned,
 else a Lua error will be raised.
 
