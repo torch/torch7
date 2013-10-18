@@ -2,6 +2,8 @@
 #define TH_GENERIC_FILE "generic/THTensorMath.c"
 #else
 
+#define TH_OMP_OVERHEAD_THRESHOLD 100000
+
 void THTensor_(fill)(THTensor *r_, real value)
 {
   TH_TENSOR_APPLY(real, r_, 
@@ -214,7 +216,7 @@ void THTensor_(add)(THTensor *r_, THTensor *t, real value)
       real *tp = THTensor_(data)(t);
       real *rp = THTensor_(data)(r_);
       long i;
-      #pragma omp parallel for private(i)
+      #pragma omp parallel for if(THTensor_(nElement)(t) > TH_OMP_OVERHEAD_THRESHOLD) private(i) 
       for (i=0; i<THTensor_(nElement)(t); i++)
       {
           rp[i] = tp[i] + value;
@@ -231,7 +233,7 @@ void THTensor_(mul)(THTensor *r_, THTensor *t, real value)
       real *tp = THTensor_(data)(t);
       real *rp = THTensor_(data)(r_);
       long i;
-      #pragma omp parallel for private(i)
+      #pragma omp parallel for if(THTensor_(nElement)(t) > TH_OMP_OVERHEAD_THRESHOLD) private(i)  
       for (i=0; i<THTensor_(nElement)(t); i++)
       {
           rp[i] = tp[i] * value;
@@ -248,7 +250,7 @@ void THTensor_(div)(THTensor *r_, THTensor *t, real value)
       real *tp = THTensor_(data)(t);
       real *rp = THTensor_(data)(r_);
       long i;
-      #pragma omp parallel for private(i)
+      #pragma omp parallel for if(THTensor_(nElement)(t) > TH_OMP_OVERHEAD_THRESHOLD) private(i)
       for (i=0; i<THTensor_(nElement)(t); i++)
       {
           rp[i] = tp[i] / value;
@@ -266,7 +268,7 @@ void THTensor_(cadd)(THTensor *r_, THTensor *t, real value, THTensor *src)
       real *sp = THTensor_(data)(src);
       real *rp = THTensor_(data)(r_);
       long i;
-      #pragma omp parallel for private(i)
+      #pragma omp parallel for if(THTensor_(nElement)(t) > TH_OMP_OVERHEAD_THRESHOLD) private(i)
       for (i=0; i<THTensor_(nElement)(t); i++)
       {
           rp[i] = tp[i] + value * sp[i];
@@ -284,7 +286,7 @@ void THTensor_(cmul)(THTensor *r_, THTensor *t, THTensor *src)
       real *sp = THTensor_(data)(src);
       real *rp = THTensor_(data)(r_);
       long i;
-      #pragma omp parallel for private(i)
+      #pragma omp parallel for if(THTensor_(nElement)(t) > TH_OMP_OVERHEAD_THRESHOLD) private(i) 
       for (i=0; i<THTensor_(nElement)(t); i++)
       {
           rp[i] = tp[i] * sp[i];
@@ -302,7 +304,7 @@ void THTensor_(cdiv)(THTensor *r_, THTensor *t, THTensor *src)
       real *sp = THTensor_(data)(src);
       real *rp = THTensor_(data)(r_);
       long i;
-      #pragma omp parallel for private(i)
+      #pragma omp parallel for if(THTensor_(nElement)(t) > TH_OMP_OVERHEAD_THRESHOLD) private(i) 
       for (i=0; i<THTensor_(nElement)(t); i++)
       {
           rp[i] = tp[i] / sp[i];
@@ -920,49 +922,109 @@ void THTensor_(reshape)(THTensor *r_, THTensor *t, THLongStorage *size)
    http://www.alienryderflex.com/quicksort/
    This public-domain C implementation by Darel Rex Finley.
    Thanks man :)
+
+    Updated Oct 16 2013: change choice of pivot to avoid worst-case being a pre-sorted input
 */
 #define  MAX_LEVELS  300
 static void THTensor_(quicksortascend)(real *arr, long *idx, long elements, long stride)
 {
-  long beg[MAX_LEVELS], end[MAX_LEVELS], i=0, L, R, swap, pid;
-  real piv;
+  long beg[MAX_LEVELS], end[MAX_LEVELS], i=0, L, R, P, swap, pid;
+  real rswap, piv;
   
   beg[0]=0; end[0]=elements;
   while (i>=0) {
     L=beg[i]; R=end[i]-1;
     if (L<R) {
-      piv=arr[L*stride];
-      pid=idx[L*stride];
+      P=(L+R)>>1; /* Choose pivot as middle element of the current block */
+      piv=arr[P*stride];
+      pid=idx[P*stride];
+      rswap=arr[L*stride];
+      swap=idx[L*stride];
+      arr[L*stride]=piv;
+      idx[L*stride]=pid;
+      arr[P*stride]=rswap;
+      idx[P*stride]=swap;
       while (L<R) {
-        while (arr[R*stride]>=piv && L<R) R--; if (L<R) {idx[L*stride]=idx[R*stride]; arr[L*stride]=arr[R*stride]; L++;}
-        while (arr[L*stride]<=piv && L<R) L++; if (L<R) {idx[R*stride]=idx[L*stride]; arr[R*stride]=arr[L*stride]; R--;} }
-      idx[L*stride]=pid; arr[L*stride]=piv; beg[i+1]=L+1; end[i+1]=end[i]; end[i++]=L;
+        while (arr[R*stride]>=piv && L<R)
+            R--;
+        if (L<R) {
+            idx[L*stride]=idx[R*stride];
+            arr[L*stride]=arr[R*stride];
+            L++;
+        }
+        while (arr[L*stride]<=piv && L<R)
+            L++;
+        if (L<R) {
+            idx[R*stride]=idx[L*stride];
+            arr[R*stride]=arr[L*stride];
+            R--;
+        }
+      }
+      idx[L*stride]=pid;
+      arr[L*stride]=piv;
+      beg[i+1]=L+1;
+      end[i+1]=end[i];
+      end[i++]=L;
       if (end[i]-beg[i]>end[i-1]-beg[i-1]) {
         swap=beg[i]; beg[i]=beg[i-1]; beg[i-1]=swap;
-        swap=end[i]; end[i]=end[i-1]; end[i-1]=swap; }}
+        swap=end[i]; end[i]=end[i-1]; end[i-1]=swap;
+      }
+    }
     else {
-      i--; }}}
+      i--;
+    }
+  }
+}
 
 static void THTensor_(quicksortdescend)(real *arr, long *idx, long elements, long stride)
 {
-  long beg[MAX_LEVELS], end[MAX_LEVELS], i=0, L, R, swap, pid;
-  real piv;
+  long beg[MAX_LEVELS], end[MAX_LEVELS], i=0, L, R, P, swap, pid;
+  real rswap, piv;
   
   beg[0]=0; end[0]=elements;
   while (i>=0) {
     L=beg[i]; R=end[i]-1;
     if (L<R) {
-      piv=arr[L*stride];
-      pid=idx[L*stride];
+      P=(L+R)>>1; /* Choose pivot as middle element of the current block */
+      piv=arr[P*stride];
+      pid=idx[P*stride];
+      rswap=arr[L*stride];
+      swap=idx[L*stride];
+      arr[L*stride]=piv;
+      idx[L*stride]=pid;
+      arr[P*stride]=rswap;
+      idx[P*stride]=swap;
       while (L<R) {
-        while (arr[R*stride]<=piv && L<R) R--; if (L<R) {idx[L*stride]=idx[R*stride]; arr[L*stride]=arr[R*stride]; L++;}
-        while (arr[L*stride]>=piv && L<R) L++; if (L<R) {idx[R*stride]=idx[L*stride]; arr[R*stride]=arr[L*stride]; R--;} }
-      idx[L*stride]=pid; arr[L*stride]=piv; beg[i+1]=L+1; end[i+1]=end[i]; end[i++]=L;
+        while (arr[R*stride]<=piv && L<R)
+            R--;
+        if (L<R) {
+            idx[L*stride]=idx[R*stride];
+            arr[L*stride]=arr[R*stride];
+            L++;
+        }
+        while (arr[L*stride]>=piv && L<R)
+            L++;
+        if (L<R) {
+            idx[R*stride]=idx[L*stride];
+            arr[R*stride]=arr[L*stride];
+            R--;
+        }
+      }
+      idx[L*stride]=pid;
+      arr[L*stride]=piv;
+      beg[i+1]=L+1;
+      end[i+1]=end[i];
+      end[i++]=L;
       if (end[i]-beg[i]>end[i-1]-beg[i-1]) {
         swap=beg[i]; beg[i]=beg[i-1]; beg[i-1]=swap;
-        swap=end[i]; end[i]=end[i-1]; end[i-1]=swap; }}
+        swap=end[i]; end[i]=end[i-1]; end[i-1]=swap;
+      }
+    }
     else {
-      i--; }}}
+      i--;
+    }
+  }
+}
 
 void THTensor_(sort)(THTensor *rt_, THLongTensor *ri_, THTensor *t, int dimension, int descendingOrder)
 {
