@@ -2,8 +2,7 @@ package = "torch"
 version = "scm-1"
 
 source = {
-   url = "git://github.com/andresy/torch7-split.git",
-   dir = "torch7-split/rocks/torch"
+   url = "git://github.com/torch/torch7.git",
 }
 
 description = {
