@@ -1035,32 +1035,51 @@ function torchtest.reshape()
    torch.reshape(mxx,x,130,23)
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.reshape value')
 end
+
+local function assertIsOrdered(order, x, mxx, ixx, task)
+  local areOrdered
+  if order == 'descending' then
+    areOrdered = function(a, b) return a >= b end
+  elseif order == 'ascending' then
+    areOrdered = function(a, b) return a <= b end
+  else
+    error('unknown order "' .. order .. '", must be "ascending" or "descending"')
+  end
+
+  local decreasing = true
+  for j = 1,msize do
+    for k = 2,msize do
+      decreasing = decreasing and areOrdered(mxx[j][k-1], mxx[j][k])
+    end
+  end
+  mytester:assert(decreasing, 'torch.sort (' .. order .. ') values unordered for ' .. task)
+  local seen = torch.ByteTensor(msize)
+  local indicesCorrect = true
+  for k = 1,msize do
+    seen:zero()
+    for j = 1,msize do
+      indicesCorrect = indicesCorrect and (x[k][ixx[k][j]] == mxx[k][j])
+      seen[ixx[k][j]] = 1
+    end
+    indicesCorrect = indicesCorrect and (torch.sum(seen) == msize)
+  end
+  mytester:assert(indicesCorrect, 'torch.sort (' .. order .. ') indices wrong for ' .. task)
+end
+
 function torchtest.sortAscending()
    local x = torch.rand(msize,msize)
    local mx,ix = torch.sort(x)
+
+   -- Test use of result tensor
    local mxx = torch.Tensor()
    local ixx = torch.LongTensor()
    torch.sort(mxx,ixx,x)
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.sort (ascending) value')
    mytester:asserteq(maxdiff(ix,ixx),0,'torch.sort (ascending) index')
-   local increasing = true
-   for j = 1,msize do
-       for k = 2,msize do
-           increasing = increasing and (mxx[j][k-1] < mxx[j][k])
-       end
-   end
-   mytester:assert(increasing, 'torch.sort (ascending) increasing')
-   local seen = torch.ByteTensor(msize)
-   local indicesCorrect = true
-   for k = 1,msize do
-       seen:zero()
-       for j = 1,msize do
-           indicesCorrect = indicesCorrect and (x[k][ixx[k][j]] == mxx[k][j])
-           seen[ixx[k][j]] = 1
-       end
-       indicesCorrect = indicesCorrect and (torch.sum(seen) == msize)
-   end
-   mytester:assert(indicesCorrect, 'torch.sort (ascending) indices')
+
+   -- Test sorting of random numbers
+   assertIsOrdered('ascending', x, mxx, ixx, 'random')
+
    mytester:assertTensorEq(
            torch.sort(torch.Tensor{ 50, 40, 30, 20, 10 }),
            torch.Tensor{ 10, 20, 30, 40, 50 },
@@ -1070,79 +1089,35 @@ function torchtest.sortAscending()
    -- Test that we still have proper sorting with duplicate keys
    local x = torch.floor(torch.rand(msize,msize)*10)
    torch.sort(mxx,ixx,x)
-   local increasing = true
-   for j = 1,msize do
-       for k = 2,msize do
-           increasing = increasing and (mxx[j][k-1] <= mxx[j][k])
-       end
-   end
-   mytester:assert(increasing, 'torch.sort (ascending) increasing with equal keys')
-   local seen = torch.ByteTensor(msize)
-   local indicesCorrect = true
-   for k = 1,msize do
-       seen:zero()
-       for j = 1,msize do
-           indicesCorrect = indicesCorrect and (x[k][ixx[k][j]] == mxx[k][j])
-           seen[ixx[k][j]] = 1
-       end
-       indicesCorrect = indicesCorrect and (torch.sum(seen) == msize)
-   end
-   mytester:assert(indicesCorrect, 'torch.sort (ascending) indices with equal keys')
+   assertIsOrdered('ascending', x, mxx, ixx, 'random with duplicate keys')
 end
+
 function torchtest.sortDescending()
    local x = torch.rand(msize,msize)
    local mx,ix = torch.sort(x,true)
+
+   -- Test use of result tensor
    local mxx = torch.Tensor()
    local ixx = torch.LongTensor()
    torch.sort(mxx,ixx,x,true)
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.sort (descending) value')
    mytester:asserteq(maxdiff(ix,ixx),0,'torch.sort (descending) index')
-   local decreasing = true
-   for j = 1,msize do
-       for k = 2,msize do
-           decreasing = decreasing and (mxx[j][k-1] > mxx[j][k])
-       end
-   end
-   mytester:assert(decreasing, 'torch.sort (descending) decreasing')
-   local seen = torch.ByteTensor(msize)
-   local indicesCorrect = true
-   for k = 1,msize do
-       seen:zero()
-       for j = 1,msize do
-           indicesCorrect = indicesCorrect and (x[k][ixx[k][j]] == mxx[k][j])
-           seen[ixx[k][j]] = 1
-       end
-       indicesCorrect = indicesCorrect and (torch.sum(seen) == msize)
-   end
-   mytester:assert(indicesCorrect, 'torch.sort (descending) indices')
+
+   -- Test sorting of random numbers
+   assertIsOrdered('descending', x, mxx, ixx, 'random')
+
+   -- Test simple sort task
    mytester:assertTensorEq(
            torch.sort(torch.Tensor{ 10, 20, 30, 40, 50 },true),
            torch.Tensor{ 50, 40, 30, 20, 10 },
            1e-16,
            "torch.sort (descending) simple sort"
        )
+
    -- Test that we still have proper sorting with duplicate keys
-   local x = torch.floor(torch.rand(msize,msize)*10)
-   torch.sort(mxx,ixx,x,true)
-   local decreasing = true
-   for j = 1,msize do
-       for k = 2,msize do
-           decreasing = decreasing and (mxx[j][k-1] >= mxx[j][k])
-       end
-   end
-   mytester:assert(decreasing, 'torch.sort (descending) decreasing with equal keys')
-   local seen = torch.ByteTensor(msize)
-   local indicesCorrect = true
-   for k = 1,msize do
-       seen:zero()
-       for j = 1,msize do
-           indicesCorrect = indicesCorrect and (x[k][ixx[k][j]] == mxx[k][j])
-           seen[ixx[k][j]] = 1
-       end
-       indicesCorrect = indicesCorrect and (torch.sum(seen) == msize)
-   end
-   mytester:assert(indicesCorrect, 'torch.sort (descending) indices with equal keys')
+   assertIsOrdered('descending', x, mxx, ixx, 'random with duplicate keys')
 end
+
 function torchtest.tril()
    local x = torch.rand(msize,msize)
    local mx = torch.tril(x)
