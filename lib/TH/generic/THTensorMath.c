@@ -1070,40 +1070,45 @@ static void THTensor_(quicksortascend)(real *arr, long *idx, long elements, long
   long beg[MAX_LEVELS], end[MAX_LEVELS], i=0, L, R, P, swap, pid;
   real rswap, piv;
 
+#define ARR(I) arr[(I)*stride]
+#define IDX(I) idx[(I)*stride]
+
 #define LONG_SWAP(A, B) swap = A; A = B; B = swap
 #define REAL_SWAP(A, B) rswap = A; A = B; B = rswap
+
 #define BOTH_SWAP(I, J) \
-  REAL_SWAP(arr[I*stride], arr[J*stride]); \
-  LONG_SWAP(idx[I*stride], idx[J*stride])
+  REAL_SWAP(ARR(I), ARR(J)); \
+  LONG_SWAP(IDX(I), IDX(J))
+
   beg[0]=0; end[0]=elements;
   while (i>=0) {
     L=beg[i]; R=end[i]-1;
     if (L<R) {
       P=(L+R)>>1; /* Choose pivot as middle element of the current block */
 
-      piv=arr[P*stride];
-      pid=idx[P*stride];
-
       BOTH_SWAP(L, P);
 
+      piv=ARR(L);
+      pid=IDX(L);
+
       while (L<R) {
-        while (arr[R*stride]>piv && L<R)
+        while (ARR(R)>piv && L<R)
             R--;
         if (L<R) {
-            idx[L*stride]=idx[R*stride];
-            arr[L*stride]=arr[R*stride];
+            IDX(L)=IDX(R);
+            ARR(L)=ARR(R);
             L++;
         }
-        while (arr[L*stride]<piv && L<R)
+        while (ARR(L)<piv && L<R)
             L++;
         if (L<R) {
-            idx[R*stride]=idx[L*stride];
-            arr[R*stride]=arr[L*stride];
+            IDX(R)=IDX(L);
+            ARR(R)=ARR(L);
             R--;
         }
       }
-      idx[L*stride]=pid;
-      arr[L*stride]=piv;
+      IDX(L)=pid;
+      ARR(L)=piv;
       beg[i+1]=L+1;
       end[i+1]=end[i];
       end[i++]=L;
