@@ -1072,7 +1072,9 @@ static void THTensor_(quicksortascend)(real *arr, long *idx, long elements, long
 
 #define LONG_SWAP(A, B) swap = A; A = B; B = swap
 #define REAL_SWAP(A, B) rswap = A; A = B; B = rswap
-  
+#define BOTH_SWAP(I, J) \
+  REAL_SWAP(arr[I*stride], arr[J*stride]); \
+  LONG_SWAP(idx[I*stride], idx[J*stride])
   beg[0]=0; end[0]=elements;
   while (i>=0) {
     L=beg[i]; R=end[i]-1;
@@ -1080,10 +1082,9 @@ static void THTensor_(quicksortascend)(real *arr, long *idx, long elements, long
       P=(L+R)>>1; /* Choose pivot as middle element of the current block */
 
       piv=arr[P*stride];
-      REAL_SWAP(arr[L*stride], arr[P*stride]);
-
       pid=idx[P*stride];
-      LONG_SWAP(idx[L*stride], idx[P*stride]);
+
+      BOTH_SWAP(L, P);
 
       while (L<R) {
         while (arr[R*stride]>piv && L<R)
