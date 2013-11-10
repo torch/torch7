@@ -1084,9 +1084,12 @@ static void THTensor_(quicksortascend)(real *arr, long *idx, long elements, long
   while (i>=0) {
     L=beg[i]; R=end[i]-1;
     if (L<R) {
-      P=(L+R)>>1; /* Choose pivot as middle element of the current block */
-
-      BOTH_SWAP(L, P);
+      /* Use median of three for pivot choice */
+      P=(L+R)>>1;
+      BOTH_SWAP((L+R)>>1, L+1);
+      if (ARR(L+1) > ARR(R)) { BOTH_SWAP(L+1, R); }
+      if (ARR(L) > ARR(R)) { BOTH_SWAP(L, R); }
+      if (ARR(L+1) > ARR(L)) { BOTH_SWAP(L+1, L); }
 
       piv=ARR(L);
       pid=IDX(L);
