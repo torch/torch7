@@ -1,3 +1,4 @@
+#include <assert.h>
 #ifndef TH_GENERIC_FILE
 #define TH_GENERIC_FILE "generic/THTensorMath.c"
 #else
@@ -1057,6 +1058,122 @@ void THTensor_(reshape)(THTensor *r_, THTensor *t, THLongStorage *size)
 }
 
 /* I cut and pasted (slightly adapted) the quicksort code from
+   Sedgewick's 1978 "Implementing Quicksort Programs" article
+   http://www.csie.ntu.edu.tw/~b93076/p847-sedgewick.pdf
+
+   It is the state of the art existing implementation. The macros 
+   are here to make as close a match as possible to the pseudocode of
+   Program 2 p.851
+
+   Note that other partition schemes exist, and are typically presented
+   in textbook, but those are less efficient. See e.g.
+   http://cs.stackexchange.com/questions/11458/quicksort-partitioning-hoare-vs-lomuto
+
+   Julien, November 12th 2013
+*/
+#define MAX_LEVELS  300
+#define M_SMALL 10 /* Limit for small subfiles */
+
+#define ARR(III) arr[(III)*stride]
+#define IDX(III) idx[(III)*stride]
+
+#define LONG_SWAP(AAA, BBB) swap = AAA; AAA = BBB; BBB = swap
+#define REAL_SWAP(AAA, BBB) rswap = AAA; AAA = BBB; BBB = rswap
+
+#define BOTH_SWAP(III, JJJ) \
+  REAL_SWAP(ARR(III), ARR(JJJ)); \
+  LONG_SWAP(IDX(III), IDX(JJJ))
+
+static void THTensor_(quicksortascend)(real *arr, long *idx, long elements, long stride)
+{
+  long beg[MAX_LEVELS], end[MAX_LEVELS], i, j, L, R, P, swap, pid, stack = 0, sz_right, sz_left;
+  real rswap, piv;
+  unsigned char done = 0;
+
+  /* beg[0]=0; end[0]=elements; */
+  stack = 0;
+  L = 0; R = elements-1;
+  done = elements-1 <= M_SMALL;
+
+  while(!done) {
+      /* Use median of three for pivot choice */
+      P=(L+R)>>1;
+      BOTH_SWAP(P, L+1);
+      if (ARR(L+1) > ARR(R)) { BOTH_SWAP(L+1, R); }
+      if (ARR(L) > ARR(R)) { BOTH_SWAP(L, R); }
+      if (ARR(L+1) > ARR(L)) { BOTH_SWAP(L+1, L); }
+
+      i = L+1; j = R; piv = ARR(L); pid = IDX(L);
+
+      do {
+          do { i = i+1; } while(ARR(i) < piv);
+          do { j = j-1; } while(ARR(j) > piv);
+          if (j < i)
+              break;
+          BOTH_SWAP(i, j);
+      } while(1);
+      BOTH_SWAP(L, j);
+      /* Left subfile is (L, j-1) */
+      /* Right subfile is (i, R) */
+      sz_left = j-L;
+      sz_right = R-i+1;
+      if (sz_left <= M_SMALL && sz_right <= M_SMALL) {
+          /* both subfiles are small */
+          /* if stack empty */
+          if (stack == 0) {
+              done = 1;
+          } else {
+              stack--;
+              L = beg[stack];
+              R = end[stack];
+          }
+      } else if (sz_left <= M_SMALL || sz_right <= M_SMALL) {
+              /* exactly one of the subfiles is small */
+              /* (L,R) = large subfile */
+              if (sz_left > sz_right) {
+                  /* Implicit: L = L; */
+                  R = j-1;
+              } else {
+                  L = i;
+                  /* Implicit: R = R; */
+              }
+      } else {
+          /* none of the subfiles is small */
+          /* push large subfile */
+          /* (L,R) = small subfile */
+          if (sz_left > sz_right) {
+              beg[stack] = L;
+              end[stack] = j-1;
+              stack++;
+              L = i;
+              /* Implicit: R = R */
+          } else {
+              beg[stack] = i;
+              end[stack] = R;
+              stack++;
+              /* Implicit: L = L; */
+              R = j-1;
+          }
+      }
+  } /* while not done */
+  /* Now insertion sort on the concatenation of subfiles */
+  for(i=elements-2; i>=0; i--) {
+    if (ARR(i) > ARR(i+1)) {
+          piv = ARR(i);
+      pid = IDX(i);
+      j = i+1;
+      do {
+          ARR(j-1) = ARR(j);
+          IDX(j-1) = IDX(j);
+          j = j+1;
+      } while(j < elements && ARR(j) < piv);
+      ARR(j-1) = piv;
+      IDX(j-1) = pid;
+     }
+  }
+}
+
+/* I cut and pasted (slightly adapted) the quicksort code from
    http://www.alienryderflex.com/quicksort/
    This public-domain C implementation by Darel Rex Finley.
    Thanks man :)
@@ -1064,68 +1181,6 @@ void THTensor_(reshape)(THTensor *r_, THTensor *t, THLongStorage *size)
     Updated Oct 16 2013: change choice of pivot to avoid worst-case being a pre-sorted input - Daniel and Julien
     Updated Oct 24 2013: change pivot comparison to strict inequality to avoid worst-case on constant input, see Sedgewick, Algorithms in C, Addison Wesley, 1990, p. 120 - Julien
 */
-#define  MAX_LEVELS  300
-static void THTensor_(quicksortascend)(real *arr, long *idx, long elements, long stride)
-{
-  long beg[MAX_LEVELS], end[MAX_LEVELS], i=0, L, R, P, swap, pid;
-  real rswap, piv;
-
-#define ARR(I) arr[(I)*stride]
-#define IDX(I) idx[(I)*stride]
-
-#define LONG_SWAP(A, B) swap = A; A = B; B = swap
-#define REAL_SWAP(A, B) rswap = A; A = B; B = rswap
-
-#define BOTH_SWAP(I, J) \
-  REAL_SWAP(ARR(I), ARR(J)); \
-  LONG_SWAP(IDX(I), IDX(J))
-
-  beg[0]=0; end[0]=elements;
-  while (i>=0) {
-    L=beg[i]; R=end[i]-1;
-    if (L<R) {
-      /* Use median of three for pivot choice */
-      P=(L+R)>>1;
-      BOTH_SWAP((L+R)>>1, L+1);
-      if (ARR(L+1) > ARR(R)) { BOTH_SWAP(L+1, R); }
-      if (ARR(L) > ARR(R)) { BOTH_SWAP(L, R); }
-      if (ARR(L+1) > ARR(L)) { BOTH_SWAP(L+1, L); }
-
-      piv=ARR(L);
-      pid=IDX(L);
-
-      while (L<R) {
-        while (ARR(R)>piv && L<R)
-            R--;
-        if (L<R) {
-            IDX(L)=IDX(R);
-            ARR(L)=ARR(R);
-            L++;
-        }
-        while (ARR(L)<piv && L<R)
-            L++;
-        if (L<R) {
-            IDX(R)=IDX(L);
-            ARR(R)=ARR(L);
-            R--;
-        }
-      }
-      IDX(L)=pid;
-      ARR(L)=piv;
-      beg[i+1]=L+1;
-      end[i+1]=end[i];
-      end[i++]=L;
-      if (end[i]-beg[i]>end[i-1]-beg[i-1]) {
-        LONG_SWAP(beg[i], beg[i-1]);
-        LONG_SWAP(end[i], end[i-1]);
-      }
-    }
-    else {
-      i--;
-    }
-  }
-}
-
 static void THTensor_(quicksortdescend)(real *arr, long *idx, long elements, long stride)
 {
   long beg[MAX_LEVELS], end[MAX_LEVELS], i=0, L, R, P, swap, pid;
