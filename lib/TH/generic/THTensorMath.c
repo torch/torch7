@@ -1173,6 +1173,12 @@ static void THTensor_(quicksortascend)(real *arr, long *idx, long elements, long
   }
 }
 
+#undef ARR
+#undef IDX
+#undef LONG_SWAP
+#undef REAL_SWAP
+#undef BOTH_SWAP
+
 /* I cut and pasted (slightly adapted) the quicksort code from
    http://www.alienryderflex.com/quicksort/
    This public-domain C implementation by Darel Rex Finley.
