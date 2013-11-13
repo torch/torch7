@@ -1,4 +1,3 @@
-#include <assert.h>
 #ifndef TH_GENERIC_FILE
 #define TH_GENERIC_FILE "generic/THTensorMath.c"
 #else
