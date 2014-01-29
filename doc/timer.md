@@ -23,7 +23,7 @@ Returns a new `Timer`. The timer starts to count the time now.
 ### [self] reset() ###
 
 Reset the timer accumulated time to `0`. If the timer was running, the timer
-restarts to count the time now. If the timer was stopped, it stays stopped.
+restarts to count the time now. A reset does not start a stopped timer.
 
 <a name="torch.Timer.resume"/>
 ### [self] resume() ###
@@ -34,7 +34,7 @@ the accumulated time with the time already counted before being stopped.
 <a name="torch.Timer.stop"/>
 ### [self] stop() ###
 
-Stop the timer. The accumulated time counted until now is stored.
+Stop the timer. The accumulated time counted until now is stored.  The timer cannot be started again.
 
 <a name="torch.Timer.time"/>
 ### [table] time() ###
