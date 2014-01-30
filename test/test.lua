@@ -444,7 +444,6 @@ function torchtest.TestAsserts()
    mytester:assertTensorNe(x, xx+1, 1e-16, 'assertTensorNe: not deemed different')
 end
 
-
 function torchtest.BugInAssertTableEq()
    local t = {1,2,3}
    local tt = {1,2,3}
@@ -470,6 +469,21 @@ function torchtest.RNGState()
    torch.setRNGState(state)
    local after = torch.rand(1000)
    mytester:assertTensorEq(before, after, 1e-16, 'getRNGState/setRNGState not generating same sequence')
+end
+
+function torchtest.abs()
+   local in1 = torch.IntTensor{1,-1}
+   local out1 = torch.IntTensor{1,1}
+   mytester:assertTensorEq(in1:abs(), out1, 1e-16, 'torch.abs(1)')
+
+   local in2 = torch.LongTensor{1,-1}
+   local out2 = torch.LongTensor{1,1}
+   mytester:assertTensorEq(in2:abs(), out2, 1e-16, 'torch.abs(2)')
+
+   -- Checking that the right abs function is called for LongIntTensor
+   local bignumber = 2^31 + 1
+   local in3 = torch.LongTensor{-bignumber}
+   mytester:assertgt(in3:abs()[1], 0, 'torch.abs(3)')
 end
 
 function torch.test()
