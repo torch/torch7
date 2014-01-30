@@ -717,6 +717,24 @@ static void THTensor_random1__(THTensor *self, long b)
             {name=Tensor}})
    end
 
+   if Tensor == 'IntTensor' then
+         wrap("abs",
+              cname("abs"),
+              {{name=Tensor, default=true, returned=true, method={default='nil'}},
+               {name=Tensor, method={default=1}}},
+              "abs",
+              {{name=real},
+               {name=real, creturned=true}})
+   elseif Tensor == 'LongTensor' then
+         wrap("abs",
+              cname("abs"),
+              {{name=Tensor, default=true, returned=true, method={default='nil'}},
+               {name=Tensor, method={default=1}}},
+              "labs",
+              {{name=real},
+               {name=real, creturned=true}})
+   end
+
    if Tensor == 'FloatTensor' or Tensor == 'DoubleTensor' then
 
       wrap("mean",
