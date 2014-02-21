@@ -529,6 +529,62 @@ function torchtest.testCholeskyErrsOnRankDeficient()
 end
 
 
+-- Generate a tensor of size `size` whose values are ascending integers from
+-- `start` (or 1, if `start is not given)
+local function consecutive(size, start)
+    local sequence = torch.ones(torch.Tensor(size):prod(1)[1]):cumsum(1)
+    if start then
+        sequence:add(start - 1)
+    end
+    return sequence:resize(unpack(size))
+end
+
+function torchtest.index()
+    local badIndexMsg = "Lookup with valid index should return correct result"
+    local reference = consecutive{3, 3, 3}
+    mytester:assertTensorEq(reference[1], consecutive{3, 3}, 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[2], consecutive({3, 3}, 10), 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[3], consecutive({3, 3}, 19), 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[{1}], consecutive{3, 3}, 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[{2}], consecutive({3, 3}, 10), 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[{3}], consecutive({3, 3}, 19), 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[{1,2}], consecutive({3}, 4), 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[{{1,2}}], consecutive({2, 3, 3}), 1e-16, badIndexMsg)
+    mytester:asserteq(reference[{3, 3, 3}], 27, badIndexMsg)
+    mytester:assertTensorEq(reference[{}], consecutive{3, 3, 3}, 1e-16, badIndexMsg)
+
+    local shouldErrorMsg = "Lookup with too many indices should error"
+    mytester:assertError(function() return reference[{1, 1, 1, 1}] end, shouldErrorMsg)
+    mytester:assertError(function() return reference[{1, 1, 1, {1, 1}}] end, shouldErrorMsg)
+    mytester:assertError(function() return reference[{3, 3, 3, 3, 3, 3, 3, 3}] end, shouldErrorMsg)
+end
+
+function torchtest.newIndex()
+    local badIndexMsg = "Assignment to valid index should produce correct result"
+    local reference = consecutive{3, 3, 3}
+    -- This relies on __index__() being correct - but we have separate tests for that
+    local function checkPartialAssign(index)
+        local reference = torch.zeros(3, 3, 3)
+        reference[index] = consecutive{3, 3, 3}[index]
+        mytester:assertTensorEq(reference[index], consecutive{3, 3, 3}[index], 1e-16, badIndexMsg)
+        reference[index] = 0
+        mytester:assertTensorEq(reference, torch.zeros(3, 3, 3), 1e-16, badIndexMsg)
+    end
+
+    checkPartialAssign{1}
+    checkPartialAssign{2}
+    checkPartialAssign{3}
+    checkPartialAssign{1,2}
+    checkPartialAssign{2,3}
+    checkPartialAssign{1,3}
+    checkPartialAssign{}
+
+    local shouldErrorMsg = "Assignment with too many indices should error"
+    mytester:assertError(function() reference[{1, 1, 1, 1}] = 1 end, shouldErrorMsg)
+    mytester:assertError(function() reference[{1, 1, 1, {1, 1}}] = 1 end, shouldErrorMsg)
+    mytester:assertError(function() reference[{3, 3, 3, 3, 3, 3, 3, 3}] = 1 end, shouldErrorMsg)
+end
+
 function torch.test()
    math.randomseed(os.time())
    mytester = torch.Tester()
