@@ -858,7 +858,8 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                {name="double", default=f.b},
                {name="double", creturned=true}},
               cname(f.name),
-              {{name=Tensor, returned=true},
+              {{name='Generator'},
+               {name=Tensor, returned=true},
                {name=real, default=f.a},
                {name=real, default=f.b}})
       end
@@ -867,10 +868,12 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
          
          wrap(f.name,
               string.format("THRandom_%s", f.name),
-              {{name="double", default=f.a},
+              {{name='Generator'},
+               {name="double", default=f.a},
                {name="double", creturned=true}},
               cname(f.name),
-              {{name=Tensor, returned=true},
+              {{name='Generator'},
+               {name=Tensor, returned=true},
                {name=real, default=f.a}})
       end
       
