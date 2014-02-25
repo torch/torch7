@@ -321,42 +321,132 @@ function Tensor.expandAs(tensor,template)
 end
 torch.expandAs = Tensor.expandAs
 
-function Tensor.repeatTensor(tensor,...)
-   -- get sizes
-   local sizes = {...}
+local function isTensor(tensor)
+  return type(tensor) == 'userdata' and string.sub(torch.typename(tensor),-6) == 'Tensor'
+end 
 
-   -- check type
-   local size
-   if torch.typename(sizes[1]) and torch.typename(sizes[1])=='torch.LongStorage' then
-      size = sizes[1]
-   else
-      size = torch.LongStorage(#sizes)
-      for i,s in ipairs(sizes) do
-         size[i] = s
-      end
-   end
-   if size:size() < tensor:dim() then
-      error('Number of dimensions of repeat dims can not be smaller than number of dimensions of tensor')
-   end
-   local xtensor = tensor.new():set(tensor)
-   local xsize = xtensor:size():totable()
-   for i=1,size:size()-tensor:dim() do
-      table.insert(xsize,1,1)
-   end
-   size = torch.DoubleTensor(xsize):cmul(torch.DoubleTensor(size:totable())):long():storage()
-   xtensor:resize(torch.LongStorage(xsize))
-   local rtensor = tensor.new():resize(size)
-   local urtensor = rtensor.new(rtensor)
-   for i=1,xtensor:dim() do
-      urtensor = urtensor:unfold(i,xtensor:size(i),xtensor:size(i))
-   end
-   for i=1,urtensor:dim()-xtensor:dim() do
-      table.insert(xsize,1,1)
-   end
-   xtensor:resize(torch.LongStorage(xsize))
-   local xxtensor = xtensor:expandAs(urtensor)
-   urtensor:copy(xxtensor)
-   return rtensor
+--[[
+  Try to convert various formats to into a long storage format 
+  a nil result is returned if the conversion fails
+
+  This will convert
+  1. LongStorage (identity)
+  2. Table of LongStorage
+  3. Formats that can be expressed as pairs (e.g. tables)
+]]-- 
+local function asLongStorage(data)
+  local result
+
+  if torch.typename(data) == 'torch.LongStorage' then
+    result = data
+  elseif torch.typename(data[1]) == 'torch.LongStorage' then 
+    result = data[1]
+  else 
+    -- we try a brute force convert
+    result = torch.LongStorage(#data)
+    for i,s in ipairs(data) do
+      result[i] = s
+    end
+  end
+
+  return result
+end
+
+--[[ Converts variadic arguments after a start index to a table ]]--
+local function argsToTable(startIndex,...)
+  local result = {}
+
+  for index = startIndex,select('#',...) do
+    local arg = select(index,...)
+    table.insert(result,arg)
+  end
+
+  return result
+end
+
+--[[ Pad the front a indices in LongStorage format with ones ]]--
+local function padFrontWith(indices,count,value)
+  local result = indices:totable()
+  for i=1,count do
+    table.insert(result,1,value)
+  end
+  return torch.LongStorage(result)
+end
+
+--[[
+  Create a new tensor that is a give number of repeats (tessellations) of the old tensor
+
+    Example:
+
+      And input vector {1,2} repeated by 2,2  gives {{1,2,1,2},{1,2,1,2}}
+      The size of the input vector is {2} and the size of the repeat vector is {2,2}
+      as such the size of the result vector is {2,4} 
+      
+  In general, if the dimensions of the input tensor is {s_1,...,s_n} and the 
+  size of the repeat is {r_1,...,r_m} where m >= n.
+  
+  The size of the resulting tensor is {r_1,...,r_{m-n} * s_1,...,r_m * s_n}, which
+  we can tessellate with the input vector accordingly.
+]]--
+function Tensor.repeatTensor(tensor,...)
+  local argv = {...}
+  local sizeArray = {}
+  
+  --[[ boiler plate code to handle polymorphism ]]--
+  if not isTensor(tensor) then
+    error('expecting at first argument to be a tensor')
+  end
+  
+  local emplaceResult = false
+
+  -- note: order of evaluation of conditions is important
+  if isTensor(argv[1]) then
+    size = asLongStorage(argsToTable(2,...))
+    emplaceResult = true
+  else
+    size = asLongStorage(argsToTable(1,...))
+  end
+
+  local xtensor
+  if not emplaceResult then
+    xtensor = tensor.new():set(tensor)
+  else 
+    xtensor = tensor.new():set(argv[1])
+  end
+
+  local repeatDim = size:size()
+  local tensorDim = xtensor:dim()
+
+  if repeatDim < tensorDim then
+    error('Error: repeat dimensions < tensor dimensions')
+  end
+  
+  --[[ implementation ]]--
+  local xsize = padFrontWith(xtensor:size(),repeatDim - tensorDim,1)
+  xtensor:resize(xsize)
+
+  -- note: multiplication should be done in this order to prevent side effects to xsize
+  size = torch.LongTensor(size):cmul(torch.LongTensor(xsize)):storage()
+  rtensor = tensor.new(size)
+
+  local urtensor = rtensor.new(rtensor)
+  for i=1,xtensor:dim() do
+    urtensor = urtensor:unfold(i,xtensor:size(i),xtensor:size(i))
+  end
+
+  xsize = padFrontWith(xsize,urtensor:dim() - xtensor:dim(),1)
+  xtensor:resize(xsize)
+
+  -- expand and copy the result
+  urtensor:copy(xtensor:expandAs(urtensor))
+
+  -- emplace the result if necessary
+  if emplaceResult then 
+    tensor:set(rtensor)
+  end
+
+  return rtensor
+
 end
 torch.repeatTensor = Tensor.repeatTensor
 
