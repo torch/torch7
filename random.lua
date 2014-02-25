@@ -29,6 +29,7 @@ interface:print(
    [[
 void torch_random_init(lua_State *L)
 {
+  torch_Generator_init(L);
   luaL_register(L, NULL, random__);
 }
 ]])

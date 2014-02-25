@@ -430,7 +430,8 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
 
    wrap("randperm",
         cname("randperm"),
-        {{name=Tensor, default=true, returned=true, method={default='nil'},
+        {{name="Generator"},
+         {name=Tensor, default=true, returned=true, method={default='nil'},
           postcall=function(arg)
                       return table.concat(
                          {
@@ -470,64 +471,72 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
    if Tensor == 'ByteTensor' then -- we declare this only once
       interface:print(
          [[
-static int THRandom_random2__(long a, long b)
+static int THRandom_random2__(THGenerator *gen, long a, long b)
 {
   THArgCheck(b >= a, 2, "upper bound must be larger than lower bound");
-  return((THRandom_random() % (b+1-a)) + a);
+  return((THRandom_random(gen) % (b+1-a)) + a);
 }
          
-static int THRandom_random1__(long b)
+static int THRandom_random1__(THGenerator *gen, long b)
 {
   THArgCheck(b > 0, 1, "upper bound must be strictly positive");
-  return(THRandom_random() % b + 1);
+  return(THRandom_random(gen) % b + 1);
 }
          ]])
    end
 
    interface:print(string.gsub(
                       [[
-static void THTensor_random2__(THTensor *self, long a, long b)
+static void THTensor_random2__(THTensor *self, THGenerator *gen, long a, long b)
 {
   THArgCheck(b >= a, 2, "upper bound must be larger than lower bound");
-  TH_TENSOR_APPLY(real, self, *self_data = ((THRandom_random() % (b+1-a)) + a);)
+  TH_TENSOR_APPLY(real, self, *self_data = ((THRandom_random(gen) % (b+1-a)) + a);)
 }
 
-static void THTensor_random1__(THTensor *self, long b)
+static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
 {
   THArgCheck(b > 0, 1, "upper bound must be strictly positive");
-  TH_TENSOR_APPLY(real, self, *self_data = (THRandom_random() % b + 1);)
+  TH_TENSOR_APPLY(real, self, *self_data = (THRandom_random(gen) % b + 1);)
 }
 ]], 'Tensor', Tensor):gsub('real', real))
 
    wrap('random',
         'THRandom_random2__',
-        {{name='long'},
+        {{name='Generator'},
+         {name='long'},
          {name='long'},
          {name='long', creturned=true}},
         'THRandom_random1__',
-        {{name='long'},
+        {{name='Generator'},
+         {name='long'},
          {name='long', creturned=true}},
         'THRandom_random',
-        {{name='long', creturned=true}},
+        {{name='Generator'},
+         {name='long', creturned=true}},
         cname("random2__"),
         {{name=Tensor, returned=true},
+         {name='Generator'},
          {name='long'},
          {name='long'}},
         cname("random1__"),
         {{name=Tensor, returned=true},
+         {name='Generator'},
          {name='long'}},
         cname("random"),
-        {{name=Tensor, returned=true}})
+        {{name='Generator'},
+         {name=Tensor, returned=true}})
 
    for _,f in ipairs({{name='geometric'},
                       {name='bernoulli', a=0.5}}) do
       
       wrap(f.name,
            string.format("THRandom_%s", f.name),
-           {{name="double", default=f.a},
+           {{name='Generator'},
+            {name="double", default=f.a},
             {name="double", creturned=true}},
            cname(f.name),
-           {{name=Tensor, returned=true},
+           {{name='Generator'},
+            {name=Tensor, returned=true},
             {name=real, default=f.a}})
    end
 
@@ -827,12 +836,14 @@ static void THTensor_random1__(THTensor *self, long b)
 
       wrap("rand",
            cname("rand"),
-           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+           {{name='Generator'},
+            {name=Tensor, default=true, returned=true, method={default='nil'}},
             {name="LongArg"}})
 
       wrap("randn",
            cname("randn"),
-           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+           {{name='Generator'},
+            {name=Tensor, default=true, returned=true, method={default='nil'}},
             {name="LongArg"}})
       
       for _,f in ipairs({{name='uniform', a=0, b=1},
@@ -842,7 +853,8 @@ static void THTensor_random1__(THTensor *self, long b)
          
          wrap(f.name,
               string.format("THRandom_%s", f.name),
-              {{name="double", default=f.a},
+              {{name='Generator'},
+               {name="double", default=f.a},
                {name="double", default=f.b},
                {name="double", creturned=true}},
               cname(f.name),
