@@ -8,7 +8,7 @@ static const struct luaL_Reg torch_Generator_table_ [] = {
 
 static int torch_Generator_new(lua_State *L)
 {
-  THGenerator *gen = THRandomGenerator_new();
+  THGenerator *gen = THGenerator_new();
   luaT_pushudata(L, gen, torch_Generator);
   return 1;
 }
