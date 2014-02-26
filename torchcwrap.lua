@@ -106,6 +106,12 @@ types.Generator = {
           end,
 
    init = function(arg)
+             local text = {} 
+             -- If no generator is supplied, pull the default out of the torch namespace.
+             table.insert(text, 'lua_getglobal(L,"torch");')
+             table.insert(text, string.format('arg%d = luaT_getfieldcheckudata(L, -1, "_gen", torch_Generator);', arg.i))
+             table.insert(text, 'lua_pop(L, 2);')
+             return table.concat(text, '\n')
           end,
    
    carg = function(arg)

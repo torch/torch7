@@ -13,24 +13,24 @@ interface:print(
 for _,name in ipairs({"seed", "initialSeed"}) do
    interface:wrap(name,
                   string.format("THRandom_%s",name),
-                  {{name='Generator'},
+                  {{name='Generator', default=true},
                    {name="long", creturned=true}})
 end
 
 interface:wrap('manualSeed',
                'THRandom_manualSeed',
-               {{name='Generator'},
+               {{name='Generator', default=true},
                 {name="long"}})
 
 interface:wrap('getRNGState',
                 'THLongTensor_getRNGState',
-                {{name='Generator'},
+                {{name='Generator', default=true},
                  {name='LongTensor',default=true,returned=true,method={default='nil'}}
                  })
 
 interface:wrap('setRNGState',
                 'THLongTensor_setRNGState',
-                {{name='Generator'},
+                {{name='Generator', default=true},
                  {name='LongTensor',default=true,returned=true,method={default='nil'}}
                  })
 
