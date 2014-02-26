@@ -472,18 +472,24 @@ function torchtest.RNGState()
 end
 
 function torchtest.abs()
-   local in1 = torch.IntTensor{1,-1}
-   local out1 = torch.IntTensor{1,1}
-   mytester:assertTensorEq(in1:abs(), out1, 1e-16, 'torch.abs(1)')
+   local size = 1000
+   local range = 1000
+   local original = torch.rand(size):mul(range)
+   -- Tensor filled with {-1,1}
+   local switch = torch.rand(size):mul(2):floor():mul(2):add(-1)
 
-   local in2 = torch.LongTensor{1,-1}
-   local out2 = torch.LongTensor{1,1}
-   mytester:assertTensorEq(in2:abs(), out2, 1e-16, 'torch.abs(2)')
+   local types = {'torch.DoubleTensor', 'torch.FloatTensor', 'torch.LongTensor', 'torch.IntTensor'}
+   for k,t in ipairs(types) do
+      local data = original:type(t)
+      local switch = switch:type(t)
+      local input = torch.cmul(data, switch)
+      mytester:assertTensorEq(input:abs(), data, 1e-16, 'Error in abs() for '..t)
+   end
 
-   -- Checking that the right abs function is called for LongIntTensor
+   -- Checking that the right abs function is called for LongTensor
    local bignumber = 2^31 + 1
-   local in3 = torch.LongTensor{-bignumber}
-   mytester:assertgt(in3:abs()[1], 0, 'torch.abs(3)')
+   local input = torch.LongTensor{-bignumber}
+   mytester:assertgt(input:abs()[1], 0, 'torch.abs(3)')
 end
 
 function torch.test()
