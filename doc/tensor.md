@@ -1180,7 +1180,7 @@ to copy, and fill (sub) tensors.
 <a name="torch.Tensor.index"/>
 ### [Tensor] index(dim, index) ###
 
-Returns a new `Tensor` which indexes the given tensor along dimension `dim` and using the entries in `torch.LongTensor` `index`. The returned tensor has the same number of dimensions as the original tensor. The returned tensor does __not__ use the same storage as the original tensor.
+Returns a new `Tensor` which indexes the given tensor along dimension `dim` and using the entries in `torch.LongTensor` `index`. The returned tensor has the same number of dimensions as the original tensor. The returned tensor does __not__ use the same storage as the original tensor -- see below for storing the result in an existing tensor.
 
 ```lua
 t7> x = torch.rand(5,5)
@@ -1213,7 +1213,28 @@ t7> =x
 
 ```
 
-Note the explicit `index` function is different than the indexing operator `[]`. The indexing operator `[]` is a syntactic shortcut for a series of select and narrow operations, therefore it always returns a new view on the original tensor that shares the same storage. However, he explicit `index` function can not use the same storage.
+Note the explicit `index` function is different than the indexing operator `[]`. The indexing operator `[]` is a syntactic shortcut for a series of select and narrow operations, therefore it always returns a new view on the original tensor that shares the same storage. However, the explicit `index` function can not use the same storage.
+
+It is possible to store the result into an existing Tensor with `result:index(source, ...)`:
+
+```lua
+t7> x = torch.rand(5,5)
+t7> =x
+ 0.8020  0.7246  0.1204  0.3419  0.4385
+ 0.0369  0.4158  0.0985  0.3024  0.8186
+ 0.2746  0.9362  0.2546  0.8586  0.6674
+ 0.7473  0.9028  0.1046  0.9085  0.6622
+ 0.1412  0.6784  0.1624  0.8113  0.3949
+[torch.DoubleTensor of dimension 5x5]
+
+t7> y = torch.Tensor()
+ty> y:index(x,1,torch.LongTensor{3,1})
+t7> =y
+ 0.2746  0.9362  0.2546  0.8586  0.6674
+ 0.8020  0.7246  0.1204  0.3419  0.4385
+[torch.DoubleTensor of dimension 2x5]
+```
+
 
 <a name="torch.Tensor.indexCopy"/>
 ### [Tensor] indexCopy(dim, index, tensor) ###
