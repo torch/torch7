@@ -1213,7 +1213,7 @@ t7> =x
 
 ```
 
-Note the explicit `index` function is different than the indexing operator `[]`. The indexing operator `[]` is a syntactic shortcut for a series of select and narrow operations, therefore it always returns a new view on the original tensor that shares the same storage. However, he explicit `index` function can not use the same storage.
+Note the explicit `index` function is different than the indexing operator `[]`. The indexing operator `[]` is a syntactic shortcut for a series of select and narrow operations, therefore it always returns a new view on the original tensor that shares the same storage. However, the explicit `index` function can not use the same storage.
 
 It is possible to store the result into an existing Tensor with `result:index(source, ...)`:
 
