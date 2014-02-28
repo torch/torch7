@@ -161,6 +161,27 @@ function torchtest.sortAscending()
            1e-16,
            "torch.sort (ascending) simple sort"
        )
+   -- Test that we still have proper sorting with duplicate keys
+   local x = torch.floor(torch.rand(msize,msize)*10)
+   torch.sort(mxx,ixx,x)
+   local increasing = true
+   for j = 1,msize do
+       for k = 2,msize do
+           increasing = increasing and (mxx[j][k-1] <= mxx[j][k])
+       end
+   end
+   mytester:assert(increasing, 'torch.sort (ascending) increasing with equal keys')
+   local seen = torch.ByteTensor(msize)
+   local indicesCorrect = true
+   for k = 1,msize do
+       seen:zero()
+       for j = 1,msize do
+           indicesCorrect = indicesCorrect and (x[k][ixx[k][j]] == mxx[k][j])
+           seen[ixx[k][j]] = 1
+       end
+       indicesCorrect = indicesCorrect and (torch.sum(seen) == msize)
+   end
+   mytester:assert(indicesCorrect, 'torch.sort (ascending) indices with equal keys')
 end
 function torchtest.sortDescending()
    local x = torch.rand(msize,msize)
@@ -170,13 +191,13 @@ function torchtest.sortDescending()
    torch.sort(mxx,ixx,x,true)
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.sort (descending) value')
    mytester:asserteq(maxdiff(ix,ixx),0,'torch.sort (descending) index')
-   local increasing = true
+   local decreasing = true
    for j = 1,msize do
        for k = 2,msize do
-           increasing = increasing and (mxx[j][k-1] > mxx[j][k])
+           decreasing = decreasing and (mxx[j][k-1] > mxx[j][k])
        end
    end
-   mytester:assert(increasing, 'torch.sort (descending) decreasing')
+   mytester:assert(decreasing, 'torch.sort (descending) decreasing')
    local seen = torch.ByteTensor(msize)
    local indicesCorrect = true
    for k = 1,msize do
@@ -194,6 +215,27 @@ function torchtest.sortDescending()
            1e-16,
            "torch.sort (descending) simple sort"
        )
+   -- Test that we still have proper sorting with duplicate keys
+   local x = torch.floor(torch.rand(msize,msize)*10)
+   torch.sort(mxx,ixx,x,true)
+   local decreasing = true
+   for j = 1,msize do
+       for k = 2,msize do
+           decreasing = decreasing and (mxx[j][k-1] >= mxx[j][k])
+       end
+   end
+   mytester:assert(decreasing, 'torch.sort (descending) decreasing with equal keys')
+   local seen = torch.ByteTensor(msize)
+   local indicesCorrect = true
+   for k = 1,msize do
+       seen:zero()
+       for j = 1,msize do
+           indicesCorrect = indicesCorrect and (x[k][ixx[k][j]] == mxx[k][j])
+           seen[ixx[k][j]] = 1
+       end
+       indicesCorrect = indicesCorrect and (torch.sum(seen) == msize)
+   end
+   mytester:assert(indicesCorrect, 'torch.sort (descending) indices with equal keys')
 end
 function torchtest.tril()
    local x = torch.rand(msize,msize)
@@ -437,11 +479,14 @@ end
 
 function torchtest.TestAsserts()
    mytester:assertError(function() error('hello') end, 'assertError: Error not caught')
+   mytester:assertErrorMsg(function() error('hello') end, 'test.lua:482: hello', 'assertError: "hello" Error not caught')
+   mytester:assertErrorPattern(function() error('hello') end, '.*ll.*', 'assertError: ".*ll.*" Error not caught')
 
    local x = torch.rand(100,100)*2-1;
    local xx = x:clone();
    mytester:assertTensorEq(x, xx, 1e-16, 'assertTensorEq: not deemed equal')
    mytester:assertTensorNe(x, xx+1, 1e-16, 'assertTensorNe: not deemed different')
+   mytester:assertalmosteq(0, 1e-250, 1e-16, 'assertalmosteq: not deemed different')
 end
 
 function torchtest.BugInAssertTableEq()
@@ -450,10 +495,6 @@ function torchtest.BugInAssertTableEq()
    mytester:assertTableEq(t, tt, 'assertTableEq: not deemed equal')
    mytester:assertTableNe(t, {3,2,1}, 'assertTableNe: not deemed different')
    mytester:assertTableEq({1,2,{4,5}}, {1,2,{4,5}}, 'assertTableEq: fails on recursive lists')
-   -- TODO: once a mechanism for testing that assert fails exist, test that the two asserts below do not pass
-   -- should not pass: mytester:assertTableEq(t, {1,2}, 'assertTableNe: different size should not be equal') 
-   -- should not pass: mytester:assertTableEq(t, {1,2,3,4}, 'assertTableNe: different size should not be equal')
-
    mytester:assertTableNe(t, {1,2}, 'assertTableNe: different size not deemed different')
    mytester:assertTableNe(t, {1,2,3,4}, 'assertTableNe: different size not deemed different')
 end
@@ -490,6 +531,78 @@ function torchtest.abs()
    local bignumber = 2^31 + 1
    local input = torch.LongTensor{-bignumber}
    mytester:assertgt(input:abs()[1], 0, 'torch.abs(3)')
+end
+
+function torchtest.testCholesky()
+    local x = torch.rand(10,10)
+    local A = torch.mm(x, x:t())
+    local C = torch.potrf(A)
+    local B = torch.mm(C:t(), C)
+    mytester:assertTensorEq(A, B, 1e-14, 'potrf did not allow rebuilding the original matrix')
+end
+function torchtest.testCholeskyErrsOnRankDeficient()
+    local x = torch.rand(5,5)
+    local A = torch.mm(x, x:t())
+    -- Make the matrix rank-defficient
+    A[{{},5}]:copy(A[{{},{1}}])
+    mytester:assertError(function() torch.potrf(A) end)
+end
+
+
+-- Generate a tensor of size `size` whose values are ascending integers from
+-- `start` (or 1, if `start is not given)
+local function consecutive(size, start)
+    local sequence = torch.ones(torch.Tensor(size):prod(1)[1]):cumsum(1)
+    if start then
+        sequence:add(start - 1)
+    end
+    return sequence:resize(unpack(size))
+end
+
+function torchtest.index()
+    local badIndexMsg = "Lookup with valid index should return correct result"
+    local reference = consecutive{3, 3, 3}
+    mytester:assertTensorEq(reference[1], consecutive{3, 3}, 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[2], consecutive({3, 3}, 10), 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[3], consecutive({3, 3}, 19), 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[{1}], consecutive{3, 3}, 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[{2}], consecutive({3, 3}, 10), 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[{3}], consecutive({3, 3}, 19), 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[{1,2}], consecutive({3}, 4), 1e-16, badIndexMsg)
+    mytester:assertTensorEq(reference[{{1,2}}], consecutive({2, 3, 3}), 1e-16, badIndexMsg)
+    mytester:asserteq(reference[{3, 3, 3}], 27, badIndexMsg)
+    mytester:assertTensorEq(reference[{}], consecutive{3, 3, 3}, 1e-16, badIndexMsg)
+
+    local shouldErrorMsg = "Lookup with too many indices should error"
+    mytester:assertError(function() return reference[{1, 1, 1, 1}] end, shouldErrorMsg)
+    mytester:assertError(function() return reference[{1, 1, 1, {1, 1}}] end, shouldErrorMsg)
+    mytester:assertError(function() return reference[{3, 3, 3, 3, 3, 3, 3, 3}] end, shouldErrorMsg)
+end
+
+function torchtest.newIndex()
+    local badIndexMsg = "Assignment to valid index should produce correct result"
+    local reference = consecutive{3, 3, 3}
+    -- This relies on __index__() being correct - but we have separate tests for that
+    local function checkPartialAssign(index)
+        local reference = torch.zeros(3, 3, 3)
+        reference[index] = consecutive{3, 3, 3}[index]
+        mytester:assertTensorEq(reference[index], consecutive{3, 3, 3}[index], 1e-16, badIndexMsg)
+        reference[index] = 0
+        mytester:assertTensorEq(reference, torch.zeros(3, 3, 3), 1e-16, badIndexMsg)
+    end
+
+    checkPartialAssign{1}
+    checkPartialAssign{2}
+    checkPartialAssign{3}
+    checkPartialAssign{1,2}
+    checkPartialAssign{2,3}
+    checkPartialAssign{1,3}
+    checkPartialAssign{}
+
+    local shouldErrorMsg = "Assignment with too many indices should error"
+    mytester:assertError(function() reference[{1, 1, 1, 1}] = 1 end, shouldErrorMsg)
+    mytester:assertError(function() reference[{1, 1, 1, {1, 1}}] = 1 end, shouldErrorMsg)
+    mytester:assertError(function() reference[{3, 3, 3, 3, 3, 3, 3, 3}] = 1 end, shouldErrorMsg)
 end
 
 function torch.test()
