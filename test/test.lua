@@ -489,6 +489,7 @@ function torchtest.TestAsserts()
    mytester:assertalmosteq(0, 1e-250, 1e-16, 'assertalmosteq: not deemed different')
 end
 
+
 function torchtest.BugInAssertTableEq()
    local t = {1,2,3}
    local tt = {1,2,3}

@@ -39,6 +39,7 @@ function testSort(output, descending)
             print('CST j:', j, 'for 10^', pow10[i], ' time: ', this_time)
             bench_cst[i] = bench_cst[i] + this_time/nrep
             collectgarbage()
+            
         end
         io.flush()
     end

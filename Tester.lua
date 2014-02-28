@@ -104,6 +104,8 @@ function Tester:assertErrorObj(f, errcomp, message)
    self:assert_sub(status == false and errcomp(err), string.format('%s\n%s  err=%s', message,' ERROR violation ', tostring(err)))
 end
 
+
+
 function Tester:pcall(f)
    local nerr = #self.errors
    -- local res = f()

@@ -1235,6 +1235,7 @@ t7> =y
 [torch.DoubleTensor of dimension 2x5]
 ```
 
+
 <a name="torch.Tensor.indexCopy"/>
 ### [Tensor] indexCopy(dim, index, tensor) ###
 
