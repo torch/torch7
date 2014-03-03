@@ -8,6 +8,9 @@ interface:print(
    [[
 #include "luaT.h"
 #include "TH.h"
+
+extern void torch_Generator_init(lua_State *L);
+extern void torch_Generator_new(lua_State *L);
    ]])
 
 for _,name in ipairs({"seed", "initialSeed"}) do
