@@ -555,7 +555,9 @@ static int torch_Tensor_(__newindex__)(lua_State *L)
   {
     void *src;
     long index = luaL_checklong(L,2)-1;
+    luaL_argcheck(L, tensor->nDimension > 0, 1, "empty tensor");
     if (index < 0) index = tensor->size[0] + index + 1;
+
     if (lua_isnumber(L,3)) {
       real value = (real)luaL_checknumber(L,3);
       if (tensor->nDimension == 1) {
@@ -746,9 +748,9 @@ static int torch_Tensor_(__index__)(lua_State *L)
   if(lua_isnumber(L, 2))
   {
     long index = luaL_checklong(L,2)-1;
-    if (index < 0) index = tensor->size[0] + index + 1;
 
     luaL_argcheck(L, tensor->nDimension > 0, 1, "empty tensor");
+    if (index < 0) index = tensor->size[0] + index + 1;
     luaL_argcheck(L, index >= 0 && index < tensor->size[0], 2, "out of range");
 
     if(tensor->nDimension == 1)
