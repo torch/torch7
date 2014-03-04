@@ -479,7 +479,7 @@ end
 
 function torchtest.TestAsserts()
    mytester:assertError(function() error('hello') end, 'assertError: Error not caught')
-   mytester:assertErrorMsg(function() error('hello') end, 'test.lua:440: hello', 'assertError: "hello" Error not caught')
+   mytester:assertErrorMsg(function() error('hello') end, 'test.lua:482: hello', 'assertError: "hello" Error not caught')
    mytester:assertErrorPattern(function() error('hello') end, '.*ll.*', 'assertError: ".*ll.*" Error not caught')
 
    local x = torch.rand(100,100)*2-1;
@@ -510,6 +510,27 @@ function torchtest.RNGState()
    torch.setRNGState(state)
    local after = torch.rand(1000)
    mytester:assertTensorEq(before, after, 1e-16, 'getRNGState/setRNGState not generating same sequence')
+end
+
+function torchtest.abs()
+   local size = 1000
+   local range = 1000
+   local original = torch.rand(size):mul(range)
+   -- Tensor filled with {-1,1}
+   local switch = torch.rand(size):mul(2):floor():mul(2):add(-1)
+
+   local types = {'torch.DoubleTensor', 'torch.FloatTensor', 'torch.LongTensor', 'torch.IntTensor'}
+   for k,t in ipairs(types) do
+      local data = original:type(t)
+      local switch = switch:type(t)
+      local input = torch.cmul(data, switch)
+      mytester:assertTensorEq(input:abs(), data, 1e-16, 'Error in abs() for '..t)
+   end
+
+   -- Checking that the right abs function is called for LongTensor
+   local bignumber = 2^31 + 1
+   local input = torch.LongTensor{-bignumber}
+   mytester:assertgt(input:abs()[1], 0, 'torch.abs(3)')
 end
 
 function torchtest.testCholesky()
