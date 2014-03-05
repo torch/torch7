@@ -852,6 +852,13 @@ static void THTensor_random1__(THTensor *self, long b)
            cname("randn"),
            {{name=Tensor, default=true, returned=true, method={default='nil'}},
             {name="LongArg"}})
+            
+      wrap("multinomial",
+           cname("multinomial"),
+           {{name="LongTensor", default=true, returned=true, method={default='nil'}},
+            {name=Tensor}, 
+            {name="int"}, 
+            {name="boolean", default=false}})
       
       for _,f in ipairs({{name='uniform', a=0, b=1},
                          {name='normal', a=0, b=1},
