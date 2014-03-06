@@ -91,29 +91,29 @@ types.Tensor = {
 types.Generator = {
 
    helpname = function(arg)
-                return "Generator"
-            end,
+                 return "Generator"
+              end,
 
    declare = function(arg)
                 return string.format("THGenerator * arg%d;", arg.i)
-           end,
-   
+             end,
+
    check = function(arg, idx)
-             return string.format("(arg%d = luaT_toudata(L, %d, torch_Generator))", arg.i, idx)
-         end,
+              return string.format("(arg%d = luaT_toudata(L, %d, torch_Generator))", arg.i, idx)
+           end,
 
    read = function(arg, idx)
           end,
 
    init = function(arg)
-             local text = {} 
+             local text = {}
              -- If no generator is supplied, pull the default out of the torch namespace.
              table.insert(text, 'lua_getglobal(L,"torch");')
              table.insert(text, string.format('arg%d = luaT_getfieldcheckudata(L, -1, "_gen", torch_Generator);', arg.i))
              table.insert(text, 'lua_pop(L, 2);')
              return table.concat(text, '\n')
           end,
-   
+
    carg = function(arg)
              return string.format('arg%d', arg.i)
           end,
@@ -121,7 +121,7 @@ types.Generator = {
    creturn = function(arg)
                 return string.format('arg%d', arg.i)
              end,
-   
+
    precall = function(arg)
              end,
 
