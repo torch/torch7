@@ -855,7 +855,7 @@ static void THTensor_random1__(THTensor *self, long b)
             
       wrap("multinomial",
            cname("multinomial"),
-           {{name="LongTensor", default=true, returned=true, method={default='nil'}},
+           {{name="IndexTensor", default=true, returned=true, method={default='nil'}},
             {name=Tensor}, 
             {name="int"}, 
             {name="boolean", default=false}})
