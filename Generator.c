@@ -1,7 +1,5 @@
 #include <general.h>
 
-#define torch_Generator "torch.Generator"
-
 static const struct luaL_Reg torch_Generator_table_ [] = {
   {NULL, NULL}
 };
