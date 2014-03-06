@@ -165,18 +165,20 @@ is below the main diagonal.
 `y=torch.multinomial(p,n)` returns a tensor `y` where each row contains
 `n` indices sampled __with replacement__ (`flag=true`) from the 
 [multinomial probability distribution](http://en.wikipedia.org/wiki/Multinomial_distribution)
-corresponding to the row of tensor `p`. The rows need not sum to one 
-(in which case we use the values as weights), but should be non-negative and
-have a non-zero sum. Indices are ordered from left to right according to 
+located in the corresponding row of tensor `p`. 
+
+The rows of `p` need not sum to one (in which case we use the values as weights), 
+but should be non-negative and have a non-zero sum. 
+Indices are ordered from left to right according to 
 when each was sampled (first samples are placed in first column). 
 
 If `p` is an `MxN` matrix, `y` is an `Mxn` matrix.
 
-If `p` is a `M`-size vector, `y` is a `n`-size vector.
+If `p` is a vector of size `M`, `y` is a vector size `n`.
 
 `y=torch.multinomial(p,n,false)` is like the above, except samples are drawn
-__without replacement__. This implies the constraint `n <= N`.
-
+__without replacement__. In other words, when a sample index is drawn for a row, it 
+cannot be drawn again for that row. This implies the constraint `n <= N`.
 
 <a name="torch.ones"/>
 ### [res] torch.ones([res,] m [,n...]) ###
