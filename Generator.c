@@ -3,7 +3,7 @@
 #define torch_Generator "torch.Generator"
 
 static const struct luaL_Reg torch_Generator_table_ [] = {
-    {NULL, NULL}
+  {NULL, NULL}
 };
 
 int torch_Generator_new(lua_State *L)

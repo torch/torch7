@@ -430,8 +430,7 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
 
    wrap("randperm",
         cname("randperm"),
-        {{name="Generator", default=true},
-         {name=Tensor, default=true, returned=true, method={default='nil'},
+        {{name=Tensor, default=true, returned=true, method={default='nil'},
           postcall=function(arg)
                       return table.concat(
                          {
@@ -439,6 +438,7 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
                             string.format("TH%s_add(%s, %s, 1);", Tensor, arg:carg(), arg:carg())
                          }, '\n')
                    end},
+         {name="Generator", default=true},
          {name="long"}})
 
    wrap("sort",
@@ -523,8 +523,8 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
          {name='Generator', default=true},
          {name='long'}},
         cname("random"),
-        {{name='Generator', default=true},
-         {name=Tensor, returned=true}})
+        {{name=Tensor, returned=true},
+         {name='Generator', default=true}})
 
    for _,f in ipairs({{name='geometric'},
                       {name='bernoulli', a=0.5}}) do
@@ -535,8 +535,8 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
             {name="double", default=f.a},
             {name="double", creturned=true}},
            cname(f.name),
-           {{name='Generator', default=true},
-            {name=Tensor, returned=true},
+           {{name=Tensor, returned=true},
+            {name='Generator', default=true},
             {name=real, default=f.a}})
    end
 
@@ -836,14 +836,14 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
 
       wrap("rand",
            cname("rand"),
-           {{name='Generator', default=true},
-            {name=Tensor, default=true, returned=true, method={default='nil'}},
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name='Generator', default=true},
             {name="LongArg"}})
 
       wrap("randn",
            cname("randn"),
-           {{name='Generator', default=true},
-            {name=Tensor, default=true, returned=true, method={default='nil'}},
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name='Generator', default=true},
             {name="LongArg"}})
       
       for _,f in ipairs({{name='uniform', a=0, b=1},
@@ -858,8 +858,8 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                {name="double", default=f.b},
                {name="double", creturned=true}},
               cname(f.name),
-              {{name='Generator', default=true},
-               {name=Tensor, returned=true},
+              {{name=Tensor, returned=true},
+               {name='Generator', default=true},
                {name=real, default=f.a},
                {name=real, default=f.b}})
       end
@@ -872,8 +872,8 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                {name="double", default=f.a},
                {name="double", creturned=true}},
               cname(f.name),
-              {{name='Generator', default=true},
-               {name=Tensor, returned=true},
+              {{name=Tensor, returned=true},
+               {name='Generator', default=true},
                {name=real, default=f.a}})
       end
       
