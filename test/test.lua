@@ -609,4 +609,5 @@ function torch.test()
    mytester = torch.Tester()
    mytester:add(torchtest)
    mytester:run()
+   return mytester
 end
