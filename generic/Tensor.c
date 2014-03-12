@@ -635,13 +635,13 @@ static int torch_Tensor_(__newindex__)(lua_State *L)
   }
   else if(lua_istable(L, 2))
   {
-	int dim;
+    int dim;
     int cdim = 0;
     int ndims;
     int done = 0;
-    tensor = THTensor_(newWithTensor)(tensor);
     ndims = tensor->nDimension;
     luaL_argcheck(L, lua_objlen(L, 2) <= ndims, 2, "too many indices provided");
+    tensor = THTensor_(newWithTensor)(tensor);
     for(dim = 0; dim < ndims; dim++)
     {
       lua_rawgeti(L, 2, dim+1);
@@ -790,10 +790,11 @@ static int torch_Tensor_(__index__)(lua_State *L)
     int cdim = 0;
     int ndims;
     int done = 0;
-    tensor = THTensor_(newWithTensor)(tensor);
+
     ndims = tensor->nDimension;
-    
     luaL_argcheck(L, lua_objlen(L, 2) <= ndims, 2, "too many indices provided");
+    tensor = THTensor_(newWithTensor)(tensor);
+
     for(dim = 0; dim < ndims; dim++)
     {
       lua_rawgeti(L, 2, dim+1);
