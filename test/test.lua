@@ -604,10 +604,10 @@ function torchtest.abs()
    mytester:assertgt(input:abs()[1], 0, 'torch.abs(3)')
 end
 
-function torch.test()
+function torch.test(tests)
    math.randomseed(os.time())
    mytester = torch.Tester()
    mytester:add(torchtest)
-   mytester:run()
+   mytester:run(tests)
    return mytester
 end
