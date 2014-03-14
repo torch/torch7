@@ -979,9 +979,14 @@ static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index
   *storage_ = NULL;
   *storageOffset_ = 0;
 
-  char errMsg[64];
-  sprintf(errMsg, "expecting number%s%s", (allowTensor ? " or Tensor" : ""), (allowStorage ? " or Storage" : ""));
-  luaL_argcheck(L, 0, index, errMsg);
+  if(allowTensor && allowStorage)
+      luaL_argcheck(L, 0, index, "expecting number or Tensor or Storage");
+  else if(allowTensor)
+      luaL_argcheck(L, 0, index, "expecting number or Tensor");
+  else if(allowStorage)
+      luaL_argcheck(L, 0, index, "expecting number or Storage");
+  else
+      luaL_argcheck(L, 0, index, "expecting number");
 }
 
 static int torch_Tensor_(apply)(lua_State *L)
