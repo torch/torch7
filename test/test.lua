@@ -1154,5 +1154,3 @@ function torch.test(tests)
    mytester:run(tests)
    return mytester
 end
-
-torch.test()
