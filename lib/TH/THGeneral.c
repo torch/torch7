@@ -3,6 +3,26 @@
 #ifndef TH_HAVE_THREAD
 #define __thread
 #endif
+
+/* Torch Allocator Handling */
+static void *allocatorAlloc(void* ctx, long size) {
+  return THAlloc(size);
+}
+
+static void *allocatorRealloc(void* ctx, void* ptr, long size) {
+  return THRealloc(ptr, size);
+}
+
+static void allocatorFree(void* ctx, void* ptr) {
+  THFree(ptr);
+}
+
+THAllocator THDefaultAllocator = {
+  &allocatorAlloc,
+  &allocatorRealloc,
+  &allocatorFree,
+};
+
 /* Torch Error Handling */
 static void defaultTorchErrorHandlerFunction(const char *msg, void *data)
 {

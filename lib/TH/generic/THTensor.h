@@ -17,6 +17,8 @@ typedef struct THTensor
     int refcount;
 
     char flag;
+    THAllocator *allocator;
+    void *allocatorContext;
 
 } THTensor;
 
@@ -37,6 +39,8 @@ TH_API void THTensor_(clearFlag)(THTensor *self, const char flag);
 
 /**** creation methods ****/
 TH_API THTensor *THTensor_(new)(void);
+TH_API THTensor *THTensor_(newWithAllocator)(THAllocator* allocator,
+                                             void* allocatorContext);
 TH_API THTensor *THTensor_(newWithTensor)(THTensor *tensor);
 /* stride might be NULL */
 TH_API THTensor *THTensor_(newWithStorage)(THStorage *storage_, long storageOffset_, THLongStorage *size_, THLongStorage *stride_);

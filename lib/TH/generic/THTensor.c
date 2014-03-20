@@ -77,11 +77,22 @@ THTensor *THTensor_(new)(void)
   return self;
 }
 
+THTensor *THTensor_(newWithAllocator)(THAllocator *allocator,
+                                      void* allocatorContext)
+{
+  THTensor* self = THTensor_(new)();
+  self->allocator = allocator;
+  self->allocatorContext = allocatorContext;
+  return self;
+}
+
 /* Pointer-copy init */
 THTensor *THTensor_(newWithTensor)(THTensor *tensor)
 {
   THTensor *self = THAlloc(sizeof(THTensor));
   THTensor_(rawInit)(self);
+  self->allocator = tensor->allocator;
+  self->allocatorContext = tensor->allocatorContext;
   THTensor_(rawSet)(self,
                     tensor->storage,
                     tensor->storageOffset,
@@ -179,6 +190,8 @@ THTensor *THTensor_(newWithSize4d)(long size0, long size1, long size2, long size
 THTensor *THTensor_(newClone)(THTensor *self)
 {
   THTensor *tensor = THTensor_(new)();
+  tensor->allocator = self->allocator;
+  tensor->allocatorContext = self->allocatorContext;
   THTensor_(resizeAs)(tensor, self);
   THTensor_(copy)(tensor, self);
   return tensor;
@@ -588,6 +601,8 @@ static void THTensor_(rawInit)(THTensor *self)
   self->stride = NULL;
   self->nDimension = 0;    
   self->flag = TH_TENSOR_REFCOUNTED;
+  self->allocator = &THDefaultAllocator;
+  self->allocatorContext = NULL;
 }
 
 static void THTensor_(rawSet)(THTensor *self, THStorage *storage, long storageOffset, int nDimension, long *size, long *stride)
@@ -674,9 +689,16 @@ static void THTensor_(rawResize)(THTensor *self, int nDimension, long *size, lon
     if(totalSize+self->storageOffset > 0)
     {
       if(!self->storage)
-        self->storage = THStorage_(new)();    
-      if(totalSize+self->storageOffset > self->storage->size)
+      {
+        self->storage = THStorage_(newWithAllocator)(
+            totalSize + self->storageOffset,
+            self->allocator,
+            self->allocatorContext);
+      }
+      else if(totalSize+self->storageOffset > self->storage->size)
+      {
         THStorage_(resize)(self->storage, totalSize+self->storageOffset);
+      }
     }
   }
   else

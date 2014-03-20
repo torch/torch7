@@ -27,7 +27,8 @@ typedef struct THStorage
     long size;
     int refcount;
     char flag;
-
+    THAllocator *allocator;
+    void *allocatorContext;
 } THStorage;
 
 TH_API real* THStorage_(data)(const THStorage*);
@@ -44,7 +45,14 @@ TH_API THStorage* THStorage_(newWithSize2)(real, real);
 TH_API THStorage* THStorage_(newWithSize3)(real, real, real);
 TH_API THStorage* THStorage_(newWithSize4)(real, real, real, real);
 TH_API THStorage* THStorage_(newWithMapping)(const char *fileName, int isShared);
+/* takes ownership of data */
 TH_API THStorage* THStorage_(newWithData)(real *data, long size);
+
+TH_API THStorage* THStorage_(newWithAllocator)(long size,
+                                               THAllocator* allocator,
+                                               void *allocatorContext);
+TH_API THStorage* THStorage_(newWithDataAndAllocator)(
+    real* data, long size, THAllocator* allocator, void *allocatorContext);
 
 /* should not differ with API */
 TH_API void THStorage_(setFlag)(THStorage *storage, const char flag);

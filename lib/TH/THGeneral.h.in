@@ -43,6 +43,17 @@
 # define M_PI 3.14159265358979323846
 #endif
 
+/* Custom allocator. malloc and realloc raise an error (using THError) on
+ * allocation failure.
+ */
+typedef struct THAllocator {
+  void* (*malloc)(void*, long);
+  void* (*realloc)(void*, void*, long);
+  void (*free)(void*, void*);
+} THAllocator;
+
+extern THAllocator THDefaultAllocator;
+
 TH_API double THLog1p(const double x);
 TH_API void THError(const char *fmt, ...);
 TH_API void THSetErrorHandler( void (*torchErrorHandlerFunction)(const char *msg, void *data), void *data );
