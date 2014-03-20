@@ -635,13 +635,13 @@ static int torch_Tensor_(__newindex__)(lua_State *L)
   }
   else if(lua_istable(L, 2))
   {
-	int dim;
+    int dim;
     int cdim = 0;
     int ndims;
     int done = 0;
-    tensor = THTensor_(newWithTensor)(tensor);
     ndims = tensor->nDimension;
     luaL_argcheck(L, lua_objlen(L, 2) <= ndims, 2, "too many indices provided");
+    tensor = THTensor_(newWithTensor)(tensor);
     for(dim = 0; dim < ndims; dim++)
     {
       lua_rawgeti(L, 2, dim+1);
@@ -790,10 +790,11 @@ static int torch_Tensor_(__index__)(lua_State *L)
     int cdim = 0;
     int ndims;
     int done = 0;
-    tensor = THTensor_(newWithTensor)(tensor);
+
     ndims = tensor->nDimension;
-    
     luaL_argcheck(L, lua_objlen(L, 2) <= ndims, 2, "too many indices provided");
+    tensor = THTensor_(newWithTensor)(tensor);
+
     for(dim = 0; dim < ndims; dim++)
     {
       lua_rawgeti(L, 2, dim+1);
@@ -929,7 +930,6 @@ static void torch_Tensor_(c_readSizeStride)(lua_State *L, int index, int allowSt
 static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index, int allowNone, int allowTensor, int allowStorage, int allowStride,
                                                          THStorage **storage_, long *storageOffset_, THLongStorage **size_, THLongStorage **stride_)
 {
-  static char errMsg[64];
   THTensor *src = NULL;
   THStorage *storage = NULL;
 
@@ -979,8 +979,14 @@ static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index
   *storage_ = NULL;
   *storageOffset_ = 0;
 
-  sprintf(errMsg, "expecting number%s%s", (allowTensor ? " or Tensor" : ""), (allowStorage ? " or Storage" : ""));
-  luaL_argcheck(L, 0, index, errMsg);
+  if(allowTensor && allowStorage)
+      luaL_argcheck(L, 0, index, "expecting number or Tensor or Storage");
+  else if(allowTensor)
+      luaL_argcheck(L, 0, index, "expecting number or Tensor");
+  else if(allowStorage)
+      luaL_argcheck(L, 0, index, "expecting number or Storage");
+  else
+      luaL_argcheck(L, 0, index, "expecting number");
 }
 
 static int torch_Tensor_(apply)(lua_State *L)

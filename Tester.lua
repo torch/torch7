@@ -143,7 +143,7 @@ function Tester:run(run_tests)
       testnames = {}
       for i,fun in ipairs(self.tests) do
          for j,name in ipairs(run_tests) do
-            if self.testnames[i] == name then
+            if self.testnames[i] == name or i == name then
                tests[#tests+1] = self.tests[i]
                testnames[#testnames+1] = self.testnames[i]
             end
