@@ -199,6 +199,15 @@ static int torch_Storage_(read)(lua_State *L)
   return 0;
 }
 
+static int torch_Storage_(lshift)(lua_State *L)
+{
+  THStorage *src = luaT_checkudata(L, 1, torch_Storage);
+  size_t n_el = luaL_optint(L, 2, 1);
+  size_t copy_el = src->size - n_el;
+  memmove(src->data, src->data+n_el, copy_el*sizeof(real) );
+  return 1;
+}
+
 static const struct luaL_Reg torch_Storage_(_) [] = {
   {"size", torch_Storage_(__len__)},
   {"__len__", torch_Storage_(__len__)},
@@ -213,6 +222,7 @@ static const struct luaL_Reg torch_Storage_(_) [] = {
 #if defined(TH_REAL_IS_CHAR) || defined(TH_REAL_IS_BYTE)
   {"string", torch_Storage_(string)},
 #endif
+  {"lshift", torch_Storage_(lshift)},
   {NULL, NULL}
 };
 
