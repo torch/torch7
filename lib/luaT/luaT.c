@@ -368,14 +368,16 @@ const char *luaT_classrootname(const char *tname)
   return tname;
 }
 
-/* module_name must be a buffer at least as big as tname */
-void luaT_classmodulename(const char *tname, char *module_name)
+/* module_name must be a buffer at least as big as tname 
+ * return true if the class is part of a module */
+int luaT_classmodulename(const char *tname, char *module_name)
 {
   char chars[] = {'.', '\0'};
   size_t n;
   n = strcspn(tname, chars);
   strncpy(module_name, tname, n);
   module_name[n] = '\0';
+  return tname[n] == '.';
 }
 
 /* Lua only functions */
@@ -383,7 +385,8 @@ int luaT_lua_newmetatable(lua_State *L)
 {
   const char* tname = luaL_checkstring(L, 1);
   char module_name[256];
-  luaT_classmodulename(tname, module_name);
+  int is_in_module = 0;
+  is_in_module = luaT_classmodulename(tname, module_name);
 
   lua_settop(L, 5);
   luaL_argcheck(L, lua_isnoneornil(L, 2) || lua_isstring(L, 2), 2, "parent class name or nil expected");
@@ -391,7 +394,7 @@ int luaT_lua_newmetatable(lua_State *L)
   luaL_argcheck(L, lua_isnoneornil(L, 4) || lua_isfunction(L, 4), 4, "destructor function or nil expected");
   luaL_argcheck(L, lua_isnoneornil(L, 5) || lua_isfunction(L, 5), 5, "factory function or nil expected");
 
-  if(module_name)
+  if(is_in_module)
     lua_getfield(L, LUA_GLOBALSINDEX, module_name);
   else
     lua_pushvalue(L, LUA_GLOBALSINDEX);
