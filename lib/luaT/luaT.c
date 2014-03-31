@@ -368,29 +368,22 @@ const char *luaT_classrootname(const char *tname)
   return tname;
 }
 
-const char *luaT_classmodulename(const char *tname)
+/* module_name must be a buffer at least as big as tname */
+void luaT_classmodulename(const char *tname, char *module_name)
 {
-  static char luaT_class_module_name[256];
-  int i;
-
-  strncpy(luaT_class_module_name, tname, 256);
-  for(i = 0; i < 256; i++)
-  {
-    if(luaT_class_module_name[i] == '\0')
-      break;
-    if(luaT_class_module_name[i] == '.')
-    {
-      luaT_class_module_name[i] = '\0';
-      return luaT_class_module_name;
-    }
-  }
-  return NULL;
+  char chars[] = {'.', '\0'};
+  size_t n;
+  n = strcspn(tname, chars);
+  strncpy(module_name, tname, n);
+  module_name[n] = '\0';
 }
 
 /* Lua only functions */
 int luaT_lua_newmetatable(lua_State *L)
 {
   const char* tname = luaL_checkstring(L, 1);
+  char module_name[256];
+  luaT_classmodulename(tname, module_name);
 
   lua_settop(L, 5);
   luaL_argcheck(L, lua_isnoneornil(L, 2) || lua_isstring(L, 2), 2, "parent class name or nil expected");
@@ -398,12 +391,12 @@ int luaT_lua_newmetatable(lua_State *L)
   luaL_argcheck(L, lua_isnoneornil(L, 4) || lua_isfunction(L, 4), 4, "destructor function or nil expected");
   luaL_argcheck(L, lua_isnoneornil(L, 5) || lua_isfunction(L, 5), 5, "factory function or nil expected");
 
-  if(luaT_classmodulename(tname))
-    lua_getfield(L, LUA_GLOBALSINDEX, luaT_classmodulename(tname));
+  if(module_name)
+    lua_getfield(L, LUA_GLOBALSINDEX, module_name);
   else
     lua_pushvalue(L, LUA_GLOBALSINDEX);
   if(!lua_istable(L, 6))
-    luaL_error(L, "while creating metatable %s: bad argument #1 (%s is an invalid module name)", tname, luaT_classmodulename(tname));
+    luaL_error(L, "while creating metatable %s: bad argument #1 (%s is an invalid module name)", tname, module_name);
 
   /* we first create the new metaclass if we have to */
   if(!luaT_pushmetatable(L, tname))
