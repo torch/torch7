@@ -69,7 +69,7 @@ LUAT_API void luaT_registeratname(lua_State *L, const struct luaL_Reg *methods, 
 
 /* utility functions */
 LUAT_API const char *luaT_classrootname(const char *tname);
-LUAT_API void luaT_classmodulename(const char *tname, char *module_name);
+LUAT_API int luaT_classmodulename(const char *tname, char *module_name);
 
 /* debug */
 LUAT_API void luaT_stackdump(lua_State *L);

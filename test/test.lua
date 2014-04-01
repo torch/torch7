@@ -1142,6 +1142,20 @@ function torchtest.abs()
    mytester:assertgt(input:abs()[1], 0, 'torch.abs(3)')
 end
 
+function torchtest.classInModule()
+    -- Need a global for this module
+    _mymodule123 = {}
+    local x = torch.class('_mymodule123.myclass')
+    mytester:assert(x, 'Could not create class in module')
+    -- Remove the global
+    _G['_mymodule123'] = nil
+end
+
+function torchtest.classNoModule()
+    local x = torch.class('_myclass123')
+    mytester:assert(x, 'Could not create class in module')
+end
+
 function torch.test(tests)
    math.randomseed(os.time())
    if torch.getdefaulttensortype() == 'torch.FloatTensor' then
