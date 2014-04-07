@@ -9,7 +9,8 @@ static int torch_Storage_(new)(lua_State *L)
   {
     const char *fileName = luaL_checkstring(L, 1);
     int isShared = luaT_optboolean(L, 2, 0);
-    storage = THStorage_(newWithMapping)(fileName, isShared);  
+    long size = luaL_optlong(L, 3, 0);
+    storage = THStorage_(newWithMapping)(fileName, size, isShared);
   }
   else if(lua_type(L, 1) == LUA_TTABLE)
   {
