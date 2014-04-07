@@ -74,6 +74,7 @@ torch.setdefaulttensortype('torch.DoubleTensor')
 include('Tensor.lua')
 include('File.lua')
 include('CmdLine.lua')
+include('FFI.lua')
 include('Tester.lua')
 include('test.lua')
 
