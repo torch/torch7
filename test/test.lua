@@ -631,6 +631,62 @@ function torchtest.eye()
    torch.eye(mxx,msize,msize)
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.eye value')
 end
+function torchtest.multinomialwithreplacement()
+   local n_row = 3
+   for n_col=4,5 do
+      local t=os.time()
+      torch.manualSeed(t)
+      local prob_dist = torch.rand(n_row,n_col)
+      prob_dist:select(2,n_col):fill(0) --index n_col shouldn't be sampled
+      local n_sample = n_col
+      local sample_indices = torch.multinomial(prob_dist, n_sample, true)
+      mytester:assert(prob_dist:dim() == 2, "wrong number of prob_dist dimensions")
+      mytester:assert(sample_indices:size(2) == n_sample, "wrong number of samples")
+      for i=1,n_row do
+         for j=1,n_sample do
+            mytester:assert(sample_indices[{i,j}] ~= n_col, "sampled an index with zero probability")
+         end
+      end
+   end
+end
+function torchtest.multinomialwithoutreplacement()
+   local n_row = 3
+   for n_col=4,5 do
+      local t=os.time()
+      torch.manualSeed(t)
+      local prob_dist = torch.rand(n_row,n_col)
+      prob_dist:select(2,n_col):fill(0) --index n_col shouldn't be sampled
+      local n_sample = 3
+      local sample_indices = torch.multinomial(prob_dist, n_sample, false)
+      mytester:assert(prob_dist:dim() == 2, "wrong number of prob_dist dimensions")
+      mytester:assert(sample_indices:size(2) == n_sample, "wrong number of samples")
+      for i=1,n_row do
+         local row_samples = {}
+         for j=1,n_sample do
+            local sample_idx = sample_indices[{i,j}]
+            mytester:assert(
+                sample_idx ~= n_col, "sampled an index with zero probability"
+            )
+            mytester:assert(
+                not row_samples[sample_idx], "sampled an index twice"
+            )
+            row_samples[sample_idx] = true
+         end
+      end
+   end
+end
+function torchtest.multinomialvector()
+   local n_col = 4
+   local t=os.time()
+   torch.manualSeed(t)
+   local prob_dist = torch.rand(n_col)
+   local n_sample = n_col
+   local sample_indices = torch.multinomial(prob_dist, n_sample, true)
+   local s_dim = sample_indices:dim()
+   mytester:assert(s_dim == 1, "wrong number of returned dimensions: "..s_dim)
+   mytester:assert(prob_dist:dim() == 1, "wrong number of prob_dist dimensions")
+   mytester:assert(sample_indices:size(1) == n_sample, "wrong number of samples")
+end
 function torchtest.range()
    local mx = torch.range(0,1)
    local mxx = torch.Tensor()
