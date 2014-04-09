@@ -95,7 +95,7 @@ types.Generator = {
               end,
 
    declare = function(arg)
-                return string.format("THGenerator * arg%d;", arg.i)
+                return string.format("THGenerator *arg%d = NULL;", arg.i)
              end,
 
    check = function(arg, idx)
