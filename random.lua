@@ -26,15 +26,15 @@ interface:wrap('manualSeed',
                 {name="long"}})
 
 interface:wrap('getRNGState',
-                'THLongTensor_getRNGState',
+                'THByteTensor_getRNGState',
                 {{name='Generator', default=true},
-                 {name='LongTensor',default=true,returned=true,method={default='nil'}}
+                 {name='ByteTensor',default=true,returned=true,method={default='nil'}}
                  })
 
 interface:wrap('setRNGState',
-                'THLongTensor_setRNGState',
+                'THByteTensor_setRNGState',
                 {{name='Generator', default=true},
-                 {name='LongTensor',default=true,returned=true,method={default='nil'}}
+                 {name='ByteTensor',default=true,returned=true,method={default='nil'}}
                  })
 
 interface:register("random__")
