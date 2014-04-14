@@ -1,4 +1,3 @@
-
 <a name="torch.maths.dok"/>
 # Math Functions #
 
@@ -803,9 +802,14 @@ might be handy, they create and return a new tensor containing the
 results. They are thus not as fast as the operations available in the
 [previous section](#torch.Tensor.BasicOperations.dok).
 
-### Addition and substraction ###
+Another important point to note is that these operators are only overloaded when the first operand is a tensor. For example, this will NOT work:
+```
+> x = 5 + torch.rand(3)
+```
 
-You can add a tensor to another one with the `+` operator. Substraction is done with `-`.
+### Addition and subtraction ###
+
+You can add a tensor to another one with the `+` operator. Subtraction is done with `-`.
 The number of elements in the tensors must match, but the sizes do not matter. The size
 of the returned tensor will be the size of the first tensor.
 ```
@@ -826,7 +830,7 @@ of the returned tensor will be the size of the first tensor.
 [torch.Tensor of dimension 4]
 ```
 
-A scalar might also be added or substracted to a tensor. The scalar might be on the right or left of the operator.
+A scalar might also be added or subtracted to a tensor. The scalar might be on the right or left of the operator.
 ```
 > x = torch.Tensor(2,2):fill(2)
 > = x+3
