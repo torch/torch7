@@ -1297,7 +1297,7 @@ t7> =x
 
 ```
 
-## Expanding/Replicating Tensors ##
+## Expanding/Replicating/Squeezing Tensors ##
 
 These methods returns a `Tensor` which is created by replications of the
 original tensor.
@@ -1437,8 +1437,54 @@ t7> return torch.repeatTensor(x,3,2,1)
 [torch.DoubleTensor of dimension 3x2x5]
 
  ```
+ 
+<a name="torch.Tensor.squeeze"/>
+#### [Tensor] squeeze([dim]) ####
 
+Removes all singleton dimensions of the tensor.
+If `dim` is given, squeezes only that particular dimension of the tensor.
 
+ ```lua
+ t7> x=torch.rand(2,1,2,1,2)
+t7> =x
+ (1,1,1,.,.) =
+  0.6020  0.8897
+
+(2,1,1,.,.) =
+  0.4713  0.2645
+
+(1,1,2,.,.) =
+  0.4441  0.9792
+
+(2,1,2,.,.) =
+  0.5467  0.8648
+[torch.DoubleTensor of dimension 2x1x2x1x2]
+
+t7> =torch.squeeze(x)
+(1,.,.) =
+  0.6020  0.8897
+  0.4441  0.9792
+
+(2,.,.) =
+  0.4713  0.2645
+  0.5467  0.8648
+[torch.DoubleTensor of dimension 2x2x2] 
+
+t7> =torch.squeeze(x, 2)
+(1,1,.,.) =
+  0.6020  0.8897
+
+(2,1,.,.) =
+  0.4713  0.2645
+
+(1,2,.,.) =
+  0.4441  0.9792
+
+(2,2,.,.) =
+  0.5467  0.8648
+[torch.DoubleTensor of dimension 2x2x1x2]
+
+ ```
 
 ## Manipulating the tensor view ##
 
