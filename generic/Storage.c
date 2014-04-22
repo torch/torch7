@@ -29,6 +29,13 @@ static int torch_Storage_(new)(lua_State *L)
       lua_pop(L, 1);
     }
   }
+	else if(lua_type(L, 1) == LUA_TLIGHTUSERDATA)
+	{
+		long size = luaL_checklong(L, 2);
+		real *ptr = (real *)lua_touserdata(L,1);
+		storage = THStorage_(newWithData)(ptr, size);
+		storage->flag = 0;
+	}
   else if(lua_type(L, 2) == LUA_TNUMBER)
   {
     long size = luaL_optlong(L, 1, 0);
@@ -200,6 +207,13 @@ static int torch_Storage_(read)(lua_State *L)
   return 0;
 }
 
+static int torch_Storage_(pointer)(lua_State *L)
+{
+	THStorage *src = luaT_checkudata(L, 1, torch_Storage);
+	lua_pushlightuserdata(L, src->data);
+	return 1;
+}
+
 static const struct luaL_Reg torch_Storage_(_) [] = {
   {"size", torch_Storage_(__len__)},
   {"__len__", torch_Storage_(__len__)},
@@ -214,6 +228,7 @@ static const struct luaL_Reg torch_Storage_(_) [] = {
 #if defined(TH_REAL_IS_CHAR) || defined(TH_REAL_IS_BYTE)
   {"string", torch_Storage_(string)},
 #endif
+	{"pointer", torch_Storage_(pointer)}
   {NULL, NULL}
 };
 
