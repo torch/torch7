@@ -1055,6 +1055,124 @@ function torchtest.conv3()
    mytester:asserteq(maxdiff(immfc[1],imfc),0,'torch.conv3')
 end
 
+function torchtest.xcorr3_xcorr2_eq()
+    local ix = math.floor(torch.uniform(20,40))
+    local iy = math.floor(torch.uniform(20,40))
+    local iz = math.floor(torch.uniform(20,40))
+    local kx = math.floor(torch.uniform(5,10))
+    local ky = math.floor(torch.uniform(5,10))
+    local kz = math.floor(torch.uniform(5,10))
+
+    local x = torch.rand(ix,iy,iz)
+    local k = torch.rand(kx,ky,kz)
+
+    local o3 = torch.xcorr3(x,k)
+    local o32 = torch.zeros(o3:size())
+
+    for i=1,o3:size(1) do
+        for j=1,k:size(1) do
+            o32[i]:add(torch.xcorr2(x[i+j-1],k[j]))
+        end
+    end
+
+    mytester:assertlt(maxdiff(o3,o32),precision,'torch.conv3_conv2_eq')
+end
+
+function torchtest.fxcorr3_fxcorr2_eq()
+    local ix = math.floor(torch.uniform(20,40))
+    local iy = math.floor(torch.uniform(20,40))
+    local iz = math.floor(torch.uniform(20,40))
+    local kx = math.floor(torch.uniform(5,10))
+    local ky = math.floor(torch.uniform(5,10))
+    local kz = math.floor(torch.uniform(5,10))
+
+    local x = torch.rand(ix,iy,iz)
+    local k = torch.rand(kx,ky,kz)
+
+    local o3 = torch.xcorr3(x,k,'F')
+
+    local o32 = torch.zeros(o3:size())
+
+    for i=1,x:size(1) do
+        for j=1,k:size(1) do
+            o32[i+j-1]:add(torch.xcorr2(x[i],k[k:size(1)-j + 1],'F'))
+        end
+    end
+
+    mytester:assertlt(maxdiff(o3,o32),precision,'torch.conv3_conv2_eq')
+end
+
+function torchtest.conv3_conv2_eq()
+    local ix = math.floor(torch.uniform(20,40))
+    local iy = math.floor(torch.uniform(20,40))
+    local iz = math.floor(torch.uniform(20,40))
+    local kx = math.floor(torch.uniform(5,10))
+    local ky = math.floor(torch.uniform(5,10))
+    local kz = math.floor(torch.uniform(5,10))
+
+    local x = torch.rand(ix,iy,iz)
+    local k = torch.rand(kx,ky,kz)
+
+    local o3 = torch.conv3(x,k)
+    local o32 = torch.zeros(o3:size())
+
+    for i=1,o3:size(1) do
+        for j=1,k:size(1) do
+            o32[i]:add(torch.conv2(x[i+j-1],k[k:size(1)-j+1]))
+        end
+    end
+
+    mytester:assertlt(maxdiff(o3,o32),precision,'torch.conv3_conv2_eq')
+end
+
+function torchtest.fxcorr3_fxcorr2_eq()
+    local ix = math.floor(torch.uniform(20,40))
+    local iy = math.floor(torch.uniform(20,40))
+    local iz = math.floor(torch.uniform(20,40))
+    local kx = math.floor(torch.uniform(5,10))
+    local ky = math.floor(torch.uniform(5,10))
+    local kz = math.floor(torch.uniform(5,10))
+
+    local x = torch.rand(ix,iy,iz)
+    local k = torch.rand(kx,ky,kz)
+
+    local o3 = torch.xcorr3(x,k,'F')
+
+    local o32 = torch.zeros(o3:size())
+
+    for i=1,x:size(1) do
+        for j=1,k:size(1) do
+            o32[i+j-1]:add(torch.xcorr2(x[i],k[k:size(1)-j + 1],'F'))
+        end
+    end
+
+    mytester:assertlt(maxdiff(o3,o32),precision,'torch.conv3_conv2_eq')
+end
+
+function torchtest.fconv3_fconv2_eq()
+    local ix = math.floor(torch.uniform(20,40))
+    local iy = math.floor(torch.uniform(20,40))
+    local iz = math.floor(torch.uniform(20,40))
+    local kx = math.floor(torch.uniform(5,10))
+    local ky = math.floor(torch.uniform(5,10))
+    local kz = math.floor(torch.uniform(5,10))
+
+    local x = torch.rand(ix,iy,iz)
+    local k = torch.rand(kx,ky,kz)
+
+    local o3 = torch.conv3(x,k,'F')
+
+    local o32 = torch.zeros(o3:size())
+
+    for i=1,x:size(1) do
+        for j=1,k:size(1) do
+            o32[i+j-1]:add(torch.conv2(x[i],k[j],'F'))
+        end
+    end
+
+    mytester:assertlt(maxdiff(o3,o32),precision,'torch.conv3_conv2_eq')
+end
+
 function torchtest.logical()
    local x = torch.rand(100,100)*2-1;
    local xx = x:clone()
