@@ -2,5 +2,6 @@ language: c
 compiler:
   - gcc
   - clang
+before_script: sudo apt-get install libblas-dev libatlas-dev liblapack-dev
 script: curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-all | bash 
 after_script: luajit -ltorch -e "torch.test()"
