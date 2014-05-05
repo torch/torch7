@@ -2,4 +2,4 @@ language: c
 compiler:
   - gcc
   - clang
-script: curl -s https://raw.github.com/torch/ezinstall/master/install-all | bash
+script: curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-all | bash
