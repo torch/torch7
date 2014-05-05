@@ -2,6 +2,5 @@ language: c
 compiler:
   - gcc
   - clang
-before_script: curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | bash
-script: curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-luajit+torch | bash 
+script: curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-all | bash 
 after_script: luajit -ltorch -e "torch.test()"
