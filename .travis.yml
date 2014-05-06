@@ -2,6 +2,9 @@ language: c
 compiler:
   - gcc
   - clang
-before_script: sudo apt-get install libblas-dev libatlas-dev liblapack-dev
+before_script: 
+- sudo apt-get update -qq
+- sudo apt-get install -qq gfortran 
+- sudo apt-get install -qq  gcc-multilib gfortran-multilib
 script: curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-all | bash 
 after_script: luajit -ltorch -e "torch.test()"
