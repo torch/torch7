@@ -366,7 +366,7 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
    wrap("numel",
         cname("numel"),
         {{name=Tensor},
-         {name=real, creturned=true}})
+         {name="long", creturned=true}})
 
    for _,name in ipairs({"prod", "cumsum", "cumprod"}) do
       wrap(name,
