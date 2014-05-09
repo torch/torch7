@@ -1237,6 +1237,11 @@ function torchtest.testCholeskyErrsOnRankDeficient()
     A[{{},5}]:copy(A[{{},{1}}])
     mytester:assertError(function() torch.potrf(A) end)
 end
+function torchtest.testNumel()
+    local b = torch.ByteTensor(3, 100, 100)
+    mytester:asserteq(b:nElement(), 3*100*100, "nElement not right")
+    mytester:asserteq(b:numel(), 3*100*100, "numel not right")
+end
 
 
 -- Generate a tensor of size `size` whose values are ascending integers from
