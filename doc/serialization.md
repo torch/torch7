@@ -64,9 +64,13 @@ print(obj)
 ```
 
 <a name="torch.serialize"/>
-### [str] torch.serialize(object) ###
+### [str] torch.serialize(object [, format]) ###
 
-Serializes `object` into a string.
+Serializes `object` into a string. The `format` can be set
+to `ascii` or `binary` (default is binary). Binary format is platform
+dependent, but typically more compact and faster to read/write. The ASCII
+format is platform-independent, and should be used to share data structures
+across platforms.
 
 ```
 -- arbitrary object:
@@ -83,9 +87,13 @@ str = torch.serialize(obj)
 ```
 
 <a name="torch.deserialize"/>
-### [object] torch.deserialize(str) ###
+### [object] torch.deserialize(str [, format]) ###
 
-Deserializes `object` from a string.
+Deserializes `object` from a string. The `format` can be set
+to `ascii` or `binary` (default is binary). Binary format is platform
+dependent, but typically more compact and faster to read/write. The ASCII
+format is platform-independent, and should be used to share data structures
+across platforms.
 
 ```
 -- given serialized object from section above, deserialize:
