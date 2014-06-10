@@ -1255,6 +1255,20 @@ function torchtest.RNGState()
    mytester:assertTensorEq(before, after, 1e-16, 'getRNGState/setRNGState not generating same sequence')
 end
 
+function torchtest.testBoxMullerState()
+    torch.manualSeed(123)
+    local odd_number = 101
+    local seeded = torch.randn(odd_number)
+    local state = torch.getRNGState()
+    local midstream = torch.randn(odd_number)
+    torch.setRNGState(state)
+    local repeat_midstream = torch.randn(odd_number)
+    torch.manualSeed(123)
+    local reseeded = torch.randn(odd_number)
+    mytester:assertTensorEq(midstream, repeat_midstream, 1e-16, 'getRNGState/setRNGState not generating same sequence of normally distributed numbers')
+    mytester:assertTensorEq(seeded, reseeded, 1e-16, 'repeated calls to manualSeed not generating same sequence of normally distributed numbers')
+end
+
 function torchtest.testCholesky()
     local x = torch.rand(10,10)
     local A = torch.mm(x, x:t())
