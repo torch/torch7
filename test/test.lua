@@ -633,7 +633,6 @@ function torchtest.eye()
 end
 function torchtest.renorm()
    local m1 = torch.randn(10,5)
-   
    local res1 = torch.Tensor()
 
    local function renorm(matrix, value, axis, max_norm)
@@ -645,13 +644,24 @@ function torchtest.renorm()
       return torch.cmul(matrix,div:expandAs(matrix))
    end
    
-   print(m1)
-   print(m1:norm(2,1))
-   m1:renorm(2,2,0.1)
-   print(m1)
-   print(m1:norm(2,1))
+   local maxnorm = m1:norm(2,1):mean()
+   local m2 = renorm(m1,2,1,maxnorm)
    
-   --mytester:assertlt(err, precision, 'error in torch.mul - scalar, non contiguous')
+   -- note that the axis fed to torch.renorm is different (2~=1)
+   m1:renorm(2,2,maxnorm)
+   mytester:assertTensorEq(m1, m2, 0.00001)
+   mytester:assertTensorEq(m1:norm(2,1), m2:norm(2,1), 0.00001)
+   
+   m1 = torch.randn(3,4,5)
+   m2 = m1:transpose(2,3):contiguous():reshape(15,4)
+   
+   maxnorm = m2:norm(2,1):mean()
+   m2 = renorm(m2,2,1,maxnorm)
+   
+   m1:renorm(2,2,maxnorm)
+   m3 = m1:transpose(2,3):contiguous():reshape(15,4)
+   mytester:assertTensorEq(m3, m2, 0.00001)
+   mytester:assertTensorEq(m3:norm(2,1), m2:norm(2,1), 0.00001)
 end
 function torchtest.multinomialwithreplacement()
    local n_row = 3
