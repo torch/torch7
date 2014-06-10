@@ -631,6 +631,28 @@ function torchtest.eye()
    torch.eye(mxx,msize,msize)
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.eye value')
 end
+function torchtest.renorm()
+   local m1 = torch.randn(10,5)
+   
+   local res1 = torch.Tensor()
+
+   local function renorm(matrix, value, axis, max_norm)
+      local norms = matrix:norm(value,axis)
+      -- clip
+      local new_norms = norms:clone()
+      new_norms[torch.gt(norms, max_norm)] = max_norm
+      local div = torch.cdiv(new_norms, torch.add(norms,1e-7))
+      return torch.cmul(matrix,div:expandAs(matrix))
+   end
+   
+   print(m1)
+   print(m1:norm(2,1))
+   m1:renorm(2,2,0.1)
+   print(m1)
+   print(m1:norm(2,1))
+   
+   --mytester:assertlt(err, precision, 'error in torch.mul - scalar, non contiguous')
+end
 function torchtest.multinomialwithreplacement()
    local n_row = 3
    for n_col=4,5 do
