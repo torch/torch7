@@ -1049,6 +1049,18 @@ a specific dimension `d`, in __descending__ order.
 
 `y=torch.norm(x,p,dim)` returns the p-norms of the tensor x computed over the dimension dim.
 
+<a name="torch.renorm"/>
+### torch.renorm([res], x, p, dim, maxnorm) ###
+Renormalizes the sub-tensors along dimension `dim` such that they do not exceed norm `maxnorm`. 
+
+`y=torch.renorm(x,p,dim,maxnorm)` returns a version of `x` with `p`-norms lower than `maxnorm` over non-`dim` dimensions. 
+The `dim` argument is not to be confused with the argument of the same name in function [norm](#torch.norm). 
+In this case, the `p`-norm is measured for each `i`-th sub-tensor `x:select(dim, i)`.
+
+`x:renorm(p,dim,maxnorm)` returns the equivalent of `x:copy(torch.renorm(x,p,dim,maxnorm))`.
+
+Note: this function is particularly useful as a regularizer for constraining the norm of parameter tensors.
+
 <a name="torch.dist"/>
 ### torch.dist(x,y) ###
 
