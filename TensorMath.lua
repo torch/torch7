@@ -801,7 +801,7 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
             {name=Tensor, method={default=1}},
             {name=real},
             {name="index"},
-            {name=real})
+            {name=real}})
       
       wrap("dist",
            cname("dist"),
