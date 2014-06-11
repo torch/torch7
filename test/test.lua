@@ -635,19 +635,24 @@ function torchtest.renorm()
    local m1 = torch.randn(10,5)
    local res1 = torch.Tensor()
 
-   local function renorm(matrix, value, axis, max_norm)
-      local norms = matrix:norm(value,axis)
+   local function renorm(matrix, value, dim, max_norm)
+      local m1 = matrix:transpose(dim, 1):contiguous()
+      -- collapse non-dim dimensions:
+      m2 = m1:reshape(m1:size(1), m1:nElement()/m1:size(1))
+      local norms = m2:norm(value,2)
       -- clip
       local new_norms = norms:clone()
       new_norms[torch.gt(norms, max_norm)] = max_norm
-      local div = torch.cdiv(new_norms, torch.add(norms,1e-7))
-      return torch.cmul(matrix,div:expandAs(matrix))
+      new_norms:cdiv(norms:add(1e-7))
+      -- renormalize
+      m1:cmul(new_norms:expandAs(m1))
+      return m1:transpose(dim, 1)
    end
    
-   local maxnorm = m1:norm(2,1):mean()
-   local m2 = renorm(m1,2,1,maxnorm)
-   
    -- note that the axis fed to torch.renorm is different (2~=1)
+   local maxnorm = m1:norm(2,1):mean()
+   local m2 = renorm(m1,2,2,maxnorm)
+   
    m1:renorm(2,2,maxnorm)
    mytester:assertTensorEq(m1, m2, 0.00001)
    mytester:assertTensorEq(m1:norm(2,1), m2:norm(2,1), 0.00001)
@@ -656,7 +661,7 @@ function torchtest.renorm()
    m2 = m1:transpose(2,3):contiguous():reshape(15,4)
    
    maxnorm = m2:norm(2,1):mean()
-   m2 = renorm(m2,2,1,maxnorm)
+   m2 = renorm(m2,2,2,maxnorm)
    
    m1:renorm(2,2,maxnorm)
    m3 = m1:transpose(2,3):contiguous():reshape(15,4)
