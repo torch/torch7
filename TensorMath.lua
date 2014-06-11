@@ -537,7 +537,7 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
            cname(f.name),
            {{name=Tensor, returned=true},
             {name='Generator', default=true},
-            {name=real, default=f.a}})
+            {name="double", default=f.a}})
    end
 
    wrap("squeeze",
