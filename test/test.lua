@@ -1244,13 +1244,7 @@ function torchtest.testCholesky()
     local B = torch.mm(C:t(), C)
     mytester:assertTensorEq(A, B, 1e-14, 'potrf did not allow rebuilding the original matrix')
 end
-function torchtest.testCholeskyErrsOnRankDeficient()
-    local x = torch.rand(5,5)
-    local A = torch.mm(x, x:t())
-    -- Make the matrix rank-defficient
-    A[{{},5}]:copy(A[{{},{1}}])
-    mytester:assertError(function() torch.potrf(A) end)
-end
+
 function torchtest.testNumel()
     local b = torch.ByteTensor(3, 100, 100)
     mytester:asserteq(b:nElement(), 3*100*100, "nElement not right")
