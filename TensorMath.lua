@@ -794,6 +794,14 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
             {name=Tensor},
             {name=real},
             {name="index"}})
+            
+      wrap("renorm",
+           cname("renorm"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=Tensor, method={default=1}},
+            {name=real},
+            {name="index"},
+            {name=real}})
       
       wrap("dist",
            cname("dist"),

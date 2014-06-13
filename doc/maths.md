@@ -1049,6 +1049,34 @@ a specific dimension `d`, in __descending__ order.
 
 `y=torch.norm(x,p,dim)` returns the p-norms of the tensor x computed over the dimension dim.
 
+<a name="torch.renorm"/>
+### torch.renorm([res], x, p, dim, maxnorm) ###
+Renormalizes the sub-tensors along dimension `dim` such that they do not exceed norm `maxnorm`.
+
+`y=torch.renorm(x,p,dim,maxnorm)` returns a version of `x` with `p`-norms lower than `maxnorm` over non-`dim` dimensions. 
+The `dim` argument is not to be confused with the argument of the same name in function [norm](#torch.norm). 
+In this case, the `p`-norm is measured for each `i`-th sub-tensor `x:select(dim, i)`. This function is 
+equivalent to (but faster than) the following:
+```lua
+function renorm(matrix, value, dim, maxnorm)
+  local m1 = matrix:transpose(dim, 1):contiguous()
+  -- collapse non-dim dimensions:
+  m2 = m1:reshape(m1:size(1), m1:nElement()/m1:size(1))
+  local norms = m2:norm(value,2)
+  -- clip
+  local new_norms = norms:clone()
+  new_norms[torch.gt(norms, maxnorm)] = maxnorm
+  new_norms:cdiv(norms:add(1e-7))
+  -- renormalize
+  m1:cmul(new_norms:expandAs(m1))
+  return m1:transpose(dim, 1)
+end
+```
+
+`x:renorm(p,dim,maxnorm)` returns the equivalent of `x:copy(torch.renorm(x,p,dim,maxnorm))`.
+
+Note: this function is particularly useful as a regularizer for constraining the norm of parameter tensors (see [Hinton et al. 2012, p. 2](#http://arxiv.org/pdf/1207.0580.pdf).
+
 <a name="torch.dist"/>
 ### torch.dist(x,y) ###
 
