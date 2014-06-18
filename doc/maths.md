@@ -1075,7 +1075,7 @@ end
 
 `x:renorm(p,dim,maxnorm)` returns the equivalent of `x:copy(torch.renorm(x,p,dim,maxnorm))`.
 
-Note: this function is particularly useful as a regularizer for constraining the norm of parameter tensors (see [Hinton et al. 2012, p. 2](#http://arxiv.org/pdf/1207.0580.pdf).
+Note: this function is particularly useful as a regularizer for constraining the norm of parameter tensors. See [Hinton et al. 2012, p. 2](http://arxiv.org/pdf/1207.0580.pdf).
 
 <a name="torch.dist"/>
 ### torch.dist(x,y) ###
