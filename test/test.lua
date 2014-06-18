@@ -1072,7 +1072,7 @@ function torchtest.conv3()
    mytester:asserteq(maxdiff(imvc,imvx),0,'torch.conv3')
    mytester:asserteq(maxdiff(imvc,imvx2),0,'torch.conv3')
    mytester:asserteq(maxdiff(imfc,imfx),0,'torch.conv3')
-   mytester:assertlt(math.abs(x:dot(x)-torch.xcorr3(x,x)[1][1][1]),1e-10,'torch.conv3')
+   mytester:assertlt(math.abs(x:dot(x)-torch.xcorr3(x,x)[1][1][1]),4*1e-10,'torch.conv3')
 
    local xx = torch.Tensor(2,x:size(1),x:size(2),x:size(3))
    xx[1]:copy(x)
