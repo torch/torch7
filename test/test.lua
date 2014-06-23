@@ -1253,11 +1253,26 @@ function torchtest.RNGState()
    local stateCloned = state:clone()
    local before = torch.rand(1000)
 
-   mytester:assert(state:ne(stateCloned):long():sum() == 0, 'RNG (supposedly cloned) state has changed after random number generation')
+   mytester:assert(state:ne(stateCloned):long():sum() == 0, 'getRNGState should have value semantics, but appears to have reference semantics')
 
    torch.setRNGState(state)
    local after = torch.rand(1000)
    mytester:assertTensorEq(before, after, 1e-16, 'getRNGState/setRNGState not generating same sequence')
+end
+
+function torchtest.RNGStateAliasing()
+    torch.manualSeed(1)
+    local unused = torch.uniform()
+
+    -- Fork the random number stream at this point
+    local gen = torch.Generator()
+    torch.setRNGState(gen, torch.getRNGState())
+
+    local target_value = torch.rand(1000)
+    --Dramatically alter the internal state of the main generator
+    local also_unused = torch.rand(100000)
+    local forked_value = torch.rand(gen, 1000)
+    mytester:assertTensorEq(target_value, forked_value, 1e-16, "RNG has not forked correctly.")
 end
 
 function torchtest.testBoxMullerState()
