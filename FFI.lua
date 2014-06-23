@@ -156,7 +156,7 @@ typedef struct THRealTensor
    end
 
    -- torch.data
-   -- will fail is :data() is not defined
+   -- will fail if :data() is not defined
    function torch.data(self, asnumber)
       local data = self:data()
       if asnumber then
@@ -167,7 +167,7 @@ typedef struct THRealTensor
    end
 
    -- torch.cdata
-   -- will fail is :cdata() is not defined
+   -- will fail if :cdata() is not defined
    function torch.cdata(self, asnumber)
       local cdata = self:cdata()
       if asnumber then
