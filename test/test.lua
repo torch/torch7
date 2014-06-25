@@ -1395,6 +1395,17 @@ function torchtest.classNoModule()
     mytester:assert(x, 'Could not create class in module')
 end
 
+function torchtest.view()
+   local tensor = torch.rand(15)
+   local template = torch.rand(3,5)
+   local target = template:size():totable()
+   mytester:assertTableEq(tensor:viewAs(template):size():totable(), target, 'Error in viewAs')
+   mytester:assertTableEq(tensor:view(3,5):size():totable(), target, 'Error in view')
+   mytester:assertTableEq(tensor:view(torch.LongStorage{3,5}):size():totable(), target, 'Error in view using LongStorage')
+   mytester:assertTableEq(tensor:view(-1,5):size():totable(), target, 'Error in view using dimension -1')
+   mytester:assertTableEq(tensor:view(3,-1):size():totable(), target, 'Error in view using dimension -1')
+end
+
 function torch.test(tests)
    math.randomseed(os.time())
    if torch.getdefaulttensortype() == 'torch.FloatTensor' then
