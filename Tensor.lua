@@ -360,10 +360,6 @@ function Tensor.repeatTensor(tensor,...)
 end
 torch.repeatTensor = Tensor.repeatTensor
 
--- One of the size elements can be -1,
--- a new LongStorage is then returned.
--- The length of the unspecified dimension
--- is infered from the number of remaining elements.
 local function specifyFully(size, nElements)
     local nCoveredElements = 1
     local remainingDim = nil
@@ -390,19 +386,6 @@ local function specifyFully(size, nElements)
     return copy
 end
 
---[[ Reshape tensor without copying
-
-Parameters:
-- `tensor`
-- `...` (number or LongTensor) sizes of each dimension in the output.
-
-If one of the dimensions is -1, the size of the dimension is inferred from the
-number of remaining elements.
-
-Returns:
-
-- tensor with the desired size
-]]
 function Tensor.view(tensor,...)
    local size = ...
    if torch.typename(size) ~= 'torch.LongStorage' then
