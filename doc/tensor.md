@@ -1494,6 +1494,57 @@ the sub-tensor will have an impact on the primary tensor, and vice-versa.
 
 These methods are very fast, are they do not involve any memory copy.
 
+<a name="torch.Tensor.view"/>
+### [Tensor] view(tensor, sizes) ###
+
+Creates a view with different dimensions of the storage associated with `tensor`.
+
+`sizes` can either be a `torch.LongStorage` or numbers. If one of the dimensions
+is -1, the size of that dimension is inferred from the rest of the elements.
+
+
+```lua
+> x = torch.zeros(4)
+> print(x:view(2,2))
+0 0
+0 0
+[torch.DoubleTensor of dimension 2x2]
+
+> print(x:view(2,-1))
+0 0
+0 0
+[torch.DoubleTensor of dimension 2x2]
+
+> print(x:view(torch.LongStorage{2,2}))
+0 0
+0 0
+[torch.DoubleTensor of dimension 2x2]
+
+> print(x)
+0
+0
+0
+0
+[torch.DoubleTensor of dimension 4]
+```
+
+<a name="torch.Tensor.viewAs"/>
+### [Tensor] viewAs(tensor, template) ###
+
+Creates a view with with the same dimensions as `template` of the storage associated 
+with `tensor`.
+
+
+```lua
+> x = torch.zeros(4)
+> y = torch.Tensor(2,2)
+> print(x:viewAs(y))
+0 0
+0 0
+[torch.DoubleTensor of dimension 2x2]
+```
+
+
 <a name="torch.Tensor.transpose"/>
 ### [Tensor] transpose(dim1, dim2) ###
 

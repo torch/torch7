@@ -360,6 +360,57 @@ function Tensor.repeatTensor(tensor,...)
 end
 torch.repeatTensor = Tensor.repeatTensor
 
+local function specifyFully(size, nElements)
+    local nCoveredElements = 1
+    local remainingDim = nil
+    local sizes = size:totable()
+    for i = 1, #sizes do
+        local wantedDimSize = sizes[i]
+        if wantedDimSize == -1 then
+            if remainingDim then
+                error("Only one of viewReshaped dimensions can be -1.")
+            end
+            remainingDim = i
+        else
+            nCoveredElements = nCoveredElements * wantedDimSize
+        end
+    end
+
+    if not remainingDim then
+        return size
+    end
+
+    assert(nElements % nCoveredElements == 0, "The number of covered elements is not a multiple of all elements.")
+    local copy = torch.LongStorage(sizes)
+    copy[remainingDim] = nElements / nCoveredElements
+    return copy
+end
+
+function Tensor.view(tensor,...)
+   local size = ...
+   if torch.typename(size) ~= 'torch.LongStorage' then
+      size = torch.LongStorage({...})
+   end
+   local origNElement = tensor:nElement()
+   size = specifyFully(size, origNElement)
+
+   assert(tensor:isContiguous(), "expecting a contiguous tensor")
+   local view = tensor.new(tensor:storage(), tensor:storageOffset(), size)
+   if view:nElement() ~= origNElement then
+      local inputSize = table.concat(tensor:size():totable(), "x")
+      local outputSize = table.concat(size:totable(), "x")
+      error(string.format("Wrong size for view. Input size: %s. Output size: %s",
+      inputSize, outputSize))
+   end
+   return view
+end
+torch.view = Tensor.view
+
+function Tensor.viewAs(tensor,template)
+   return tensor:view(template:size())
+end
+torch.viewAs = Tensor.viewAs
+
 for _,type in ipairs(types) do
    local metatable = torch.getmetatable('torch.' .. type .. 'Tensor')
    for funcname, func in pairs(Tensor) do
