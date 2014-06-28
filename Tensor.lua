@@ -372,7 +372,7 @@ local function specifyFully(size, nElements)
         local wantedDimSize = sizes[i]
         if wantedDimSize == -1 then
             if remainingDim then
-                error("Only one of viewReshaped dimensions can be -1.")
+                error("Only one of torch.view dimensions can be -1.")
             end
             remainingDim = i
         else
@@ -390,16 +390,46 @@ local function specifyFully(size, nElements)
     return copy
 end
 
-function Tensor.view(tensor,...)
+-- TODO : This should be implemented in TH and and wrapped.
+function Tensor.view(result, src, ...)
    local size = ...
-   if torch.typename(size) ~= 'torch.LongStorage' then
-      size = torch.LongStorage({...})
+   local view, tensor
+   local function istensor(tensor)
+      return torch.typename(tensor) and torch.typename(tensor):find('torch.*Tensor')
+   end
+   local function isstorage(storage)
+      return torch.typename(storage) and torch.typename(storage) == 'torch.LongStorage'
+   end
+   if istensor(result) and istensor(src) and type(size) == 'number' then
+      size = torch.LongStorage{...}
+      view = result
+      tensor = src
+   elseif istensor(result) and istensor(src) and isstorage(size) then
+      size = size
+      view = result
+      tensor = src
+   elseif istensor(result) and isstorage(src) and size == nil then
+      size = src
+      tensor = result
+      view = tensor.new()
+   elseif istensor(result) and type(src) == 'number' then
+      size = {...}
+      table.insert(size,1,src)
+      size = torch.LongStorage(size)
+      tensor = result
+      view = tensor.new()
+   else
+      local t1 = 'torch.Tensor, torch.Tensor, number [, number ]*'
+      local t2 = 'torch.Tensor, torch.Tensor, torch.LongStorage'
+      local t3 = 'torch.Tensor, torch.LongStorage'
+      local t4 = 'torch.Tensor, number [, number ]*'
+      error(string.format('torch.view, expected (%s) or\n (%s) or\n (%s)\n or (%s)', t1, t2, t3, t4))
    end
    local origNElement = tensor:nElement()
    size = specifyFully(size, origNElement)
 
    assert(tensor:isContiguous(), "expecting a contiguous tensor")
-   local view = tensor.new(tensor:storage(), tensor:storageOffset(), size)
+   view:set(tensor:storage(), tensor:storageOffset(), size)
    if view:nElement() ~= origNElement then
       local inputSize = table.concat(tensor:size():totable(), "x")
       local outputSize = table.concat(size:totable(), "x")
@@ -410,8 +440,19 @@ function Tensor.view(tensor,...)
 end
 torch.view = Tensor.view
 
-function Tensor.viewAs(tensor,template)
-   return tensor:view(template:size())
+function Tensor.viewAs(result, src, template)
+   if template and torch.typename(template) then
+      return result:view(src, template:size())
+   elseif template == nil then
+      template = src
+      src = result
+      result = src.new()
+      return result:view(src, template:size())
+   else
+      local t1 = 'torch.Tensor, torch.Tensor, torch.LongStorage'
+      local t2 = 'torch.Tensor, torch.LongStorage'
+      error(string.format('expecting (%s) or (%s)', t1, t2))
+   end
 end
 torch.viewAs = Tensor.viewAs
 
