@@ -1404,6 +1404,18 @@ function torchtest.view()
    mytester:assertTableEq(tensor:view(torch.LongStorage{3,5}):size():totable(), target, 'Error in view using LongStorage')
    mytester:assertTableEq(tensor:view(-1,5):size():totable(), target, 'Error in view using dimension -1')
    mytester:assertTableEq(tensor:view(3,-1):size():totable(), target, 'Error in view using dimension -1')
+   local tensor_view = tensor:view(5,3)
+   tensor_view:fill(torch.rand(1)[1])
+   mytester:asserteq((tensor_view-tensor):abs():max(), 0, 'Error in view')
+
+   local target_tensor = torch.Tensor()
+   mytester:assertTableEq(target_tensor:viewAs(tensor, template):size():totable(), target, 'Error in viewAs')
+   mytester:assertTableEq(target_tensor:view(tensor, 3,5):size():totable(), target, 'Error in view')
+   mytester:assertTableEq(target_tensor:view(tensor, torch.LongStorage{3,5}):size():totable(), target, 'Error in view using LongStorage')
+   mytester:assertTableEq(target_tensor:view(tensor, -1,5):size():totable(), target, 'Error in view using dimension -1')
+   mytester:assertTableEq(target_tensor:view(tensor, 3,-1):size():totable(), target, 'Error in view using dimension -1')
+   target_tensor:fill(torch.rand(1)[1])
+   mytester:asserteq((target_tensor-tensor):abs():max(), 0, 'Error in viewAs')
 end
 
 function torch.test(tests)

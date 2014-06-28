@@ -1495,9 +1495,11 @@ the sub-tensor will have an impact on the primary tensor, and vice-versa.
 These methods are very fast, are they do not involve any memory copy.
 
 <a name="torch.Tensor.view"/>
-### [Tensor] view(tensor, sizes) ###
+### [result] view(result, tensor, sizes) ###
 
 Creates a view with different dimensions of the storage associated with `tensor`.
+If `result` is not passed, then a new tensor is returned, otherwise its storage is 
+made to point to storage of `tensor`.
 
 `sizes` can either be a `torch.LongStorage` or numbers. If one of the dimensions
 is -1, the size of that dimension is inferred from the rest of the elements.
@@ -1529,10 +1531,11 @@ is -1, the size of that dimension is inferred from the rest of the elements.
 ```
 
 <a name="torch.Tensor.viewAs"/>
-### [Tensor] viewAs(tensor, template) ###
+### [result] viewAs(result, tensor, template) ###
 
 Creates a view with with the same dimensions as `template` of the storage associated 
-with `tensor`.
+with `tensor`. If `result` is not passed, then a new tensor is returned, otherwise its storage is 
+made to point to storage of `tensor`.
 
 
 ```lua
