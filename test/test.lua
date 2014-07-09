@@ -1395,6 +1395,14 @@ function torchtest.classNoModule()
     mytester:assert(x, 'Could not create class in module')
 end
 
+function torchtest.type()
+   local objects = {torch.DoubleTensor(), {}, nil, 2, "asdf"}
+   local types = {'torch.DoubleTensor', 'table', 'nil', 'number', 'string'}
+   for i,obj in ipairs(objects) do
+      mytester:assert(torch.type(obj) == types[i], "wrong type "..types[i])
+   end
+end
+
 function torchtest.view()
    local tensor = torch.rand(15)
    local template = torch.rand(3,5)
