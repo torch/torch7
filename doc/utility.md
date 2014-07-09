@@ -18,7 +18,7 @@ If `name` is of the form `package.className` then the class `className` will be 
 In that case, `package` has to be a valid (and already loaded) package. If `name` does not contain any `"."`,
 then the class will be defined in the global environment.
 
-One [or two] (meta)tables are returned. These tables contain all the method
+One \[or two\] (meta)tables are returned. These tables contain all the method
 provided by the class [and its parent class if it has been provided]. After
 a call to `torch.class()` you have to fill-up properly the metatable.
 
@@ -96,6 +96,24 @@ constructor. The constructor creates a Lua table and set the right
 metatable on it, and then calls ```lua__init()``` if it exists in the
 metatable. It also sets a [factory](#torch.factory) field ```lua__factory``` such that it
 is possible to create an empty object of this class.
+
+<a name="torch.type"/>
+### [string] torch.type(object) ###
+
+Checks if `object` has a metatable. If it does, and if it corresponds to a
+`Torch` class, then returns a string containing the name of the
+class. Otherwise, it returns the Lua `type(object)` of the object. 
+Unlike [torch.typename()](#torch.typename), all outputs are strings:
+
+```lua
+> torch.type(torch.Tensor())
+torch.DoubleTensor	
+> torch.type({})
+table	
+> torch.type(7)
+number	
+```
+
 
 <a name="torch.typename"/>
 ### [string] torch.typename(object) ###
