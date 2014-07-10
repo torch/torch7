@@ -1,5 +1,12 @@
 
 -- We are using paths.require to appease mkl
+
+-- Make this work with LuaJIT in Lua 5.2 compatibility mode, which
+-- renames string.gfind (already deprecated in 5.1)
+if not string.gfind then
+    string.gfind = string.gmatch
+end
+
 require "paths"
 paths.require "libtorch"
 
