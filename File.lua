@@ -90,19 +90,7 @@ function File:writeObject(object)
       local stringStorage = torch.CharStorage():string(object)
       self:writeInt(#stringStorage)
       self:writeChar(stringStorage)
-   elseif typeidx == TYPE_FUNCTION then
-      local upvalues = {}
-      while true do
-         local name,value = debug.getupvalue(object, #upvalues+1)
-         if not name then break end
-         table.insert(upvalues, value)
-      end
-      local dumped = string.dump(object)
-      local stringStorage = torch.CharStorage():string(dumped)
-      self:writeInt(#stringStorage)
-      self:writeChar(stringStorage)
-      self:writeObject(upvalues)
-   elseif typeidx == TYPE_TORCH or typeidx == TYPE_TABLE then
+   elseif typeidx == TYPE_TORCH or typeidx == TYPE_TABLE or  typeidx == TYPE_FUNCTION then
       -- check it exists already (we look at the pointer!)
       local objects = torch.getenv(self).writeObjects
       local objectsRef = torch.getenv(self).writeObjectsRef
@@ -121,8 +109,21 @@ function File:writeObject(object)
          end
          self:writeInt(index)
          objects.nWriteObject = index
-
-         if typeidx == TYPE_TORCH then
+         if typeidx == TYPE_FUNCTION then
+            local upvalues = {}
+            local counter = 0
+            while true do
+               counter = counter + 1
+               local name,value = debug.getupvalue(object, counter)
+               if not name then break end
+               table.insert(upvalues, value)
+            end
+            local dumped = string.dump(object)
+            local stringStorage = torch.CharStorage():string(dumped)
+            self:writeInt(#stringStorage)
+            self:writeChar(stringStorage)
+            self:writeObject(upvalues)
+         elseif typeidx == TYPE_TORCH then
             local version   = torch.CharStorage():string('V ' .. torch.version(object))
             local className = torch.CharStorage():string(torch.typename(object))
             self:writeInt(#version)
@@ -181,16 +182,7 @@ function File:readObject()
    elseif typeidx == TYPE_STRING then
       local size = self:readInt()
       return self:readChar(size):string()
-   elseif typeidx == TYPE_FUNCTION then
-      local size = self:readInt()
-      local dumped = self:readChar(size):string()
-      local func = loadstring(dumped)
-      local upvalues = self:readObject()
-      for index,upvalue in ipairs(upvalues) do
-         debug.setupvalue(func, index, upvalue)
-      end
-      return func
-   elseif typeidx == TYPE_TABLE or typeidx == TYPE_TORCH then
+   elseif typeidx == TYPE_TABLE or typeidx == TYPE_TORCH or typeidx == TYPE_FUNCTION then
       -- read the index
       local index = self:readInt()
 
@@ -201,7 +193,17 @@ function File:readObject()
       end
 
       -- otherwise read it
-      if typeidx == TYPE_TORCH then
+      if typeidx == TYPE_FUNCTION then
+        local size = self:readInt()
+        local dumped = self:readChar(size):string()
+        local func = loadstring(dumped)
+        objects[index] = func
+        local upvalues = self:readObject()
+        for index,upvalue in ipairs(upvalues) do
+           debug.setupvalue(func, index, upvalue)
+        end
+        return func
+      elseif typeidx == TYPE_TORCH then
          local version, className, versionNumber
          version = self:readChar(self:readInt()):string()
          versionNumber = tonumber(string.match(version, '^V (.*)$'))
