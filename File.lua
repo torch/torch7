@@ -19,6 +19,7 @@ local TYPE_TABLE    = 3
 local TYPE_TORCH    = 4
 local TYPE_BOOLEAN  = 5
 local TYPE_FUNCTION = 6
+local TYPE_RECUR_FUNCTION = 7
 
 function File:isWritableObject(object)
    local typename = type(object)
@@ -36,7 +37,7 @@ function File:isWritableObject(object)
    elseif typename == 'boolean' then
       typeidx = TYPE_BOOLEAN
    elseif typename == 'function' and pcall(string.dump, object) then
-      typeidx = TYPE_FUNCTION
+      typeidx = TYPE_RECUR_FUNCTION
    end
    return typeidx
 end
@@ -90,7 +91,7 @@ function File:writeObject(object)
       local stringStorage = torch.CharStorage():string(object)
       self:writeInt(#stringStorage)
       self:writeChar(stringStorage)
-   elseif typeidx == TYPE_TORCH or typeidx == TYPE_TABLE or  typeidx == TYPE_FUNCTION then
+   elseif typeidx == TYPE_TORCH or typeidx == TYPE_TABLE or  typeidx == TYPE_RECUR_FUNCTION then
       -- check it exists already (we look at the pointer!)
       local objects = torch.getenv(self).writeObjects
       local objectsRef = torch.getenv(self).writeObjectsRef
@@ -109,7 +110,7 @@ function File:writeObject(object)
          end
          self:writeInt(index)
          objects.nWriteObject = index
-         if typeidx == TYPE_FUNCTION then
+         if typeidx == TYPE_RECUR_FUNCTION then
             local upvalues = {}
             local counter = 0
             while true do
@@ -182,7 +183,16 @@ function File:readObject()
    elseif typeidx == TYPE_STRING then
       local size = self:readInt()
       return self:readChar(size):string()
-   elseif typeidx == TYPE_TABLE or typeidx == TYPE_TORCH or typeidx == TYPE_FUNCTION then
+   elseif typeidx == TYPE_FUNCTION then
+       local size = self:readInt()
+       local dumped = self:readChar(size):string()
+       local func = loadstring(dumped)
+       local upvalues = self:readObject()
+       for index,upvalue in ipairs(upvalues) do
+          debug.setupvalue(func, index, upvalue)
+       end
+       return func
+   elseif typeidx == TYPE_TABLE or typeidx == TYPE_TORCH or typeidx == TYPE_RECUR_FUNCTION then
       -- read the index
       local index = self:readInt()
 
@@ -193,7 +203,7 @@ function File:readObject()
       end
 
       -- otherwise read it
-      if typeidx == TYPE_FUNCTION then
+      if typeidx == TYPE_RECUR_FUNCTION then
         local size = self:readInt()
         local dumped = self:readChar(size):string()
         local func = loadstring(dumped)
