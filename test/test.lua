@@ -1426,6 +1426,17 @@ function torchtest.view()
    mytester:asserteq((target_tensor-tensor):abs():max(), 0, 'Error in viewAs')
 end
 
+function torchtest.isSameSizeAs()
+   local t1 = torch.Tensor(3, 4, 9, 10)
+   local t2 = torch.Tensor(3, 4)
+   local t3 = torch.Tensor(1, 9, 3, 3)
+   local t4 = torch.Tensor(3, 4, 9, 10)
+
+   mytester:assert(t1:isSameSizeAs(t2) == false, "wrong answer ")
+   mytester:assert(t1:isSameSizeAs(t3) == false, "wrong answer ")
+   mytester:assert(t1:isSameSizeAs(t4) == true, "wrong answer ")
+end
+
 function torch.test(tests)
    math.randomseed(os.time())
    if torch.getdefaulttensortype() == 'torch.FloatTensor' then

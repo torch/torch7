@@ -708,6 +708,20 @@ false
 [torch.LongStorage of size 1]
 ```
 
+<a name="torch.Tensor.isSameSizeAs"/>
+### [boolean] isSameSizeAs(tensor) ###
+
+Returns `true` iff the dimensions of the `Tensor` and the argument `Tensor` are exactly the same.
+```lua
+> x = torch.Tensor(4,5)
+> y = torch.Tensor(4,5)
+> = x:isSameSizeAs(y)
+true
+> y = torch.Tensor(4, 6)
+> = x:isSameSizeAs(y)
+false
+```
+
 <a name="torch.Tensor.nElement"/>
 ### [number] nElement() ###
 
