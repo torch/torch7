@@ -1385,6 +1385,8 @@ Third argument defines computation of eigenvectors or eigenvalues
 only. If ` N `, only eignevalues are computed. If ` V `, both
 eigenvalues and eigenvectors are computed.
 
+The eigen values returned follow [LAPACK convention](https://software.intel.com/sites/products/documentation/hpc/mkl/mklman/GUID-16EB5901-5644-4DA6-A332-A052309010C4.htm) and are returned as complex (real/imaginary) pairs of numbers (Nx2 dimensional tensor).
+
 ```lua
 
 a=torch.Tensor({{ 1.96,  0.00,  0.00,  0.00,  0.00},
