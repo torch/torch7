@@ -1,7 +1,6 @@
 language: c
 compiler:
   - gcc
-  - clang
 before_script: 
 - sudo apt-get update -qq >/dev/null
 - sudo apt-get install -qq gfortran  >/dev/null
