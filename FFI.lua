@@ -81,12 +81,14 @@ typedef struct THRealTensor
       rawset(Tensor,
              "cdata",
              function(self)
+                if not self then return nil; end
                 return Tensor_tt(self)[0]
              end)
 
       rawset(Tensor,
              "data",
              function(self)
+                if not self then return nil; end
                 self = Tensor_tt(self)[0]
                 return self.storage ~= nil and self.storage.data + self.storageOffset or nil
              end)
@@ -158,6 +160,7 @@ typedef struct THRealTensor
    -- torch.data
    -- will fail if :data() is not defined
    function torch.data(self, asnumber)
+      if not self then return nil; end
       local data = self:data()
       if asnumber then
          return ffi.cast('intptr_t', data)
@@ -169,6 +172,7 @@ typedef struct THRealTensor
    -- torch.cdata
    -- will fail if :cdata() is not defined
    function torch.cdata(self, asnumber)
+      if not self then return nil; end
       local cdata = self:cdata()
       if asnumber then
          return ffi.cast('intptr_t', cdata)
