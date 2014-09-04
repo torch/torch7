@@ -137,7 +137,7 @@ is below the main diagonal.
 
 `y=torch.eye(n)` returns the n-by-n identity matrix.
 
-`y=torch.eye(n,m)` returns an m-by-m identity matrix with ones on the diagonal and zeros elsewhere.
+`y=torch.eye(n,m)` returns an n-by-m identity matrix with ones on the diagonal and zeros elsewhere.
 
 
 <a name="torch.linspace"/>
