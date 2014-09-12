@@ -1313,11 +1313,11 @@ t7> =x
 
 ## Expanding/Replicating/Squeezing Tensors ##
 
-These methods returns a `Tensor` which is created by replications of the
+These methods returns a Tensor which is created by replications of the
 original tensor.
 
 <a name="torch.Tensor.expand"/>
-#### [Tensor] expand(sizes) ####
+#### [result] expand([result,] sizes) ####
 
 `sizes` can either be a `torch.LongStorage` or numbers. Expanding a tensor
 does not allocate new memory, but only creates a new view on the existing tensor where
@@ -1410,7 +1410,7 @@ t7> =x
 ```
 
 <a name="torch.Tensor.expandAs"/>
-#### [Tensor] expandAs(tensor) ####
+#### [result] expandAs([result,] tensor) ####
 
 This is equivalent to self:expand(tensor:size())
 
@@ -1509,7 +1509,7 @@ the sub-tensor will have an impact on the primary tensor, and vice-versa.
 These methods are very fast, are they do not involve any memory copy.
 
 <a name="torch.Tensor.view"/>
-### [result] view(result, tensor, sizes) ###
+### [result] view([result,] tensor, sizes) ###
 
 Creates a view with different dimensions of the storage associated with `tensor`.
 If `result` is not passed, then a new tensor is returned, otherwise its storage is 
@@ -1545,7 +1545,7 @@ is -1, the size of that dimension is inferred from the rest of the elements.
 ```
 
 <a name="torch.Tensor.viewAs"/>
-### [result] viewAs(result, tensor, template) ###
+### [result] viewAs([result,] tensor, template) ###
 
 Creates a view with with the same dimensions as `template` of the storage associated 
 with `tensor`. If `result` is not passed, then a new tensor is returned, otherwise its storage is 

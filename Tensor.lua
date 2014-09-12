@@ -284,7 +284,6 @@ function Tensor.expand(result,tensor,...)
       tensor = result
       result = tensor.new()
    end
-   
 
    -- check type
    local size
