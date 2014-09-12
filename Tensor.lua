@@ -1,8 +1,8 @@
 -- additional methods for Storage
-local Storage = {}
+local Storage = {isStorage=true}
 
 -- additional methods for Tensor
-local Tensor = {}
+local Tensor = {isTensor=true}
 
 -- types
 local types = {'Byte', 'Char', 'Short', 'Int', 'Long', 'Float', 'Double'}
@@ -274,13 +274,20 @@ function Tensor.real(self)
    return self:type(torch.getdefaulttensortype())
 end
 
-function Tensor.expand(tensor,...)
+function Tensor.expand(result,tensor,...)
    -- get sizes
    local sizes = {...}
+   
+   local t = torch.type(tensor)
+   if (t == 'number' or t == 'torch.LongTensor') then
+      table.insert(sizes,1,tensor)
+      tensor = result
+      result = tensor.new()
+   end
 
    -- check type
    local size
-   if torch.typename(sizes[1]) and torch.typename(sizes[1])=='torch.LongStorage' then
+   if torch.type(sizes[1])=='torch.LongStorage' then
       size = sizes[1]
    else
       size = torch.LongStorage(#sizes)
@@ -310,14 +317,17 @@ function Tensor.expand(tensor,...)
    end
 
    -- create new view, with singleton expansion:
-   tensor = tensor.new(tensor:storage(), tensor:storageOffset(),
+   result:set(tensor:storage(), tensor:storageOffset(),
                          tensor_size, tensor_stride)
-   return tensor
+   return result
 end
 torch.expand = Tensor.expand
 
-function Tensor.expandAs(tensor,template)
-   return tensor:expand(template:size())
+function Tensor.expandAs(result,tensor,template)
+   if template then
+      return result:expand(tensor,template:size())
+   end
+   return result:expand(tensor:size())
 end
 torch.expandAs = Tensor.expandAs
 
