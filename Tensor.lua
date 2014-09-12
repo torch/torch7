@@ -279,11 +279,12 @@ function Tensor.expand(result,tensor,...)
    local sizes = {...}
    
    local t = torch.type(tensor)
-   if (t == 'number' or t == 'torch.LongTensor') then
+   if (t == 'number' or t == 'torch.LongStorage') then
       table.insert(sizes,1,tensor)
       tensor = result
       result = tensor.new()
    end
+   
 
    -- check type
    local size
