@@ -331,13 +331,20 @@ function Tensor.expandAs(result,tensor,template)
 end
 torch.expandAs = Tensor.expandAs
 
-function Tensor.repeatTensor(tensor,...)
+function Tensor.repeatTensor(result,tensor,...)
    -- get sizes
    local sizes = {...}
+   
+   local t = torch.type(tensor)
+   if (t == 'number' or t == 'torch.LongStorage') then
+      table.insert(sizes,1,tensor)
+      tensor = result
+      result = tensor.new()
+   end
 
    -- check type
    local size
-   if torch.typename(sizes[1]) and torch.typename(sizes[1])=='torch.LongStorage' then
+   if torch.type(sizes[1])=='torch.LongStorage' then
       size = sizes[1]
    else
       size = torch.LongStorage(#sizes)
@@ -355,8 +362,8 @@ function Tensor.repeatTensor(tensor,...)
    end
    size = torch.DoubleTensor(xsize):cmul(torch.DoubleTensor(size:totable())):long():storage()
    xtensor:resize(torch.LongStorage(xsize))
-   local rtensor = tensor.new():resize(size)
-   local urtensor = rtensor.new(rtensor)
+   result:resize(size)
+   local urtensor = rtensor.new(result)
    for i=1,xtensor:dim() do
       urtensor = urtensor:unfold(i,xtensor:size(i),xtensor:size(i))
    end
@@ -366,7 +373,7 @@ function Tensor.repeatTensor(tensor,...)
    xtensor:resize(torch.LongStorage(xsize))
    local xxtensor = xtensor:expandAs(urtensor)
    urtensor:copy(xxtensor)
-   return rtensor
+   return result
 end
 torch.repeatTensor = Tensor.repeatTensor
 
