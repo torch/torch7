@@ -1415,10 +1415,11 @@ t7> =x
 This is equivalent to self:expand(tensor:size())
 
 <a name="torch.Tensor.repeatTensor"/>
-#### [Tensor] repeatTensor(sizes) ####
+#### [Tensor] repeatTensor([result,] sizes) ####
 
 `sizes` can either be a `torch.LongStorage` or numbers. Repeating a tensor allocates
- new memory. `sizes` specify the number of times the tensor is repeated in each dimension.
+ new memory, unless `result` is provided, in which case its memory is 
+ resized. `sizes` specify the number of times the tensor is repeated in each dimension.
 
  ```lua
  t7> x=torch.rand(5)
