@@ -1440,8 +1440,22 @@ function torchtest.expand()
    mytester:assertTableEq(result:size():totable(), target, 'Error in expand using result')
    result:expand(tensor,torch.LongStorage{8,5})
    mytester:assertTableEq(result:size():totable(), target, 'Error in expand using result and LongStorage')
-   print(result, tensor)
    mytester:asserteq((result:mean(2):view(8,1)-tensor):abs():max(), 0, 'Error in expand (not equal)')
+end
+
+function torchtest.repeatTensor()
+   local result = torch.Tensor()
+   local tensor = torch.rand(8,4)
+   local size = {3,1,1}
+   local sizeStorage = torch.LongStorage(size)
+   local target = {3,8,4}
+   mytester:assertTableEq(tensor:repeatTensor(unpack(size)):size():totable(), target, 'Error in repeatTensor')
+   mytester:assertTableEq(tensor:repeatTensor(sizeStorage):size():totable(), target, 'Error in repeatTensor using LongStorage')
+   result:repeatTensor(tensor,size)
+   mytester:assertTableEq(result:size():totable(), target, 'Error in repeatTensor using result')
+   result:repeatTensor(tensor,sizeStorage)
+   mytester:assertTableEq(result:size():totable(), target, 'Error in repeatTensor using result and LongStorage')
+   mytester:asserteq((result:mean(1):view(8,4)-tensor):abs():max(), 0, 'Error in repeatTensor (not equal)')
 end
 
 function torchtest.isSameSizeAs()
