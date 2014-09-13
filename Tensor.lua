@@ -341,6 +341,9 @@ function Tensor.repeatTensor(result,tensor,...)
       tensor = result
       result = tensor.new()
    end
+   if not tensor:isContiguous() then
+      error("expecting a contiguous tensor to repeat", 2)
+   end
 
    -- check type
    local size
