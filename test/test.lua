@@ -1451,7 +1451,7 @@ function torchtest.repeatTensor()
    local target = {3,8,4}
    mytester:assertTableEq(tensor:repeatTensor(unpack(size)):size():totable(), target, 'Error in repeatTensor')
    mytester:assertTableEq(tensor:repeatTensor(sizeStorage):size():totable(), target, 'Error in repeatTensor using LongStorage')
-   result:repeatTensor(tensor,size)
+   result:repeatTensor(tensor,unpack(size))
    mytester:assertTableEq(result:size():totable(), target, 'Error in repeatTensor using result')
    result:repeatTensor(tensor,sizeStorage)
    mytester:assertTableEq(result:size():totable(), target, 'Error in repeatTensor using result and LongStorage')

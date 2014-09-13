@@ -363,7 +363,7 @@ function Tensor.repeatTensor(result,tensor,...)
    size = torch.DoubleTensor(xsize):cmul(torch.DoubleTensor(size:totable())):long():storage()
    xtensor:resize(torch.LongStorage(xsize))
    result:resize(size)
-   local urtensor = rtensor.new(result)
+   local urtensor = result.new(result)
    for i=1,xtensor:dim() do
       urtensor = urtensor:unfold(i,xtensor:size(i),xtensor:size(i))
    end
