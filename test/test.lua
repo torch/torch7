@@ -1426,6 +1426,38 @@ function torchtest.view()
    mytester:asserteq((target_tensor-tensor):abs():max(), 0, 'Error in viewAs')
 end
 
+function torchtest.expand()
+   local result = torch.Tensor()
+   local tensor = torch.rand(8,1)
+   local template = torch.rand(8,5)
+   local target = template:size():totable()
+   mytester:assertTableEq(tensor:expandAs(template):size():totable(), target, 'Error in expandAs')
+   mytester:assertTableEq(tensor:expand(8,5):size():totable(), target, 'Error in expand')
+   mytester:assertTableEq(tensor:expand(torch.LongStorage{8,5}):size():totable(), target, 'Error in expand using LongStorage')
+   result:expandAs(tensor,template)
+   mytester:assertTableEq(result:size():totable(), target, 'Error in expandAs using result')
+   result:expand(tensor,8,5)
+   mytester:assertTableEq(result:size():totable(), target, 'Error in expand using result')
+   result:expand(tensor,torch.LongStorage{8,5})
+   mytester:assertTableEq(result:size():totable(), target, 'Error in expand using result and LongStorage')
+   mytester:asserteq((result:mean(2):view(8,1)-tensor):abs():max(), 0, 'Error in expand (not equal)')
+end
+
+function torchtest.repeatTensor()
+   local result = torch.Tensor()
+   local tensor = torch.rand(8,4)
+   local size = {3,1,1}
+   local sizeStorage = torch.LongStorage(size)
+   local target = {3,8,4}
+   mytester:assertTableEq(tensor:repeatTensor(unpack(size)):size():totable(), target, 'Error in repeatTensor')
+   mytester:assertTableEq(tensor:repeatTensor(sizeStorage):size():totable(), target, 'Error in repeatTensor using LongStorage')
+   result:repeatTensor(tensor,unpack(size))
+   mytester:assertTableEq(result:size():totable(), target, 'Error in repeatTensor using result')
+   result:repeatTensor(tensor,sizeStorage)
+   mytester:assertTableEq(result:size():totable(), target, 'Error in repeatTensor using result and LongStorage')
+   mytester:asserteq((result:mean(1):view(8,4)-tensor):abs():max(), 0, 'Error in repeatTensor (not equal)')
+end
+
 function torchtest.isSameSizeAs()
    local t1 = torch.Tensor(3, 4, 9, 10)
    local t2 = torch.Tensor(3, 4)
