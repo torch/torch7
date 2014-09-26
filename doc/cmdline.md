@@ -33,9 +33,9 @@ cmd:log(params.rundir .. '/log', params)
 
 ```
 
-When this file is run on the lua commandline as follows
+When this file is run on the th commandline as follows
 ```shell
-# lua myscript.lua
+# th myscript.lua
 ```
 
 It will produce the following output:
@@ -60,7 +60,7 @@ command line and is different than the default value, the `rundir`
 is name is produced to reflect the parameter setting.
 
 ```shell
-# lua myscript.lua -seed 456 -stroption mycustomstring
+# th myscript.th -seed 456 -stroption mycustomstring
 ```
 
 This will produce the following output:
