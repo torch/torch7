@@ -1403,6 +1403,13 @@ function torchtest.type()
    end
 end
 
+function torchtest.isTensor()
+   local t = torch.randn(3,4)
+   mytester:assert(torch.isTensor(t), 'error in isTensor')
+   mytester:assert(torch.isTensor(t[1]), 'error in isTensor for subTensor')
+   mytester:assert(not torch.isTensor(t[1][2]), 'false positive in isTensor')
+end
+
 function torchtest.view()
    local tensor = torch.rand(15)
    local template = torch.rand(3,5)
