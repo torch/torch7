@@ -390,13 +390,21 @@ local function specifyFully(size, nElements)
     return copy
 end
 
+
+-- Queries whether an object is a tensor.
+function Tensor.isTensor(tensor)
+   if torch.typename(tensor) and torch.typename(tensor):find('torch.*Tensor') then
+      return true
+   else
+      return false
+   end
+end
+
 -- TODO : This should be implemented in TH and and wrapped.
 function Tensor.view(result, src, ...)
    local size = ...
    local view, tensor
-   local function istensor(tensor)
-      return torch.typename(tensor) and torch.typename(tensor):find('torch.*Tensor')
-   end
+   local istensor = Tensor.isTensor
    local function isstorage(storage)
       return torch.typename(storage) and torch.typename(storage) == 'torch.LongStorage'
    end

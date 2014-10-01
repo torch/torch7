@@ -93,4 +93,7 @@ include('FFI.lua')
 include('Tester.lua')
 include('test.lua')
 
+-- alias for convenience
+torch.isTensor = torch.Tensor.isTensor
+
 return torch
