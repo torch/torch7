@@ -516,6 +516,19 @@ Convenience method for the [type](#torch.Tensor.type) method. Equivalent to
 type(tensor:type())
 ```
 
+<a name="torch.Tensor.isTensor"?>
+### [boolean] isTensor(object) ###
+
+Returns `true` iff the provided `object` is one of the `torch.*Tensor` types.
+
+```lua
+> =torch.isTensor(torch.randn(3,4))
+true
+> =torch.isTensor(torch.randn(3,4)[1])
+true
+> =torch.isTensor(torch.randn(3,4)[1][2])
+false
+```
 
 <a name="torch.Tensor.byte"/>
 ### [Tensor] byte(), char(), short(), int(), long(), float(), double() ###
