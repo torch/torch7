@@ -1403,6 +1403,33 @@ function torchtest.type()
    end
 end
 
+function torchtest.isTypeOfInheritance()
+   do
+      local A = torch.class('A')
+      local B, parB = torch.class('B', 'A')
+      local C, parC = torch.class('C', 'A')
+   end
+   local a, b, c = A(), B(), C()
+
+   mytester:assert(torch.isTypeOf(a, 'A'), 'isTypeOf error, string spec')
+   mytester:assert(torch.isTypeOf(a, A), 'isTypeOf error, constructor')
+   mytester:assert(torch.isTypeOf(b, 'B'), 'isTypeOf error child class')
+   mytester:assert(torch.isTypeOf(b, B), 'isTypeOf error child class ctor')
+   mytester:assert(torch.isTypeOf(b, 'A'), 'isTypeOf error: inheritance')
+   mytester:assert(torch.isTypeOf(b, A), 'isTypeOf error: inheritance')
+   mytester:assert(not torch.isTypeOf(c, 'B'), 'isTypeOf error: common parent')
+   mytester:assert(not torch.isTypeOf(c, B), 'isTypeOf error: common parent')
+end
+
+
+function torchtest.isTensor()
+   local t = torch.randn(3,4)
+   mytester:assert(torch.isTensor(t), 'error in isTensor')
+   mytester:assert(torch.isTensor(t[1]), 'error in isTensor for subTensor')
+   mytester:assert(not torch.isTensor(t[1][2]), 'false positive in isTensor')
+   mytester:assert(torch.Tensor.isTensor(t), 'alias not working')
+end
+
 function torchtest.view()
    local tensor = torch.rand(15)
    local template = torch.rand(3,5)

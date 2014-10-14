@@ -147,6 +147,16 @@ Returns `nil` if `object` is not a Torch object.
 
 This is different from the _object_ id returned by [torch.pointer()](#torch.pointer).
 
+<a name="torch.isTypeOf"/>
+### [boolean] isTypeOf(object, typeSpec) ###
+
+Checks if a given object is an instance of the type specified by typeSpec.
+Typespec can be a string (including a string.find pattern) or the constructor
+object for a Torch class. This function traverses up the class hierarchy,
+so if b is an instance of B which is a subclass of A, then
+`torch.isTypeOf(b, B)` and `torch.isTypeOf(b, A)` will both return true.
+
+
 <a name="torch.newmetatable"/>
 ### [table] torch.newmetatable(name, parentName, constructor) ###
 
