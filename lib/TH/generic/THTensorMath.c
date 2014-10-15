@@ -1226,6 +1226,22 @@ LAB_IMPLEMENT_BASIC_FUNCTION(abs,labs)
 LAB_IMPLEMENT_BASIC_FUNCTION(abs,abs)
 #endif /* int only part */
 
+#if defined(TH_REAL_IS_BYTE)
+
+#define TENSOR_IMPLEMENT_LOGICAL_SUM(NAME, OP, INIT_VALUE) \
+  bool_t THTensor_(NAME)(THTensor *tensor) \
+  { \
+    THArgCheck(tensor->nDimension > 0, 1, "empty Tensor"); \
+    bool_t sum = INIT_VALUE; \
+    TH_TENSOR_APPLY(real, tensor, sum OP *tensor_data;); \
+    return sum; \
+  }
+
+TENSOR_IMPLEMENT_LOGICAL_SUM(logicalall, &=, TH_TRUE)
+TENSOR_IMPLEMENT_LOGICAL_SUM(logicalany, |=, TH_FALSE)
+
+#endif /* Byte only part */
+
 /* floating point only now */
 #if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
 
@@ -1472,7 +1488,7 @@ accreal THTensor_(varall)(THTensor *tensor)
 accreal THTensor_(stdall)(THTensor *tensor)
 { 
   return sqrt(THTensor_(varall)(tensor));
-} 
+}
 
 void THTensor_(linspace)(THTensor *r_, real a, real b, long n)
 {

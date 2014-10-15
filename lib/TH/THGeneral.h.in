@@ -73,6 +73,11 @@ TH_API void THFree(void *ptr);
 #define THMin(X, Y)  ((X) < (Y) ? (X) : (Y))
 #define THMax(X, Y)  ((X) > (Y) ? (X) : (Y))
 
+/* Bool definition to avoid depending stdbool.h (C99). */
+typedef int bool_t;
+#define TH_TRUE 1
+#define TH_FALSE 0
+
 #ifdef _MSC_VER
 # define log1p(x) THLog1p(x)
 #define snprintf _snprintf
