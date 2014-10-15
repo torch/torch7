@@ -1593,6 +1593,13 @@ Implements `==` operator comparing each element in `a` with `b`
 Implements `!=` operator comparing each element in `a` with `b`
 (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
+### torch.all(a) ###
+### torch.any(a) ###
+
+Additionally, `any` and `all` logically sum a `ByteTensor` returning true
+if any or all elements are logically true respectively. Note that logically true
+here is meant in the C sense (zero is false, non-zero is true) such as the output
+of the tensor element-wise logical operations.
 
 ```lua
 
@@ -1704,6 +1711,16 @@ Implements `!=` operator comparing each element in `a` with `b`
  0.0740
 [torch.DoubleTensor of dimension 10]
 
-
+> a = torch.ones(3):byte()
+> =torch.all(a)
+true
+> a[2] = 0
+> =torch.all(a)
+false
+> =torch.any(a)
+true
+> a:zero()
+> =torch.any(a)
+false
 ```
 
