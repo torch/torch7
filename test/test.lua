@@ -288,6 +288,23 @@ function torchtest.min()  -- torch.min([resval, resind,] x [,dim])
    mytester:assertlt(minerr, precision, 'error in torch.min - non-contiguous')      
 end
 
+for i, v in ipairs{{10}, {5, 5}} do
+   torchtest['allAndAny' .. i] =
+      function ()
+           local x = torch.ones(unpack(v)):byte()
+	   mytester:assert(x:all())
+	   mytester:assert(x:any())
+
+           x[3] = 0
+	   mytester:assert(not x:all())
+	   mytester:assert(x:any())
+
+	   x:zero()
+	   mytester:assert(not x:all())
+           mytester:assert(not x:any())
+       end
+end
+
 function torchtest.mv()
    local m1 = torch.randn(100,100)
    local v1 = torch.randn(100)
