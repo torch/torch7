@@ -595,7 +595,6 @@ int luaT_lua_newmetatable(lua_State *L)
   return 1; /* returns the metatable */
 }
 
-
 /* Lua only utility functions */
 int luaT_lua_factory(lua_State *L)
 {
@@ -669,14 +668,20 @@ int luaT_lua_pointer(lua_State *L)
     lua_pushnumber(L, (long)(*ptr));
     return 1;
   }
-  else if(lua_istable(L, 1) || lua_isthread(L, 1) || lua_isfunction(L, 1))
+  else if(lua_istable(L, 1) || lua_isthread(L, 1) || lua_isfunction(L, 1) || lua_type(L, 1) == 10)
   {
     const void* ptr = lua_topointer(L, 1);
     lua_pushnumber(L, (long)(ptr));
     return 1;
   }
+  else if(lua_isstring(L, 1))
+  {
+    const char* ptr = lua_tostring(L, 1);
+    lua_pushnumber(L, (long)(ptr));
+    return 1;
+  }
   else
-    luaL_error(L, "Torch object, table, thread or function expected");
+    luaL_error(L, "Torch object, table, thread, cdata or function expected");
 
   return 0;
 }
