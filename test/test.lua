@@ -415,6 +415,31 @@ function torchtest.div()
    mytester:assertlt(err, precision, 'error in torch.div - scalar, non contiguous')
 end
 
+function torchtest.clamp()
+   local m1 = torch.rand(100):mul(5):add(-2.5)  -- uniform in [-2.5, 2.5]
+   -- just in case we're extremely lucky:
+   local min_val = -1
+   local max_val = 1
+   m1[1] = min_val
+   m2[2] = max_val
+   local res1 = m1:clone()
+
+   res1:clamp(min_val, max_val)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      if res2[i] > max_val then
+         res2[i] = max_val
+      elseif res2[i] < min_val then
+         res2[i] = min_val
+      end
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.div - scalar, non contiguous')
+end
+
 function torchtest.pow()  -- [res] torch.pow([res,] x)
    -- contiguous
    local m1 = torch.randn(100,100)
