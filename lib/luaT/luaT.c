@@ -687,10 +687,18 @@ int luaT_lua_pointer(lua_State *L)
     lua_pushnumber(L, (long)(*ptr));
     return 1;
   }
-  else if(lua_istable(L, 1) || lua_isthread(L, 1) || lua_isfunction(L, 1) || lua_type(L, 1) == 10)
+  else if(lua_istable(L, 1) || lua_isthread(L, 1) || lua_isfunction(L, 1))
   {
     const void* ptr = lua_topointer(L, 1);
     lua_pushnumber(L, (long)(ptr));
+    return 1;
+  }
+  else if(lua_type(L, 1) == 10) /* cdata */
+  {
+    /* we want the pointer holded by cdata */
+    /* not the pointer on the cdata object */
+    const void* ptr = *((void**)lua_topointer(L, 1));
+    lua_pushnumber(L, (intptr_t)(ptr));
     return 1;
   }
   else if(lua_isstring(L, 1))
