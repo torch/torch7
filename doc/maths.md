@@ -513,7 +513,27 @@ Multiply all elements in the tensor by the given `value`.
 
 `x:mul(2)` will multiply all elements of `x` with `2` in-place.
 
-`z:mul(x,2)` with put the result of `x*2` in `z`.
+`z:mul(x,2)` will put the result of `x*2` in `z`.
+
+<a name="torch.Tensor.clamp"/>
+### [res] torch.clamp([res,] tensor1, min_value, max_value) ###
+<a name="torch.mul"/>
+
+Clamp all elements in the tensor into the range `[min_value, max_value]`.  ie:
+
+```
+y_i = x_i, if x_i >= min_value or x_i <= max_value
+    = min_value, if x_i < min_value
+    = max_value, if x_i > max_value
+```
+
+`z=torch.clamp(x,0,1)` will return a new tensor with the result of `x` bounded between `0` and `1`.
+
+`torch.clamp(z,x,0,1)` will put the result in `z`.
+
+`x:clamp(0,1)` will perform the clamp operation in place (putting the result in `x`).
+
+`z:clamp(x,0,1)` will put the result in `z`.
 
 <a name="torch.Tensor.cmul"/>
 ### [res] torch.cmul([res,] tensor1, tensor2) ###
