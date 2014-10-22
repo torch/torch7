@@ -626,7 +626,7 @@ int luaT_lua_pushudata(lua_State *L)
   if(lua_type(L, 1) == 10)
     udata = *((void**)lua_topointer(L, 1));
   else if(lua_isnumber(L, 1))
-    udata = (void*)(intptr_t)lua_tonumber(L, 1);
+    udata = (void*)(long)lua_tonumber(L, 1);
   else
     luaL_argerror(L, 1, "expecting number or cdata");
 
@@ -718,7 +718,7 @@ int luaT_lua_pointer(lua_State *L)
     /* we want the pointer holded by cdata */
     /* not the pointer on the cdata object */
     const void* ptr = *((void**)lua_topointer(L, 1));
-    lua_pushnumber(L, (intptr_t)(ptr));
+    lua_pushnumber(L, (long)(ptr));
     return 1;
   }
   else if(lua_isstring(L, 1))
