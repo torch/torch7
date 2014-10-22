@@ -48,7 +48,7 @@ local genericSingleOpTest = [[
    local maxerrc = 0
    for i = 1, err:size(1) do
       if err[i] > maxerrc then
-	      maxerrc = err[i]
+         maxerrc = err[i]
       end
    end
 
@@ -68,7 +68,7 @@ local genericSingleOpTest = [[
    local maxerrnc = 0
    for i = 1, err:size(1) do
       if err[i] > maxerrnc then
-	      maxerrnc = err[i]
+         maxerrnc = err[i]
       end
    end
    return maxerrc, maxerrnc
