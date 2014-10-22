@@ -821,7 +821,7 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                             "sin", "asin", "sinh",
                             "tan", "atan", "tanh",
                             "sqrt",
-                            "ceil", "floor"}) do
+                            "round", "ceil", "floor"}) do
                             --"abs"}) do
 
          wrap(name, 
