@@ -118,6 +118,7 @@ TH_API void THTensor_(mean)(THTensor *r_, THTensor *t, int dimension);
 TH_API void THTensor_(std)(THTensor *r_, THTensor *t, int dimension, int flag);
 TH_API void THTensor_(var)(THTensor *r_, THTensor *t, int dimension, int flag);
 TH_API void THTensor_(norm)(THTensor *r_, THTensor *t, real value, int dimension);
+TH_API void THTensor_(renorm)(THTensor *r_, THTensor *t, real value, int dimension, real maxnorm);
 TH_API accreal THTensor_(dist)(THTensor *a, THTensor *b, real value);
 TH_API void THTensor_(histc)(THTensor *hist, THTensor *tensor, long nbins, real minvalue, real maxvalue);
 
@@ -132,5 +133,12 @@ TH_API void THTensor_(rand)(THTensor *r_, THGenerator *_generator, THLongStorage
 TH_API void THTensor_(randn)(THTensor *r_, THGenerator *_generator, THLongStorage *size);
 
 #endif
+
+#if defined(TH_REAL_IS_BYTE)
+
+TH_API int THTensor_(logicalall)(THTensor *self);
+TH_API int THTensor_(logicalany)(THTensor *self);
+
+#endif /* TH_REAL_IS_BYTE */
 
 #endif

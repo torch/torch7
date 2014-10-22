@@ -537,7 +537,7 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
            cname(f.name),
            {{name=Tensor, returned=true},
             {name='Generator', default=true},
-            {name=real, default=f.a}})
+            {name="double", default=f.a}})
    end
 
    wrap("squeeze",
@@ -736,6 +736,16 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
             {name=Tensor}})
    end
 
+   if Tensor == 'ByteTensor' then
+     -- Logical accumulators only apply to ByteTensor
+      for _,name in ipairs({'all', 'any'}) do
+        wrap(name,
+             cname('logical' .. name),
+             {{name=Tensor},
+		{name="boolean", creturned=true}})
+      end
+   end
+
    if Tensor == 'IntTensor' then
          wrap("abs",
               cname("abs"),
@@ -794,6 +804,14 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
             {name=Tensor},
             {name=real},
             {name="index"}})
+            
+      wrap("renorm",
+           cname("renorm"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=Tensor, method={default=1}},
+            {name=real},
+            {name="index"},
+            {name=real}})
       
       wrap("dist",
            cname("dist"),

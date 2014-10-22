@@ -8,6 +8,7 @@
 THGenerator* THGenerator_new()
 {
   THGenerator *self = THAlloc(sizeof(THGenerator));
+  memset(self, 0, sizeof(THGenerator));
   self->left = 1;
   self->initf = 0;
   self->normal_is_valid = 0;
@@ -137,7 +138,7 @@ void THRandom_nextState(THGenerator *_generator)
     THRandom_seed(_generator);
 
   _generator->left = n;
-  _generator->next = _generator->state;
+  _generator->next = 0;
     
   for(j = n-m+1; --j; p++) 
     *p = p[m] ^ TWIST(p[0], p[1]);
@@ -154,7 +155,7 @@ unsigned long THRandom_random(THGenerator *_generator)
 
   if (--(_generator->left) == 0)
     THRandom_nextState(_generator);
-  y = *((_generator->next)++);
+  y = *(_generator->state + (_generator->next)++);
   
   /* Tempering */
   y ^= (y >> 11);
@@ -172,7 +173,7 @@ static double __uniform__(THGenerator *_generator)
 
   if (--(_generator->left) == 0)
     THRandom_nextState(_generator);
-  y = *((_generator->next)++);
+  y = *(_generator->state + (_generator->next)++);
 
   /* Tempering */
   y ^= (y >> 11);
@@ -256,7 +257,7 @@ void THRandom_getState(THGenerator *_generator, unsigned long *_state, long *off
   if(_generator->initf == 0)
     THRandom_seed(_generator);
   memmove(_state, _generator->state, n*sizeof(long));
-  *offset = (long)(_generator->next - _generator->state);
+  *offset = _generator->next;
   *_left = _generator->left;
 }
 
@@ -264,7 +265,7 @@ void THRandom_getState(THGenerator *_generator, unsigned long *_state, long *off
 void THRandom_setState(THGenerator *_generator, unsigned long *_state, long offset, long _left)
 {
   memmove(_generator->state, _state, n*sizeof(long));
-  _generator->next = _generator->state + offset;
+  _generator->next = offset;
   _generator->left = _left;
   _generator->initf = 1;
 }

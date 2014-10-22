@@ -116,6 +116,7 @@ void THTensor_(indexCopy)(THTensor *tensor, int dim, THLongTensor *index, THTens
   numel = THLongTensor_nElement(index);
   THArgCheck(index->nDimension == 1, 3, "Index is supposed to be a vector");
   THArgCheck(dim < src->nDimension,4,"Indexing dim is out of bounds");
+  THArgCheck(numel == src->size[dim],4,"Number of indices should be equal to source:size(dim)");
 
   index = THLongTensor_newContiguous(index);
   index_data = THLongTensor_data(index);
@@ -1225,6 +1226,22 @@ LAB_IMPLEMENT_BASIC_FUNCTION(abs,labs)
 LAB_IMPLEMENT_BASIC_FUNCTION(abs,abs)
 #endif /* int only part */
 
+#if defined(TH_REAL_IS_BYTE)
+
+#define TENSOR_IMPLEMENT_LOGICAL_SUM(NAME, OP, INIT_VALUE) \
+  int THTensor_(NAME)(THTensor *tensor) \
+  { \
+    THArgCheck(tensor->nDimension > 0, 1, "empty Tensor"); \
+    int sum = INIT_VALUE;                               \
+    TH_TENSOR_APPLY(real, tensor, sum OP *tensor_data;); \
+    return sum; \
+  }
+
+TENSOR_IMPLEMENT_LOGICAL_SUM(logicalall, &=, 1)
+TENSOR_IMPLEMENT_LOGICAL_SUM(logicalany, |=, 0)
+
+#endif /* Byte only part */
+
 /* floating point only now */
 #if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
 
@@ -1398,6 +1415,54 @@ accreal THTensor_(normall)(THTensor *tensor, real value)
   }
 }
 
+void THTensor_(renorm)(THTensor *res, THTensor *src, real value, int dimension, real maxnorm)
+{
+  int i;
+  THTensor *rowR, *rowS;
+  
+  THArgCheck(dimension >= 0 && dimension < THTensor_(nDimension)(src), 3, "invalid dimension");
+  THArgCheck(value > 0, 2, "non-positive-norm not supported");
+  THArgCheck(THTensor_(nDimension)(src) > 1, 1, "need at least 2 dimensions");
+  
+  rowR = THTensor_(new)();
+  rowS = THTensor_(new)();
+  
+  THTensor_(resizeAs)(res, src);
+   
+  for (i=0; i<src->size[dimension]; i++)
+  {
+    real norm = 0;
+    real new_norm;
+    
+    THTensor_(select)(rowS, src, dimension, i);
+    THTensor_(select)(rowR, res, dimension, i);
+    if (value == 1) {
+      TH_TENSOR_APPLY(real, rowS, norm += fabs(*rowS_data););
+    } else if (value == 2) {
+      TH_TENSOR_APPLY(real, rowS, accreal z = *rowS_data; norm += z*z;);
+    } else {
+      TH_TENSOR_APPLY(real, rowS, norm += pow(fabs(*rowS_data), value););
+    }
+
+    norm = pow(norm, 1/value);
+
+    if (norm > maxnorm)
+    {
+      new_norm = maxnorm / (norm + 1e-7);
+      
+      TH_TENSOR_APPLY2(
+        real, rowR, real, rowS, 
+        *rowR_data = (*rowS_data) * new_norm;
+      )
+    }
+    else
+      THTensor_(copy)(rowR, rowS);
+  }
+  
+  THTensor_(free)(rowR);
+  THTensor_(free)(rowS);
+}
+
 accreal THTensor_(dist)(THTensor *tensor, THTensor *src, real value)
 { 
   real sum = 0;
@@ -1424,7 +1489,7 @@ accreal THTensor_(varall)(THTensor *tensor)
 accreal THTensor_(stdall)(THTensor *tensor)
 { 
   return sqrt(THTensor_(varall)(tensor));
-} 
+}
 
 void THTensor_(linspace)(THTensor *r_, real a, real b, long n)
 {

@@ -1,5 +1,12 @@
 
 -- We are using paths.require to appease mkl
+
+-- Make this work with LuaJIT in Lua 5.2 compatibility mode, which
+-- renames string.gfind (already deprecated in 5.1)
+if not string.gfind then
+    string.gfind = string.gmatch
+end
+
 require "paths"
 paths.require "libtorch"
 
@@ -69,6 +76,35 @@ function torch.setdefaulttensortype(typename)
    end
 end
 
+function torch.type(obj)
+   local class = torch.typename(obj)
+   if not class then
+      class = type(obj)
+   end
+   return class
+end
+
+--[[ See if a given object is an instance of the provided torch class. ]]
+function torch.isTypeOf(obj, typeSpec)
+  -- typeSpec can be provided as either a string, regexp, or the constructor. If
+  -- the constructor is used, we look in the __typename field of the
+  -- metatable to find a string to compare to.
+  if type(typeSpec) ~= 'string' then
+    typeSpec = getmetatable(typeSpec).__typename
+    assert(type(typeSpec) == 'string',
+           "type must be provided as [regexp] string, or factory")
+  end
+
+  local mt = getmetatable(obj)
+  while mt do
+    if mt.__typename and mt.__typename:find(typeSpec) then
+      return true
+    end
+    mt = getmetatable(mt)
+  end
+  return false
+end
+
 torch.setdefaulttensortype('torch.DoubleTensor')
 
 include('Tensor.lua')
@@ -77,5 +113,11 @@ include('CmdLine.lua')
 include('FFI.lua')
 include('Tester.lua')
 include('test.lua')
+
+function torch.isTensor(obj)
+  return torch.isTypeOf(obj, 'torch.*Tensor')
+end
+-- alias for convenience
+torch.Tensor.isTensor = torch.isTensor
 
 return torch

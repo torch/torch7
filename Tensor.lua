@@ -274,13 +274,20 @@ function Tensor.real(self)
    return self:type(torch.getdefaulttensortype())
 end
 
-function Tensor.expand(tensor,...)
+function Tensor.expand(result,tensor,...)
    -- get sizes
    local sizes = {...}
+   
+   local t = torch.type(tensor)
+   if (t == 'number' or t == 'torch.LongStorage') then
+      table.insert(sizes,1,tensor)
+      tensor = result
+      result = tensor.new()
+   end
 
    -- check type
    local size
-   if torch.typename(sizes[1]) and torch.typename(sizes[1])=='torch.LongStorage' then
+   if torch.type(sizes[1])=='torch.LongStorage' then
       size = sizes[1]
    else
       size = torch.LongStorage(#sizes)
@@ -310,24 +317,36 @@ function Tensor.expand(tensor,...)
    end
 
    -- create new view, with singleton expansion:
-   tensor = tensor.new(tensor:storage(), tensor:storageOffset(),
+   result:set(tensor:storage(), tensor:storageOffset(),
                          tensor_size, tensor_stride)
-   return tensor
+   return result
 end
 torch.expand = Tensor.expand
 
-function Tensor.expandAs(tensor,template)
-   return tensor:expand(template:size())
+function Tensor.expandAs(result,tensor,template)
+   if template then
+      return result:expand(tensor,template:size())
+   end
+   return result:expand(tensor:size())
 end
 torch.expandAs = Tensor.expandAs
 
-function Tensor.repeatTensor(tensor,...)
+function Tensor.repeatTensor(result,tensor,...)
    -- get sizes
    local sizes = {...}
+   
+   local t = torch.type(tensor)
+   if (t == 'number' or t == 'torch.LongStorage') then
+      table.insert(sizes,1,tensor)
+      tensor = result
+      result = tensor.new()
+   end
+   -- if not contiguous, then force the tensor to be contiguous
+   if not tensor:isContiguous() then tensor = tensor:clone() end
 
    -- check type
    local size
-   if torch.typename(sizes[1]) and torch.typename(sizes[1])=='torch.LongStorage' then
+   if torch.type(sizes[1])=='torch.LongStorage' then
       size = sizes[1]
    else
       size = torch.LongStorage(#sizes)
@@ -345,8 +364,8 @@ function Tensor.repeatTensor(tensor,...)
    end
    size = torch.DoubleTensor(xsize):cmul(torch.DoubleTensor(size:totable())):long():storage()
    xtensor:resize(torch.LongStorage(xsize))
-   local rtensor = tensor.new():resize(size)
-   local urtensor = rtensor.new(rtensor)
+   result:resize(size)
+   local urtensor = result.new(result)
    for i=1,xtensor:dim() do
       urtensor = urtensor:unfold(i,xtensor:size(i),xtensor:size(i))
    end
@@ -356,9 +375,105 @@ function Tensor.repeatTensor(tensor,...)
    xtensor:resize(torch.LongStorage(xsize))
    local xxtensor = xtensor:expandAs(urtensor)
    urtensor:copy(xxtensor)
-   return rtensor
+   return result
 end
 torch.repeatTensor = Tensor.repeatTensor
+
+--- One of the size elements can be -1,
+ --- a new LongStorage is then returned.
+ --- The length of the unspecified dimension
+ --- is infered from the number of remaining elements.
+local function specifyFully(size, nElements)
+    local nCoveredElements = 1
+    local remainingDim = nil
+    local sizes = size:totable()
+    for i = 1, #sizes do
+        local wantedDimSize = sizes[i]
+        if wantedDimSize == -1 then
+            if remainingDim then
+                error("Only one of torch.view dimensions can be -1.")
+            end
+            remainingDim = i
+        else
+            nCoveredElements = nCoveredElements * wantedDimSize
+        end
+    end
+
+    if not remainingDim then
+        return size
+    end
+
+    assert(nElements % nCoveredElements == 0, "The number of covered elements is not a multiple of all elements.")
+    local copy = torch.LongStorage(sizes)
+    copy[remainingDim] = nElements / nCoveredElements
+    return copy
+end
+
+-- TODO : This should be implemented in TH and and wrapped.
+function Tensor.view(result, src, ...)
+   local size = ...
+   local view, tensor
+   local function istensor(tensor)
+      return torch.typename(tensor) and torch.typename(tensor):find('torch.*Tensor')
+   end
+   local function isstorage(storage)
+      return torch.typename(storage) and torch.typename(storage) == 'torch.LongStorage'
+   end
+   if istensor(result) and istensor(src) and type(size) == 'number' then
+      size = torch.LongStorage{...}
+      view = result
+      tensor = src
+   elseif istensor(result) and istensor(src) and isstorage(size) then
+      size = size
+      view = result
+      tensor = src
+   elseif istensor(result) and isstorage(src) and size == nil then
+      size = src
+      tensor = result
+      view = tensor.new()
+   elseif istensor(result) and type(src) == 'number' then
+      size = {...}
+      table.insert(size,1,src)
+      size = torch.LongStorage(size)
+      tensor = result
+      view = tensor.new()
+   else
+      local t1 = 'torch.Tensor, torch.Tensor, number [, number ]*'
+      local t2 = 'torch.Tensor, torch.Tensor, torch.LongStorage'
+      local t3 = 'torch.Tensor, torch.LongStorage'
+      local t4 = 'torch.Tensor, number [, number ]*'
+      error(string.format('torch.view, expected (%s) or\n (%s) or\n (%s)\n or (%s)', t1, t2, t3, t4))
+   end
+   local origNElement = tensor:nElement()
+   size = specifyFully(size, origNElement)
+
+   assert(tensor:isContiguous(), "expecting a contiguous tensor")
+   view:set(tensor:storage(), tensor:storageOffset(), size)
+   if view:nElement() ~= origNElement then
+      local inputSize = table.concat(tensor:size():totable(), "x")
+      local outputSize = table.concat(size:totable(), "x")
+      error(string.format("Wrong size for view. Input size: %s. Output size: %s",
+      inputSize, outputSize))
+   end
+   return view
+end
+torch.view = Tensor.view
+
+function Tensor.viewAs(result, src, template)
+   if template and torch.typename(template) then
+      return result:view(src, template:size())
+   elseif template == nil then
+      template = src
+      src = result
+      result = src.new()
+      return result:view(src, template:size())
+   else
+      local t1 = 'torch.Tensor, torch.Tensor, torch.LongStorage'
+      local t2 = 'torch.Tensor, torch.LongStorage'
+      error(string.format('expecting (%s) or (%s)', t1, t2))
+   end
+end
+torch.viewAs = Tensor.viewAs
 
 for _,type in ipairs(types) do
    local metatable = torch.getmetatable('torch.' .. type .. 'Tensor')

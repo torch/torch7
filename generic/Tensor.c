@@ -512,6 +512,14 @@ static int torch_Tensor_(isContiguous)(lua_State *L)
   return 1;
 }
 
+static int torch_Tensor_(isSameSizeAs)(lua_State *L)
+{
+  THTensor *tensor1 = luaT_checkudata(L, 1, torch_Tensor);
+  THTensor *tensor2 = luaT_checkudata(L, 2, torch_Tensor);
+  lua_pushboolean(L, THTensor_(isSameSizeAs)(tensor1, tensor2));
+  return 1;
+}
+
 static int torch_Tensor_(nElement)(lua_State *L)
 {
   THTensor *tensor = luaT_checkudata(L, 1, torch_Tensor);
@@ -1148,6 +1156,7 @@ static const struct luaL_Reg torch_Tensor_(_) [] = {
   {"t", torch_Tensor_(t)},
   {"unfold", torch_Tensor_(unfold)},
   {"isContiguous", torch_Tensor_(isContiguous)},
+  {"isSameSizeAs", torch_Tensor_(isSameSizeAs)},
   {"nElement", torch_Tensor_(nElement)},
   {"copy", torch_Tensor_(copy)},
   {"apply", torch_Tensor_(apply)},

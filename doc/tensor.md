@@ -516,6 +516,19 @@ Convenience method for the [type](#torch.Tensor.type) method. Equivalent to
 type(tensor:type())
 ```
 
+<a name="torch.Tensor.isTensor"?>
+### [boolean] isTensor(object) ###
+
+Returns `true` iff the provided `object` is one of the `torch.*Tensor` types.
+
+```lua
+> =torch.isTensor(torch.randn(3,4))
+true
+> =torch.isTensor(torch.randn(3,4)[1])
+true
+> =torch.isTensor(torch.randn(3,4)[1][2])
+false
+```
 
 <a name="torch.Tensor.byte"/>
 ### [Tensor] byte(), char(), short(), int(), long(), float(), double() ###
@@ -706,6 +719,20 @@ false
 > = y:stride()
  5
 [torch.LongStorage of size 1]
+```
+
+<a name="torch.Tensor.isSameSizeAs"/>
+### [boolean] isSameSizeAs(tensor) ###
+
+Returns `true` iff the dimensions of the `Tensor` and the argument `Tensor` are exactly the same.
+```lua
+> x = torch.Tensor(4,5)
+> y = torch.Tensor(4,5)
+> = x:isSameSizeAs(y)
+true
+> y = torch.Tensor(4, 6)
+> = x:isSameSizeAs(y)
+false
 ```
 
 <a name="torch.Tensor.nElement"/>
@@ -1299,11 +1326,11 @@ t7> =x
 
 ## Expanding/Replicating/Squeezing Tensors ##
 
-These methods returns a `Tensor` which is created by replications of the
+These methods returns a Tensor which is created by replications of the
 original tensor.
 
 <a name="torch.Tensor.expand"/>
-#### [Tensor] expand(sizes) ####
+#### [result] expand([result,] sizes) ####
 
 `sizes` can either be a `torch.LongStorage` or numbers. Expanding a tensor
 does not allocate new memory, but only creates a new view on the existing tensor where
@@ -1396,15 +1423,16 @@ t7> =x
 ```
 
 <a name="torch.Tensor.expandAs"/>
-#### [Tensor] expandAs(tensor) ####
+#### [result] expandAs([result,] tensor) ####
 
 This is equivalent to self:expand(tensor:size())
 
 <a name="torch.Tensor.repeatTensor"/>
-#### [Tensor] repeatTensor(sizes) ####
+#### [Tensor] repeatTensor([result,] sizes) ####
 
 `sizes` can either be a `torch.LongStorage` or numbers. Repeating a tensor allocates
- new memory. `sizes` specify the number of times the tensor is repeated in each dimension.
+ new memory, unless `result` is provided, in which case its memory is 
+ resized. `sizes` specify the number of times the tensor is repeated in each dimension.
 
  ```lua
  t7> x=torch.rand(5)
@@ -1493,6 +1521,60 @@ the `Storage` of the given tensor. Hence, any modification in the memory of
 the sub-tensor will have an impact on the primary tensor, and vice-versa.
 
 These methods are very fast, are they do not involve any memory copy.
+
+<a name="torch.Tensor.view"/>
+### [result] view([result,] tensor, sizes) ###
+
+Creates a view with different dimensions of the storage associated with `tensor`.
+If `result` is not passed, then a new tensor is returned, otherwise its storage is 
+made to point to storage of `tensor`.
+
+`sizes` can either be a `torch.LongStorage` or numbers. If one of the dimensions
+is -1, the size of that dimension is inferred from the rest of the elements.
+
+
+```lua
+> x = torch.zeros(4)
+> print(x:view(2,2))
+0 0
+0 0
+[torch.DoubleTensor of dimension 2x2]
+
+> print(x:view(2,-1))
+0 0
+0 0
+[torch.DoubleTensor of dimension 2x2]
+
+> print(x:view(torch.LongStorage{2,2}))
+0 0
+0 0
+[torch.DoubleTensor of dimension 2x2]
+
+> print(x)
+0
+0
+0
+0
+[torch.DoubleTensor of dimension 4]
+```
+
+<a name="torch.Tensor.viewAs"/>
+### [result] viewAs([result,] tensor, template) ###
+
+Creates a view with with the same dimensions as `template` of the storage associated 
+with `tensor`. If `result` is not passed, then a new tensor is returned, otherwise its storage is 
+made to point to storage of `tensor`.
+
+
+```lua
+> x = torch.zeros(4)
+> y = torch.Tensor(2,2)
+> print(x:viewAs(y))
+0 0
+0 0
+[torch.DoubleTensor of dimension 2x2]
+```
+
 
 <a name="torch.Tensor.transpose"/>
 ### [Tensor] transpose(dim1, dim2) ###
