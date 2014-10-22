@@ -385,6 +385,14 @@ This function is more accurate than [log()](#torch.log) for small values of x.
 
 `x:pow(n)` replaces all elements in-place with the elements of x to the power of n.
 
+<a name="torch.round"/>
+### [res] torch.round([res,] x) ###
+<a name="torch.Tensor.round"/>
+
+`y=torch.round(x)` returns a new tensor with the values of the elements of x rounded to the nearest integers.
+
+`x:round()` replaces all elements in-place with the values of the elements of x rounded to the nearest integers.
+
 <a name="torch.sin"/>
 ### [res] torch.sin([res,] x) ###
 <a name="torch.Tensor.sin"/>
