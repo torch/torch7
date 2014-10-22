@@ -595,6 +595,8 @@ int luaT_lua_newmetatable(lua_State *L)
   return 1; /* returns the metatable */
 }
 
+/* Lua only utility functions */
+
 /* add any custom type, provided the object has a metatable */
 int luaT_lua_metatype(lua_State *L)
 {
@@ -614,7 +616,25 @@ int luaT_lua_metatype(lua_State *L)
   return 0;
 }
 
-/* Lua only utility functions */
+/* return a userdata from a C pointer */
+/* you are better to know what you are doing */
+int luaT_lua_pushudata(lua_State *L)
+{
+  void *udata;
+  const char *tname = luaL_checkstring(L, 2);
+
+  if(lua_type(L, 1) == 10)
+    udata = *((void**)lua_topointer(L, 1));
+  else if(lua_isnumber(L, 1))
+    udata = (void*)(intptr_t)lua_tonumber(L, 1);
+  else
+    luaL_argerror(L, 1, "expecting number or cdata");
+
+  luaT_pushudata(L, udata, tname);
+
+  return 1;
+}
+
 int luaT_lua_factory(lua_State *L)
 {
   const char* tname = luaL_checkstring(L, 1);

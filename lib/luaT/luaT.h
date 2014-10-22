@@ -87,6 +87,7 @@ LUAT_API int luaT_lua_getmetatable(lua_State *L);
 LUAT_API int luaT_lua_version(lua_State *L);
 LUAT_API int luaT_lua_setmetatable(lua_State *L);
 LUAT_API int luaT_lua_metatype(lua_State *L);
+LUAT_API int luaT_lua_pushudata(lua_State *L);
 
 /* deprecated functions */
 /* ids have been replaced by string names to identify classes */
