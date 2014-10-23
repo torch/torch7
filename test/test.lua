@@ -1583,6 +1583,50 @@ function torchtest.isSameSizeAs()
    mytester:assert(t1:isSameSizeAs(t4) == true, "wrong answer ")
 end
 
+function torchtest.split()
+   local result = {}
+   local tensor = torch.rand(7,4)
+   local splitSize = 3
+   local targetSize = {{3,4},{3,4},{1,4}}
+   local dim = 1
+   local splits = tensor:split(splitSize, dim)
+   local start = 1
+   for i, split in ipairs(splits) do
+      mytester:assertTableEq(split:size():totable(), targetSize[i], 'Size error in split '..i)
+      mytester:assertTensorEq(tensor:narrow(dim, start, targetSize[i][dim]), split, 0.00001, 'Content error in split '..i)
+      start = start + targetSize[i][dim]
+   end
+   torch.split(result, tensor, splitSize, dim)
+   local start = 1
+   for i, split in ipairs(result) do
+      mytester:assertTableEq(split:size():totable(), targetSize[i], 'Result size error in split '..i)
+      mytester:assertTensorEq(tensor:narrow(dim, start, targetSize[i][dim]), split, 0.000001, 'Result content error in split '..i)
+      start = start + targetSize[i][dim]
+   end
+end
+
+function torchtest.chunk()
+   local result = {}
+   local tensor = torch.rand(4,7)
+   local nChunk = 3
+   local targetSize = {{4,3},{4,3},{4,1}}
+   local dim = 2
+   local splits = tensor:chunk(nChunk, dim)
+   local start = 1
+   for i, split in ipairs(splits) do
+      mytester:assertTableEq(split:size():totable(), targetSize[i], 'Size error in chunk '..i)
+      mytester:assertTensorEq(tensor:narrow(dim, start, targetSize[i][dim]), split, 0.00001, 'Content error in chunk '..i)
+      start = start + targetSize[i][dim]
+   end
+   torch.split(result, tensor, nChunk, dim)
+   local start = 1
+   for i, split in ipairs(result) do
+      mytester:assertTableEq(split:size():totable(), targetSize[i], 'Result size error in chunk '..i)
+      mytester:assertTensorEq(tensor:narrow(dim, start, targetSize[i][dim]), split, 0.000001, 'Result content error in chunk '..i)
+      start = start + targetSize[i][dim]
+   end
+end
+
 function torch.test(tests)
    math.randomseed(os.time())
    if torch.getdefaulttensortype() == 'torch.FloatTensor' then

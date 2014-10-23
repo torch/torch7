@@ -475,6 +475,44 @@ function Tensor.viewAs(result, src, template)
 end
 torch.viewAs = Tensor.viewAs
 
+function Tensor.split(result, tensor, splitSize, dim)
+   if torch.type(result) ~= 'table' then
+      dim = splitSize
+      splitSize = tensor
+      tensor = result
+      result = {}
+   else
+      -- empty existing result table before using it
+      for k,v in pairs(result) do
+         result[k] = nil
+      end
+   end
+   dim = dim or 1
+   local splits = {}
+   local start = 1
+   while start <= tensor:size(dim) do
+      local size = math.min(splitSize, tensor:size(dim) - start + 1)
+      local split = tensor:narrow(dim, start, size)
+      table.insert(splits, split)
+      start = start + size
+   end
+   return splits
+end
+torch.split = Tensor.split
+
+function Tensor.chunk(result, tensor, nChunk, dim)
+   if torch.type(result) ~= 'table' then
+      dim = nChunk
+      nChunk = tensor
+      tensor = result
+      result = {}
+   end
+   dim = dim or 1
+   local splitSize = math.ceil(tensor:size(dim)/nChunk)
+   return torch.split(result, tensor, splitSize, dim)
+end
+torch.chunk = Tensor.chunk
+
 for _,type in ipairs(types) do
    local metatable = torch.getmetatable('torch.' .. type .. 'Tensor')
    for funcname, func in pairs(Tensor) do
