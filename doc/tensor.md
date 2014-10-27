@@ -1838,3 +1838,80 @@ Example:
 ```
 
 
+## Converting Tensors to tables of Tensors ##
+
+These functions divide a Tensor into a table of Tensors.
+
+<a name="torch.Tensor.split"/>
+### [result] split([result,] tensor, size, [dim]) ###
+
+Splits Tensor `tensor` along dimension `dim` 
+into a `result` table of Tensors of size `size` (a number)
+or less (in the case of the last Tensor). The sizes of the non-`dim`
+dimensions remain unchanged. Internally, a series of 
+[narrows](#torch.Tensor.narrow) are performed along 
+dimensions `dim`. Argument `dim` defaults to 1.
+
+If `result` is not passed, then a new table is returned, otherwise it 
+is emptied and reused. 
+
+Example:
+```lua
+> x = torch.randn(3,4,5)
+
+> x:split(2,1)
+{
+  1 : DoubleTensor - size: 2x4x5
+  2 : DoubleTensor - size: 1x4x5
+}
+
+> x:split(3,2)
+{
+  1 : DoubleTensor - size: 3x3x5
+  2 : DoubleTensor - size: 3x1x5
+}
+
+> x:split(2,3)
+{
+  1 : DoubleTensor - size: 3x4x2
+  2 : DoubleTensor - size: 3x4x2
+  3 : DoubleTensor - size: 3x4x1
+}
+```
+
+
+<a name="torch.Tensor.chunk"/>
+### [result] chunk([result,] tensor, n, [dim]) ###
+
+Splits Tensor `tensor` into `n` chunks of approximately equal size along 
+dimensions `dim` and returns these as a `result` table of Tensors.
+Argument `dim` defaults to 1.
+ 
+This function uses [split](#torch.Tensor.split) internally:
+```lua
+torch.split(result, tensor, math.ceil(tensor:size(dim)/n), dim)
+``` 
+
+Example:
+```lua
+> x = torch.randn(3,4,5)
+
+> x:chunk(2,1)
+{
+  1 : DoubleTensor - size: 2x4x5
+  2 : DoubleTensor - size: 1x4x5
+}
+
+> x:chunk(2,2)
+{
+  1 : DoubleTensor - size: 3x2x5
+  2 : DoubleTensor - size: 3x2x5
+}
+
+> x:chunk(2,3)
+{
+  1 : DoubleTensor - size: 3x4x3
+  2 : DoubleTensor - size: 3x4x2
+}
+```
+
