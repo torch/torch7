@@ -114,10 +114,4 @@ include('FFI.lua')
 include('Tester.lua')
 include('test.lua')
 
-function torch.isTensor(obj)
-  return torch.isTypeOf(obj, 'torch.*Tensor')
-end
--- alias for convenience
-torch.Tensor.isTensor = torch.isTensor
-
 return torch

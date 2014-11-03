@@ -224,6 +224,11 @@ function Tensor.__tostring__(self)
    return str
 end
 
+function Tensor.isTensor(obj)
+  return torch.isTypeOf(obj, 'torch.*Tensor')
+end
+torch.isTensor = Tensor.isTensor
+
 function Tensor.type(self,type)
    local current = torch.typename(self)
    if not type then return current end
