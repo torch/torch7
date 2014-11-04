@@ -2,7 +2,7 @@
 # Math Functions #
 
 Torch provides Matlab-like functions for manipulating
-[Tensor](README.md#Tensor) objects.  Functions fall into several types of
+[Tensor](tensor.md) objects.  Functions fall into several types of
 categories:
   * [constructors](#torch.construction.dok) like [zeros](#torch.zeros), [ones](#torch.ones)
   * extractors like  [diag](#torch.diag)  and [triu](#torch.triu),
