@@ -441,7 +441,7 @@ z = x:t():contiguous():fill(3.14)
 <a name="torch.Tensor.type"/>
 ### [Tensor or string] type(type) ###
 
-__If `type` is `nil`__, returns atring containing the type name of
+__If `type` is `nil`__, returns a string containing the type name of
   the given tensor.
 
 ```lua
