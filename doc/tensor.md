@@ -25,10 +25,10 @@ Example:
 
 The number of dimensions of a `Tensor` can be queried by
 [nDimension()](#torch.nDimension) or
-[dim()](#torch.dim). Size of the `i-th` dimension is
-returned by [size(i)](#torch.size). A [LongStorage](storage.md)
+[dim()](#torch.Tensor.dim). Size of the `i-th` dimension is
+returned by [size(i)](#torch.Tensor.size). A [LongStorage](storage.md)
 containing all the dimensions can be returned by
-[size()](#torch.size).
+[size()](#torch.Tensor.size).
 
 ```lua
 > print(x:nDimension())
@@ -53,7 +53,7 @@ not be contiguous: the first position used in the `Storage` is given
 by [`storageOffset()`](#torch.storageOffset) (starting at
 `1`). And the _jump_ needed to go from one element to another
 element in the `i-th` dimension is given by
-[`stride(i)`](#torch.stride). In other words, given a 3D
+[`stride(i)`](#torch.Tensor.stride). In other words, given a 3D
 tensor
 
 ```lua
@@ -141,7 +141,7 @@ __Efficient memory management__
 _All_ tensor operations in this class do _not_ make any memory copy. All
 these methods transform the existing tensor, or return a new tensor
 referencing _the same storage_. This magical behavior is internally
-obtained by good usage of the [stride()](#torch.stride) and
+obtained by good usage of the [stride()](#torch.Tensor.stride) and
 [storageOffset()](#torch.storageOffset). Example:
 ```lua
 > x = torch.Tensor(5):zero()
@@ -163,7 +163,7 @@ obtained by good usage of the [stride()](#torch.stride) and
 [torch.Tensor of dimension 5]
 ```
 
-If you really need to copy a `Tensor`, you can use the [copy()](#torch.copy) method:
+If you really need to copy a `Tensor`, you can use the [copy()](#torch.Tensor.copy) method:
 ```lua
 > y = torch.Tensor(x:size()):copy(x)
 ```
@@ -193,7 +193,7 @@ Returns an empty tensor.
 
 Returns a new tensor which reference the same
 [Storage](#torch.storage) than the given `tensor`. The
-[size](#torch.size), [stride](#torch.stride), and
+[size](#torch.Tensor.size), [stride](#torch.Tensor.stride), and
 [storage offset](#torch.storageOffset) are the same than the
 given tensor.
 
@@ -240,7 +240,7 @@ the tensor. The optional [LongStorage](storage.md) `strides` gives the
 jump necessary to go from one element to the next one in the each
 dimension. Of course, `sizes` and `strides` must have the same
 number of elements. If not given, or if some elements of `strides`
-are _negative_, the [stride()](#torch.stride) will be
+are _negative_, the [stride()](#torch.Tensor.stride) will be
 computed such that the tensor is as contiguous as possible in memory.
 
 Example, create a 4D 4x4x3x2 tensor:
@@ -279,7 +279,7 @@ the all Storage.
 The jump necessary to go from one element to the next one in each
 dimension is given by the optional argument [LongStorage](storage.md)
 `strides`. If not given, or if some elements of `strides` are
-negative, the [stride()](#torch.stride) will be computed such
+negative, the [stride()](#torch.Tensor.stride) will be computed such
 that the tensor is as contiguous as possible in memory.
 
 Any modification in the elements of the `Storage` will have an
@@ -338,7 +338,7 @@ Example:
 
 ## Cloning ##
 
-<a name="torch.clone"/>
+<a name="torch.Tensor.clone"/>
 ### [Tensor] clone() ###
 
 Returns a clone of a tensor. The memory is copied.
@@ -392,11 +392,11 @@ y:fill(1)
 [torch.DoubleTensor of dimension 5]
 ```
 
-<a name="torch.contiguous"/>
+<a name="torch.Tensor.contiguous"/>
 ### [Tensor] contiguous ###
 
   * If the given Tensor contents are contiguous in memory, returns the exact same Tensor (no memory copy).
-  * Otherwise (_not contiguous in memory_), returns a [clone](#torch.clone) (memory _copy_).
+  * Otherwise (_not contiguous in memory_), returns a [clone](#torch.Tensor.clone) (memory _copy_).
 
 ```lua
 x = torch.Tensor(2,3):fill(1)
@@ -508,7 +508,7 @@ y = x:type('torch.IntTensor')
 
 ```
 
-<a name="torch.typeAs"/>
+<a name="torch.Tensor.typeAs"/>
 ### [Tensor] typeAs(tensor) ###
 
 Convenience method for the [type](#torch.type) method. Equivalent to
@@ -532,12 +532,12 @@ false
 
 <a name="torch.byte"/>
 ### [Tensor] byte(), char(), short(), int(), long(), float(), double() ###
-<a name="torch.short"/>
-<a name="torch.char"/>
-<a name="torch.long"/>
-<a name="torch.int"/>
-<a name="torch.double"/>
-<a name="torch.float"/>
+<a name="torch.Tensor.short"/>
+<a name="torch.Tensor.char"/>
+<a name="torch.Tensor.long"/>
+<a name="torch.Tensor.int"/>
+<a name="torch.Tensor.double"/>
+<a name="torch.Tensor.float"/>
 
 Convenience methods for the [type](#torch.type) method. For e.g.,
 ```lua
@@ -579,12 +579,12 @@ Returns the number of dimensions in a `Tensor`.
 2
 ```
 
-<a name="torch.dim"/>
+<a name="torch.Tensor.dim"/>
 ### [number] dim() ###
 
 Same as [nDimension()](#torch.nDimension).
 
-<a name="torch.size"/>
+<a name="torch.Tensor.size"/>
 ### [number] size(dim) ###
 
 Returns the size of the specified dimension `dim`. Example:
@@ -602,7 +602,7 @@ Returns the size of the specified dimension `dim`. Example:
 5
 ```
 
-<a name="torch.size"/>
+<a name="torch.Tensor.size"/>
 ### [LongStorage] size() ###
 
 Returns a [LongStorage](storage.md) containing the size of each dimension
@@ -623,12 +623,12 @@ of the tensor.
 [torch.LongStorage of size 2]
 ```
 
-<a name="torch.size"/>
+<a name="torch.Tensor.size"/>
 ### [LongStorage] #self ###
 
-Same as [size()](#torch.size) method.
+Same as [size()](#torch.Tensor.size) method.
 
-<a name="torch.stride"/>
+<a name="torch.Tensor.stride"/>
 ### [number] stride(dim) ###
 
 Returns the jump necessary to go from one element to the next one in the
@@ -656,7 +656,7 @@ specified dimension `dim`. Example:
 Note also that in `Torch` _elements in the same row_ [elements along the __last__ dimension]
 are contiguous in memory for a matrix [tensor].
 
-<a name="torch.stride"/>
+<a name="torch.Tensor.stride"/>
 ### [LongStorage] stride() ###
 
 Returns the jump necessary to go from one element to the next one in each dimension. Example:
@@ -699,7 +699,7 @@ Basically, a `Tensor` is a particular way of _viewing_ a `Storage`.
 [torch.DoubleTensor of dimension 4x5]
 ```
 
-<a name="torch.isContiguous"/>
+<a name="torch.Tensor.isContiguous"/>
 ### [boolean] isContiguous() ###
 
 Returns `true` iff the elements of the `Tensor` are contiguous in memory.
@@ -721,7 +721,7 @@ false
 [torch.LongStorage of size 1]
 ```
 
-<a name="torch.isSameSizeAs"/>
+<a name="torch.Tensor.isSameSizeAs"/>
 ### [boolean] isSameSizeAs(tensor) ###
 
 Returns `true` iff the dimensions of the `Tensor` and the argument `Tensor` are exactly the same.
@@ -735,7 +735,7 @@ true
 false
 ```
 
-<a name="torch.nElement"/>
+<a name="torch.Tensor.nElement"/>
 ### [number] nElement() ###
 
 Returns the number of elements of a tensor.
@@ -756,7 +756,7 @@ Return the first index (starting at 1) used in the tensor's [storage](#torch.sto
 Elements of a tensor can be retrieved with the `[index]` operator.
 
 If `index` is a number, `[index]` operator is equivalent to a
-[`select(1, index)`](#torch.select) if the tensor has more
+[`select(1, index)`](#torch.Tensor.select) if the tensor has more
 than one dimension. If the tensor is a 1D tensor, it returns the value
 at `index` in this tensor.
 
@@ -797,7 +797,7 @@ Example:
 
 ```
 
-<a name="torch.set"/>
+<a name="torch.Tensor.set"/>
 ## Referencing a tensor to an existing tensor or chunk of memory ##
 
 A `Tensor` being a way of _viewing_ a [Storage](storage.md), it is
@@ -815,7 +815,7 @@ y = torch.Storage(10)
 x = torch.Tensor(y, 1, 10)
 ```
 
-<a name="torch.set"/>
+<a name="torch.Tensor.set"/>
 ### [self] set(tensor) ###
 
 The `Tensor` is now going to "view" the same [storage](#torch.storage)
@@ -846,13 +846,13 @@ vice-versa. This is an efficient method, as there is no memory copy!
 [torch.DoubleTensor of dimension 2x5]
 ```
 
-<a name="torch.set"/>
+<a name="torch.Tensor.set"/>
 ### [self] set(storage, [storageOffset, sizes, [strides]]) ###
 
 The `Tensor` is now going to "view" the given
 [`storage`](storage.md), starting at position `storageOffset` (>=1)
-with the given [dimension `sizes`](#torch.size) and the optional given
-[`strides`](#torch.stride). As the result, any modification in the
+with the given [dimension `sizes`](#torch.Tensor.size) and the optional given
+[`strides`](#torch.Tensor.stride). As the result, any modification in the
 elements of the `Storage` will have a impact on the elements of the
 `Tensor`, and vice-versa. This is an efficient method, as there is no
 memory copy!
@@ -888,7 +888,7 @@ If only `storage` is provided, the whole storage will be viewed as a 1D Tensor.
 [torch.DoubleStorage of size 10]
 ```
 
-<a name="torch.set"/>
+<a name="torch.Tensor.set"/>
 ### [self] set(storage, [storageOffset, sz1 [, st1 ... [, sz4 [, st4]]]]) ###
 
 This is a "shorcut" for previous method.
@@ -897,11 +897,11 @@ It works up to 4 dimensions. `szi` is the size of the `i`-th dimension of the te
 
 ## Copying and initializing ##
 
-<a name="torch.copy"/>
+<a name="torch.Tensor.copy"/>
 ### [self] copy(tensor) ###
 
 Copy the elements of the given `tensor`. The
-[number of elements](#torch.nElement) must match, but the
+[number of elements](#torch.Tensor.nElement) must match, but the
 sizes might be different.
 
 ```lua
@@ -961,10 +961,10 @@ all the elements of the `Tensor`.
 
 __When resizing to a smaller size__, the underlying [Storage](#Storage) is not resized.
 
-__Important note:__ the content of a `Tensor` after resizing is _undertermined_ as [strides](#torch.stride)
+__Important note:__ the content of a `Tensor` after resizing is _undertermined_ as [strides](#torch.Tensor.stride)
 might have been completely changed. In particular, _the elements of the resized tensor are contiguous in memory_.
 
-<a name="torch.resizeAs"/>
+<a name="torch.Tensor.resizeAs"/>
 ### [self] resizeAs(tensor) ###
 
 Resize the `tensor` as the given `tensor` (of the same type). 
@@ -987,7 +987,7 @@ the sub-tensor will have an impact on the primary tensor, and vice-versa.
 
 These methods are very fast, as they do not involve any memory copy.
 
-<a name="torch.narrow"/>
+<a name="torch.Tensor.narrow"/>
 ### [Tensor] narrow(dim, index, size) ###
 
 Returns a new `Tensor` which is a narrowed version of the current one: the dimension `dim` is narrowed
@@ -1023,11 +1023,11 @@ from `index` to `index+size-1`.
 [torch.DoubleTensor of dimension 5x6]
 ```
 
-<a name="torch.sub"/>
+<a name="torch.Tensor.sub"/>
 ### [Tensor] sub(dim1s, dim1e ... [, dim4s [, dim4e]]) ###
 
 This method is equivalent to do a series of
-[narrow](#torch.narrow) up to the first 4 dimensions.  It
+[narrow](#torch.Tensor.narrow) up to the first 4 dimensions.  It
 returns a new `Tensor` which is a sub-tensor going from index
 `dimis` to `dimie` in the `i`-th dimension. Negative values are
 interpreted index starting from the end: `-1` is the last index,
@@ -1084,7 +1084,7 @@ interpreted index starting from the end: `-1` is the last index,
 [torch.DoubleTensor of dimension 1x2]
 ```
 
-<a name="torch.select"/>
+<a name="torch.Tensor.select"/>
 ### [Tensor] select(dim, index) ###
 
 Returns a new `Tensor` which is a tensor slice at the given `index` in the
@@ -1145,7 +1145,7 @@ Note that "selecting" on the first dimension is equivalent to use the [[] operat
 [torch.DoubleTensor of dimension 5x6]
 ```
 
-<a name="torch.index"/>
+<a name="torch.Tensor.index"/>
 ### [Tensor] [{ dim1,dim2,... }] or [{ {dim1s,dim1e}, {dim2s,dim2e} }] ###
 
 The indexing operator [] can be used to combine narrow/sub and
@@ -1204,7 +1204,7 @@ to copy, and fill (sub) tensors.
 [torch.DoubleTensor of dimension 5x6]
 ```
 
-<a name="torch.index"/>
+<a name="torch.Tensor.index"/>
 ### [Tensor] index(dim, index) ###
 
 Returns a new `Tensor` which indexes the given tensor along dimension `dim` and using the entries in `torch.LongTensor` `index`. The returned tensor has the same number of dimensions as the original tensor. The returned tensor does __not__ use the same storage as the original tensor -- see below for storing the result in an existing tensor.
@@ -1263,7 +1263,7 @@ t7> =y
 ```
 
 
-<a name="torch.indexCopy"/>
+<a name="torch.Tensor.indexCopy"/>
 ### [Tensor] indexCopy(dim, index, tensor) ###
 
 Copies the elements of `tensor` into itself by selecting the indices in the order defined by the order given in `index`.
@@ -1298,7 +1298,7 @@ t7> =x
 
 ```
 
-<a name="torch.indexFill"/>
+<a name="torch.Tensor.indexFill"/>
 ### [Tensor] indexFill(dim, index, val) ###
 
 Fills the elements of itself with value `val` by selecting the indices in the order defined by the order given in `index`.
@@ -1422,7 +1422,7 @@ t7> =x
 
 ```
 
-<a name="torch.expandAs"/>
+<a name="torch.Tensor.expandAs"/>
 #### [result] expandAs([result,] tensor) ####
 
 This is equivalent to self:expand(tensor:size())
@@ -1576,11 +1576,11 @@ made to point to storage of `tensor`.
 ```
 
 
-<a name="torch.transpose"/>
+<a name="torch.Tensor.transpose"/>
 ### [Tensor] transpose(dim1, dim2) ###
 
 Returns a tensor where dimensions `dim1` and `dim2` have been swapped. For 2D tensors,
-the convenience method of [t()](#torch.t) is available.
+the convenience method of [t()](#torch.Tensor.t) is available.
 ```lua
 > x = torch.Tensor(3,4):zero()                  
 > x:select(2,3):fill(7) -- fill column 3 with 7
@@ -1618,10 +1618,10 @@ the convenience method of [t()](#torch.t) is available.
 ```
 
 
-<a name="torch.t"/>
+<a name="torch.Tensor.t"/>
 ### [Tensor] t() ###
 
-Convenience method of [transpose()](#torch.transpose) for 2D
+Convenience method of [transpose()](#torch.Tensor.transpose) for 2D
 tensors. The given tensor must be 2 dimensional. Swap dimensions 1 and 2.
 ```lua
 > x = torch.Tensor(3,4):zero()
@@ -1643,7 +1643,7 @@ tensors. The given tensor must be 2 dimensional. Swap dimensions 1 and 2.
 [torch.DoubleTensor of dimension 3x4]
 ```
 
-<a name="torch.unfold"/>
+<a name="torch.Tensor.unfold"/>
 ### [Tensor] unfold(dim, size, step) ###
 
 Returns a tensor which contains all slices of size `size` in the dimension `dim`. Step between
@@ -1693,7 +1693,7 @@ method is called (self). These methods are much faster than using a `for`
 loop in `Lua`. The results is stored in `self` (if the function returns
 something).
 
-<a name="torch.apply"/>
+<a name="torch.Tensor.apply"/>
 ### [self] apply(function) ###
 
 Apply the given function to all elements of self.
@@ -1734,7 +1734,7 @@ Examples:
 1.9552094821074
 ```
 
-<a name="torch.map"/>
+<a name="torch.Tensor.map"/>
 ### [self] map(tensor, function(xs, xt)) ###
 
 Apply the given function to all elements of self and `tensor`. The number of elements of both tensors
@@ -1780,7 +1780,7 @@ Example:
 [torch.DoubleTensor of dimension 3x3]
 ```
 
-<a name="torch.map2"/>
+<a name="torch.Tensor.map2"/>
 ### [self] map2(tensor1, tensor2, function(x, xt1, xt2)) ###
 
 Apply the given function to all elements of self, `tensor1` and `tensor2`. The number of elements of all tensors
@@ -1849,7 +1849,7 @@ Splits Tensor `tensor` along dimension `dim`
 into a `result` table of Tensors of size `size` (a number)
 or less (in the case of the last Tensor). The sizes of the non-`dim`
 dimensions remain unchanged. Internally, a series of 
-[narrows](#torch.narrow) are performed along 
+[narrows](#torch.Tensor.narrow) are performed along 
 dimensions `dim`. Argument `dim` defaults to 1.
 
 If `result` is not passed, then a new table is returned, otherwise it 
