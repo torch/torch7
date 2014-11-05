@@ -1915,3 +1915,70 @@ Example:
 }
 ```
 
+## LuaJIT FFI access ##
+These functions expose Torch's Tensor and Storage data structures, through
+[LuaJIT FFI](luajit.org/ext_ffi_api.html). 
+This allows extremely fast access to Tensors and Storages, all from Lua.
+
+<a name="torch.data"/>
+### [result] data(tensor, [asnumber]) ###
+
+Returns a LuaJIT FFI pointer to the raw data of the tensor.
+If `asnumber` is true, then returns the pointer as a Lua number.
+
+Accessing the raw data of a Tensor like this is extremely efficient, in fact, it's
+almost as fast as C in lots of cases.
+
+Example:
+```lua
+> t = torch.randn(3,2)
+> print(t)
+ 0.8008 -0.6103
+ 0.6473 -0.1870
+-0.0023 -0.4902
+[torch.DoubleTensor of dimension 3x2]
+
+> t_data = torch.data(t)
+> for i = 0,t:nElement()-1 do t_data[i] = 0 end
+> print(t)
+0 0
+0 0
+0 0
+[torch.DoubleTensor of dimension 3x2]
+```
+
+WARNING: bear in mind that accessing the raw data like this is dangerous, and should
+only be done on contiguous tensors (if a tensor is not contiguous, then you have to
+use it size and stride information). Making sure a tensor is contiguous is easy: 
+```lua
+> t = torch.randn(3,2)
+> t_noncontiguous = t:transpose(1,2)
+
+-- it would be unsafe to work with torch.data(t_noncontiguous)
+
+> t_transposed_and_contiguous = t:noncontiguous:contiguous()
+
+-- it is now safe to work with the raw pointer
+
+> data = torch.data(t_contiguous)
+```
+
+Last, the pointer can be returned as a plain Lua number. This can be useful
+to share pointers between threads (warning: this is dangerous, as the second
+tensor doesn't increment the reference counter on the storage. If the first tensor
+gets freed, then the second points to nothing):
+
+```lua
+> t = torch.randn(10)
+> p = torch.data(t,true)
+> s = torch.Storage(10, p)
+> tt = torch.Tensor(s)
+-- tt and t are a view on the same data. 
+```
+
+<a name="torch.cdata"/>
+### [result] cdata(tensor, [asnumber]) ###
+
+Returns a LuaJIT FFI pointer to the C structure of the tensor.
+Use this with caution, and look at [FFI.lua](https://github.com/torch/torch7/blob/master/FFI.lua) 
+for the members of the tensor
