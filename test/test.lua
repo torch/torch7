@@ -337,16 +337,16 @@ for i, v in ipairs{{10}, {5, 5}} do
    torchtest['allAndAny' .. i] =
       function ()
            local x = torch.ones(unpack(v)):byte()
-           mytester:assert(x:all())
-           mytester:assert(x:any())
+           mytester:assert(x:all(), 'error in all()')
+           mytester:assert(x:any(), 'error in any()')
 
            x[3] = 0
-           mytester:assert(not x:all())
-           mytester:assert(x:any())
+           mytester:assert(not x:all(), 'error in all()')
+           mytester:assert(x:any(), 'error in any()')
 
            x:zero()
-           mytester:assert(not x:all())
-           mytester:assert(not x:any())
+           mytester:assert(not x:all(), 'error in all()')
+           mytester:assert(not x:any(), 'error in any()')
        end
 end
 
@@ -466,7 +466,7 @@ function torchtest.clamp()
    local min_val = -1
    local max_val = 1
    m1[1] = min_val
-   m2[2] = max_val
+   m1[2] = max_val
    local res1 = m1:clone()
 
    res1:clamp(min_val, max_val)
@@ -721,6 +721,7 @@ end
 function torchtest.renorm()
    local m1 = torch.randn(10,5)
    local res1 = torch.Tensor()
+   local m2
 
    local function renorm(matrix, value, dim, max_norm)
       local m1 = matrix:transpose(dim, 1):contiguous()
@@ -738,11 +739,11 @@ function torchtest.renorm()
 
    -- note that the axis fed to torch.renorm is different (2~=1)
    local maxnorm = m1:norm(2,1):mean()
-   local m2 = renorm(m1,2,2,maxnorm)
+   m2 = renorm(m1,2,2,maxnorm)
 
    m1:renorm(2,2,maxnorm)
-   mytester:assertTensorEq(m1, m2, 0.00001)
-   mytester:assertTensorEq(m1:norm(2,1), m2:norm(2,1), 0.00001)
+   mytester:assertTensorEq(m1, m2, 0.00001, 'error in renorm')
+   mytester:assertTensorEq(m1:norm(2,1), m2:norm(2,1), 0.00001, 'error in renorm')
 
    m1 = torch.randn(3,4,5)
    m2 = m1:transpose(2,3):contiguous():reshape(15,4)
@@ -751,9 +752,9 @@ function torchtest.renorm()
    m2 = renorm(m2,2,2,maxnorm)
 
    m1:renorm(2,2,maxnorm)
-   m3 = m1:transpose(2,3):contiguous():reshape(15,4)
-   mytester:assertTensorEq(m3, m2, 0.00001)
-   mytester:assertTensorEq(m3:norm(2,1), m2:norm(2,1), 0.00001)
+   local m3 = m1:transpose(2,3):contiguous():reshape(15,4)
+   mytester:assertTensorEq(m3, m2, 0.00001, 'error in renorm')
+   mytester:assertTensorEq(m3:norm(2,1), m2:norm(2,1), 0.00001, 'error in renorm')
 end
 function torchtest.multinomialwithreplacement()
    local n_row = 3
@@ -1088,7 +1089,7 @@ function torchtest.svd()
    local uu = torch.Tensor()
    local ss = torch.Tensor()
    local vv = torch.Tensor()
-   uuu,sss,vvv = torch.svd(uu,ss,vv,a)
+   local uuu,sss,vvv = torch.svd(uu,ss,vv,a)
    mytester:asserteq(maxdiff(u,uu),0,'torch.svd')
    mytester:asserteq(maxdiff(u,uuu),0,'torch.svd')
    mytester:asserteq(maxdiff(s,ss),0,'torch.svd')
