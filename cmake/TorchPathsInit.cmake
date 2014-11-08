@@ -21,14 +21,13 @@ IF(UNIX)
   OPTION(WITH_RPATH "Build libraries with executable rpaths" ON)
 
   IF(WITH_RPATH)
-    SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
     FILE(RELATIVE_PATH Torch_INSTALL_BIN2LIB
       "${Torch_INSTALL_BIN}" "${Torch_INSTALL_LIB}")
     IF(APPLE)
       SET(CMAKE_MACOSX_RPATH TRUE) # @rpath in libs
       SET(CMAKE_INSTALL_RPATH "@executable_path/${Torch_INSTALL_BIN2LIB}") # exec
     ELSE()
-      SET(CMAKE_INSTALL_RPATH "\$ORIGIN/${Torch_INSTALL_BIN2LIB}")
+      SET(CMAKE_INSTALL_RPATH "\$ORIGIN/${Torch_INSTALL_BIN2LIB};\$ORIGIN/../../")
     ENDIF()
   ELSE()
     SET(CMAKE_MACOSX_RPATH FALSE) # no @rpath in libs
