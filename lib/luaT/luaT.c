@@ -685,7 +685,7 @@ int luaT_lua_metatype(lua_State *L)
 /* you are better to know what you are doing */
 int luaT_lua_pushudata(lua_State *L)
 {
-  void *udata;
+  void *udata = NULL;
   const char *tname = luaL_checkstring(L, 2);
 
   if(lua_type(L, 1) == 10)
