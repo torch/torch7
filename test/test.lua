@@ -1448,6 +1448,29 @@ function torchtest.newIndex()
     mytester:assertError(function() reference[{3, 3, 3, 3, 3, 3, 3, 3}] = 1 end, shouldErrorMsg)
 end
 
+function torchtest.indexCopy()
+   local nCopy, nDest = 3, 20
+   local dest = torch.randn(nDest,4,5)
+   local src = torch.randn(nCopy,4,5)
+   local idx = torch.randperm(nDest):narrow(1, 1, nCopy):long()
+   local dest2 = dest:clone()
+   dest:indexCopy(1, idx, src)
+   for i=1,idx:size(1) do
+      dest2[idx[i]]:copy(src[i])
+   end
+   mytester:assertTensorEq(dest, dest2, 0.000001, "indexCopy tensor error")
+   
+   local dest = torch.randn(nDest)
+   local src = torch.randn(nCopy)
+   local idx = torch.randperm(nDest):narrow(1, 1, nCopy):long()
+   local dest2 = dest:clone()
+   dest:indexCopy(1, idx, src)
+   for i=1,idx:size(1) do
+      dest2[idx[i]] = src[i]
+   end
+   mytester:assertTensorEq(dest, dest2, 0.000001, "indexCopy scalar error")
+end
+
 function torchtest.abs()
    local size = 1000
    local range = 1000
