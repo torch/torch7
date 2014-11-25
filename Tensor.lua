@@ -225,7 +225,7 @@ function Tensor.__tostring__(self)
 end
 
 function Tensor.isTensor(obj)
-  return torch.isTypeOf(obj, 'torch.*Tensor')
+  return type(obj) == 'userdata' and torch.isTypeOf(obj, 'torch.*Tensor')
 end
 torch.isTensor = Tensor.isTensor
 

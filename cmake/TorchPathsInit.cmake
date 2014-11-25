@@ -21,6 +21,7 @@ IF(UNIX)
   OPTION(WITH_RPATH "Build libraries with executable rpaths" ON)
 
   IF(WITH_RPATH)
+    SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
     FILE(RELATIVE_PATH Torch_INSTALL_BIN2LIB
       "${Torch_INSTALL_BIN}" "${Torch_INSTALL_LIB}")
     IF(APPLE)

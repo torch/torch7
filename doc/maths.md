@@ -858,7 +858,7 @@ of the returned tensor will be the size of the first tensor.
 [torch.Tensor of dimension 4]
 ```
 
-A scalar might also be added or subtracted to a tensor. The scalar might be on the right or left of the operator.
+A scalar might also be added or subtracted to a tensor. The scalar needs to be on the right of the operator.
 ```
 > x = torch.Tensor(2,2):fill(2)
 > = x+3
@@ -867,11 +867,6 @@ A scalar might also be added or subtracted to a tensor. The scalar might be on t
  5  5
 [torch.Tensor of dimension 2x2]
 
-> = 3-x
-
- 1  1
- 1  1
-[torch.Tensor of dimension 2x2]
 ```
 
 ### Negation ###

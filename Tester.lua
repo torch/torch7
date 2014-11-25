@@ -66,8 +66,8 @@ end
 
 local function areTablesEqual(ta, tb)
    local function isIncludedIn(ta, tb)
-      if type(ta) ~= 'table' or type(tb) ~= 'table' then 
-         return ta == tb 
+      if type(ta) ~= 'table' or type(tb) ~= 'table' then
+         return ta == tb
       end
       for k, v in pairs(tb) do
          if not areTablesEqual(ta[k], v) then return false end
@@ -79,11 +79,11 @@ local function areTablesEqual(ta, tb)
 end
 
 function Tester:assertTableEq(ta, tb, message)
-  self:assert_sub(areTablesEqual(ta, tb), string.format('%s\n%s val=%s, condition=%s',(message or ''),' TableEQ(==) violation ', tostring(err), tostring(condition)))
+   self:assert_sub(areTablesEqual(ta, tb), string.format('%s\n%s',(message or ''),' TableEQ(==) violation '))
 end
 
 function Tester:assertTableNe(ta, tb, message)
-   self:assert_sub(not areTablesEqual(ta, tb), string.format('%s\n%s val=%s, condition=%s',(message or ''),' TableEQ(==) violation ', tostring(err), tostring(condition)))
+   self:assert_sub(not areTablesEqual(ta, tb), string.format('%s\n%s',(message or ''),' TableEQ(==) violation '))
 end
 
 function Tester:assertError(f, message)
@@ -157,7 +157,7 @@ function Tester:run(run_tests)
    io.write(statstr .. '\r')
    for i,v in ipairs(tests) do
       self.curtestname = testnames[i]
-      
+
       --clear
       io.write('\r' .. string.rep(' ', pstr:len()))
       io.flush()
@@ -165,9 +165,9 @@ function Tester:run(run_tests)
       pstr = statstr:sub(1,i-1) .. '|' .. statstr:sub(i+1) .. '  ==> ' .. self.curtestname
       io.write('\r' .. pstr)
       io.flush()
-      
+
       local stat, message, pass = self:pcall(v)
-      
+
       if pass then
          --io.write(string.format('\b_'))
          statstr = statstr:sub(1,i-1) .. '_' .. statstr:sub(i+1)
@@ -175,7 +175,7 @@ function Tester:run(run_tests)
          statstr = statstr:sub(1,i-1) .. '*' .. statstr:sub(i+1)
          --io.write(string.format('\b*'))
       end
-      
+
       if not stat then
          -- print()
          -- print('Function call failed: Test No ' .. i .. ' ' .. testnames[i])
