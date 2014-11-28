@@ -88,7 +88,7 @@ IMPLEMENT_TORCH_FILE_FUNC(close)
       }                                                                 \
     }                                                                   \
                                                                         \
-    luaL_error(L, "nothing, number, or Storage expected");              \
+    luaL_error(L, "nothing, number, or " #TYPEC "Storage expected");    \
     return 0;                                                           \
   }                                                                     \
                                                                         \
@@ -113,7 +113,7 @@ IMPLEMENT_TORCH_FILE_FUNC(close)
       }                                                                 \
     }                                                                   \
                                                                         \
-    luaL_error(L, "number, or Storage expected");                       \
+    luaL_error(L, "number, or " #TYPEC "Storage expected");             \
     return 0;                                                           \
   }
 
