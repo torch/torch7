@@ -217,7 +217,15 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
          {name=Tensor, method={default=1}},
          {name=real}})
-   
+  
+   wrap("clamp",
+        cname("clamp"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=Tensor, method={default=1}},
+         {name=real},
+         {name=real}})
+
+
    wrap("match",
         cname("match"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -368,12 +376,12 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
         {{name=Tensor},
          {name="long", creturned=true}})
 
-   for _,name in ipairs({"prod", "cumsum", "cumprod"}) do
+   for _,name in ipairs({"cumsum", "cumprod"}) do
       wrap(name,
            cname(name),
            {{name=Tensor, default=true, returned=true},
             {name=Tensor},
-            {name="index"}})
+            {name="index", default=1}})
    end
 
    wrap("sum",
@@ -381,6 +389,15 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
         {{name=Tensor},
          {name=accreal, creturned=true}},
         cname("sum"),
+        {{name=Tensor, default=true, returned=true},
+         {name=Tensor},
+         {name="index"}})
+
+   wrap("prod",
+        cname("prodall"),
+        {{name=Tensor},
+         {name=accreal, creturned=true}},
+        cname("prod"),
         {{name=Tensor, default=true, returned=true},
          {name=Tensor},
          {name="index"}})

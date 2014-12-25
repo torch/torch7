@@ -195,6 +195,7 @@ static const struct luaL_Reg torch_utils__ [] = {
   {"setmetatable", luaT_lua_setmetatable},
   {"getmetatable", luaT_lua_getmetatable},
   {"metatype", luaT_lua_metatype},
+  {"pushudata", luaT_lua_pushudata},
   {"version", luaT_lua_version},
   {"pointer", luaT_lua_pointer},
   {NULL, NULL}

@@ -115,7 +115,7 @@ include('Tester.lua')
 include('test.lua')
 
 function torch.isTensor(obj)
-  return torch.isTypeOf(obj, 'torch.*Tensor')
+  return type(obj) == 'userdata' and torch.isTypeOf(obj, 'torch.*Tensor')
 end
 -- alias for convenience
 torch.Tensor.isTensor = torch.isTensor

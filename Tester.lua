@@ -14,60 +14,60 @@ function Tester:assert_sub (condition, message)
       local ss = debug.traceback('tester',2)
       --print(ss)
       ss = ss:match('[^\n]+\n[^\n]+\n([^\n]+\n[^\n]+)\n')
-      self.errors[#self.errors+1] = self.curtestname .. '\n' .. message .. '\n' .. ss .. '\n'
+      self.errors[#self.errors+1] = self.curtestname .. '\n' .. (message or '') .. '\n' .. ss .. '\n'
    end
 end
 
 function Tester:assert (condition, message)
-   self:assert_sub(condition,string.format('%s\n%s  condition=%s',message,' BOOL violation ', tostring(condition)))
+   self:assert_sub(condition,string.format('%s\n%s  condition=%s',(message or ''),' BOOL violation ', tostring(condition)))
 end
 
 function Tester:assertlt (val, condition, message)
-   self:assert_sub(val<condition,string.format('%s\n%s  val=%s, condition=%s',message,' LT(<) violation ', tostring(val), tostring(condition)))
+   self:assert_sub(val<condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' LT(<) violation ', tostring(val), tostring(condition)))
 end
 
 function Tester:assertgt (val, condition, message)
-   self:assert_sub(val>condition,string.format('%s\n%s  val=%s, condition=%s',message,' GT(>) violation ', tostring(val), tostring(condition)))
+   self:assert_sub(val>condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' GT(>) violation ', tostring(val), tostring(condition)))
 end
 
 function Tester:assertle (val, condition, message)
-   self:assert_sub(val<=condition,string.format('%s\n%s  val=%s, condition=%s',message,' LE(<=) violation ', tostring(val), tostring(condition)))
+   self:assert_sub(val<=condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' LE(<=) violation ', tostring(val), tostring(condition)))
 end
 
 function Tester:assertge (val, condition, message)
-   self:assert_sub(val>=condition,string.format('%s\n%s  val=%s, condition=%s',message,' GE(>=) violation ', tostring(val), tostring(condition)))
+   self:assert_sub(val>=condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' GE(>=) violation ', tostring(val), tostring(condition)))
 end
 
 function Tester:asserteq (val, condition, message)
-   self:assert_sub(val==condition,string.format('%s\n%s  val=%s, condition=%s',message,' EQ(==) violation ', tostring(val), tostring(condition)))
+   self:assert_sub(val==condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' EQ(==) violation ', tostring(val), tostring(condition)))
 end
 
 function Tester:assertalmosteq (a, b, condition, message)
    condition = condition or 1e-16
    local err = math.abs(a-b)
-   self:assert_sub(err < condition, string.format('%s\n%s  val=%s, condition=%s',message,' ALMOST_EQ(==) violation ', tostring(err), tostring(condition)))
+   self:assert_sub(err < condition, string.format('%s\n%s  val=%s, condition=%s',(message or ''),' ALMOST_EQ(==) violation ', tostring(err), tostring(condition)))
 end
 
 function Tester:assertne (val, condition, message)
-   self:assert_sub(val~=condition,string.format('%s\n%s  val=%s, condition=%s',message,' NE(~=) violation ', tostring(val), tostring(condition)))
+   self:assert_sub(val~=condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' NE(~=) violation ', tostring(val), tostring(condition)))
 end
 
 function Tester:assertTensorEq(ta, tb, condition, message)
    local diff = ta-tb
    local err = diff:abs():max()
-   self:assert_sub(err<condition,string.format('%s\n%s  val=%s, condition=%s',message,' TensorEQ(==) violation ', tostring(err), tostring(condition)))
+   self:assert_sub(err<condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' TensorEQ(==) violation ', tostring(err), tostring(condition)))
 end
 
 function Tester:assertTensorNe(ta, tb, condition, message)
    local diff = ta-tb
    local err = diff:abs():max()
-   self:assert_sub(err>=condition,string.format('%s\n%s  val=%s, condition=%s',message,' TensorNE(~=) violation ', tostring(err), tostring(condition)))
+   self:assert_sub(err>=condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' TensorNE(~=) violation ', tostring(err), tostring(condition)))
 end
 
 local function areTablesEqual(ta, tb)
    local function isIncludedIn(ta, tb)
-      if type(ta) ~= 'table' or type(tb) ~= 'table' then 
-         return ta == tb 
+      if type(ta) ~= 'table' or type(tb) ~= 'table' then
+         return ta == tb
       end
       for k, v in pairs(tb) do
          if not areTablesEqual(ta[k], v) then return false end
@@ -79,11 +79,11 @@ local function areTablesEqual(ta, tb)
 end
 
 function Tester:assertTableEq(ta, tb, message)
-  self:assert_sub(areTablesEqual(ta, tb), string.format('%s\n%s val=%s, condition=%s',message,' TableEQ(==) violation ', tostring(err), tostring(condition)))
+   self:assert_sub(areTablesEqual(ta, tb), string.format('%s\n%s',(message or ''),' TableEQ(==) violation '))
 end
 
 function Tester:assertTableNe(ta, tb, message)
-   self:assert_sub(not areTablesEqual(ta, tb), string.format('%s\n%s val=%s, condition=%s',message,' TableEQ(==) violation ', tostring(err), tostring(condition)))
+   self:assert_sub(not areTablesEqual(ta, tb), string.format('%s\n%s',(message or ''),' TableEQ(==) violation '))
 end
 
 function Tester:assertError(f, message)
@@ -101,7 +101,7 @@ end
 function Tester:assertErrorObj(f, errcomp, message)
     -- errcomp must be  a function  that compares the error object to its expected value
    local status, err = pcall(f)
-   self:assert_sub(status == false and errcomp(err), string.format('%s\n%s  err=%s', message,' ERROR violation ', tostring(err)))
+   self:assert_sub(status == false and errcomp(err), string.format('%s\n%s  err=%s', (message or ''),' ERROR violation ', tostring(err)))
 end
 
 
@@ -157,7 +157,7 @@ function Tester:run(run_tests)
    io.write(statstr .. '\r')
    for i,v in ipairs(tests) do
       self.curtestname = testnames[i]
-      
+
       --clear
       io.write('\r' .. string.rep(' ', pstr:len()))
       io.flush()
@@ -165,9 +165,9 @@ function Tester:run(run_tests)
       pstr = statstr:sub(1,i-1) .. '|' .. statstr:sub(i+1) .. '  ==> ' .. self.curtestname
       io.write('\r' .. pstr)
       io.flush()
-      
+
       local stat, message, pass = self:pcall(v)
-      
+
       if pass then
          --io.write(string.format('\b_'))
          statstr = statstr:sub(1,i-1) .. '_' .. statstr:sub(i+1)
@@ -175,7 +175,7 @@ function Tester:run(run_tests)
          statstr = statstr:sub(1,i-1) .. '*' .. statstr:sub(i+1)
          --io.write(string.format('\b*'))
       end
-      
+
       if not stat then
          -- print()
          -- print('Function call failed: Test No ' .. i .. ' ' .. testnames[i])
