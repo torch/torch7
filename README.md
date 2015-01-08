@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/torch/torch7.svg)](https://travis-ci.org/torch/torch7)
+
 <a name="torch.reference.dok"/>
 # Torch Package Reference Manual #
 

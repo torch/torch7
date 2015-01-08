@@ -69,6 +69,10 @@ void luaT_stackdump(lua_State *L)
         tname = luaT_typename(L, i);
         printf("userdata %lx [%s]", (long)lua_topointer(L, i), (tname ? tname : "not a Torch object"));
         break;
+      case 10:
+        tname = luaT_typename(L, i);
+        printf("cdata %lx [%s]", (long)lua_topointer(L, i), (tname ? tname : "not a Torch object"));
+        break;
       case LUA_TTABLE:
         lua_pushvalue(L, i);
         lua_rawget(L, LUA_REGISTRYINDEX);
@@ -154,9 +158,61 @@ const char *luaT_typenameid(lua_State *L, const char *tname)
   return NULL;
 }
 
+static const char cdataname[] = ""
+  "local _, ffi = pcall(require, 'ffi')\n"
+  "if ffi then\n"
+  "  local id2name = {}\n"
+  "  return function(cdata, name)\n"
+  "    local id = tonumber(ffi.typeof(cdata))\n"
+  "    if id then\n"
+  "      if name then\n"
+  "        id2name[id] = name\n"
+  "        return name\n"
+  "      else\n"
+  "        return rawget(id2name, id)\n"
+  "      end\n"
+  "    end\n"
+  "    return nil\n"
+  "  end\n"
+  "else\n"
+  "  return function() end\n"
+  "end\n";
+
+static const char* luaT_cdataname(lua_State *L, int ud, const char *tname)
+{
+  lua_pushstring(L, "__cdataname");
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  if(lua_isnil(L,-1))
+  {
+    lua_pop(L, 1);
+
+    if(luaL_dostring(L, cdataname)) /* did something go wrong? */
+      luaL_error(L, "internal error (could not load cdataname): %s", lua_tostring(L, -1));
+
+    lua_pushstring(L, "__cdataname");
+    lua_pushvalue(L, -2);
+    lua_rawset(L, LUA_REGISTRYINDEX);
+  }
+  if(!lua_isfunction(L, -1)) /* should not happen */
+    luaL_error(L, "internal error (cdataname is not a function)");
+
+  lua_pushvalue(L, ud);
+  if(tname)
+    lua_pushstring(L, tname);
+  if(lua_pcall(L, (tname ? 2 : 1), 1, 0))
+    luaL_error(L, "internal error (cdataname): %s", lua_tostring(L, -1));
+
+  tname = lua_tostring(L, -1);
+  lua_pop(L, 1);
+
+  return tname;
+}
+
 const char* luaT_typename(lua_State *L, int ud)
 {
-  if(lua_getmetatable(L, ud))
+  if(lua_type(L, ud) == 10)
+    return luaT_cdataname(L, ud, NULL);
+  else if(lua_getmetatable(L, ud))
   {
     const char *tname = NULL;
     lua_rawget(L, LUA_REGISTRYINDEX);
@@ -368,29 +424,25 @@ const char *luaT_classrootname(const char *tname)
   return tname;
 }
 
-const char *luaT_classmodulename(const char *tname)
+/* module_name must be a buffer at least as big as tname 
+ * return true if the class is part of a module */
+int luaT_classmodulename(const char *tname, char *module_name)
 {
-  static char luaT_class_module_name[256];
-  int i;
-
-  strncpy(luaT_class_module_name, tname, 256);
-  for(i = 0; i < 256; i++)
-  {
-    if(luaT_class_module_name[i] == '\0')
-      break;
-    if(luaT_class_module_name[i] == '.')
-    {
-      luaT_class_module_name[i] = '\0';
-      return luaT_class_module_name;
-    }
-  }
-  return NULL;
+  char chars[] = {'.', '\0'};
+  size_t n;
+  n = strcspn(tname, chars);
+  strncpy(module_name, tname, n);
+  module_name[n] = '\0';
+  return tname[n] == '.';
 }
 
 /* Lua only functions */
 int luaT_lua_newmetatable(lua_State *L)
 {
   const char* tname = luaL_checkstring(L, 1);
+  char module_name[256];
+  int is_in_module = 0;
+  is_in_module = luaT_classmodulename(tname, module_name);
 
   lua_settop(L, 5);
   luaL_argcheck(L, lua_isnoneornil(L, 2) || lua_isstring(L, 2), 2, "parent class name or nil expected");
@@ -398,12 +450,12 @@ int luaT_lua_newmetatable(lua_State *L)
   luaL_argcheck(L, lua_isnoneornil(L, 4) || lua_isfunction(L, 4), 4, "destructor function or nil expected");
   luaL_argcheck(L, lua_isnoneornil(L, 5) || lua_isfunction(L, 5), 5, "factory function or nil expected");
 
-  if(luaT_classmodulename(tname))
-    lua_getfield(L, LUA_GLOBALSINDEX, luaT_classmodulename(tname));
+  if(is_in_module)
+    lua_getfield(L, LUA_GLOBALSINDEX, module_name);
   else
     lua_pushvalue(L, LUA_GLOBALSINDEX);
   if(!lua_istable(L, 6))
-    luaL_error(L, "while creating metatable %s: bad argument #1 (%s is an invalid module name)", tname, luaT_classmodulename(tname));
+    luaL_error(L, "while creating metatable %s: bad argument #1 (%s is an invalid module name)", tname, module_name);
 
   /* we first create the new metaclass if we have to */
   if(!luaT_pushmetatable(L, tname))
@@ -599,8 +651,55 @@ int luaT_lua_newmetatable(lua_State *L)
   return 1; /* returns the metatable */
 }
 
-
 /* Lua only utility functions */
+
+/* add any custom type, provided the object has a metatable */
+int luaT_lua_metatype(lua_State *L)
+{
+  if( (lua_gettop(L) != 2) && (lua_gettop(L) != 3) )
+    luaL_error(L, "expecting: string table [ctype]");
+
+  luaL_checkstring(L, 1);
+  luaL_checktype(L, 2, LUA_TTABLE);
+
+  if(lua_gettop(L) == 3)
+  {
+    if(!luaT_cdataname(L, 3, lua_tostring(L, 1)))
+      luaL_error(L, "could not register cdata type -- missing ffi library?");
+  }
+
+  /* registry[name] = metatable */
+  lua_pushvalue(L, 1);
+  lua_pushvalue(L, 2);
+  lua_rawset(L, LUA_REGISTRYINDEX);
+
+  /* registry[metatable] = tname */
+  lua_pushvalue(L, 2);
+  lua_pushvalue(L, 1);
+  lua_rawset(L, LUA_REGISTRYINDEX);
+
+  return 0;
+}
+
+/* return a userdata from a C pointer */
+/* you are better to know what you are doing */
+int luaT_lua_pushudata(lua_State *L)
+{
+  void *udata = NULL;
+  const char *tname = luaL_checkstring(L, 2);
+
+  if(lua_type(L, 1) == 10)
+    udata = *((void**)lua_topointer(L, 1));
+  else if(lua_isnumber(L, 1))
+    udata = (void*)(long)lua_tonumber(L, 1);
+  else
+    luaL_argerror(L, 1, "expecting number or cdata");
+
+  luaT_pushudata(L, udata, tname);
+
+  return 1;
+}
+
 int luaT_lua_factory(lua_State *L)
 {
   const char* tname = luaL_checkstring(L, 1);
@@ -679,8 +778,22 @@ int luaT_lua_pointer(lua_State *L)
     lua_pushnumber(L, (long)(ptr));
     return 1;
   }
+  else if(lua_type(L, 1) == 10) /* cdata */
+  {
+    /* we want the pointer holded by cdata */
+    /* not the pointer on the cdata object */
+    const void* ptr = *((void**)lua_topointer(L, 1));
+    lua_pushnumber(L, (long)(ptr));
+    return 1;
+  }
+  else if(lua_isstring(L, 1))
+  {
+    const char* ptr = lua_tostring(L, 1);
+    lua_pushnumber(L, (long)(ptr));
+    return 1;
+  }
   else
-    luaL_error(L, "Torch object, table, thread or function expected");
+    luaL_error(L, "Torch object, table, thread, cdata or function expected");
 
   return 0;
 }
@@ -714,7 +827,19 @@ int luaT_lua_version(lua_State *L)
 {
   luaL_checkany(L, 1);
 
-  if(lua_getmetatable(L, 1))
+  if(lua_type(L, 1) == 10)
+  {
+    const char *tname = luaT_cdataname(L, 1, NULL);
+    if(tname)
+    {
+      luaT_pushmetatable(L, tname);
+      lua_pushstring(L, "__version");
+      lua_rawget(L, -2);
+      return 1;
+    }
+    return 0;
+  }
+  else if(lua_getmetatable(L, 1))
   {
     lua_pushstring(L, "__version");
     lua_rawget(L, -2);

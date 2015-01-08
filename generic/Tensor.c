@@ -512,6 +512,14 @@ static int torch_Tensor_(isContiguous)(lua_State *L)
   return 1;
 }
 
+static int torch_Tensor_(isSameSizeAs)(lua_State *L)
+{
+  THTensor *tensor1 = luaT_checkudata(L, 1, torch_Tensor);
+  THTensor *tensor2 = luaT_checkudata(L, 2, torch_Tensor);
+  lua_pushboolean(L, THTensor_(isSameSizeAs)(tensor1, tensor2));
+  return 1;
+}
+
 static int torch_Tensor_(nElement)(lua_State *L)
 {
   THTensor *tensor = luaT_checkudata(L, 1, torch_Tensor);
@@ -554,11 +562,10 @@ static int torch_Tensor_(__newindex__)(lua_State *L)
   if(lua_isnumber(L, 2))
   {
     void *src;
-    long index;
-
+    long index = luaL_checklong(L,2)-1;
     luaL_argcheck(L, tensor->nDimension > 0, 1, "empty tensor");
-    index = luaL_checklong(L,2)-1;
     if (index < 0) index = tensor->size[0] + index + 1;
+
     if (lua_isnumber(L,3)) {
       real value = (real)luaL_checknumber(L,3);
       if (tensor->nDimension == 1) {
@@ -636,12 +643,13 @@ static int torch_Tensor_(__newindex__)(lua_State *L)
   }
   else if(lua_istable(L, 2))
   {
-	int dim;
+    int dim;
     int cdim = 0;
     int ndims;
     int done = 0;
-    tensor = THTensor_(newWithTensor)(tensor);
     ndims = tensor->nDimension;
+    luaL_argcheck(L, lua_objlen(L, 2) <= ndims, 2, "too many indices provided");
+    tensor = THTensor_(newWithTensor)(tensor);
     for(dim = 0; dim < ndims; dim++)
     {
       lua_rawgeti(L, 2, dim+1);
@@ -747,6 +755,7 @@ static int torch_Tensor_(__index__)(lua_State *L)
 
   if(lua_isnumber(L, 2))
   {
+<<<<<<< HEAD
     long index;
 
     luaL_argcheck(L, tensor->nDimension > 0, 1, "empty tensor");
@@ -754,6 +763,12 @@ static int torch_Tensor_(__index__)(lua_State *L)
 
     if (index < 0) index = tensor->size[0] + index + 1;
 
+=======
+    long index = luaL_checklong(L,2)-1;
+
+    luaL_argcheck(L, tensor->nDimension > 0, 1, "empty tensor");
+    if (index < 0) index = tensor->size[0] + index + 1;
+>>>>>>> upstream/master
     luaL_argcheck(L, index >= 0 && index < tensor->size[0], 2, "out of range");
 
     if(tensor->nDimension == 1)
@@ -793,9 +808,11 @@ static int torch_Tensor_(__index__)(lua_State *L)
     int cdim = 0;
     int ndims;
     int done = 0;
-    tensor = THTensor_(newWithTensor)(tensor);
+
     ndims = tensor->nDimension;
-    
+    luaL_argcheck(L, lua_objlen(L, 2) <= ndims, 2, "too many indices provided");
+    tensor = THTensor_(newWithTensor)(tensor);
+
     for(dim = 0; dim < ndims; dim++)
     {
       lua_rawgeti(L, 2, dim+1);
@@ -931,7 +948,6 @@ static void torch_Tensor_(c_readSizeStride)(lua_State *L, int index, int allowSt
 static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index, int allowNone, int allowTensor, int allowStorage, int allowStride,
                                                          THStorage **storage_, long *storageOffset_, THLongStorage **size_, THLongStorage **stride_)
 {
-  static char errMsg[64];
   THTensor *src = NULL;
   THStorage *storage = NULL;
 
@@ -981,8 +997,14 @@ static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index
   *storage_ = NULL;
   *storageOffset_ = 0;
 
-  sprintf(errMsg, "expecting number%s%s", (allowTensor ? " or Tensor" : ""), (allowStorage ? " or Storage" : ""));
-  luaL_argcheck(L, 0, index, errMsg);
+  if(allowTensor && allowStorage)
+      luaL_argcheck(L, 0, index, "expecting number or Tensor or Storage");
+  else if(allowTensor)
+      luaL_argcheck(L, 0, index, "expecting number or Tensor");
+  else if(allowStorage)
+      luaL_argcheck(L, 0, index, "expecting number or Storage");
+  else
+      luaL_argcheck(L, 0, index, "expecting number");
 }
 
 static int torch_Tensor_(apply)(lua_State *L)
@@ -1144,6 +1166,7 @@ static const struct luaL_Reg torch_Tensor_(_) [] = {
   {"t", torch_Tensor_(t)},
   {"unfold", torch_Tensor_(unfold)},
   {"isContiguous", torch_Tensor_(isContiguous)},
+  {"isSameSizeAs", torch_Tensor_(isSameSizeAs)},
   {"nElement", torch_Tensor_(nElement)},
   {"copy", torch_Tensor_(copy)},
   {"apply", torch_Tensor_(apply)},

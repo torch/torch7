@@ -1,3 +1,8 @@
+# avoid some cmake warnings
+IF(POLICY CMP0026)
+ CMAKE_POLICY(SET CMP0026 OLD)
+ENDIF()
+
 INCLUDE_DIRECTORIES(${LUA_INCDIR})
 IF(LUALIB)
   LINK_DIRECTORIES(${LUA_LIBDIR}) # note: must be done before defining target

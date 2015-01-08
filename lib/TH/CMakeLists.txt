@@ -1,6 +1,30 @@
+cmake_minimum_required(VERSION 2.6)
+
+# avoid some cmake warnings
+IF(POLICY CMP0026)
+ CMAKE_POLICY(SET CMP0026 OLD)
+ENDIF()
+
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
+# Can be compiled standalone
+IF(NOT TH_INSTALL_BIN_SUBDIR
+    OR NOT TH_INSTALL_LIB_SUBDIR
+    OR NOT TH_INSTALL_INCLUDE_SUBDIR
+    OR NOT TH_INSTALL_CMAKE_SUBDIR)
+
+  SET(TH_INSTALL_BIN_SUBDIR "bin" CACHE PATH "TH install binary subdirectory")
+  SET(TH_INSTALL_LIB_SUBDIR "lib" CACHE PATH "TH install library subdirectory")
+  SET(TH_INSTALL_INCLUDE_SUBDIR "include" CACHE PATH "TH install include subdirectory")
+  SET(TH_INSTALL_CMAKE_SUBDIR "share/cmake/TH" CACHE PATH "TH install cmake subdirectory")
+ENDIF()
+
 # flags
+
+IF(MSVC)
+  # respect the standard
+  ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE=1)
+ENDIF(MSVC)
 
 # OpenMP support?
 SET(WITH_OPENMP ON CACHE BOOL "OpenMP support if available?")
@@ -69,13 +93,13 @@ IF(C_SSE4_2_FOUND)
   SET(CMAKE_C_FLAGS "${C_SSE4_2_FLAGS} -DUSE_SSE4_2 ${CMAKE_C_FLAGS}")
 ENDIF(C_SSE4_2_FOUND)
 
-SET(hdr 
-  THGeneral.h THStorage.h THTensor.h THTensorApply.h
-  THBlas.h THLapack.h THLogAdd.h THRandom.h THVector.h)
-SET(src 
-  THGeneral.c THStorage.c THTensor.c THBlas.c THLapack.c
-  THLogAdd.c THRandom.c
-  THFile.c THDiskFile.c THMemoryFile.c)
+SET(hdr
+  THGeneral.h THAllocator.h THStorage.h THTensor.h THTensorApply.h THBlas.h
+  THLapack.h THLogAdd.h THRandom.h THVector.h)
+
+SET(src
+  THGeneral.c THAllocator.c THStorage.c THTensor.c THBlas.c THLapack.c
+  THLogAdd.c THRandom.c THFile.c THDiskFile.c THMemoryFile.c)
 
 SET(src ${src} ${hdr})
 ADD_LIBRARY(TH SHARED ${src})
@@ -131,17 +155,28 @@ IF(NOT DEFINED C_INLINE)
 SET(TH_INLINE "")
 ENDIF(NOT DEFINED C_INLINE)
 
+# Is __thread supported?
+INCLUDE (CheckCSourceCompiles)
+CHECK_C_SOURCE_COMPILES("static __thread int x = 1; int main() { return x; }" C_HAS_THREAD)
+IF(NOT DEFINED C_HAS_THREAD)
+  MESSAGE(STATUS "Warning: __thread is not supported, generating thread-unsafe code")
+ENDIF(NOT DEFINED C_HAS_THREAD)
+IF(C_HAS_THREAD)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DTH_HAVE_THREAD")
+ENDIF(C_HAS_THREAD)
+
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}")
 CONFIGURE_FILE(THGeneral.h.in "${CMAKE_CURRENT_BINARY_DIR}/THGeneral.h")
 
 INSTALL(TARGETS TH
-  EXPORT torch-exports
-  RUNTIME DESTINATION "${Torch_INSTALL_BIN_SUBDIR}"
-  LIBRARY DESTINATION "${Torch_INSTALL_LIB_SUBDIR}"
-  ARCHIVE DESTINATION "${Torch_INSTALL_LIB_SUBDIR}")
+  EXPORT TH-exports
+  RUNTIME DESTINATION "${TH_INSTALL_BIN_SUBDIR}"
+  LIBRARY DESTINATION "${TH_INSTALL_LIB_SUBDIR}"
+  ARCHIVE DESTINATION "${TH_INSTALL_LIB_SUBDIR}")
 
 INSTALL(FILES
   TH.h
+  THAllocator.h
   THBlas.h
   THDiskFile.h
   THFile.h
@@ -160,7 +195,7 @@ INSTALL(FILES
   THTensorDimApply.h
   THTensorMacros.h
   THVector.h
-  DESTINATION "${Torch_INSTALL_INCLUDE_SUBDIR}/TH")
+  DESTINATION "${TH_INSTALL_INCLUDE_SUBDIR}/TH")
 
 INSTALL(FILES
   generic/THBlas.c
@@ -184,12 +219,12 @@ INSTALL(FILES
   generic/THTensorRandom.c
   generic/THTensorRandom.h
   generic/THVector.c
-  DESTINATION "${Torch_INSTALL_INCLUDE_SUBDIR}/TH/generic")
+  DESTINATION "${TH_INSTALL_INCLUDE_SUBDIR}/TH/generic")
 
 
 IF (WIN32 AND NOT CYGWIN)
   SET(BLAS_INSTALL_LIBRARIES "OFF"
-    CACHE BOOL "Copy the required BLAS DLLs into the Torch install dirs")
+    CACHE BOOL "Copy the required BLAS DLLs into the TH install dirs")
 ENDIF (WIN32 AND NOT CYGWIN)
 
 MACRO(Install_Required_Library ln)
@@ -197,7 +232,7 @@ MACRO(Install_Required_Library ln)
     get_filename_component(libname ${ln} NAME_WE)
     file(GLOB libdlls "${libpath}/${libname}*.dll")
     install(PROGRAMS ${libdlls} 
-      DESTINATION "${Torch_INSTALL_BIN_SUBDIR}")
+      DESTINATION "${TH_INSTALL_BIN_SUBDIR}")
 ENDMACRO(Install_Required_Library libname)
 
 IF (BLAS_FOUND AND BLAS_INSTALL_LIBRARIES)
@@ -219,8 +254,8 @@ ENDIF()
 # Create THConfig.cmake
 GET_TARGET_PROPERTY(TH_OUTPUT_NAME TH LOCATION)
 GET_FILENAME_COMPONENT(TH_OUTPUT_NAME ${TH_OUTPUT_NAME} NAME)
-SET(TH_LIBRARIES "${Torch_INSTALL_LIB}/${TH_OUTPUT_NAME}")
-SET(TH_INCLUDE_DIR "${Torch_INSTALL_INCLUDE}/TH")
+SET(TH_LIBRARIES "${CMAKE_INSTALL_PREFIX}/${TH_INSTALL_LIB_SUBDIR}/${TH_OUTPUT_NAME}")
+SET(TH_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${TH_INSTALL_INCLUDE_SUBDIR}/TH")
 CONFIGURE_FILE(THConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/cmake-exports/THConfig.cmake")
 INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/cmake-exports/THConfig.cmake" 
-  DESTINATION "${Torch_INSTALL_CMAKE_SUBDIR}")
+  DESTINATION "${TH_INSTALL_CMAKE_SUBDIR}")

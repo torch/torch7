@@ -1,4 +1,4 @@
-INSTALL(EXPORT torch-exports
+INSTALL(EXPORT TH-exports
   DESTINATION "${Torch_INSTALL_CMAKE_SUBDIR}"
   FILE "TorchExports.cmake")
 

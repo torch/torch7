@@ -217,7 +217,15 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
          {name=Tensor, method={default=1}},
          {name=real}})
-   
+  
+   wrap("clamp",
+        cname("clamp"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=Tensor, method={default=1}},
+         {name=real},
+         {name=real}})
+
+
    wrap("match",
         cname("match"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -366,14 +374,14 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
    wrap("numel",
         cname("numel"),
         {{name=Tensor},
-         {name=real, creturned=true}})
+         {name="long", creturned=true}})
 
-   for _,name in ipairs({"prod", "cumsum", "cumprod"}) do
+   for _,name in ipairs({"cumsum", "cumprod"}) do
       wrap(name,
            cname(name),
            {{name=Tensor, default=true, returned=true},
             {name=Tensor},
-            {name="index"}})
+            {name="index", default=1}})
    end
 
    wrap("sum",
@@ -381,6 +389,15 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
         {{name=Tensor},
          {name=accreal, creturned=true}},
         cname("sum"),
+        {{name=Tensor, default=true, returned=true},
+         {name=Tensor},
+         {name="index"}})
+
+   wrap("prod",
+        cname("prodall"),
+        {{name=Tensor},
+         {name=accreal, creturned=true}},
+        cname("prod"),
         {{name=Tensor, default=true, returned=true},
          {name=Tensor},
          {name="index"}})
@@ -438,6 +455,7 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
                             string.format("TH%s_add(%s, %s, 1);", Tensor, arg:carg(), arg:carg())
                          }, '\n')
                    end},
+         {name="Generator", default=true},
          {name="long"}})
 
    wrap("sort",
@@ -470,65 +488,73 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
    if Tensor == 'ByteTensor' then -- we declare this only once
       interface:print(
          [[
-static int THRandom_random2__(long a, long b)
+static int THRandom_random2__(THGenerator *gen, long a, long b)
 {
   THArgCheck(b >= a, 2, "upper bound must be larger than lower bound");
-  return((THRandom_random() % (b+1-a)) + a);
+  return((THRandom_random(gen) % (b+1-a)) + a);
 }
          
-static int THRandom_random1__(long b)
+static int THRandom_random1__(THGenerator *gen, long b)
 {
   THArgCheck(b > 0, 1, "upper bound must be strictly positive");
-  return(THRandom_random() % b + 1);
+  return(THRandom_random(gen) % b + 1);
 }
          ]])
    end
 
    interface:print(string.gsub(
                       [[
-static void THTensor_random2__(THTensor *self, long a, long b)
+static void THTensor_random2__(THTensor *self, THGenerator *gen, long a, long b)
 {
   THArgCheck(b >= a, 2, "upper bound must be larger than lower bound");
-  TH_TENSOR_APPLY(real, self, *self_data = ((THRandom_random() % (b+1-a)) + a);)
+  TH_TENSOR_APPLY(real, self, *self_data = ((THRandom_random(gen) % (b+1-a)) + a);)
 }
 
-static void THTensor_random1__(THTensor *self, long b)
+static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
 {
   THArgCheck(b > 0, 1, "upper bound must be strictly positive");
-  TH_TENSOR_APPLY(real, self, *self_data = (THRandom_random() % b + 1);)
+  TH_TENSOR_APPLY(real, self, *self_data = (THRandom_random(gen) % b + 1);)
 }
 ]], 'Tensor', Tensor):gsub('real', real))
 
    wrap('random',
         'THRandom_random2__',
-        {{name='long'},
+        {{name='Generator', default=true},
+         {name='long'},
          {name='long'},
          {name='long', creturned=true}},
         'THRandom_random1__',
-        {{name='long'},
+        {{name='Generator', default=true},
+         {name='long'},
          {name='long', creturned=true}},
         'THRandom_random',
-        {{name='long', creturned=true}},
+        {{name='Generator', default=true},
+         {name='long', creturned=true}},
         cname("random2__"),
         {{name=Tensor, returned=true},
+         {name='Generator', default=true},
          {name='long'},
          {name='long'}},
         cname("random1__"),
         {{name=Tensor, returned=true},
+         {name='Generator', default=true},
          {name='long'}},
         cname("random"),
-        {{name=Tensor, returned=true}})
+        {{name=Tensor, returned=true},
+         {name='Generator', default=true}})
 
    for _,f in ipairs({{name='geometric'},
                       {name='bernoulli', a=0.5}}) do
       
       wrap(f.name,
            string.format("THRandom_%s", f.name),
-           {{name="double", default=f.a},
+           {{name='Generator', default=true},
+            {name="double", default=f.a},
             {name="double", creturned=true}},
            cname(f.name),
            {{name=Tensor, returned=true},
-            {name=real, default=f.a}})
+            {name='Generator', default=true},
+            {name="double", default=f.a}})
    end
 
    wrap("squeeze",
@@ -543,15 +569,25 @@ static void THTensor_random1__(THTensor *self, long b)
                                                              end},
          {name=Tensor}},
         cname("squeeze1d"),
-        {{name=Tensor, default=true, returned=true, postcall=function(arg)
-                                                                local txt = {}
-                                                                if arg.returned then
-                                                                   table.insert(txt, string.format('if(arg%d->nDimension == 1 && arg%d->size[0] == 1)', arg.i, arg.i)) -- number
-                                                                   table.insert(txt, string.format('lua_pushnumber(L, (lua_Number)(*TH%s_data(arg%d)));', Tensor, arg.i))
-                                                                end
-                                                                return table.concat(txt, '\n')
-                                                             end},
-         {name=Tensor},
+        {{name=Tensor, default=true, returned=true,
+
+          postcall=
+             function(arg)
+                local txt = {}
+                if arg.returned then
+                   table.insert(txt, string.format('if(!hasdims && arg%d->nDimension == 1 && arg%d->size[0] == 1)', arg.i, arg.i)) -- number
+                   table.insert(txt, string.format('lua_pushnumber(L, (lua_Number)(*TH%s_data(arg%d)));}', Tensor, arg.i))
+                end
+                return table.concat(txt, '\n')
+             end},
+
+         {name=Tensor,
+
+          precall=
+             function(arg)
+                return string.format('{int hasdims = arg%d->nDimension > 1;', arg.i)
+             end},
+
          {name="index"}})
 
    wrap("sign",
@@ -717,6 +753,34 @@ static void THTensor_random1__(THTensor *self, long b)
             {name=Tensor}})
    end
 
+   if Tensor == 'ByteTensor' then
+     -- Logical accumulators only apply to ByteTensor
+      for _,name in ipairs({'all', 'any'}) do
+        wrap(name,
+             cname('logical' .. name),
+             {{name=Tensor},
+		{name="boolean", creturned=true}})
+      end
+   end
+
+   if Tensor == 'IntTensor' then
+         wrap("abs",
+              cname("abs"),
+              {{name=Tensor, default=true, returned=true, method={default='nil'}},
+               {name=Tensor, method={default=1}}},
+              "abs",
+              {{name=real},
+               {name=real, creturned=true}})
+   elseif Tensor == 'LongTensor' then
+         wrap("abs",
+              cname("abs"),
+              {{name=Tensor, default=true, returned=true, method={default='nil'}},
+               {name=Tensor, method={default=1}}},
+              "labs",
+              {{name=real},
+               {name=real, creturned=true}})
+   end
+
    if Tensor == 'FloatTensor' or Tensor == 'DoubleTensor' then
 
       wrap("mean",
@@ -757,6 +821,14 @@ static void THTensor_random1__(THTensor *self, long b)
             {name=Tensor},
             {name=real},
             {name="index"}})
+            
+      wrap("renorm",
+           cname("renorm"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=Tensor, method={default=1}},
+            {name=real},
+            {name="index"},
+            {name=real}})
       
       wrap("dist",
            cname("dist"),
@@ -784,7 +856,7 @@ static void THTensor_random1__(THTensor *self, long b)
                             "sin", "asin", "sinh",
                             "tan", "atan", "tanh",
                             "sqrt",
-                            "ceil", "floor"}) do
+                            "round", "ceil", "floor"}) do
                             --"abs"}) do
 
          wrap(name, 
@@ -828,12 +900,22 @@ static void THTensor_random1__(THTensor *self, long b)
       wrap("rand",
            cname("rand"),
            {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name='Generator', default=true},
             {name="LongArg"}})
 
       wrap("randn",
            cname("randn"),
            {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name='Generator', default=true},
             {name="LongArg"}})
+            
+      wrap("multinomial",
+           cname("multinomial"),
+           {{name="IndexTensor", default=true, returned=true, method={default='nil'}},
+            {name='Generator', default=true},
+            {name=Tensor}, 
+            {name="int"}, 
+            {name="boolean", default=false}})
       
       for _,f in ipairs({{name='uniform', a=0, b=1},
                          {name='normal', a=0, b=1},
@@ -842,11 +924,13 @@ static void THTensor_random1__(THTensor *self, long b)
          
          wrap(f.name,
               string.format("THRandom_%s", f.name),
-              {{name="double", default=f.a},
+              {{name='Generator', default=true},
+               {name="double", default=f.a},
                {name="double", default=f.b},
                {name="double", creturned=true}},
               cname(f.name),
               {{name=Tensor, returned=true},
+               {name='Generator', default=true},
                {name=real, default=f.a},
                {name=real, default=f.b}})
       end
@@ -855,10 +939,12 @@ static void THTensor_random1__(THTensor *self, long b)
          
          wrap(f.name,
               string.format("THRandom_%s", f.name),
-              {{name="double", default=f.a},
+              {{name='Generator', default=true},
+               {name="double", default=f.a},
                {name="double", creturned=true}},
               cname(f.name),
               {{name=Tensor, returned=true},
+               {name='Generator', default=true},
                {name=real, default=f.a}})
       end
       
