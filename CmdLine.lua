@@ -10,10 +10,10 @@ end
 
 function CmdLine:error(msg)
    print('')
-   print(msg)
+   io.stderr:print(msg)
    print('')
    self:help()
-   os.exit(0)
+   os.exit(1)
 end
 
 function CmdLine:__readArgument__(params, arg, i, nArgument)
