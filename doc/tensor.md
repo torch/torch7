@@ -768,6 +768,11 @@ In the same spirit, `index` might be a [LongStorage](storage.md),
 specifying the position (in the Tensor) of the element to be
 retrieved.
 
+If `index` is a `ByteTensor` in which each element is 0 or 1 then it acts as a
+selection mask used to extract a subset of the original tensor. This is
+particularly useful with [logical operators](maths.md#logical-operations-on-tensors)
+like [`torch.le`](maths.md#torchlea-b).
+
 Example:
 ```lua
 > x = torch.Tensor(3,3)
@@ -795,6 +800,12 @@ Example:
 > = x[torch.LongStorage{2,3}] -- yet another way to return row 2, column 3
 6
 
+> = x[torch.le(x,3)] -- torch.le returns a ByteTensor that acts as a mask
+
+ 1
+ 2
+ 3
+[torch.DoubleTensor of dimension 3]
 ```
 
 <a name="torch.Tensor.set"/>
@@ -1152,6 +1163,9 @@ The indexing operator [] can be used to combine narrow/sub and
 select in a concise an efficient way. It can also be used
 to copy, and fill (sub) tensors.
 
+This operator also works with an input mask made of a `ByteTensor` with 0 and 1
+elements, e.g with a [logical operator](maths.md#logical-operations-on-tensors).
+
 ```lua
 > x = torch.Tensor(5, 6):zero()
 > print(x)
@@ -1201,6 +1215,16 @@ to copy, and fill (sub) tensors.
  0  3  0 -1  0  0
  0  4  0 -1  0  0
  0  5  0 -1  0  0
+[torch.DoubleTensor of dimension 5x6]
+
+> x[torch.lt(x,0)] = -2 -- sets all negative elements to -2 via a mask
+> print(x)
+
+ 0  1  1 -2  0  0
+ 0  2  2 -2  0  0
+ 0  3  0 -2  0  0
+ 0  4  0 -2  0  0
+ 0  5  0 -2  0  0
 [torch.DoubleTensor of dimension 5x6]
 ```
 
