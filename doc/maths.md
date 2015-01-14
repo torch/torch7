@@ -806,6 +806,22 @@ Matrix matrix product of `mat1` and `mat2`. If `mat1` is a
 
 `M:mm(x,y)` puts the result in `M`.
 
+<a name="torch.bmm"/>
+### [res] torch.bmm([res,] batch1, batch2) ###
+<a name="torch.bmm"/>
+
+Batch matrix matrix product of matrices stored in `batch1` and `batch2`.
+`batch1` and `batch2` must be 3D tensors each containing the same number
+of matrices. If `batch1` is a `b x n x m` tensor, `batch2` a `b x m x p`
+tensor, res will be a `b x n x p` tensor.
+
+
+`torch.bmm(x,y)` puts the result in a new tensor.
+
+`torch.bmm(M,x,y)` puts the result in `M`, resizing `M` if necessary.
+
+`M:bmm(x,y)` puts the result in `M`, resizing `M` if necessary.
+
 <a name="torch.ger"/>
 ### [res] torch.ger([res,] vec1, vec2) ###
 <a name="torch.ger"/>

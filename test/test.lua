@@ -460,6 +460,19 @@ function torchtest.div()
    mytester:assertlt(err, precision, 'error in torch.div - scalar, non contiguous')
 end
 
+function torchtest.bmm()
+  local num_batches = 10
+  local M, N, O = 23, 8, 12
+  local b1 = torch.randn(num_batches, M, N)
+  local b2 = torch.randn(num_batches, N, O)
+  local res = torch.bmm(b1, b2)
+
+  for i = 1, num_batches do
+    local r = torch.mm(b1[i], b2[i])
+    mytester:assertTensorEq(r, res[i], precision, 'result matrix ' .. i .. ' wrong')
+  end
+end
+
 function torchtest.clamp()
    local m1 = torch.rand(100):mul(5):add(-2.5)  -- uniform in [-2.5, 2.5]
    -- just in case we're extremely lucky:
