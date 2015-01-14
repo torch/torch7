@@ -312,6 +312,13 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor, dim=2}}
      )
 
+   wrap("bmm",
+        cname("bmm"),
+        {{name=Tensor, default=true, returned=true},
+         {name=Tensor, dim=3},
+         {name=Tensor, dim=3}}
+     )
+
    wrap("ger",
         cname("addr"),
         {{name=Tensor, default=true, returned=true, method={default='nil'},
