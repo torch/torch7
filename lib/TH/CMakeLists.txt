@@ -99,9 +99,11 @@ SET(hdr
 
 SET(src
   THGeneral.c THAllocator.c THStorage.c THTensor.c THBlas.c THLapack.c
-  THLogAdd.c THRandom.c THFile.c THDiskFile.c THMemoryFile.c)
+  THLogAdd.c THRandom.c THFile.c THDiskFile.c THMemoryFile.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/spooky/spooky-c.c)
 
 SET(src ${src} ${hdr})
+INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/spooky")
 ADD_LIBRARY(TH SHARED ${src})
 
 FIND_PACKAGE(BLAS)

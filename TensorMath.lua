@@ -428,6 +428,11 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
             {name="index"}})
    end
 
+   wrap("hash",
+        cname("chash"),
+        {{name=Tensor},
+         {name="long", creturned = true}})
+
    wrap("trace",
         cname("trace"),
         {{name=Tensor},

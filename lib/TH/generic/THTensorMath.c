@@ -2,6 +2,8 @@
 #define TH_GENERIC_FILE "generic/THTensorMath.c"
 #else
 
+#include <spooky-c.h>
+
 #define TH_OMP_OVERHEAD_THRESHOLD 100000
 
 void THTensor_(fill)(THTensor *r_, real value)
@@ -214,6 +216,40 @@ accreal THTensor_(sumall)(THTensor *tensor)
   accreal sum = 0;
   TH_TENSOR_APPLY(real, tensor, sum += *tensor_data;);
   return sum;
+}
+
+// Arbitrary value used for initializing the hash function.
+static const unsigned long THTensor_(torchHashMagicNo) = 42;
+
+static long THTensor_(noncontiguousHash)(THTensor *tensor)
+{
+  struct spooky_state hash_state;
+  unsigned long hash1 = THTensor_(torchHashMagicNo);
+  unsigned long hash2 = THTensor_(torchHashMagicNo);
+  spooky_init(&hash_state, hash1, hash2);
+
+  TH_TENSOR_APPLY(real, tensor, spooky_update(&hash_state, tensor_data,
+                                              sizeof(real));)
+
+  spooky_final(&hash_state, &hash1, &hash2);
+  return hash1;
+}
+
+long THTensor_(chash)(THTensor *tensor)
+{
+  if(tensor->nDimension == 0) {
+    return 0;
+  }
+
+  if(THTensor_(isContiguous)(tensor)) {
+    return spooky_hash64(THTensor_(data)(tensor),
+                         THTensor_(nElement)(tensor)*sizeof(real),
+                         THTensor_(torchHashMagicNo));
+  }
+  else
+  {
+    return THTensor_(noncontiguousHash)(tensor);
+  }
 }
 
 accreal THTensor_(prodall)(THTensor *tensor)
