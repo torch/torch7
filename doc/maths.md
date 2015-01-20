@@ -561,6 +561,34 @@ of elements must match, but sizes do not matter.
 
 `z:cmul(x,y)` puts the result in `z`.
 
+<a name="torch.cpow"/>
+### [res] torch.cpow([res,] tensor1, tensor2) ###
+<a name="torch.cpow"/>
+
+Element-wise power operation, taking the elements of `tensor1` to the powers
+given by elements of `tensor2`. The number of elements must match,
+but sizes do not matter.
+
+```
+> x = torch.Tensor(2,2):fill(2)
+> y = torch.Tensor(4):fill(3)
+> x:cpow(y)
+> = x
+
+ 8  8
+ 8  8
+[torch.Tensor of dimension 2x2]
+```
+
+`z=torch.cpow(x,y)` returns a new tensor.
+
+`torch.cpow(z,x,y)` puts the result in `z`.
+
+`y:cpow(x)` takes all elements of `y` to the powers given by the
+corresponding elements of `x`.
+
+`z:cpow(x,y)` puts the result in `z`.
+
 <a name="torch.addcmul"/>
 ### [res] torch.addcmul([res,] x [,value], tensor1, tensor2) ###
 <a name="torch.addcmul"/>
