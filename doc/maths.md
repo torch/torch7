@@ -805,6 +805,21 @@ If `mat1` is a `n x m` matrix, `mat2` a `m x p` matrix,
 Optional values `v1` and `v2` are scalars that multiply 
 `M` and `mat1 * mat2` respectively.
 
+<a name="torch.baddmm"/>
+### [res] torch.baddmm([res,] [v1,] M [v2,] mat1, mat2) ###
+<a name="torch.baddmm"/>
+
+Batch matrix matrix product of matrices stored in `batch1` and `batch2`.
+`batch1` and `batch2` must be 3D tensors each containing the same number
+of matrices. If `batch1` is a `b x n x m` tensor, `batch2` a `b x m x p`
+tensor, res will be a `n x p` tensor.
+
+`torch.addbmm(M,x,y)` puts the result in a new tensor.
+
+`M:addbmm(x,y)` puts the result in `M`, resizing `M` if necessary.
+
+`M:addbmm(beta,M2,alpha,x,y)` puts the result in `M`, resizing `M` if necessary.
+
 <a name="torch.mv"/>
 ### [res] torch.mv([res,] mat, vec) ###
 <a name="torch.mv"/>
