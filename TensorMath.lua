@@ -351,9 +351,10 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
      )
 
    for _,f in ipairs({
-                        {name="addmv", dim1=1, dim2=2, dim3=1},
-                        {name="addmm", dim1=2, dim2=2, dim3=2},
-                        {name="addr",  dim1=2, dim2=1, dim3=1},
+                        {name="addmv",  dim1=1, dim2=2, dim3=1},
+                        {name="addmm",  dim1=2, dim2=2, dim3=2},
+                        {name="addr",   dim1=2, dim2=1, dim3=1},
+                        {name="baddmm", dim1=2, dim2=3, dim3=3},
                      }
                   ) do
 
