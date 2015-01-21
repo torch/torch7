@@ -277,7 +277,7 @@ end
 function Tensor.expand(result,tensor,...)
    -- get sizes
    local sizes = {...}
-   
+
    local t = torch.type(tensor)
    if (t == 'number' or t == 'torch.LongStorage') then
       table.insert(sizes,1,tensor)
@@ -334,7 +334,7 @@ torch.expandAs = Tensor.expandAs
 function Tensor.repeatTensor(result,tensor,...)
    -- get sizes
    local sizes = {...}
-   
+
    local t = torch.type(tensor)
    if (t == 'number' or t == 'torch.LongStorage') then
       table.insert(sizes,1,tensor)
@@ -512,6 +512,18 @@ function Tensor.chunk(result, tensor, nChunk, dim)
    return torch.split(result, tensor, splitSize, dim)
 end
 torch.chunk = Tensor.chunk
+
+function Tensor.totable(tensor)
+  local result = {}
+  if tensor:dim() == 1 then
+    tensor:apply(function(i) table.insert(result, i) end)
+  else
+    for i = 1, tensor:size(1) do
+      table.insert(result, tensor[i]:totable())
+    end
+  end
+  return result
+end
 
 for _,type in ipairs(types) do
    local metatable = torch.getmetatable('torch.' .. type .. 'Tensor')
