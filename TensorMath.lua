@@ -240,6 +240,12 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor, method={default=1}},
          {name=Tensor}})
 
+   wrap("cpow",
+        cname("cpow"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=Tensor, method={default=1}},
+         {name=Tensor}})
+
    wrap("cdiv",
         cname("cdiv"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
