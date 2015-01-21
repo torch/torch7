@@ -32,7 +32,7 @@ This call will first call the method ```lua__init()``` if it exists, passing all
  do
    --- creates a class "Foo"
    local Foo = torch.class('Foo')
- 
+
    --- the initializer
    function Foo:__init()
      self.contents = "this is some text"
@@ -65,7 +65,7 @@ This call will first call the method ```lua__init()``` if it exists, passing all
    function Bar:__init(stuff)
      --- call the parent initializer on ourself
      parent.__init(self)
- 
+
      --- do some stuff
      self.stuff = stuff
    end
@@ -102,16 +102,16 @@ is possible to create an empty object of this class.
 
 Checks if `object` has a metatable. If it does, and if it corresponds to a
 `Torch` class, then returns a string containing the name of the
-class. Otherwise, it returns the Lua `type(object)` of the object. 
+class. Otherwise, it returns the Lua `type(object)` of the object.
 Unlike [torch.typename()](#torch.typename), all outputs are strings:
 
 ```lua
 > torch.type(torch.Tensor())
-torch.DoubleTensor	
+torch.DoubleTensor
 > torch.type({})
-table	
+table
 > torch.type(7)
-number	
+number
 ```
 
 
@@ -164,7 +164,7 @@ Register a new metatable as a Torch type with the given string `name`. The new m
 
 If the string `parentName` is not `nil` and is a valid Torch type (previously created
 by `torch.newmetatable()`) then set the corresponding metatable as a metatable to the returned new
-metatable. 
+metatable.
 
 If the given `constructor` function is not `nil`, then assign to the variable `name` the given constructor.
 The given `name` might be of the form `package.className`, in which case the `className` will be local to the
@@ -278,5 +278,18 @@ of care.
 ### [table] torch.getconstructortable(string) ###
 
 BUGGY
-Return the constructor table of the Torch class specified by ''string'.
+Return the constructor table of the Torch class specified by 'string'.
 
+<a name="torch.totable"/>
+### [table] torch.totable(object) ###
+
+Converts a Tensor or a Storage to a lua table. Also available as methods: `tensor:totable()` and `storage:totable()`.
+Multidimensional Tensors are converted to a set of nested tables, matching the shape of the source Tensor.
+```
+t7> print(torch.totable(torch.Tensor({1, 2, 3})))
+{
+  1 : 1
+  2 : 2
+  3 : 3
+}
+```
