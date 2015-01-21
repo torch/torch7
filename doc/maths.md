@@ -381,7 +381,11 @@ This function is more accurate than [log()](#torch.log) for small values of x.
 ### [res] torch.pow([res,] x) ###
 <a name="torch.pow"/>
 
+Let x be a tensor and n a number.
+
 `y=torch.pow(x,n)` returns a new tensor with the elements of x to the power of n.
+
+`y=torch.pow(n,x)` returns, for each element in x, n raised to the power of the element in x.
 
 `x:pow(n)` replaces all elements in-place with the elements of x to the power of n.
 
