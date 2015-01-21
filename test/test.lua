@@ -1580,7 +1580,7 @@ function torchtest.indexCopy()
       dest2[idx[i]]:copy(src[i])
    end
    mytester:assertTensorEq(dest, dest2, 0.000001, "indexCopy tensor error")
-   
+
    local dest = torch.randn(nDest)
    local src = torch.randn(nCopy)
    local idx = torch.randperm(nDest):narrow(1, 1, nCopy):long()
@@ -1660,6 +1660,12 @@ function torchtest.isTensor()
    mytester:assert(torch.isTensor(t[1]), 'error in isTensor for subTensor')
    mytester:assert(not torch.isTensor(t[1][2]), 'false positive in isTensor')
    mytester:assert(torch.Tensor.isTensor(t), 'alias not working')
+end
+
+function torchtest.isStorage()
+  local t = torch.randn(3,4)
+  mytester:assert(torch.isStorage(t:storage()), 'error in isStorage')
+  mytester:assert(not torch.isStorage(t), 'false positive in isStorage')
 end
 
 function torchtest.view()
@@ -1770,6 +1776,27 @@ function torchtest.chunk()
       mytester:assertTensorEq(tensor:narrow(dim, start, targetSize[i][dim]), split, 0.000001, 'Result content error in chunk '..i)
       start = start + targetSize[i][dim]
    end
+end
+
+function torchtest.totable()
+  local table1D = {1, 2, 3}
+  local tensor1D = torch.Tensor(table1D)
+  local storage = torch.Storage(table1D)
+  mytester:assertTableEq(tensor1D:totable(), table1D, 'tensor1D:totable incorrect')
+  mytester:assertTableEq(storage:totable(), table1D, 'storage:totable incorrect')
+  mytester:assertTableEq(torch.totable(tensor1D), table1D, 'torch.totable incorrect for Tensors')
+  mytester:assertTableEq(torch.totable(storage), table1D, 'torch.totable incorrect for Storages')
+
+  local table2D = {{1, 2}, {3, 4}}
+  local tensor2D = torch.Tensor(table2D)
+  mytester:assertTableEq(tensor2D:totable(), table2D, 'tensor2D:totable incorrect')
+
+  local tensor3D = torch.Tensor({{{1, 2}, {3, 4}}, {{5, 6}, {7, 8}}})
+  local tensorNonContig = tensor3D:select(2, 2)
+  mytester:assert(not tensorNonContig:isContiguous(), 'invalid test')
+  mytester:assertTableEq(tensorNonContig:totable(), {{3, 4}, {7, 8}},
+                         'totable() incorrect for non-contiguous tensors')
+
 end
 
 function torch.test(tests)
