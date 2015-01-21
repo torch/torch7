@@ -461,16 +461,46 @@ function torchtest.div()
 end
 
 function torchtest.bmm()
-  local num_batches = 10
-  local M, N, O = 23, 8, 12
-  local b1 = torch.randn(num_batches, M, N)
-  local b2 = torch.randn(num_batches, N, O)
-  local res = torch.bmm(b1, b2)
+   local num_batches = 10
+   local M, N, O = 23, 8, 12
+   local b1 = torch.randn(num_batches, M, N)
+   local b2 = torch.randn(num_batches, N, O)
+   local res = torch.bmm(b1, b2)
 
-  for i = 1, num_batches do
-    local r = torch.mm(b1[i], b2[i])
-    mytester:assertTensorEq(r, res[i], precision, 'result matrix ' .. i .. ' wrong')
-  end
+   for i = 1, num_batches do
+     local r = torch.mm(b1[i], b2[i])
+     mytester:assertTensorEq(r, res[i], precision, 'result matrix ' .. i .. ' wrong')
+   end
+end
+
+function torchtest.baddmm()
+   local num_batches = 10
+   local M, N, O = 12, 8, 5
+   local b1 = torch.randn(num_batches, M, N)
+   local b2 = torch.randn(num_batches, N, O)
+   local res = torch.bmm(b1, b2)
+   local res2 = torch.Tensor():resizeAs(res[1]):zero()
+
+   res2:baddmm(b1,b2)
+   mytester:assertTensorEq(res2, res:sum(1), precision, 'baddmm result wrong')
+
+   res2:baddmm(1,b1,b2)
+   mytester:assertTensorEq(res2, res:sum(1)*2, precision, 'baddmm result wrong')
+
+   res2:baddmm(1,res2,.5,b1,b2)
+   mytester:assertTensorEq(res2, res:sum(1)*2.5, precision, 'baddmm result wrong')
+
+   local res3 = torch.baddmm(1,res2,0,b1,b2)
+   mytester:assertTensorEq(res3, res2, precision, 'baddmm result wrong')
+
+   local res4 = torch.baddmm(1,res2,.5,b1,b2)
+   mytester:assertTensorEq(res4, res:sum(1)*3, precision, 'baddmm result wrong')
+
+   local res5 = torch.baddmm(0,res2,1,b1,b2)
+   mytester:assertTensorEq(res5, res:sum(1), precision, 'baddmm result wrong')
+
+   local res6 = torch.baddmm(.1,res2,.5,b1,b2)
+   mytester:assertTensorEq(res6, res2*.1 + res:sum(1)*.5, precision, 'baddmm result wrong')
 end
 
 function torchtest.clamp()

@@ -63,7 +63,7 @@ end
 <a name="torch.cat"/>
 ### [res] torch.cat( [res,] x_1, x_2, [dimension] ) ###
 <a name="torch.cat"/>
-`x=torch.cat(x_1,x_2,[dimension])` returns a tensor `x` which is the concatenation of tensors x_1 and x_2 along dimension `dimension`. 
+`x=torch.cat(x_1,x_2,[dimension])` returns a tensor `x` which is the concatenation of tensors x_1 and x_2 along dimension `dimension`.
 
 If `dimension` is not specified it is the last dimension.
 
@@ -128,7 +128,7 @@ Examples:
 with elements constructed from the diagonal of x.
 
 `y=torch.diag(x,k)` returns the k-th diagonal of x,
-wher k=0 is the main diagonal, k>0 is above the main diagonal and k<0 
+wher k=0 is the main diagonal, k>0 is above the main diagonal and k<0
 is below the main diagonal.
 
 <a name="torch.eye"/>
@@ -162,21 +162,21 @@ is below the main diagonal.
 <a name="torch.multinomial"/>
 
 `y=torch.multinomial(p,n)` returns a tensor `y` where each row contains
-`n` indices sampled __with replacement__ (`flag=true`) from the 
+`n` indices sampled __with replacement__ (`flag=true`) from the
 [multinomial probability distribution](http://en.wikipedia.org/wiki/Multinomial_distribution)
-located in the corresponding row of tensor `p`. 
+located in the corresponding row of tensor `p`.
 
-The rows of `p` need not sum to one (in which case we use the values as weights), 
-but should be non-negative and have a non-zero sum. 
-Indices are ordered from left to right according to 
-when each was sampled (first samples are placed in first column). 
+The rows of `p` need not sum to one (in which case we use the values as weights),
+but should be non-negative and have a non-zero sum.
+Indices are ordered from left to right according to
+when each was sampled (first samples are placed in first column).
 
 If `p` is an `MxN` matrix, `y` is an `Mxn` matrix.
 
 If `p` is a vector of size `M`, `y` is a vector size `n`.
 
 `y=torch.multinomial(p,n,false)` is like the above, except samples are drawn
-__without replacement__. In other words, when a sample index is drawn for a row, it 
+__without replacement__. In other words, when a sample index is drawn for a row, it
 cannot be drawn again for that row. This implies the constraint `n <= N`.
 
 <a name="torch.ones"/>
@@ -261,7 +261,7 @@ For more than 4 dimensions, you can use a storage:
 
 `y=torch.tril(x)` returns the lower triangular part of x, the other elements of y are set to 0.
 
-`torch.tril(x,k)` returns the elements on and below the k-th diagonal of x as non-zero.   k=0 is the main diagonal, k>0 is above the main diagonal and k<0 
+`torch.tril(x,k)` returns the elements on and below the k-th diagonal of x as non-zero.   k=0 is the main diagonal, k>0 is above the main diagonal and k<0
 is below the main diagonal.
 
 <a name="torch.triu"/>
@@ -271,7 +271,7 @@ is below the main diagonal.
 `y=torch.triu(x)` returns the upper triangular part of x,
 the other elements of y are set to 0.
 
-`torch.triu(x,k)` returns the elements on and above the k-th diagonal of x as non-zero.   k=0 is the main diagonal, k>0 is above the main diagonal and k<0 
+`torch.triu(x,k)` returns the elements on and above the k-th diagonal of x as non-zero.   k=0 is the main diagonal, k>0 is above the main diagonal and k<0
 is below the main diagonal.
 
 <a name="torch.zeros"/>
@@ -642,7 +642,7 @@ number of elements must match, but sizes do not matter.
 
 ```
 > x = torch.Tensor(2,2):fill(1)
-> y = torch.Tensor(4)        
+> y = torch.Tensor(4)
 > for i=1,4 do y[i] = i end
 > x:cdiv(y)
 > = x
@@ -664,8 +664,8 @@ number of elements must match, but sizes do not matter.
 ### [res] torch.addcdiv([res,] x [,value], tensor1, tensor2) ###
 <a name="torch.addcdiv"/>
 
-Performs the element-wise division of `tensor1` by `tensor1`, 
-multiply the result by the scalar `value` and add it to `x`. 
+Performs the element-wise division of `tensor1` by `tensor1`,
+multiply the result by the scalar `value` and add it to `x`.
 The number of elements must match, but sizes do not matter.
 
 ```
@@ -740,7 +740,7 @@ be a vector of size `n`.
 
 `r:addmv(x,y,z)` puts the result of `x+y*z` into `r`.
 
-Optional values `v1` and `v2` are scalars that multiply 
+Optional values `v1` and `v2` are scalars that multiply
 `vec1` and `mat*vec2` respectively.
 
 <a name="torch.addr"/>
@@ -754,11 +754,11 @@ In other words,
 res_ij = v1 * mat_ij + v2 * vec1_i * vec2_j
 ```
 
-If `vec1` is a vector of size `n` and `vec2` is a vector of size `m`, 
+If `vec1` is a vector of size `n` and `vec2` is a vector of size `m`,
 then mat must be a matrix of size `n x m`.
 
 ```
-> x = torch.Tensor(3)        
+> x = torch.Tensor(3)
 > y = torch.Tensor(2)
 > for i=1,3 do x[i] = i end
 > for i=1,2 do y[i] = i end
@@ -780,7 +780,7 @@ then mat must be a matrix of size `n x m`.
 
 `r:addr(M,x,y)` puts the result in `r`.
 
-Optional values `v1` and `v2` are scalars that multiply 
+Optional values `v1` and `v2` are scalars that multiply
 `M` and `vec1 [out] vec2` respectively.
 
 
@@ -795,7 +795,7 @@ and `mat2` (2D tensor). In other words,
 res = v1 * M + v2 * mat1*mat2
 ```
 
-If `mat1` is a `n x m` matrix, `mat2` a `m x p` matrix, 
+If `mat1` is a `n x m` matrix, `mat2` a `m x p` matrix,
 `M` must be a `n x p` matrix.
 
 `torch.addmm(M,mat1,mat2)` returns the result in a new tensor.
@@ -806,15 +806,30 @@ If `mat1` is a `n x m` matrix, `mat2` a `m x p` matrix,
 
 `r:addmm(M,mat1,mat2)` puts the result in `r`.
 
-Optional values `v1` and `v2` are scalars that multiply 
+Optional values `v1` and `v2` are scalars that multiply
 `M` and `mat1 * mat2` respectively.
+
+<a name="torch.baddmm"/>
+### [res] torch.baddmm([res,] [v1,] M [v2,] mat1, mat2) ###
+<a name="torch.baddmm"/>
+
+Batch matrix matrix product of matrices stored in `batch1` and `batch2`.
+`batch1` and `batch2` must be 3D tensors each containing the same number
+of matrices. If `batch1` is a `b x n x m` tensor, `batch2` a `b x m x p`
+tensor, res will be a `n x p` tensor.
+
+`torch.baddmm(M,x,y)` puts the result in a new tensor.
+
+`M:baddmm(x,y)` puts the result in `M`, resizing `M` if necessary.
+
+`M:baddmm(beta,M2,alpha,x,y)` puts the result in `M`, resizing `M` if necessary.
 
 <a name="torch.mv"/>
 ### [res] torch.mv([res,] mat, vec) ###
 <a name="torch.mv"/>
 
-Matrix vector product of `mat` and `vec`. Sizes must respect 
-the matrix-multiplication operation: if `mat` is a `n x m` matrix, 
+Matrix vector product of `mat` and `vec`. Sizes must respect
+the matrix-multiplication operation: if `mat` is a `n x m` matrix,
 `vec` must be vector of size `m` and res must be a vector of size `n`.
 
 `torch.mv(x,y)` puts the result in a new tensor.
@@ -827,8 +842,8 @@ the matrix-multiplication operation: if `mat` is a `n x m` matrix,
 ### [res] torch.mm([res,] mat1, mat2) ###
 <a name="torch.mm"/>
 
-Matrix matrix product of `mat1` and `mat2`. If `mat1` is a 
-`n x m` matrix, `mat2` a `m x p` matrix, res must be a 
+Matrix matrix product of `mat1` and `mat2`. If `mat1` is a
+`n x m` matrix, `mat2` a `m x p` matrix, res must be a
 `n x p` matrix.
 
 
@@ -858,8 +873,8 @@ tensor, res will be a `b x n x p` tensor.
 ### [res] torch.ger([res,] vec1, vec2) ###
 <a name="torch.ger"/>
 
-Outer product of `vec1` and `vec2`. If `vec1` is a vector of 
-size `n` and `vec2` is a vector of size `m`, then res must 
+Outer product of `vec1` and `vec2`. If `vec1` is a vector of
+size `n` and `vec2` is a vector of size `m`, then res must
 be a matrix of size `n x m`.
 
 
@@ -986,13 +1001,13 @@ Example:
 ### [res] torch.cross([res,] a, b [,n]) ###
 
 `y=torch.cross(a,b)` returns the cross product of the tensors a and b.
-a and b must be 3 element vectors. 
+a and b must be 3 element vectors.
 
 `y=cross(a,b)` returns the cross product of a and b along the first dimension of length 3.
 
 `y=cross(a,b,n)`, where a and b returns the cross
-product of vectors in dimension n of a and b. 
-a and b must have the same size, 
+product of vectors in dimension n of a and b.
+a and b must have the same size,
 and both `a:size(n)` and `b:size(n)` must be 3.
 
 
@@ -1033,7 +1048,7 @@ of `x`, performing the operation over dimension `n`.
 
 `y=torch.mean(x)` returns the mean of all elements of `x`.
 
-`y=torch.mean(x,1)` returns a tensor `y` of the mean of the elements in 
+`y=torch.mean(x,1)` returns a tensor `y` of the mean of the elements in
 each column of `x`.
 
 `y=torch.mean(x,2)` performs the mean operation for each row and
@@ -1057,7 +1072,7 @@ each column of `x`.
 <a name="torch.prod"/>
 ### [res] torch.prod([res,] x [,n]) ###
 
-`y=torch.prod(x)` returns a tensor `y` of the product of all elements in `x`. 
+`y=torch.prod(x)` returns a tensor `y` of the product of all elements in `x`.
 
 `y=torch.prod(x,2)` performs the prod operation for each row and
 
@@ -1115,9 +1130,9 @@ a specific dimension `d`, in __descending__ order.
 <a name="torch.norm"/>
 ### torch.norm(x) ###
 
-`y=torch.norm(x)` returns the 2-norm of the tensor `x`. 
+`y=torch.norm(x)` returns the 2-norm of the tensor `x`.
 
-`y=torch.norm(x,p)` returns the `p`-norm of the tensor `x`. 
+`y=torch.norm(x,p)` returns the `p`-norm of the tensor `x`.
 
 `y=torch.norm(x,p,dim)` returns the `p`-norms of the tensor `x` computed over the dimension dim.
 
@@ -1125,9 +1140,9 @@ a specific dimension `d`, in __descending__ order.
 ### torch.renorm([res], x, p, dim, maxnorm) ###
 Renormalizes the sub-tensors along dimension `dim` such that they do not exceed norm `maxnorm`.
 
-`y=torch.renorm(x,p,dim,maxnorm)` returns a version of `x` with `p`-norms lower than `maxnorm` over non-`dim` dimensions. 
-The `dim` argument is not to be confused with the argument of the same name in function [norm](#torch.norm). 
-In this case, the `p`-norm is measured for each `i`-th sub-tensor `x:select(dim, i)`. This function is 
+`y=torch.renorm(x,p,dim,maxnorm)` returns a version of `x` with `p`-norms lower than `maxnorm` over non-`dim` dimensions.
+The `dim` argument is not to be confused with the argument of the same name in function [norm](#torch.norm).
+In this case, the `p`-norm is measured for each `i`-th sub-tensor `x:select(dim, i)`. This function is
 equivalent to (but faster than) the following:
 ```lua
 function renorm(matrix, value, dim, maxnorm)
@@ -1152,9 +1167,9 @@ Note: this function is particularly useful as a regularizer for constraining the
 <a name="torch.dist"/>
 ### torch.dist(x,y) ###
 
-`y=torch.dist(x,y)` returns the 2-norm of `(x-y)`. 
+`y=torch.dist(x,y)` returns the 2-norm of `(x-y)`.
 
-`y=torch.dist(x,y,p)` returns the `p`-norm of `(x-y)`. 
+`y=torch.dist(x,y,p)` returns the `p`-norm of `(x-y)`.
 
 <a name="torch.numel"/>
 ### torch.numel(x) ###
@@ -1164,7 +1179,7 @@ Note: this function is particularly useful as a regularizer for constraining the
 <a name="torch.trace"/>
 ### torch.trace(x) ###
 
-`y=torch.trace(x)` returns the trace (sum of the diagonal elements) 
+`y=torch.trace(x)` returns the trace (sum of the diagonal elements)
 of a matrix `x`. This is  equal  to the sum of the eigenvalues of `x`.
 The returned value `y` is a number, not a tensor.
 
@@ -1359,8 +1374,8 @@ b=torch.Tensor({{8.58,  8.26,  8.48, -5.28,  5.72,  8.93},
 [torch.DoubleTensor of dimension 6x2]
 
 x = torch.gels(b,a)
-=x 
- -0.4506   0.2497 
+=x
+ -0.4506   0.2497
  -0.8492  -0.9020
   0.7066   0.6323
   0.1289   0.1351
@@ -1450,7 +1465,7 @@ e,v = torch.symeig(a,'V')
 
 Eigen values and eigen vectors of a general real matrix ` A ` of
 size ` m x m `. This function calculates all right eigenvalues (and
-vectors) of ` A ` such that ` A = V' diag(e) V `. 
+vectors) of ` A ` such that ` A = V' diag(e) V `.
 
 Third argument defines computation of eigenvectors or eigenvalues
 only. If ` N `, only eignevalues are computed. If ` V `, both
