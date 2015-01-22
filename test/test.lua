@@ -473,7 +473,7 @@ function torchtest.bmm()
    end
 end
 
-function torchtest.baddmm()
+function torchtest.addbmm()
    local num_batches = 10
    local M, N, O = 12, 8, 5
    local b1 = torch.randn(num_batches, M, N)
@@ -481,26 +481,56 @@ function torchtest.baddmm()
    local res = torch.bmm(b1, b2)
    local res2 = torch.Tensor():resizeAs(res[1]):zero()
 
-   res2:baddmm(b1,b2)
-   mytester:assertTensorEq(res2, res:sum(1), precision, 'baddmm result wrong')
+   res2:addbmm(b1,b2)
+   mytester:assertTensorEq(res2, res:sum(1), precision, 'addbmm result wrong')
 
-   res2:baddmm(1,b1,b2)
-   mytester:assertTensorEq(res2, res:sum(1)*2, precision, 'baddmm result wrong')
+   res2:addbmm(1,b1,b2)
+   mytester:assertTensorEq(res2, res:sum(1)*2, precision, 'addbmm result wrong')
 
-   res2:baddmm(1,res2,.5,b1,b2)
-   mytester:assertTensorEq(res2, res:sum(1)*2.5, precision, 'baddmm result wrong')
+   res2:addbmm(1,res2,.5,b1,b2)
+   mytester:assertTensorEq(res2, res:sum(1)*2.5, precision, 'addbmm result wrong')
 
-   local res3 = torch.baddmm(1,res2,0,b1,b2)
-   mytester:assertTensorEq(res3, res2, precision, 'baddmm result wrong')
+   local res3 = torch.addbmm(1,res2,0,b1,b2)
+   mytester:assertTensorEq(res3, res2, precision, 'addbmm result wrong')
 
-   local res4 = torch.baddmm(1,res2,.5,b1,b2)
-   mytester:assertTensorEq(res4, res:sum(1)*3, precision, 'baddmm result wrong')
+   local res4 = torch.addbmm(1,res2,.5,b1,b2)
+   mytester:assertTensorEq(res4, res:sum(1)*3, precision, 'addbmm result wrong')
 
-   local res5 = torch.baddmm(0,res2,1,b1,b2)
-   mytester:assertTensorEq(res5, res:sum(1), precision, 'baddmm result wrong')
+   local res5 = torch.addbmm(0,res2,1,b1,b2)
+   mytester:assertTensorEq(res5, res:sum(1), precision, 'addbmm result wrong')
 
-   local res6 = torch.baddmm(.1,res2,.5,b1,b2)
-   mytester:assertTensorEq(res6, res2*.1 + res:sum(1)*.5, precision, 'baddmm result wrong')
+   local res6 = torch.addbmm(.1,res2,.5,b1,b2)
+   mytester:assertTensorEq(res6, res2*.1 + res:sum(1)*.5, precision, 'addbmm result wrong')
+end
+
+function torchtest.baddbmm()
+   local num_batches = 10
+   local M, N, O = 12, 8, 5
+   local b1 = torch.randn(num_batches, M, N)
+   local b2 = torch.randn(num_batches, N, O)
+   local res = torch.bmm(b1, b2)
+   local res2 = torch.Tensor():resizeAs(res):zero()
+
+   res2:baddbmm(b1,b2)
+   mytester:assertTensorEq(res2, res, precision, 'baddbmm result wrong')
+
+   res2:baddbmm(1,b1,b2)
+   mytester:assertTensorEq(res2, res*2, precision, 'baddbmm result wrong')
+
+   res2:baddbmm(1,res2,.5,b1,b2)
+   mytester:assertTensorEq(res2, res*2.5, precision, 'baddbmm result wrong')
+
+   local res3 = torch.baddbmm(1,res2,0,b1,b2)
+   mytester:assertTensorEq(res3, res2, precision, 'baddbmm result wrong')
+
+   local res4 = torch.baddbmm(1,res2,.5,b1,b2)
+   mytester:assertTensorEq(res4, res*3, precision, 'baddbmm result wrong')
+
+   local res5 = torch.baddbmm(0,res2,1,b1,b2)
+   mytester:assertTensorEq(res5, res, precision, 'baddbmm result wrong')
+
+   local res6 = torch.baddbmm(.1,res2,.5,b1,b2)
+   mytester:assertTensorEq(res6, res2*.1 + res*.5, precision, 'baddbmm result wrong')
 end
 
 function torchtest.clamp()

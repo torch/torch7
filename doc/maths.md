@@ -809,20 +809,38 @@ If `mat1` is a `n x m` matrix, `mat2` a `m x p` matrix,
 Optional values `v1` and `v2` are scalars that multiply 
 `M` and `mat1 * mat2` respectively.
 
-<a name="torch.baddmm"/>
-### [res] torch.baddmm([res,] [v1,] M [v2,] mat1, mat2) ###
-<a name="torch.baddmm"/>
+<a name="torch.addbmm"/>
+### [res] torch.addbmm([res,] [v1,] M [v2,] mat1, mat2) ###
+<a name="torch.addbmm"/>
 
-Batch matrix matrix product of matrices stored in `batch1` and `batch2`.
+Batch matrix matrix product of matrices stored in `batch1` and `batch2`, 
+with a reduced add step (all matrix multiplications get accumulated in a
+single place).
 `batch1` and `batch2` must be 3D tensors each containing the same number
 of matrices. If `batch1` is a `b x n x m` tensor, `batch2` a `b x m x p`
 tensor, res will be a `n x p` tensor.
 
-`torch.baddmm(M,x,y)` puts the result in a new tensor.
+`torch.addbmm(M,x,y)` puts the result in a new tensor.
 
-`M:baddmm(x,y)` puts the result in `M`, resizing `M` if necessary.
+`M:addbmm(x,y)` puts the result in `M`, resizing `M` if necessary.
 
-`M:baddmm(beta,M2,alpha,x,y)` puts the result in `M`, resizing `M` if necessary.
+`M:addbmm(beta,M2,alpha,x,y)` puts the result in `M`, resizing `M` if necessary.
+
+<a name="torch.baddbmm"/>
+### [res] torch.baddbmm([res,] [v1,] M [v2,] mat1, mat2) ###
+<a name="torch.baddbmm"/>
+
+Batch matrix matrix product of matrices stored in `batch1` and `batch2`,
+with batch add.
+`batch1` and `batch2` must be 3D tensors each containing the same number
+of matrices. If `batch1` is a `b x n x m` tensor, `batch2` a `b x m x p`
+tensor, res will be a `b x n x p` tensor.
+
+`torch.baddbmm(M,x,y)` puts the result in a new tensor.
+
+`M:baddbmm(x,y)` puts the result in `M`, resizing `M` if necessary.
+
+`M:baddbmm(beta,M2,alpha,x,y)` puts the result in `M`, resizing `M` if necessary.
 
 <a name="torch.mv"/>
 ### [res] torch.mv([res,] mat, vec) ###
