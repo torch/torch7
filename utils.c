@@ -178,7 +178,7 @@ static int torch_setnumthreads(lua_State *L)
   return 0;
 }
 
-static int torch_getnumprocs(lua_State *L)
+static int torch_getnumcores(lua_State *L)
 {
 #ifdef _OPENMP
   lua_pushinteger(L, omp_get_num_procs());
@@ -195,7 +195,7 @@ static const struct luaL_Reg torch_utils__ [] = {
   {"toc", torch_lua_toc},
   {"setnumthreads", torch_setnumthreads},
   {"getnumthreads", torch_getnumthreads},
-  {"getnumprocs", torch_getnumprocs},
+  {"getnumcores", torch_getnumcores},
   {"factory", luaT_lua_factory},
   {"getconstructortable", luaT_lua_getconstructortable},
   {"typename", luaT_lua_typename},
