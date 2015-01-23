@@ -258,6 +258,7 @@ end
 -- simple helpers to save/load arbitrary objects/tables
 function torch.save(filename, object, mode)
    mode = mode or 'binary'
+   local filename = filename:gsub('~',os.getenv('HOME'))
    local file = torch.DiskFile(filename, 'w')
    file[mode](file)
    file:writeObject(object)
@@ -266,6 +267,7 @@ end
 
 function torch.load(filename, mode)
    mode = mode or 'binary'
+   local filename = filename:gsub('~',os.getenv('HOME'))
    local file = torch.DiskFile(filename, 'r')
    file[mode](file)
    local object = file:readObject()
