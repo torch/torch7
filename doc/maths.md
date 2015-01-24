@@ -1187,7 +1187,14 @@ Note: this function is particularly useful as a regularizer for constraining the
 
 `y=torch.dist(x,y)` returns the 2-norm of `(x-y)`. 
 
-`y=torch.dist(x,y,p)` returns the `p`-norm of `(x-y)`. 
+`y=torch.dist(x,y,p)` returns the `p`-norm of `(x-y)`.
+
+<a name = "torch.hash" />
+### torch.hash(x) ###
+
+`y=torch.hash(x)` returns a hash of the contents on tensor x. Any tensor
+with the identical contents (regardless of shape) will have the same hash. This
+can be used for caching, memoizing etc.
 
 <a name="torch.numel"/>
 ### torch.numel(x) ###

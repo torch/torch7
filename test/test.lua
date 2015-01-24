@@ -1856,7 +1856,37 @@ function torchtest.totable()
   mytester:assert(not tensorNonContig:isContiguous(), 'invalid test')
   mytester:assertTableEq(tensorNonContig:totable(), {{3, 4}, {7, 8}},
                          'totable() incorrect for non-contiguous tensors')
+end
 
+function torchtest.hash()
+  local function hashTest(t)
+    -- Check that the same content has the same hash (including
+    -- changing between continous and non-continous).
+    mytester:asserteq(t:hash(), t:clone():hash())
+    -- Check that changing any part of the array changes the hash
+    local lasthash = t:hash()
+    for i = 1, 4 do
+      for j = 1, 5 do
+        t[i] = t[i] + 1
+        local newhash = t:hash()
+        mytester:assertne(lasthash, newhash,
+                        "Changing array element should change hash for"
+                          .. tostring(typeFactory))
+        lasthash = newhash
+      end
+    end
+  end
+  for _, typeFactory in pairs{torch.DoubleTensor,
+                         torch.ByteTensor,
+                         torch.FloatTensor,
+                         torch.ShortTensor,
+                         torch.LongTensor} do
+    -- Contiguous
+    hashTest(typeFactory(4, 5):random())
+    -- Non-contiguous
+    local t = typeFactory(4, 5, 2):random()
+    hashTest(t[{{}, {}, {2}}]:squeeze())
+  end
 end
 
 function torch.test(tests)
