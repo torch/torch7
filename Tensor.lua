@@ -525,6 +525,25 @@ function Tensor.totable(tensor)
   return result
 end
 
+function Tensor.permute(tensor, ...)
+  local perm = {...}
+  local nDims = tensor:dim()
+  assert(#perm == nDims, 'Invalid permutation')
+  local j
+  for i, p in ipairs(perm) do
+    if p ~= i and p ~= 0 then
+      j = i
+      repeat
+        assert(0 < perm[j] and perm[j] <= nDims, 'Invalid permutation')
+        tensor = tensor:transpose(j, perm[j])
+        j, perm[j] = perm[j], 0
+      until perm[j] == i
+      perm[j] = j
+    end
+  end
+  return tensor
+end
+
 for _,type in ipairs(types) do
    local metatable = torch.getmetatable('torch.' .. type .. 'Tensor')
    for funcname, func in pairs(Tensor) do
