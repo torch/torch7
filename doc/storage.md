@@ -174,7 +174,7 @@ x = torch.IntStorage(10):fill(0) -- x won't be nil!
 <a name="torch.Storage.resize"/>
 ### [self] resize(size) ###
 
-Resize the storage to the provide `size`. _The new contents are undertermined_.
+Resize the storage to the provide `size`. _The new contents are undetermined_.
 
 This function returns self, allowing things like:
 ```lua

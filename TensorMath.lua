@@ -351,9 +351,11 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
      )
 
    for _,f in ipairs({
-                        {name="addmv", dim1=1, dim2=2, dim3=1},
-                        {name="addmm", dim1=2, dim2=2, dim3=2},
-                        {name="addr",  dim1=2, dim2=1, dim3=1},
+                        {name="addmv",   dim1=1, dim2=2, dim3=1},
+                        {name="addmm",   dim1=2, dim2=2, dim3=2},
+                        {name="addr",    dim1=2, dim2=1, dim3=1},
+                        {name="addbmm",  dim1=2, dim2=3, dim3=3},
+                        {name="baddbmm", dim1=3, dim2=3, dim3=3},
                      }
                   ) do
 
@@ -905,6 +907,10 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
            {{name=Tensor, default=true, returned=true, method={default='nil'}},
             {name=Tensor, method={default=1}},
             {name=real}},
+           cname("tpow"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=real},
+            {name=Tensor, method={default=1}}},
            "pow",
            {{name=real},
             {name=real},
