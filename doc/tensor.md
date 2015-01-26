@@ -1667,6 +1667,37 @@ tensors. The given tensor must be 2 dimensional. Swap dimensions 1 and 2.
 [torch.DoubleTensor of dimension 3x4]
 ```
 
+
+<a name="torch.Tensor.permute"/>
+### [Tensor] permute(dim1, dim2, ..., dimn) ###
+
+Generalizes the function [transpose()](#torch.Tensor.transpose) and can be used
+as a convenience method replacing a sequence of transpose() calls.
+Returns a tensor where the dimensions were permuted according to the permutation
+given by (dim1, dim2, ... , dimn). The permutation must be specified fully, i.e.
+there must be as many parameters as the tensor has dimensions.
+```lua
+> x = torch.Tensor(3,4,2,5)
+> print(x:size())
+
+ 3
+ 4
+ 2
+ 5
+[torch.LongStorage of size 4]
+
+t7> y = x:permute(2,3,1,4) -- equivalent to y = x:transpose(1,3):transpose(1,2)
+t7> print(y:size())
+
+ 4
+ 2
+ 3
+ 5
+[torch.LongStorage of size 4]
+
+```
+
+
 <a name="torch.Tensor.unfold"/>
 ### [Tensor] unfold(dim, size, step) ###
 
