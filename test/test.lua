@@ -1856,7 +1856,15 @@ function torchtest.totable()
   mytester:assert(not tensorNonContig:isContiguous(), 'invalid test')
   mytester:assertTableEq(tensorNonContig:totable(), {{3, 4}, {7, 8}},
                          'totable() incorrect for non-contiguous tensors')
+end
 
+function torchtest.permute()
+  local orig = {1,2,3,4,5,6,7}
+  local perm = torch.randperm(7):totable()
+  local x = torch.Tensor(unpack(orig)):fill(0)
+  local new = x:permute(unpack(perm)):size():totable()
+  mytester:assertTableEq(perm, new, 'Tensor:permute incorrect')
+  mytester:assertTableEq(x:size():totable(), orig, 'Tensor:permute changes tensor')
 end
 
 function torch.test(tests)
