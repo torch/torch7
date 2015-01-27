@@ -10,7 +10,7 @@ end
 
 function CmdLine:error(msg)
    print('')
-   io.stderr:print(msg)
+   io.stderr:write(msg)
    print('')
    self:help()
    os.exit(1)
