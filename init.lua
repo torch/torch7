@@ -33,9 +33,10 @@ function torch.packageLuaPath(name)
    end
 end
 
-function include(file, depth)
+local function include(file, depth)
    paths.dofile(file, 3 + (depth or 0))
 end
+rawset(_G, 'include', include)
 
 function torch.include(package, file)
    dofile(torch.packageLuaPath(package) .. '/' .. file)
