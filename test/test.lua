@@ -880,6 +880,12 @@ function torchtest.zeros()
    torch.zeros(mxx,msize,msize)
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.zeros value')
 end
+function torchtest.histc()
+   local x = torch.Tensor{ 2, 4, 2, 2, 5, 4 }
+   local y = torch.histc(x, 5, 1, 5) -- nbins, min, max
+   local z = torch.Tensor{ 0, 3, 0, 2, 1 }
+   mytester:assertTensorEq(y,z,precision,'error in torch.histc')
+end
 function torchtest.ones()
    local mx = torch.ones(msize,msize)
    local mxx = torch.Tensor()

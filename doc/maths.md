@@ -285,6 +285,19 @@ is below the main diagonal.
 For more than 4 dimensions, you can use a storage:
 `y=torch.zeros(torch.LongStorage{m,n,k,l,o})`
 
+<a name="torch.histc"/>
+### [res] torch.histc([res,] x [,nbins, min_value, max_value]) ###
+<a name="torch.histc"/>
+
+`y=torch.histc(x)` returns the histogram of the elements in x. By default the
+elements are sorted into 100 equally spaced bins between the minimum and maximum
+values of x.
+
+`y=torch.histc(x,n)` same as above with n bins.
+
+`y=torch.histc(x,n,min,max)` same as above with n bins and min, max as elements
+range.
+
 <a name="torch.elementwise.dok"/>
 ### Element-wise Mathematical Operations ###
 
