@@ -1523,7 +1523,6 @@ function torchtest.BugInAssertTableEq()
 end
 
 function torchtest.RNGState()
-   local ignored = torch.rand(1000)
    local state = torch.getRNGState()
    local stateCloned = state:clone()
    local before = torch.rand(1000)
