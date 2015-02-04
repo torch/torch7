@@ -278,15 +278,8 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
                         string.format("TH%s_resize1d(%s, %s->size[0]);", Tensor, arg:carg(), arg.args[5]:carg())
                      }, '\n')
                end,
-          precall=function(arg)
-                     return table.concat(
-                        {
-                           string.format("TH%s_zero(%s);", Tensor, arg:carg()),
-                           arg.__metatable.precall(arg)
-                        }, '\n')
-                  end
        },
-         {name=real, default=1, invisible=true},
+         {name=real, default=0, invisible=true},
          {name=Tensor, default=1, invisible=true},
          {name=real, default=1, invisible=true},
          {name=Tensor, dim=2},
@@ -303,15 +296,8 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
                         string.format("TH%s_resize2d(%s, %s->size[0], %s->size[1]);", Tensor, arg:carg(), arg.args[5]:carg(), arg.args[6]:carg())
                      }, '\n')
                end,
-          precall=function(arg)
-                     return table.concat(
-                        {
-                           string.format("TH%s_zero(%s);", Tensor, arg:carg()),
-                           arg.__metatable.precall(arg)
-                        }, '\n')
-                  end
        },
-         {name=real, default=1, invisible=true},
+         {name=real, default=0, invisible=true},
          {name=Tensor, default=1, invisible=true},
          {name=real, default=1, invisible=true},
          {name=Tensor, dim=2},
@@ -319,8 +305,20 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
      )
 
    wrap("bmm",
-        cname("bmm"),
-        {{name=Tensor, default=true, returned=true},
+        cname("baddbmm"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'},
+          init=function(arg)
+                  return table.concat(
+                     {
+                        arg.__metatable.init(arg),
+                        string.format("TH%s_resize3d(%s, %s->size[0], %s->size[1], %s->size[2]);",
+                                      Tensor, arg:carg(), arg.args[5]:carg(), arg.args[5]:carg(), arg.args[6]:carg())
+                     }, '\n')
+               end,
+       },
+         {name=real, default=0, invisible=true},
+         {name=Tensor, default=1, invisible=true},
+         {name=real, default=1, invisible=true},
          {name=Tensor, dim=3},
          {name=Tensor, dim=3}}
      )
