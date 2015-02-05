@@ -544,8 +544,7 @@ int luaT_lua_newmetatable(lua_State *L)
     else
     {
       const char* parenttname = luaL_checkstring(L, 2);
-      luaT_pushmetatable(L, parenttname);
-      if(lua_isnil(L, -1))
+      if(!luaT_pushmetatable(L, parenttname))
         luaL_error(L, "bad argument #2 (invalid parent class name %s)", parenttname);
       lua_setmetatable(L, -2);
     }
