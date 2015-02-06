@@ -718,14 +718,14 @@ elements must match: both tensors are seen as a 1D vector.
 `x:dot(y)` returns dot product of `x` and `y`.
 
 <a name="torch.addmv"/>
-### [res] torch.addmv([res,] [alpha,] [v1,] vec1, [v2,] mat, vec2) ###
+### [res] torch.addmv([res,] [beta,] [v1,] vec1, [v2,] mat, vec2) ###
 <a name="torch.addmv"/>
 
 Performs a matrix-vector multiplication between `mat` (2D tensor)
 and `vec` (1D tensor) and add it to vec1. In other words,
 
 ```
-res = alpha * res + v1 * vec1 + v2 * mat*vec2
+res = beta * res + v1 * vec1 + v2 * mat*vec2
 ```
 
 Sizes must respect the matrix-multiplication operation: if `mat` is
@@ -756,7 +756,7 @@ be a vector of size `n`.
 Optional values `v1` and `v2` are scalars that multiply 
 `vec1` and `mat*vec2` respectively.
 
-Optional value `alpha` is  a scalar that scales the result tensor, before accumulating the result into the tensor. Defaults to 0.
+Optional value `beta` is  a scalar that scales the result tensor, before accumulating the result into the tensor. Defaults to 1.0
 
 <a name="torch.addr"/>
 ### [res] torch.addr([res,] [v1,] mat, [v2,] vec1, vec2) ###
@@ -800,14 +800,14 @@ Optional values `v1` and `v2` are scalars that multiply
 
 
 <a name="torch.addmm"/>
-### [res] torch.addmm([res,] [alpha,] [v1,] M [v2,] mat1, mat2) ###
+### [res] torch.addmm([res,] [beta,] [v1,] M [v2,] mat1, mat2) ###
 <a name="torch.addmm"/>
 
 Performs a matrix-matrix multiplication between `mat1` (2D tensor)
 and `mat2` (2D tensor). In other words,
 
 ```
-res = res * alpha + v1 * M + v2 * mat1*mat2
+res = res * beta + v1 * M + v2 * mat1*mat2
 ```
 
 If `mat1` is a `n x m` matrix, `mat2` a `m x p` matrix, 
@@ -824,7 +824,7 @@ If `mat1` is a `n x m` matrix, `mat2` a `m x p` matrix,
 Optional values `v1` and `v2` are scalars that multiply 
 `M` and `mat1 * mat2` respectively.
 
-Optional value `alpha` is  a scalar that scales the result tensor, before accumulating the result into the tensor. Defaults to 0.
+Optional value `beta` is  a scalar that scales the result tensor, before accumulating the result into the tensor. Defaults to 1.0
 
 <a name="torch.addbmm"/>
 ### [res] torch.addbmm([res,] [v1,] M [v2,] mat1, mat2) ###
