@@ -89,7 +89,7 @@ function main()
         if math.floor(100*j/num_exps) > pc then
             pc = math.floor(100*j/num_exps)
             io.write('.')
-            if math.mod(pc, 10) == 0 then
+            if pc % 10 == 0 then
                 io.write(' ' .. pc .. '%\n')
              end
             io.flush()
