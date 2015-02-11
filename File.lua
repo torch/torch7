@@ -275,20 +275,25 @@ end
 
 -- simple helpers to serialize/deserialize arbitrary objects/tables
 function torch.serialize(object, mode)
+   local storage = torch.serializeToStorage(object, mode)
+   return storage:string()
+end
+
+-- Serialize to a CharStorage, not a lua string. This avoids
+function torch.serializeToStorage(object, mode)
    mode = mode or 'binary'
    local f = torch.MemoryFile()
    f = f[mode](f)
    f:writeObject(object)
-   local s = f:storage():string()
+   local storage = f:storage()
    f:close()
-   return s
+   return storage
 end
 
-function torch.deserialize(str, mode)
+function torch.deserializeFromStorage(storage, mode)
    mode = mode or 'binary'
-   local x = torch.CharStorage():string(str)
-   local tx = torch.CharTensor(x)
-   local xp = torch.CharStorage(x:size(1)+1)
+   local tx = torch.CharTensor(storage)
+   local xp = torch.CharStorage(tx:size(1)+1)
    local txp = torch.CharTensor(xp)
    txp:narrow(1,1,tx:size(1)):copy(tx)
    txp[tx:size(1)+1] = 0
@@ -297,6 +302,11 @@ function torch.deserialize(str, mode)
    local object = f:readObject()
    f:close()
    return object
+end
+
+function torch.deserialize(str, mode)
+   local storage = torch.CharStorage():string(str)
+   return torch.deserializeFromStorage(storage, mode)
 end
 
 -- public API (saveobj/loadobj are safe for global import)
