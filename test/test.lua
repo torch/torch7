@@ -1657,6 +1657,53 @@ function torchtest.indexCopy()
    mytester:assertTensorEq(dest, dest2, 0.000001, "indexCopy scalar error")
 end
 
+function torchtest.maskedCopy()
+   local nCopy, nDest = 3, 10
+   local dest = torch.randn(nDest)
+   local src = torch.randn(nCopy)
+   local mask = torch.ByteTensor{0,0,0,0,1,0,1,0,1,0}
+   local dest2 = dest:clone()
+   dest:maskedCopy(mask, src)
+   local j = 1
+   for i=1,nDest do
+      if mask[i] == 1 then
+         dest2[i] = src[j]
+         j = j + 1
+      end
+   end
+   mytester:assertTensorEq(dest, dest2, 0.000001, "maskedCopy error")
+end
+
+function torchtest.maskedSelect()
+   local nSrc = 10
+   local src = torch.randn(nSrc)
+   local mask = torch.rand(nSrc):mul(2):floor():byte()
+   local dst = torch.Tensor()
+   dst:maskedSelect(src, mask)
+   local dst2 = {}
+   for i=1,nSrc do
+      if mask[i] == 1 then
+         table.insert(dst2, src[i])
+      end
+   end
+   mytester:assertTensorEq(dst, torch.DoubleTensor(dst2), 0.000001, "maskedSelect error")
+end
+
+function torchtest.maskedFill()
+   local nDst = 10
+   local dst = torch.randn(nDst)
+   local mask = torch.rand(nDst):mul(2):floor():byte()
+   local val = math.random()
+   local dst2 = dst:clone()
+   dst:maskedFill(mask, val)
+   for i=1,nDst do
+      if mask[i] == 1 then
+         dst2[i] = val
+      end
+   end
+   mytester:assertTensorEq(dst, dst2, 0.000001, "maskedFill error")
+end
+
 function torchtest.abs()
    local size = 1000
    local range = 1000

@@ -456,6 +456,83 @@ static int torch_Tensor_(indexFill)(lua_State *L)
   return 1;
 }
 
+static int torch_Tensor_(maskedSelect)(lua_State *L)
+{
+  int narg = lua_gettop(L);
+  THTensor *tensor, *src;
+  THByteTensor *mask;
+  
+  if (narg == 2)
+  {
+    tensor = THTensor_(new)();
+    src = luaT_checkudata(L, 1, torch_Tensor);
+    mask = luaT_checkudata(L, 2, "torch.ByteTensor");
+    luaT_pushudata(L,tensor,torch_Tensor);
+  }
+  else if(narg == 3)
+  {
+    src = luaT_checkudata(L, 2, torch_Tensor);
+    mask = luaT_checkudata(L, 3, "torch.ByteTensor");
+    tensor = luaT_checkudata(L,1,torch_Tensor);
+    luaT_pushudata(L,tensor,torch_Tensor);
+  }
+  else
+  {
+    luaL_error(L,"Tensor, ByteTensor | Tensor, Tensor, ByteTensor expected");
+    return 0;
+  }
+
+  THTensor_(maskedSelect)(tensor,src,mask);
+
+  return 1;
+}
+
+static int torch_Tensor_(maskedCopy)(lua_State *L)
+{
+  int narg = lua_gettop(L);
+  THTensor *tensor, *src;
+  THByteTensor *mask;
+  
+  if(narg == 3)
+  {
+    mask = luaT_checkudata(L, 2, "torch.ByteTensor");
+    src = luaT_checkudata(L, 3, torch_Tensor);
+    tensor = luaT_checkudata(L,1,torch_Tensor);
+  }
+  else
+  {
+    luaL_error(L,"Tensor, ByteTensor, Tensor expected");
+    return 0;
+  }
+
+  THTensor_(maskedCopy)(tensor,mask,src);
+
+  return 1;
+}
+
+static int torch_Tensor_(maskedFill)(lua_State *L)
+{
+  int narg = lua_gettop(L);
+  THTensor *tensor;
+  THByteTensor *mask;
+  real val;
+  if(narg == 3)
+  {
+    mask = luaT_checkudata(L, 2, "torch.ByteTensor");
+    val = luaL_checknumber(L, 3);
+    tensor = luaT_checkudata(L,1,torch_Tensor);
+  }
+  else
+  {
+    luaL_error(L,"Tensor, ByteTensor, number expected");
+    return 0;
+  }
+
+  THTensor_(maskedFill)(tensor,mask,val);
+
+  return 1;
+}
+
 static int torch_Tensor_(transpose)(lua_State *L)
 {
   THTensor *tensor = luaT_checkudata(L, 1, torch_Tensor);
@@ -1152,6 +1229,9 @@ static const struct luaL_Reg torch_Tensor_(_) [] = {
   {"index", torch_Tensor_(indexSelect)},
   {"indexCopy", torch_Tensor_(indexCopy)},
   {"indexFill", torch_Tensor_(indexFill)},
+  {"maskedSelect", torch_Tensor_(maskedSelect)},
+  {"maskedCopy", torch_Tensor_(maskedCopy)},
+  {"maskedFill", torch_Tensor_(maskedFill)},
   {"transpose", torch_Tensor_(transpose)},
   {"t", torch_Tensor_(t)},
   {"unfold", torch_Tensor_(unfold)},
