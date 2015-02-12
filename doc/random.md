@@ -8,15 +8,15 @@ random number generator.
 <a name=":torch.seed.dok"/>
 ## Seed Handling ##
 
-If no seed is provided to the random generator (using
-[seed()](#torch.seed) or [manualSeed()](#torch.manualSeed)), a
-random seed will be set according to [seed()](#torch.seed) the first
-time a random number is generated.
+The random number generator is provided with a random seed via 
+[seed()](#torch.seed) when torch is being initialised. It can be 
+reinitialized using
+[seed()](#torch.seed) or [manualSeed()](#torch.manualSeed). 
 
 Initial seed can be obtained using [initialSeed()](#torch.initialSeed).
 
-Setting a particular seed allows the user to (re)-generate a particular serie of
-random numbers. Example:
+Setting a particular seed allows the user to (re)-generate a particular sequence
+of random numbers. Example:
 ```
 > torch.manualSeed(123)
 > = torch.uniform()
@@ -44,8 +44,9 @@ random numbers. Example:
 <a name="torch.seed"/>
 ### [number] seed() ###
 
-Set the seed of the random number generator according to the time of the
-computer. Granularity is seconds. Returns the seed obtained.
+Set the seed of the random number generator using `/dev/urandom`
+(on Windows the time of the computer with granularity of seconds is used).
+Returns the seed obtained.
 
 <a name="torch.manualSeed"/>
 ### manualSeed(number) ###
