@@ -999,9 +999,9 @@ the sub-tensor will have an impact on the primary tensor, and vice-versa.
 These methods are very fast, as they do not involve any memory copy.
 
 <a name="torch.Tensor.narrow"/>
-### [Tensor] narrow(dim, index, size) ###
+### [self] narrow(dim, index, size) ###
 
-Returns a new `Tensor` which is a narrowed version of the current one: the dimension `dim` is narrowed
+Returns a new Tensor` which is a narrowed version of the current one: the dimension `dim` is narrowed
 from `index` to `index+size-1`.
 
 ```lua
@@ -1156,7 +1156,7 @@ Note that "selecting" on the first dimension is equivalent to use the [[] operat
 [torch.DoubleTensor of dimension 5x6]
 ```
 
-<a name="torch.Tensor.index"/>
+<a name="torch.Tensor.indexing"/>
 ### [Tensor] [{ dim1,dim2,... }] or [{ {dim1s,dim1e}, {dim2s,dim2e} }] ###
 
 The indexing operator [] can be used to combine narrow/sub and
@@ -1231,7 +1231,10 @@ elements, e.g with a [logical operator](maths.md#logical-operations-on-tensors).
 <a name="torch.Tensor.index"/>
 ### [Tensor] index(dim, index) ###
 
-Returns a new `Tensor` which indexes the given tensor along dimension `dim` and using the entries in `torch.LongTensor` `index`. The returned tensor has the same number of dimensions as the original tensor. The returned tensor does __not__ use the same storage as the original tensor -- see below for storing the result in an existing tensor.
+Returns a new Tensor which indexes the given tensor along dimension `dim` 
+and using the entries in `torch.LongTensor` `index`. 
+The returned tensor has the same number of dimensions as the original tensor. 
+The returned tensor does __not__ use the same storage as the original tensor -- see below for storing the result in an existing tensor.
 
 ```lua
 t7> x = torch.rand(5,5)
@@ -1264,7 +1267,10 @@ t7> =x
 
 ```
 
-Note the explicit `index` function is different than the indexing operator `[]`. The indexing operator `[]` is a syntactic shortcut for a series of select and narrow operations, therefore it always returns a new view on the original tensor that shares the same storage. However, the explicit `index` function can not use the same storage.
+Note the explicit `index` function is different than the indexing operator `[]`. 
+The indexing operator `[]` is a syntactic shortcut for a series of select and narrow operations, 
+therefore it always returns a new view on the original tensor that shares the same storage. 
+However, the explicit `index` function can not use the same storage.
 
 It is possible to store the result into an existing Tensor with `result:index(source, ...)`:
 
@@ -1347,6 +1353,114 @@ t7> =x
 [torch.DoubleTensor of dimension 5x5]
 
 ```
+
+<a name="torch.Tensor.maskedSelect"/>
+### [Tensor] maskedSelect(mask) ###
+
+Returns a new Tensor which contains all elements aligned to a `1` in the corresponding
+`mask`. This `mask` is a `torch.ByteTensor` of zeros and ones. The `mask` and 
+`Tensor` must have the same number of elements. The resulting Tensor will 
+be a 1D tensor of the same type as `Tensor` having size `mask:sum()`.
+
+```lua
+t7> x = torch.range(1,12):double():resize(3,4)
+t7> =x
+  1   2   3   4
+  5   6   7   8
+  9  10  11  12
+[torch.DoubleTensor of dimension 3x4]
+
+t7> mask = torch.DoubleTensor():rand(12):mul(2):floor():byte():resize(2,6)
+t7> =mask 
+ 1  0  1  0  0  0
+ 1  1  0  0  0  1
+[torch.ByteTensor of dimension 2x6]
+
+t7> y = x:maskedSelect(mask)
+t7> =y
+  1
+  3
+  7
+  8
+ 12
+[torch.DoubleTensor of dimension 5]
+
+t7> z = torch.DoubleTensor()
+t7> z:maskedSelect(x, mask)
+t7> =z
+  1
+  3
+  7
+  8
+ 12
+```
+
+Note how the dimensions of the above `x`, `mask` and `y' do not match.
+Also note how an existing tensor `z` can be used to store the results.
+
+
+<a name="torch.Tensor.maskedCopy"/>
+### [Tensor] maskedCopy(mask, tensor) ###
+
+Copies the masked elements of `tensor` into itself. The masked elements are those elements having a 
+corresponding `1` in the `mask` Tensor. This `mask` is a `torch.ByteTensor` 
+of zeros and ones. The `mask`, `tensor` and `Tensor` must have the same number of elements.
+
+```lua
+t7> x = torch.range(1,8):double():resize(2,4)
+t7> =x
+ 1  2  3  4
+ 5  6  7  8
+[torch.DoubleTensor of dimension 2x4]
+
+t7> mask = torch.DoubleTensor():rand(8):mul(2):floor():byte():resize(1,8)
+t7> =mask
+ 1  0  0  1  1  0  0  1
+[torch.ByteTensor of dimension 1x8]
+
+t7> y = x:clone():fill(-1)
+t7> =y
+-1 -1 -1 -1
+-1 -1 -1 -1
+[torch.DoubleTensor of dimension 2x4]
+
+t7> y:maskedCopy(mask, x)
+t7> =y
+ 1 -1 -1  2
+ 3 -1 -1  4
+[torch.DoubleTensor of dimension 2x4]
+```
+
+Note how the dimensions of the above `x`, `mask` and `y' do not match, 
+but the number of elements do.
+
+<a name="torch.Tensor.maskedFill"/>
+### [Tensor] maskedFill(mask, val) ###
+
+Fills the masked elements of itself with value `val`. The masked elements are those elements having a 
+corresponding `1` in the `mask` Tensor. This `mask` is a `torch.ByteTensor` 
+of zeros and ones. The `mask` and `Tensor` must have the same number of elements.
+
+```lua
+t7> x = torch.range(1,4):double():resize(1,4)
+t7> =x
+ 1  2  3  4
+[torch.DoubleTensor of dimension 1x4]
+
+t7> mask = torch.DoubleTensor():rand(4):mul(2):floor():byte():resize(2,2)
+t7> =mask
+ 0  0
+ 1  1
+[torch.ByteTensor of dimension 2x2]
+
+t7> x:maskedFill(mask, -1)
+t7> =x
+ 1  2 -1 -1
+[torch.DoubleTensor of dimension 1x4]
+
+```
+Note how the dimensions of the above `x` and `mask` do not match, 
+but the number of elements do.
 
 ## Expanding/Replicating/Squeezing Tensors ##
 
