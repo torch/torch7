@@ -1919,6 +1919,23 @@ function torchtest.permute()
   mytester:assertTableEq(x:size():totable(), orig, 'Tensor:permute changes tensor')
 end
 
+function torchtest.serialize()
+   local tableObj = {6, a = 42}
+   local tensObj = torch.randn(3,4,5)
+
+   -- Test serializing a table
+   local serString = torch.serialize(tableObj)
+   local serStorage = torch.serializeToStorage(tableObj)
+   mytester:assertTableEq(tableObj, torch.deserialize(serString))
+   mytester:assertTableEq(tableObj, torch.deserializeFromStorage(serStorage))
+
+   -- Test serializing a Tensor
+   serString = torch.serialize(tensObj)
+   serStorage = torch.serializeToStorage(tensObj)
+   mytester:assertTensorEq(tensObj, torch.deserialize(serString), 1e-10)
+   mytester:assertTensorEq(tensObj, torch.deserializeFromStorage(serStorage), 1e-10)
+end
+
 function torch.test(tests)
    math.randomseed(os.time())
    if torch.getdefaulttensortype() == 'torch.FloatTensor' then
