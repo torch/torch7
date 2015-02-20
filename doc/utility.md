@@ -252,12 +252,12 @@ This is different from the _class_ id returned by [torch.id()](#torch.id).
 
 Sets the default tensor type for all the tensors allocated from this
 point on. Valid types are:
-  * `ByteTensor`
-  * `CharTensor`
-  * `ShortTensor`
-  * `IntTensor`
-  * `FloatTensor`
-  * `DoubleTensor`
+  * `torch.ByteTensor`
+  * `torch.CharTensor`
+  * `torch.ShortTensor`
+  * `torch.IntTensor`
+  * `torch.FloatTensor`
+  * `torch.DoubleTensor`
 
 <a name="torch.setenv"/>
 ### torch.setenv(function or userdata, table) ###
