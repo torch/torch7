@@ -1229,19 +1229,92 @@ function torchtest.gesv()
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.gesv value out1')
    mytester:asserteq(maxdiff(mx,mxxx),0,'torch.gesv value out2')
 end
-function torchtest.gels()
+function torchtest.gels_uniquely_determined()
    if not torch.gels then return end
+   local expectedNorm = 0
+   local a=torch.Tensor({{ 1.44, -9.96, -7.55,  8.34},
+                         {-7.84, -0.28,  3.24,  8.09},
+                         {-4.39, -3.24,  6.27,  5.28},
+                         {4.53,  3.83, -6.64,  2.06}}):t()
+   local b=torch.Tensor({{8.58,  8.26,  8.48, -5.28},
+                         {9.35, -4.43, -0.70, -0.26}}):t()
+   local a_copy = a:clone()
+   local b_copy = b:clone()
+   local mx = torch.gels(b,a)
+   mytester:asserteq(maxdiff(a,a_copy),0,'torch.gels changed a')
+   mytester:asserteq(maxdiff(b,b_copy),0,'torch.gels changed b')
+   mytester:assertalmosteq((torch.mm(a,mx)-b):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
+
+   local ta = torch.Tensor()
+   local tb = torch.Tensor()
+   local mxx = torch.gels(tb,ta,b,a)
+   mytester:asserteq(maxdiff(a,a_copy),0,'torch.gels changed a')
+   mytester:asserteq(maxdiff(b,b_copy),0,'torch.gels changed b')
+   mytester:assertalmosteq((torch.mm(a,tb)-b):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
+
+   local mxxx = torch.gels(b,a,b,a)
+   mytester:assertalmosteq((torch.mm(a_copy,b)-b_copy):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
+   mytester:asserteq(maxdiff(mx,tb),0,'torch.gels value temp')
+   mytester:asserteq(maxdiff(mx,b),0,'torch.gels value flag')
+   mytester:asserteq(maxdiff(mx,mxx),0,'torch.gels value out1')
+   mytester:asserteq(maxdiff(mx,mxxx),0,'torch.gels value out2')
+end
+function torchtest.gels_overdetermined()
+   if not torch.gels then return end
+   local expectedNorm = 17.390200628863
    local a=torch.Tensor({{ 1.44, -9.96, -7.55,  8.34,  7.08, -5.45},
                          {-7.84, -0.28,  3.24,  8.09,  2.52, -5.70},
                          {-4.39, -3.24,  6.27,  5.28,  0.74, -1.19},
                          {4.53,  3.83, -6.64,  2.06, -2.47,  4.70}}):t()
    local b=torch.Tensor({{8.58,  8.26,  8.48, -5.28,  5.72,  8.93},
                          {9.35, -4.43, -0.70, -0.26, -7.36, -2.52}}):t()
+   local a_copy = a:clone()
+   local b_copy = b:clone()
    local mx = torch.gels(b,a)
+   mytester:asserteq(maxdiff(a,a_copy),0,'torch.gels changed a')
+   mytester:asserteq(maxdiff(b,b_copy),0,'torch.gels changed b')
+   mytester:assertalmosteq((torch.mm(a, mx)-b):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
+
    local ta = torch.Tensor()
    local tb = torch.Tensor()
    local mxx = torch.gels(tb,ta,b,a)
+   mytester:asserteq(maxdiff(a,a_copy),0,'torch.gels changed a')
+   mytester:asserteq(maxdiff(b,b_copy),0,'torch.gels changed b')
+   mytester:assertalmosteq((torch.mm(a,tb)-b):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
+
    local mxxx = torch.gels(b,a,b,a)
+   mytester:assertalmosteq((torch.mm(a_copy,b)-b_copy):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
+   mytester:asserteq(maxdiff(mx,tb),0,'torch.gels value temp')
+   mytester:asserteq(maxdiff(mx,b),0,'torch.gels value flag')
+   mytester:asserteq(maxdiff(mx,mxx),0,'torch.gels value out1')
+   mytester:asserteq(maxdiff(mx,mxxx),0,'torch.gels value out2')
+end
+function torchtest.gels_underdetermined()
+   if not torch.gels then return end
+   local expectedNorm = 0
+   local a=torch.Tensor({{ 1.44, -9.96, -7.55},
+                         {-7.84, -0.28,  3.24},
+                         {-4.39, -3.24,  6.27},
+                         {4.53,  3.83, -6.64}}):t()
+   local b=torch.Tensor({{8.58,  8.26,  8.48},
+                         {9.35, -4.43, -0.70}}):t()
+
+   local a_copy = a:clone()
+   local b_copy = b:clone()
+   local mx = torch.gels(b,a)
+   mytester:asserteq(maxdiff(a,a_copy),0,'torch.gels changed a')
+   mytester:asserteq(maxdiff(b,b_copy),0,'torch.gels changed b')
+   mytester:assertalmosteq((torch.mm(a,mx)-b):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
+
+   local ta = torch.Tensor()
+   local tb = torch.Tensor()
+   local mxx = torch.gels(tb,ta,b,a)
+   mytester:asserteq(maxdiff(a,a_copy),0,'torch.gels changed a')
+   mytester:asserteq(maxdiff(b,b_copy),0,'torch.gels changed b')
+   mytester:assertalmosteq((torch.mm(a,tb)-b):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
+
+   local mxxx = torch.gels(b,a,b,a)
+   mytester:assertalmosteq((torch.mm(a_copy,b)-b_copy):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
    mytester:asserteq(maxdiff(mx,tb),0,'torch.gels value temp')
    mytester:asserteq(maxdiff(mx,b),0,'torch.gels value flag')
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.gels value out1')
