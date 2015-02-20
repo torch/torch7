@@ -199,7 +199,7 @@ If `format` starts with ''"*l"` then returns the next line in the `File''. The e
 If `format` starts with ''"*a"` then returns all the remaining contents of the `File''.
 
 If no data is available, then an error is raised, except if `File` is in [quiet()](#torch.File.quiet) mode where
-it then returns `nil`.
+it then returns an empty string `''` and after that you'll be able to see that last reading failed due to end of file with your_file:[hasError()](#torch.File.hasError).
 
 Because Torch is more precised on number typing, the `Lua` format ''"*n"'' is not supported:
 instead use one of the [number read methods](#torch.File.read).
