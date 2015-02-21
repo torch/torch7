@@ -27,6 +27,7 @@ cmd:text()
 params = cmd:parse(arg)
 
 params.rundir = cmd:string('experiment', params, {dir=true})
+paths.mkdir(params.rundir)
 
 -- create log file
 cmd:log(params.rundir .. '/log', params)
