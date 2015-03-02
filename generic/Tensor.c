@@ -474,7 +474,6 @@ static int torch_Tensor_(maskedSelect)(lua_State *L)
     src = luaT_checkudata(L, 2, torch_Tensor);
     mask = luaT_checkudata(L, 3, "torch.ByteTensor");
     tensor = luaT_checkudata(L,1,torch_Tensor);
-    luaT_pushudata(L,tensor,torch_Tensor);
   }
   else
   {
