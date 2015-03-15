@@ -2086,7 +2086,7 @@ Example:
 
 ## LuaJIT FFI access ##
 These functions expose Torch's Tensor and Storage data structures, through
-[LuaJIT FFI](luajit.org/ext_ffi_api.html). 
+[LuaJIT FFI](http://luajit.org/ext_ffi_api.html). 
 This allows extremely fast access to Tensors and Storages, all from Lua.
 
 <a name="torch.data"/>
@@ -2125,11 +2125,11 @@ use it size and stride information). Making sure a tensor is contiguous is easy:
 
 -- it would be unsafe to work with torch.data(t_noncontiguous)
 
-> t_transposed_and_contiguous = t:noncontiguous:contiguous()
+> t_transposed_and_contiguous = t_noncontiguous:contiguous()
 
 -- it is now safe to work with the raw pointer
 
-> data = torch.data(t_contiguous)
+> data = torch.data(t_transposed_and_contiguous)
 ```
 
 Last, the pointer can be returned as a plain Lua number. This can be useful
