@@ -74,13 +74,13 @@ IMPLEMENT_TORCH_FILE_FUNC(close)
         long nread;                                                     \
                                                                         \
         TH##TYPEC##Storage *storage = TH##TYPEC##Storage_newWithSize(size); \
-        luaT_pushudata(L, storage, "torch." #TYPEC "Storage");           \
+        luaT_pushudata(L, storage, "torch." #TYPEC "Storage");          \
         nread = THFile_read##TYPEC(self, storage);                      \
         if(nread != size)                                               \
-          TH##TYPEC##Storage_resize(storage, size);                     \
+          TH##TYPEC##Storage_resize(storage, nread);                    \
         return 1;                                                       \
       }                                                                 \
-      else if(luaT_toudata(L, 2, "torch." #TYPEC "Storage"))             \
+      else if(luaT_toudata(L, 2, "torch." #TYPEC "Storage"))            \
       {                                                                 \
         TH##TYPEC##Storage *storage = luaT_toudata(L, 2, "torch." #TYPEC "Storage"); \
         lua_pushnumber(L, THFile_read##TYPEC(self, storage));           \
