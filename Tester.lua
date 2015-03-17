@@ -53,6 +53,9 @@ function Tester:assertne (val, condition, message)
 end
 
 function Tester:assertTensorEq(ta, tb, condition, message)
+   if ta:dim() == 0 and tb:dim() == 0 then
+      return
+   end
    local diff = ta-tb
    local err = diff:abs():max()
    self:assert_sub(err<condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' TensorEQ(==) violation ', tostring(err), tostring(condition)))
