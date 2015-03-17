@@ -524,6 +524,7 @@ function Tensor.totable(tensor)
   end
   return result
 end
+torch.totable = Tensor.totable
 
 function Tensor.permute(tensor, ...)
   local perm = {...}
@@ -543,6 +544,7 @@ function Tensor.permute(tensor, ...)
   end
   return tensor
 end
+torch.permute = Tensor.permute
 
 for _,type in ipairs(types) do
    local metatable = torch.getmetatable('torch.' .. type .. 'Tensor')
