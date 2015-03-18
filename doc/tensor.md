@@ -1001,7 +1001,7 @@ These methods are very fast, as they do not involve any memory copy.
 <a name="torch.Tensor.narrow"/>
 ### [self] narrow(dim, index, size) ###
 
-Returns a new Tensor` which is a narrowed version of the current one: the dimension `dim` is narrowed
+Returns a new `Tensor` which is a narrowed version of the current one: the dimension `dim` is narrowed
 from `index` to `index+size-1`.
 
 ```lua
@@ -1573,7 +1573,7 @@ This is equivalent to self:expand(tensor:size())
  resized. `sizes` specify the number of times the tensor is repeated in each dimension.
 
  ```lua
- t7> x=torch.rand(5)
+t7> x=torch.rand(5)
 t7> =x
  0.7160
  0.6514
