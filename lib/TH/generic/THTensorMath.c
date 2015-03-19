@@ -1263,11 +1263,6 @@ static void THTensor_(quicksortdescend)(real *arr, long *idx, long elements, lon
 
 #undef MAX_LEVELS
 #undef M_SMALL
-#undef ARR
-#undef IDX
-#undef LONG_SWAP
-#undef REAL_SWAP
-#undef BOTH_SWAP
 
 void THTensor_(sort)(THTensor *rt_, THLongTensor *ri_, THTensor *t, int dimension, int descendingOrder)
 {
@@ -1298,6 +1293,116 @@ void THTensor_(sort)(THTensor *rt_, THLongTensor *ri_, THTensor *t, int dimensio
                            ri__data[i*ri__stride] = i;
                          THTensor_(quicksortascend)(rt__data, ri__data, rt__size, rt__stride);)
       }
+}
+
+/* A slightly adapted version of the Quickselect algorithm taken from
+Section 8.5 of the book 'Numerical Recipes in C' (W.H.Press, S.A.Teukolsky,
+W.T.Vetterling, B.P.Flannery, 1996, Cambridge University Press).
+*/
+static void THTensor_(quickselect)(real *arr, long *idx, long k, long elements, long stride)
+{
+  long i, ir, j, l, mid, swap, ai;
+  real a, rswap;
+  l=0;
+  ir=elements-1;
+
+  while(1) {
+    if (ir <= l+1) { /* Active partition contains 1 or 2 elements */
+      if (ir == l+1 && ARR(ir) < ARR(l)) { /* Case of 2 elements */
+        BOTH_SWAP(l, ir);
+      }
+      return; /*ARR(k)*/
+    }
+    else {
+      /* Choose median of left, center, and right elements as partitioning
+      element a. Also rearrange so that ARR[l] ≤ ARR[l+1], ARR[ir] ≥ ARR[l+1].*/
+      mid=(l+ir) >> 1;
+      BOTH_SWAP(mid, l+1);
+      if (ARR(l) > ARR(ir)) { BOTH_SWAP(l, ir); }
+      if (ARR(l+1) > ARR(ir)) { BOTH_SWAP(l+1, ir); }
+      if (ARR(l) > ARR(l+1)) { BOTH_SWAP(l, l+1); }
+      i=l+1; /* Initialize pointers for partitioning */
+      j=ir;
+      a=ARR(l+1); /* Partitioning element */
+      ai=IDX(l+1);
+      while(1) { /* Beginning of innermost loop.*/
+        do i++; while (ARR(i) < a);  /* Scan up to find element > a */
+        do j--; while (ARR(j) > a);  /* Scan down to find element < a */
+        if (j < i) break; /* Pointers crossed. Partitioning complete */
+        BOTH_SWAP(i, j);
+      } /* End of innermost loop. */
+      ARR(l+1)=ARR(j); /* Insert partitioning element */
+      IDX(l+1)=IDX(j);
+      ARR(j)=a;
+      IDX(j)=ai;
+      /* Keep active the partition that contains the kth element */
+      if (j >= k) ir=j-1;
+      if (j <= k) l=i;
+    }
+  }
+}
+
+#undef ARR
+#undef IDX
+#undef LONG_SWAP
+#undef REAL_SWAP
+#undef BOTH_SWAP
+
+void THTensor_(kthvalue)(THTensor *values_, THLongTensor *indices_, THTensor *t, long k, int dimension)
+{
+  THLongStorage *dim;
+  THTensor *temp_;
+  THLongTensor *tempi_;
+  real *temp__data;
+  long *tempi__data;
+  long t_size_dim;
+
+  THArgCheck(dimension >= 0 && dimension < THTensor_(nDimension)(t), 5, "dimension out of range");
+  THArgCheck(k >= 0 && k < t->size[dimension], 4, "selected index out of range");
+
+  dim = THTensor_(newSizeOf)(t);
+  THLongStorage_set(dim, dimension, 1);
+  THTensor_(resize)(values_, dim, NULL);
+  THLongTensor_resize(indices_, dim, NULL);
+  THLongStorage_free(dim);
+
+  t_size_dim = THTensor_(size)(t, dimension);
+
+  temp_ = THTensor_(new)();
+  THTensor_(resize1d)(temp_, t_size_dim);
+  temp__data = THTensor_(data)(temp_);
+
+  tempi_ = THLongTensor_new();
+  THLongTensor_resize1d(tempi_, t_size_dim);
+  tempi__data = THLongTensor_data(tempi_);
+
+  TH_TENSOR_DIM_APPLY3(real, t, real, values_, long, indices_, dimension,
+                       long i;
+                       for(i = 0; i < t_size_dim; i++)
+                          temp__data[i] = t_data[i*t_stride];
+                       for(i = 0; i < t_size_dim; i++)
+                          tempi__data[i] = i;
+                       THTensor_(quickselect)(temp__data, tempi__data, k, t_size_dim, 1);
+                       *values__data = temp__data[k];
+                       *indices__data = tempi__data[k];);
+
+  THTensor_(free)(temp_);
+  THLongTensor_free(tempi_);
+}
+
+void THTensor_(median)(THTensor *values_, THTensor *t, int dimension)
+{
+  long t_size_dim, k;
+  THLongTensor *indices_;
+
+  THArgCheck(dimension >= 0 && dimension < THTensor_(nDimension)(t), 3, "dimension out of range");
+
+  t_size_dim = THTensor_(size)(t, dimension);
+  k = (t_size_dim-1) >> 1; /* take middle or one-before-middle element */
+  indices_ = THLongTensor_new();
+
+  THTensor_(kthvalue)(values_, indices_, t, k, dimension);
+  THLongTensor_free(indices_);
 }
 
 void THTensor_(tril)(THTensor *r_, THTensor *t, long k)
