@@ -1118,6 +1118,79 @@ function torchtest.sortDescending()
    assertIsOrdered('descending', x, mxx, ixx, 'random with duplicate keys')
 end
 
+function torchtest.kthvalue()
+   local x = torch.rand(msize, msize, msize)
+   local x0 = x:clone()
+   do
+      local k = math.random(1, msize)
+      local mx, ix = torch.kthvalue(x, k)
+      local mxx, ixx = torch.sort(x)
+
+      mytester:assertTensorEq(mxx:select(3, k), mx, 0, 'torch.kthvalue value')
+      mytester:assertTensorEq(ixx:select(3, k), ix, 0, 'torch.kthvalue index')
+   end
+   do -- test use of result tensors
+      local k = math.random(1, msize)
+      local mx = torch.Tensor()
+      local ix = torch.LongTensor()
+      torch.kthvalue(mx, ix, x, k)
+      local mxx, ixx = torch.sort(x)
+      mytester:assertTensorEq(mxx:select(3, k), mx, 0, 'torch.kthvalue value')
+      mytester:assertTensorEq(ixx:select(3, k), ix, 0, 'torch.kthvalue index')
+   end
+   do -- test non-default dim
+      local k = math.random(1, msize)
+      local mx, ix = torch.kthvalue(x, k, 1)
+      local mxx, ixx = torch.sort(x, 1)
+      mytester:assertTensorEq(mxx:select(1, k), mx, 0, 'torch.kthvalue value')
+      mytester:assertTensorEq(ixx:select(1, k), ix, 0, 'torch.kthvalue index')
+   end
+   do -- non-contiguous
+      local y = x:narrow(2, 1, 1)
+      local y0 = y:clone()
+      local k = math.random(1, msize)
+      local my, ix = torch.kthvalue(y, k)
+      local my0, ix0 = torch.kthvalue(y0, k)
+      mytester:assertTensorEq(my, my0, 0, 'torch.kthvalue value')
+      mytester:assertTensorEq(ix, ix0, 0, 'torch.kthvalue index')
+   end
+   mytester:assertTensorEq(x, x0, 0, 'torch.kthvalue modified input')
+
+   -- simple test case (with repetitions)
+   local y = torch.Tensor{3,5,4,1,1,5}
+   mytester:assertTensorEq(torch.kthvalue(y, 3), torch.Tensor{3}, 1e-16,
+      'torch.kthvalue simple')
+   mytester:assertTensorEq(torch.kthvalue(y, 2), torch.Tensor{1}, 1e-16,
+      'torch.kthvalue simple')
+end
+
+function torchtest.median()
+   for _, msize in ipairs{155,156} do
+      local x = torch.rand(msize, msize)
+      local x0 = x:clone()
+
+      local mx = torch.median(x)
+      local mxx = torch.sort(x)
+      local ind = math.floor((msize+1)/2)
+
+      mytester:assertTensorEq(mxx:select(2, ind), mx, 0, 'torch.median value')
+      mytester:assertTensorEq(x, x0, 0, 'torch.median modified input')
+
+      -- Test use of result tensor
+      local mr = torch.Tensor()
+      torch.median(mr, x)
+      mytester:assertTensorEq(mr, mx, 0, 'torch.median result tensor')
+
+      -- Test non-default dim
+      mx = torch.median(x, 1)
+      mxx = torch.sort(x, 1)
+      mytester:assertTensorEq(mxx:select(1, ind), mx, 0,'torch.median value')
+
+      -- input unchanged
+      mytester:assertTensorEq(x, x0, 0, 'torch.median modified input')
+   end
+end
+
 function torchtest.tril()
    local x = torch.rand(msize,msize)
    local mx = torch.tril(x)

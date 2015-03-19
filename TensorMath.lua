@@ -478,7 +478,21 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor},
          {name="index", default=lastdim(3)},
          {name="boolean", default=0}})
-   
+
+   wrap("kthvalue",
+        cname("kthvalue"),
+        {{name=Tensor, default=true, returned=true},
+         {name="IndexTensor", default=true, returned=true, noreadadd=true},
+         {name=Tensor},
+         {name="index"},
+         {name="index", default=lastdim(3)}})
+
+   wrap("median",
+        cname("median"),
+        {{name=Tensor, default=true, returned=true},
+         {name=Tensor},
+         {name="index", default=lastdim(2)}})
+
    wrap("tril",
         cname("tril"),
         {{name=Tensor, default=true, returned=true},
