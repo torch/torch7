@@ -58,13 +58,13 @@ function Tester:assertTensorEq(ta, tb, condition, message)
    end
    local diff = ta-tb
    local err = diff:abs():max()
-   self:assert_sub(err<condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' TensorEQ(==) violation ', tostring(err), tostring(condition)))
+   self:assert_sub(err<=condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' TensorEQ(==) violation ', tostring(err), tostring(condition)))
 end
 
 function Tester:assertTensorNe(ta, tb, condition, message)
    local diff = ta-tb
    local err = diff:abs():max()
-   self:assert_sub(err>=condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' TensorNE(~=) violation ', tostring(err), tostring(condition)))
+   self:assert_sub(err>condition,string.format('%s\n%s  val=%s, condition=%s',(message or ''),' TensorNE(~=) violation ', tostring(err), tostring(condition)))
 end
 
 local function areTablesEqual(ta, tb)
