@@ -23,10 +23,14 @@ local function Storage__printformat(self)
    local expMin = tensor:min()
    if expMin ~= 0 then
       expMin = math.floor(math.log10(expMin)) + 1
+   else
+      expMin = 1
    end
    local expMax = tensor:max()
    if expMax ~= 0 then
       expMax = math.floor(math.log10(expMax)) + 1
+   else
+      expMax = 1
    end
 
    local format
