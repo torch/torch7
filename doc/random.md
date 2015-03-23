@@ -8,10 +8,9 @@ random number generator.
 <a name=":torch.seed.dok"/>
 ## Seed Handling ##
 
-The random number generator is provided with a random seed via 
-[seed()](#torch.seed) when torch is being initialised. It can be 
-reinitialized using
-[seed()](#torch.seed) or [manualSeed()](#torch.manualSeed). 
+The random number generator is provided with a random seed via
+[seed()](#torch.seed) when torch is being initialised. It can be
+reinitialized using [seed()](#torch.seed) or [manualSeed()](#torch.manualSeed).
 
 Initial seed can be obtained using [initialSeed()](#torch.initialSeed).
 
@@ -104,4 +103,3 @@ Returns a random integer number according to a geometric distribution
 
 Returns `1` with probability `p` and `0` with probability `1-p`. `p` must satisfy `0 <= p <= 1`.
 By default `p` is equal to `0.5`.
-
