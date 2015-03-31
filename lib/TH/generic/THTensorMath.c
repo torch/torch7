@@ -41,6 +41,10 @@ void THTensor_(maskedCopy)(THTensor *tensor, THByteTensor *mask, THTensor* src )
 		     cntr++;
 		     if (cntr > nelem)
 		       THError("Number of elements of src != mask");
+		   } else if (*mask_data == 0)
+		   {
+		     src_data++;
+		     cntr++;
 		   });
   if (cntr != nelem)
     THError("Number of elements of src != mask");
