@@ -1324,7 +1324,7 @@ x = torch.range(1,12):double():resize(3,4)
   9  10  11  12
 [torch.DoubleTensor of dimension 3x4]
 
-mask = torch.DoubleTensor():rand(12):mul(2):floor():byte():resize(2,6)
+mask = torch.ByteTensor(2,6):bernoulli()
 > mask 
  1  0  1  0  0  0
  1  1  0  0  0  1
@@ -1349,7 +1349,7 @@ z:maskedSelect(x, mask)
  12
 ```
 
-Note how the dimensions of the above `x`, `mask` and `y' do not match.
+Note how the dimensions of the above `x`, `mask` and `y` do not match.
 Also note how an existing tensor `z` can be used to store the results.
 
 
@@ -1367,7 +1367,7 @@ x = torch.range(1,8):double():resize(2,4)
  5  6  7  8
 [torch.DoubleTensor of dimension 2x4]
 
-mask = torch.DoubleTensor():rand(8):mul(2):floor():byte():resize(1,8)
+mask = torch.ByteTensor(1,8):bernoulli()
 > mask
  1  0  0  1  1  0  0  1
 [torch.ByteTensor of dimension 1x8]
@@ -1401,7 +1401,7 @@ x = torch.range(1,4):double():resize(1,4)
  1  2  3  4
 [torch.DoubleTensor of dimension 1x4]
 
-mask = torch.DoubleTensor():rand(4):mul(2):floor():byte():resize(2,2)
+mask = torch.ByteTensor(2,2):bernoulli()
 > mask
  0  0
  1  1
