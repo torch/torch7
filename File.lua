@@ -62,6 +62,27 @@ function File:isReferenced()
    return not env.force
 end
 
+local function getmetamethod(obj, name)
+   local func
+   local status
+
+   -- check getmetatable(obj).__name or
+   -- check getmetatable(obj).name
+   status, func = pcall(
+      function()
+         -- note that sometimes the metatable is hidden
+         -- we get it for sure through the torch type system
+         local mt = torch.getmetatable(torch.typename(obj))
+         if mt then
+            return mt['__' .. name] or mt[name]
+         end
+      end
+   )
+   if status and type(func) == 'function' then
+      return func
+   end
+end
+
 function File:writeObject(object)
    -- we use an environment to keep a record of written objects
    if not torch.getenv(self).writeObjects then
@@ -131,8 +152,9 @@ function File:writeObject(object)
             self:writeChar(version)
             self:writeInt(#className)
             self:writeChar(className)
-            if object.write then
-               object:write(self)
+            local write = getmetamethod(object, 'write')
+            if write then
+               write(object, self)
             elseif type(object) == 'table' then
                local var = {}
                for k,v in pairs(object) do
@@ -226,10 +248,11 @@ function File:readObject()
          if not torch.factory(className) then
             error(string.format('unknown Torch class <%s>', tostring(className)))
          end
-         local object = torch.factory(className)()
+         local object = torch.factory(className)(self)
          objects[index] = object
-         if object.read then
-            object:read(self, versionNumber)
+         local read = getmetamethod(object, 'read')
+         if read then
+            read(object, self, versionNumber)
          elseif type(object) == 'table' then
             local var = self:readObject()
             for k,v in pairs(var) do
