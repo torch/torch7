@@ -9,6 +9,9 @@ local types = {'Byte', 'Char', 'Short', 'Int', 'Long', 'Float', 'Double'}
 
 -- tostring() functions for Tensor and Storage
 local function Storage__printformat(self)
+   if self:size() == 0 then 
+     return "", nil, 0
+   end
    local intMode = true
    local type = torch.typename(self)
 --   if type == 'torch.FloatStorage' or type == 'torch.DoubleStorage' then
