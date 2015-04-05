@@ -13,7 +13,8 @@ before_script:
 - cd distro && git submodule update --init --recursive
 - export INSTALL_PREFIX=$(pwd)/install
 - mkdir build && cd build
-- CMAKE_LIBRARY_PATH=/opt/OpenBLAS/include:/opt/OpenBLAS/lib:$CMAKE_LIBRARY_PATH cmake .. -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DCMAKE_BUILD_TYPE=Release -DWITH_LUAJIT21=ON
+- export CMAKE_LIBRARY_PATH=/opt/OpenBLAS/include:/opt/OpenBLAS/lib:$CMAKE_LIBRARY_PATH
+- cmake .. -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DCMAKE_BUILD_TYPE=Release -DWITH_LUAJIT21=ON
 - make && make install
 - cd .. # in distro
 - cd .. # in local folder
