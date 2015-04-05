@@ -1,10 +1,23 @@
 language: c
 compiler:
   - gcc
+  - clang
+cache: apt
 before_script: 
-- sudo apt-get update -qq >/dev/null
-- sudo apt-get install -qq gfortran  >/dev/null
-- sudo apt-get install -qq  gcc-multilib gfortran-multilib  >/dev/null
-- sudo apt-get install -qq liblapack-dev >/dev/null
-script: curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-all | bash 
-after_script: luajit -ltorch -e "torch.test()"
+- sudo apt-get update -qq >/dev/null 2>&1
+- sudo apt-get install -qq gfortran  >/dev/null 2>&1
+- sudo apt-get install -qq  gcc-multilib gfortran-multilib  >/dev/null 2>&1
+- sudo apt-get install -qq liblapack-dev >/dev/null 2>&1
+- curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | sudo bash 2>&1 >/dev/null
+- git clone https://github.com/torch/distro.git distro --recursive
+- cd distro && git submodule update --init --recursive
+- export INSTALL_PREFIX=$(pwd)/install
+- mkdir build && cd build
+- CMAKE_LIBRARY_PATH=/opt/OpenBLAS/include:/opt/OpenBLAS/lib:$CMAKE_LIBRARY_PATH cmake .. -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DCMAKE_BUILD_TYPE=Release -DWITH_LUAJIT21=ON
+- make && make install
+- cd .. # in distro
+- cd .. # in local folder
+- export LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib:$LD_LIBRARY_PATH
+script: 
+- ${INSTALL_PREFIX}/bin/luarocks make rocks/torch-scm-1.rockspec
+- ${INSTALL_PREFIX}/bin/luajit -ltorch -e "t=torch.test(); if t.errors[1] then os.exit(1) end"
