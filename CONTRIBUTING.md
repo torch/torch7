@@ -22,7 +22,7 @@ restrictions:
   [mailing-list](groups.google.com/forum/#!forum/torch7)).
 
 * Please **do not** open issues regarding the code in a torch package 
-  outside the core. For example dont open issues about the 
+  outside the core. For example don't open issues about the 
   REPL in the torch7 issue tracker, use the trepl issue tracker for that.
 
 <a name="bugs"></a>
