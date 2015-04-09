@@ -154,6 +154,16 @@ function Tester:run(run_tests)
       end
    end
 
+   self:_run(tests, testnames)
+   self:report(tests)
+end
+
+--[[ Run exactly the given test functions with the given names.
+
+This doesn't do any matching or filtering, or produce a final report. It
+is internal to Tester:run().
+]]
+function Tester:_run(tests, testnames)
    print('Running ' .. #tests .. ' tests')
    local statstr = string.rep('_',#tests)
    local pstr = ''
@@ -195,7 +205,6 @@ function Tester:run(run_tests)
    io.flush()
    print()
    print()
-   self:report(tests)
 end
 
 function Tester:add(f,name)
