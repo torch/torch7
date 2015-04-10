@@ -70,7 +70,7 @@ Example:
 ```
 
 <a name="torch.Storage"/>
-### torch.TYPEStorage(filename [, shared]) ###
+### torch.TYPEStorage(filename [, shared [, size]]) ###
 <a name="__torch.StorageMap"/>
 
 Returns a new kind of `Storage` which maps the contents of the given
@@ -87,10 +87,21 @@ readable. Any changes on the storage will not affect the file. Note:
 changes made on the file after creation of the storage have an unspecified
 effect on the storage contents.
 
-The [size](#torch.Storage.size) of the returned `Storage` will be
+If `size` is specified, it is the [size](#torch.Storage.size) of the returned
+`Storage` (in elements). In this case, if `shared` is false then the file must
+already contain at least
 ```lua
-(size of file in byte)/(size of TYPE).
+size*(size of TYPE)
 ```
+bytes. If `shared` is true then the file will be created if necessary, and
+extended if necessary to that many bytes in length.
+
+If `size` is not specified then the [size](#torch.Storage.size) of the returned
+`Storage`  will be
+```lua
+(size of file in byte)/(size of TYPE)
+```
+elements.
 
 Example:
 ```lua
