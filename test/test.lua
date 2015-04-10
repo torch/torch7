@@ -1970,6 +1970,16 @@ function torchtest.isSameSizeAs()
    mytester:assert(t1:isSameSizeAs(t4) == true, "wrong answer ")
 end
 
+function torchtest.hasSize()
+  local t1 = torch.Tensor(3, 4, 5)
+  local s1 = torch.LongStorage({3, 4, 5})
+  local s2 = torch.LongStorage({5, 4, 3})
+
+   mytester:assert(t1:hasSize(s1) == true, "wrong answer ")
+   mytester:assert(t1:hasSize(s2) == false, "wrong answer ")
+   mytester:assert(t1:hasSize(t1:size()) == true, "wrong answer ")
+end
+
 function torchtest.split()
    local result = {}
    local tensor = torch.rand(7,4)
