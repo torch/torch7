@@ -250,7 +250,7 @@ For more than 4 dimensions, you can use a storage as argument:
 <a name="torch.range"/>
 
 `y=torch.range(x,y)` returns a tensor of size `floor((y - x) / step) + 1` with values
-from `x` to `y` with step `setp` (default to 1).
+from `x` to `y` with step `step` (default to 1).
 
 ```lua
 > print(torch.range(2,5))
