@@ -1326,6 +1326,60 @@ x:indexFill(2,torch.LongTensor{4,2},-10)
 
 ```
 
+<a name="torch.Tensor.gather"/>
+### [Tensor] gather(src, dim, index) ###
+
+Reads values from `src` at the specified indices into the output tensor, selecting a fixed number of values in each row of `src` along the specified dimension.
+The values of `index` must be between 1 and `src->size(dim)` and all values in a row along the specified dimension must be unique.
+All tensors have the same dimensionality and both `index` and the output tensor are of the same size at the specified dimension.
+
+```lua
+x = torch.rand(5, 5)
+> x
+ 0.6066  0.9862  0.1543  0.8633  0.5110
+ 0.1853  0.1215  0.1245  0.6549  0.1822
+ 0.2412  0.3336  0.5208  0.6858  0.5415
+ 0.0147  0.9215  0.5092  0.9192  0.8051
+ 0.2136  0.1595  0.7943  0.4572  0.1562
+[torch.DoubleTensor of size 5x5]
+
+y = x:gather(1, torch.LongTensor{{1, 2, 3, 4, 5}, {2, 3, 4, 5, 1}})
+> y
+ 0.6066  0.1215  0.5208  0.9192  0.1562
+ 0.1853  0.3336  0.5092  0.4572  0.5110
+[torch.DoubleTensor of size 2x5]
+
+```
+
+<a name="torch.Tensor.scatter"/>
+### [Tensor] scatter(dim, index, src|val) ###
+
+Writes all values from tensor `src` or the scalar `val` into `self` at the specified indices, writing a fixed number of elements into each row of `self` along the specified dimension.
+The values of `index` must be between 1 and `self->size(dim)` and all values in a row along the specified dimension must be unique.
+All tensors have the same dimensionality and both `src` and `index` are of the same size at the specified dimension.
+
+```lua
+x = torch.rand(2, 5)
+> x
+ 0.3227  0.4294  0.8476  0.9414  0.1159
+ 0.7338  0.5185  0.2947  0.0578  0.1273
+[torch.DoubleTensor of size 2x5]
+
+y = torch.zeros(3, 5):scatter(1, torch.LongTensor{{1, 2, 3, 1, 1}, {3, 1, 1, 2, 3}}, x)
+> y
+ 0.3227  0.5185  0.2947  0.9414  0.1159
+ 0.0000  0.4294  0.0000  0.0578  0.0000
+ 0.7338  0.0000  0.8476  0.0000  0.1273
+[torch.DoubleTensor of size 3x5]
+
+z = torch.zeros(2, 4):scatter(2, torch.LongTensor{{3}, {4}}, 1.23)
+> z
+ 0.0000  0.0000  1.2300  0.0000
+ 0.0000  0.0000  0.0000  1.2300
+[torch.DoubleTensor of size 2x4]
+
+```
+
 <a name="torch.Tensor.maskedSelect"/>
 ### [Tensor] maskedSelect(mask) ###
 
