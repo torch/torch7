@@ -698,6 +698,24 @@ false
 [torch.LongStorage of size 1]
 ```
 
+<a name="torch.Tensor.isSize"/>
+### [boolean] isSize(storage) ###
+
+Returns `true` iff the dimensions of the `Tensor` match the elements of the `storage`.
+```lua
+x = torch.Tensor(4,5)
+y = torch.LongStorage({4,5})
+z = torch.LongStorage({5,4,1})
+> x:isSize(y)
+true
+
+> x:isSize(z)
+false
+
+> x:isSize(x:size())
+true
+```
+
 <a name="torch.Tensor.isSameSizeAs"/>
 ### [boolean] isSameSizeAs(tensor) ###
 
