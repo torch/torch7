@@ -208,13 +208,13 @@ function Tensor.__tostring__(self)
                table.insert(strt, string.format(format, tensor[i]) .. '\n')
             end
          end
-         table.insert(strt, '[' .. torch.typename(self) .. ' of dimension ' .. tensor:size(1) .. ']\n')
+         table.insert(strt, '[' .. torch.typename(self) .. ' of size ' .. tensor:size(1) .. ']\n')
       elseif tensor:nDimension() == 2 then
          table.insert(strt, Tensor__printMatrix(tensor))
-         table.insert(strt, '[' .. torch.typename(self) .. ' of dimension ' .. tensor:size(1) .. 'x' .. tensor:size(2) .. ']\n')
+         table.insert(strt, '[' .. torch.typename(self) .. ' of size ' .. tensor:size(1) .. 'x' .. tensor:size(2) .. ']\n')
       else
          table.insert(strt, Tensor__printTensor(tensor))
-         table.insert(strt, '[' .. torch.typename(self) .. ' of dimension ')
+         table.insert(strt, '[' .. torch.typename(self) .. ' of size ')
          for i=1,tensor:nDimension() do
             table.insert(strt, tensor:size(i))
             if i ~= tensor:nDimension() then
