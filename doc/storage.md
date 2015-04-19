@@ -234,3 +234,26 @@ The contents of the storage viewed as a string are returned. The string might co
 blah blah
 ```
 
+## Reference counting methods ##
+
+Storages are reference-counted. It means that each time an object (C or the
+Lua state) need to keep a reference over a storage, the corresponding
+storage reference counter will be [increased](#torch.Storage.retain). The
+reference counter is [decreased]((#torch.Storage.free)) when the object
+does not need the storage anymore.
+
+These methods should be used with extreme care. In general, they should
+never be called, except if you know what you are doing, as the handling of
+references is done automatically. They can be useful in threaded
+environments. Note that these methods are atomic operations.
+
+<a name="torch.Storage.retain"/>
+### retain() ###
+
+Increment the reference counter of the storage.
+
+<a name="torch.Storage.free"/>
+### free() ###
+
+Decrement the reference counter of the storage. Free the storage if the
+counter is at 0.
