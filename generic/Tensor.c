@@ -956,6 +956,13 @@ static int torch_Tensor_(__index__)(lua_State *L)
   }
 }
 
+static int torch_Tensor_(retain)(lua_State *L)
+{
+  THTensor *tensor = luaT_checkudata(L, 1, torch_Tensor);
+  THTensor_(retain)(tensor);
+  return 0;
+}
+
 static int torch_Tensor_(free)(lua_State *L)
 {
   THTensor *tensor = luaT_checkudata(L, 1, torch_Tensor);
@@ -1217,6 +1224,8 @@ static int torch_Tensor_(read)(lua_State *L)
 }
 
 static const struct luaL_Reg torch_Tensor_(_) [] = {
+  {"retain", torch_Tensor_(retain)},
+  {"free", torch_Tensor_(free)},
   {"contiguous", torch_Tensor_(contiguous)},
   {"size", torch_Tensor_(size)},
   {"__len__", torch_Tensor_(size)},
