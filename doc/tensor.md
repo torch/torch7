@@ -1376,7 +1376,8 @@ Also note how an existing tensor `z` can be used to store the results.
 
 Copies the masked elements of `tensor` into itself. The masked elements are those elements having a 
 corresponding `1` in the `mask` Tensor. This `mask` is a `torch.ByteTensor` 
-of zeros and ones. `Tensor` must have atleast the number of elements that are equal to number of `1`s in the mask.
+of zeros and ones. The destination `Tensor` and the `mask` Tensor should have the same number of elements.
+The source `tensor` should have atleast as many elements as the number of 1s in the `mask`.
 
 ```lua
 x = torch.range(1,4):double():resize(2,2)
