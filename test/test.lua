@@ -1796,6 +1796,17 @@ function torchtest.maskedCopy()
       end
    end
    mytester:assertTensorEq(dest, dest2, 0.000001, "maskedCopy error")
+
+   -- make source bigger than number of 1s in mask
+   src = torch.randn(nDest) 
+   local ok = pcall(dest.maskedCopy, dest, mask, src)
+   mytester:assert(ok, "maskedCopy incorrect complaint when" 
+		      .. " src is bigger than mask's one count")
+   
+   src = torch.randn(nCopy - 1) -- make src smaller. this should fail
+   local ok = pcall(dest.maskedCopy, dest, mask, src)
+   mytester:assert(not ok, "maskedCopy not erroring when" 
+		      .. " src is smaller than mask's one count")
 end
 
 function torchtest.maskedSelect()
