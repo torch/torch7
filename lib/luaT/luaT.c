@@ -163,7 +163,12 @@ static const char cdataname[] = ""
   "if ffi then\n"
   "  local id2name = {}\n"
   "  return function(cdata, name)\n"
-  "    local id = tonumber(ffi.typeof(cdata))\n"
+  "    local id\n"
+  "    if jit then\n"
+  "      id = tonumber(ffi.typeof(cdata))\n"
+  "    else\n"
+  "      id = tostring(ffi.typeof(cdata))\n"
+  "    end\n"
   "    if id then\n"
   "      if name then\n"
   "        id2name[id] = name\n"
@@ -208,9 +213,47 @@ static const char* luaT_cdataname(lua_State *L, int ud, const char *tname)
   return tname;
 }
 
+static void* CDATA_MT_KEY = &CDATA_MT_KEY;
+static const char cdatamt[] = ""
+  "local _, ffi = pcall(require, 'ffi')\n"
+  "if ffi and not jit then\n"
+  "  return ffi.debug().cdata_mt\n"
+  "else\n"
+  "  return {}\n"
+  "end\n";
+
+static int luaT_iscdata(lua_State *L, int ud)
+{
+  int type = lua_type(L, ud);
+  if(type == 10)
+    return 1;
+  if(type != LUA_TUSERDATA)
+    return 0;
+  if(!lua_getmetatable(L, ud))
+    return 0;
+
+  lua_pushlightuserdata(L, CDATA_MT_KEY);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  if (lua_isnil(L, -1))
+  {
+    // initialize cdata metatable
+    lua_pop(L, 1);
+    if(luaL_dostring(L, cdatamt))
+      luaL_error(L, "internal error (could not load cdata mt): %s", lua_tostring(L, -1));
+
+    lua_pushlightuserdata(L, CDATA_MT_KEY);
+    lua_pushvalue(L, -2);
+    lua_rawset(L, LUA_REGISTRYINDEX);
+  }
+
+  int iscdata = lua_rawequal(L, -1, -2);
+  lua_pop(L, 2);
+  return iscdata;
+}
+
 const char* luaT_typename(lua_State *L, int ud)
 {
-  if(lua_type(L, ud) == 10)
+  if(luaT_iscdata(L, ud))
     return luaT_cdataname(L, ud, NULL);
   else if(lua_getmetatable(L, ud))
   {
@@ -826,7 +869,7 @@ int luaT_lua_version(lua_State *L)
 {
   luaL_checkany(L, 1);
 
-  if(lua_type(L, 1) == 10)
+  if(luaT_iscdata(L, 1))
   {
     const char *tname = luaT_cdataname(L, 1, NULL);
     if(tname)
