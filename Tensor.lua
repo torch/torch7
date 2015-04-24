@@ -492,15 +492,14 @@ function Tensor.split(result, tensor, splitSize, dim)
       end
    end
    dim = dim or 1
-   local splits = {}
    local start = 1
    while start <= tensor:size(dim) do
       local size = math.min(splitSize, tensor:size(dim) - start + 1)
       local split = tensor:narrow(dim, start, size)
-      table.insert(splits, split)
+      table.insert(result, split)
       start = start + size
    end
-   return splits
+   return result
 end
 torch.split = Tensor.split
 
