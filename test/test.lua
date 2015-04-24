@@ -3,6 +3,7 @@
 local mytester
 local torchtest = {}
 local msize = 100
+local precision
 
 local function maxdiff(x,y)
    local d = x-y
@@ -2010,6 +2011,10 @@ function torchtest.split()
       mytester:assertTableEq(split:size():totable(), targetSize[i], 'Result size error in split '..i)
       mytester:assertTensorEq(tensor:narrow(dim, start, targetSize[i][dim]), split, 0.000001, 'Result content error in split '..i)
       start = start + targetSize[i][dim]
+   end
+   mytester:asserteq(#splits,#result, 0, 'Non-consistent output size from split')
+   for i, split in ipairs(splits) do
+      mytester:assertTensorEq(split,result[i], 0, 'Non-consistent outputs from split')
    end
 end
 
