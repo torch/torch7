@@ -1992,6 +1992,34 @@ function torchtest.isSize()
    mytester:assert(t1:isSize(t1:size()) == true, "wrong answer ")
 end
 
+function torchtest.elementSize()
+  local byte   =   torch.ByteStorage():elementSize()
+  local char   =   torch.CharStorage():elementSize()
+  local short  =  torch.ShortStorage():elementSize()
+  local int    =    torch.IntStorage():elementSize()
+  local long   =   torch.LongStorage():elementSize()
+  local float  =  torch.FloatStorage():elementSize()
+  local double = torch.DoubleStorage():elementSize()
+
+  mytester:assertne(byte, 0)
+  mytester:assertne(char, 0)
+  mytester:assertne(short, 0)
+  mytester:assertne(int, 0)
+  mytester:assertne(long, 0)
+  mytester:assertne(float, 0)
+  mytester:assertne(double, 0)
+
+  -- These tests are portable, not necessarily strict for your system.
+  mytester:asserteq(byte, 1)
+  mytester:asserteq(char, 1)
+  mytester:assert(short >= 2)
+  mytester:assert(int >= 2)
+  mytester:assert(int >= short)
+  mytester:assert(long >= 4)
+  mytester:assert(long >= int)
+  mytester:assert(double >= float)
+end
+
 function torchtest.split()
    local result = {}
    local tensor = torch.rand(7,4)
