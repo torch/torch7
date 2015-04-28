@@ -1,7 +1,5 @@
-if jit then
-
-   local ffi = require 'ffi'
-
+local ok, ffi = pcall(require, 'ffi')
+if ok then
    local Real2real = {
       Byte='unsigned char',
       Char='char',
