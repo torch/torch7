@@ -46,7 +46,7 @@ void torch_random_init(lua_State *L)
   torch_Generator_init(L);
   torch_Generator_new(L);
   lua_setfield(L, -2, "_gen");
-  luaL_register(L, NULL, random__);
+  luaT_setfuncs(L, random__, 0);
 }
 ]])
 

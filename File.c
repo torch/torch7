@@ -199,6 +199,6 @@ static const struct luaL_Reg torch_File__ [] = {
 void torch_File_init(lua_State *L)
 {
   luaT_newmetatable(L, "torch.File", NULL, NULL, NULL, NULL);
-  luaL_register(L, NULL, torch_File__);
+  luaT_setfuncs(L, torch_File__, 0);
   lua_pop(L, 1);
 }

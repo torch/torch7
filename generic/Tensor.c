@@ -1278,7 +1278,7 @@ void torch_Tensor_(init)(lua_State *L)
 {
   luaT_newmetatable(L, torch_Tensor, NULL,
                     torch_Tensor_(new), torch_Tensor_(free), torch_Tensor_(factory));
-  luaL_register(L, NULL, torch_Tensor_(_));
+  luaT_setfuncs(L, torch_Tensor_(_), 0);
   lua_pop(L, 1);
 }
 

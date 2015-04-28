@@ -56,6 +56,6 @@ void torch_MemoryFile_init(lua_State *L)
 {
   luaT_newmetatable(L, "torch.MemoryFile", "torch.File",
                     torch_MemoryFile_new, torch_MemoryFile_free, NULL);
-  luaL_register(L, NULL, torch_MemoryFile__);
+  luaT_setfuncs(L, torch_MemoryFile__, 0);
   lua_pop(L, 1);
 }

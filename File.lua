@@ -21,6 +21,9 @@ local TYPE_BOOLEAN  = 5
 local TYPE_FUNCTION = 6
 local TYPE_RECUR_FUNCTION = 7
 
+-- Lua 5.2 compatibility
+local loadstring = loadstring or load
+
 function File:isWritableObject(object)
    local typename = type(object)
    local typeidx

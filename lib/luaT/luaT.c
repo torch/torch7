@@ -45,6 +45,24 @@ void luaT_free(lua_State *L, void *ptr)
   free(ptr);
 }
 
+void luaT_setfuncs(lua_State *L, const luaL_Reg *l, int nup)
+{
+#if LUA_VERSION_NUM == 501
+  luaL_checkstack(L, nup+1, "too many upvalues");
+  for (; l->name != NULL; l++) {  /* fill the table with given functions */
+    int i;
+    lua_pushstring(L, l->name);
+    for (i = 0; i < nup; i++)  /* copy upvalues to the top */
+      lua_pushvalue(L, -(nup+1));
+    lua_pushcclosure(L, l->func, nup);  /* closure with those upvalues */
+    lua_settable(L, -(nup + 3));
+  }
+  lua_pop(L, nup);  /* remove upvalues */
+#else
+  luaL_setfuncs(L, l, nup);
+#endif
+}
+
 void luaT_stackdump(lua_State *L)
 {
   int i;
@@ -159,8 +177,8 @@ const char *luaT_typenameid(lua_State *L, const char *tname)
 }
 
 static const char cdataname[] = ""
-  "local _, ffi = pcall(require, 'ffi')\n"
-  "if ffi then\n"
+  "local ok, ffi = pcall(require, 'ffi')\n"
+  "if ok then\n"
   "  local id2name = {}\n"
   "  return function(cdata, name)\n"
   "    local id\n"
@@ -215,8 +233,8 @@ static const char* luaT_cdataname(lua_State *L, int ud, const char *tname)
 
 static void* CDATA_MT_KEY = &CDATA_MT_KEY;
 static const char cdatamt[] = ""
-  "local _, ffi = pcall(require, 'ffi')\n"
-  "if ffi and not jit then\n"
+  "local ok, ffi = pcall(require, 'ffi')\n"
+  "if ok and not jit then\n"
   "  return ffi.debug().cdata_mt\n"
   "else\n"
   "  return {}\n"
@@ -448,7 +466,7 @@ void luaT_registeratname(lua_State *L, const struct luaL_Reg *methods, const cha
     lua_rawget(L, idx);
   }
 
-  luaL_register(L, NULL, methods);
+  luaT_setfuncs(L, methods, 0);
   lua_pop(L, 1);
 }
 
@@ -494,9 +512,9 @@ int luaT_lua_newmetatable(lua_State *L)
   luaL_argcheck(L, lua_isnoneornil(L, 5) || lua_isfunction(L, 5), 5, "factory function or nil expected");
 
   if(is_in_module)
-    lua_getfield(L, LUA_GLOBALSINDEX, module_name);
+    lua_getglobal(L, module_name);
   else
-    lua_pushvalue(L, LUA_GLOBALSINDEX);
+    lua_pushglobaltable(L);
   if(!lua_istable(L, 6))
     luaL_error(L, "while creating metatable %s: bad argument #1 (%s is an invalid module name)", tname, module_name);
 
@@ -853,7 +871,7 @@ int luaT_lua_setenv(lua_State *L)
   if(!lua_isfunction(L, 1) && !lua_isuserdata(L, 1))
     luaL_typerror(L, 1, "function or userdata");
   luaL_checktype(L, 2, LUA_TTABLE);
-  lua_setfenv(L, 1);
+  lua_setuservalue(L, 1);
   return 0;
 }
 
@@ -861,7 +879,9 @@ int luaT_lua_getenv(lua_State *L)
 {
   if(!lua_isfunction(L, 1) && !lua_isuserdata(L, 1))
     luaL_typerror(L, 1, "function or userdata");
-  lua_getfenv(L, 1);
+  lua_getuservalue(L, 1);
+  if (lua_isnil(L, -1))
+    lua_newtable(L);
   return 1;
 }
 

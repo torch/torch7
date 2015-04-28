@@ -56,7 +56,7 @@ int luaopen_libtorch(lua_State *L)
 
   lua_newtable(L);
   lua_pushvalue(L, -1);
-  lua_setfield(L, LUA_GLOBALSINDEX, "torch");
+  lua_setglobal(L, "torch");
 
   torch_File_init(L);
 

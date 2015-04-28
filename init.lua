@@ -6,6 +6,9 @@
 if not string.gfind then
     string.gfind = string.gmatch
 end
+if not table.unpack then
+    table.unpack = unpack
+end
 
 require "paths"
 paths.require "libtorch"

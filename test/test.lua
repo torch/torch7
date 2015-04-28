@@ -5,6 +5,10 @@ local torchtest = {}
 local msize = 100
 local precision
 
+-- Lua 5.2 compatibility
+local loadstring = loadstring or load
+local unpack = unpack or table.unpack
+
 local function maxdiff(x,y)
    local d = x-y
    if x:type() == 'torch.DoubleTensor' or x:type() == 'torch.FloatTensor' then

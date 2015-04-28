@@ -80,6 +80,6 @@ void torch_DiskFile_init(lua_State *L)
   luaT_newmetatable(L, "torch.DiskFile", "torch.File",
                     torch_DiskFile_new, torch_DiskFile_free, NULL);
   
-  luaL_register(L, NULL, torch_DiskFile__);
+  luaT_setfuncs(L, torch_DiskFile__, 0);
   lua_pop(L, 1);
 }

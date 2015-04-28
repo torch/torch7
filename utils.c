@@ -113,7 +113,7 @@ static int torch_lua_getdefaulttensortype(lua_State *L)
 
 const char* torch_getdefaulttensortype(lua_State *L)
 {
-  lua_getfield(L, LUA_GLOBALSINDEX, "torch");
+  lua_getglobal(L, "torch");
   if(lua_istable(L, -1))
   {
     lua_getfield(L, -1, "Tensor");
@@ -214,5 +214,5 @@ static const struct luaL_Reg torch_utils__ [] = {
 
 void torch_utils_init(lua_State *L)
 {
-  luaL_register(L, NULL, torch_utils__);
+  luaT_setfuncs(L, torch_utils__, 0);
 }

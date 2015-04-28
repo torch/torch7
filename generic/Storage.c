@@ -273,7 +273,7 @@ void torch_Storage_(init)(lua_State *L)
 {
   luaT_newmetatable(L, torch_Storage, NULL,
                     torch_Storage_(new), torch_Storage_(free), torch_Storage_(factory));
-  luaL_register(L, NULL, torch_Storage_(_));
+  luaT_setfuncs(L, torch_Storage_(_), 0);
   lua_pop(L, 1);
 }
 

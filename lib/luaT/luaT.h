@@ -32,12 +32,26 @@ extern "C" {
 # define LUAT_API LUA_EXTERNC
 #endif
 
+#if LUA_VERSION_NUM == 501
+# define lua_pushglobaltable(L) lua_pushvalue(L, LUA_GLOBALSINDEX)
+# define lua_setuservalue lua_setfenv
+# define lua_getuservalue lua_getfenv
+#else
+# define lua_objlen lua_rawlen
+static int luaL_typerror(lua_State *L, int narg, const char *tname)
+{
+  return luaL_error(L, "%s expected, got %s", tname, luaL_typename(L, narg));
+}
+#endif
+
 
 /* C functions */
 
 LUAT_API void* luaT_alloc(lua_State *L, long size);
 LUAT_API void* luaT_realloc(lua_State *L, void *ptr, long size);
 LUAT_API void luaT_free(lua_State *L, void *ptr);
+
+LUAT_API void luaT_setfuncs(lua_State *L, const luaL_Reg *l, int nup);
 
 LUAT_API const char* luaT_newmetatable(lua_State *L, const char *tname, const char *parenttname,
                                        lua_CFunction constructor, lua_CFunction destructor, lua_CFunction factory);

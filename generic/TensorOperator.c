@@ -166,7 +166,7 @@ static const struct luaL_Reg torch_TensorOperator_(_) [] = {
 void torch_TensorOperator_(init)(lua_State *L)
 {
   luaT_pushmetatable(L, torch_Tensor);
-  luaL_register(L, NULL, torch_TensorOperator_(_));
+  luaT_setfuncs(L, torch_TensorOperator_(_), 0);
   lua_pop(L, 1);
 }
 
