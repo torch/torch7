@@ -19,7 +19,8 @@ local TYPE_TABLE    = 3
 local TYPE_TORCH    = 4
 local TYPE_BOOLEAN  = 5
 local TYPE_FUNCTION = 6
-local TYPE_RECUR_FUNCTION = 7
+local TYPE_RECUR_FUNCTION = 8
+local LEGACY_TYPE_RECUR_FUNCTION = 7
 
 -- Lua 5.2 compatibility
 local loadstring = loadstring or load
@@ -141,7 +142,8 @@ function File:writeObject(object)
                counter = counter + 1
                local name,value = debug.getupvalue(object, counter)
                if not name then break end
-               table.insert(upvalues, value)
+               if name == '_ENV' then value = nil end
+               table.insert(upvalues, {name=name, value=value})
             end
             local dumped = string.dump(object)
             local stringStorage = torch.CharStorage():string(dumped)
@@ -217,7 +219,7 @@ function File:readObject()
           debug.setupvalue(func, index, upvalue)
        end
        return func
-   elseif typeidx == TYPE_TABLE or typeidx == TYPE_TORCH or typeidx == TYPE_RECUR_FUNCTION then
+   elseif typeidx == TYPE_TABLE or typeidx == TYPE_TORCH or typeidx == TYPE_RECUR_FUNCTION or typeidx == LEGACY_TYPE_RECUR_FUNCTION then
       -- read the index
       local index = self:readInt()
 
@@ -228,16 +230,22 @@ function File:readObject()
       end
 
       -- otherwise read it
-      if typeidx == TYPE_RECUR_FUNCTION then
-        local size = self:readInt()
-        local dumped = self:readChar(size):string()
-        local func = loadstring(dumped)
-        objects[index] = func
-        local upvalues = self:readObject()
-        for index,upvalue in ipairs(upvalues) do
-           debug.setupvalue(func, index, upvalue)
-        end
-        return func
+      if typeidx == TYPE_RECUR_FUNCTION or typeidx == LEGACY_TYPE_RECUR_FUNCTION then
+         local size = self:readInt()
+         local dumped = self:readChar(size):string()
+         local func = loadstring(dumped)
+         objects[index] = func
+         local upvalues = self:readObject()
+         for index,upvalue in ipairs(upvalues) do
+            if typeidx == LEGACY_TYPE_RECUR_FUNCTION then
+               debug.setupvalue(func, index, upvalue)
+            elseif upvalue.name == '_ENV' then
+               debug.setupvalue(func, index, _ENV)
+            else
+               debug.setupvalue(func, index, upvalue.value)
+            end
+         end
+         return func
       elseif typeidx == TYPE_TORCH then
          local version, className, versionNumber
          version = self:readChar(self:readInt()):string()
