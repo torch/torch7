@@ -1777,9 +1777,9 @@ z = x * y
 ```
 
 <a name="torch.logical.dok"/>
-## Logical Operations on Tensors ##`
-`
-Th`ese functions implement logical comparison operators that takea
+## Logical Operations on Tensors ##
+
+These functions implement logical comparison operators that take a
 tensor as input and another tensor or a number as the comparison
 target.  They return a `ByteTensor` in which each element is 0 or 1
 indicating if the comparison for the corresponding element was
