@@ -142,7 +142,7 @@ static int torch_TensorOperator_(__div__)(lua_State *L)
   THTensor *tensor = luaT_checkudata(L, 1, torch_Tensor);
   THTensor *r;
 
-  luaL_argcheck(L, lua_isnumber(L,2), 2, "number expected");
+  THArgCheck(lua_isnumber(L,2), 2, "number expected");
 
   r = THTensor_(new)();
   luaT_pushudata(L, r, torch_Tensor);
