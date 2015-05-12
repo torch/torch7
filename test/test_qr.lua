@@ -136,7 +136,10 @@ local function addTestVariations(tests, name, func, opts)
       assert(not tests[fullName])
       if tensorType == 'torch.DoubleTensor' or not opts.doubleTensorOnly then
         tests[fullName] = function()
+          local state = torch.getRNGState()
+          torch.manualSeed(1)
           func(testOpts)
+          torch.setRNGState(state)
         end
       end
     end
@@ -217,7 +220,6 @@ end, {doubleTensorOnly=true})
 
 -- Decomposing a sequence of medium-sized random matrices.
 addTestVariations(tests, 'randomMediumQR', function(testOpts)
-  torch.manualSeed(1)
   for x = 0, 10 do
     for y = 0, 10 do
       local m = math.pow(2, x)
@@ -230,7 +232,6 @@ end)
 
 -- Decomposing a sequence of small random matrices.
 addTestVariations(tests, 'randomSmallQR', function(testOpts)
-  torch.manualSeed(1)
   for m = 1, 40 do
     for n = 1, 40 do
       checkQR(testOpts, torch.rand(m, n):typeAs(testOpts.tensorFunc()))
@@ -240,7 +241,6 @@ end)
 
 -- Decomposing a sequence of small matrices that are not contiguous in memory.
 addTestVariations(tests, 'randomNonContiguous', function(testOpts)
-  torch.manualSeed(1)
   for m = 2, 40 do
     for n = 2, 40 do
       local x = torch.rand(m, n):t()
