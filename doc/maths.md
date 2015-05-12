@@ -1776,6 +1776,82 @@ z = x * y
 
 ```
 
+<a name="torch.qr"/>
+### torch.qr([q, r], x) ###
+
+Compute a QR decomposition of the matrix `x`: matrices `q` and `r` such that
+`x = q * r`, with `q` orthogonal and `r` upper triangular.
+
+`=torch.qr(x)` returns the Q and R components as new matrices.
+
+`torch.qr(q, r, x)` stores them in existing tensors `q` and `r`.
+
+Note that precision may be lost if the magnitudes of the elements of `x` are
+large.
+
+Note also that, while it should always give you a valid decomposition, it may
+not give you the same one across platforms - it will depend on your LAPACK
+implementation.
+
+```lua
+> a = torch.Tensor{{12, -51, 4}, {6, 167, -68}, {-4, 24, -41}}
+> =a
+  12  -51    4
+   6  167  -68
+  -4   24  -41
+[torch.DoubleTensor of dimension 3x3]
+
+> q, r = torch.qr(a)
+> =q
+-0.8571  0.3943  0.3314
+-0.4286 -0.9029 -0.0343
+ 0.2857 -0.1714  0.9429
+[torch.DoubleTensor of dimension 3x3]
+
+> =r
+ -14.0000  -21.0000   14.0000
+   0.0000 -175.0000   70.0000
+   0.0000    0.0000  -35.0000
+[torch.DoubleTensor of dimension 3x3]
+
+> =(q*r):round()
+  12  -51    4
+   6  167  -68
+  -4   24  -41
+[torch.DoubleTensor of dimension 3x3]
+
+> =(q:t()*q):round()
+ 1  0  0
+ 0  1  0
+ 0  0  1
+[torch.DoubleTensor of dimension 3x3]
+
+
+```
+
+<a name="torch.geqrf"/>
+### torch.geqrf([m, tau], a) ###
+
+This is a low-level function for calling LAPACK directly. You'll generally want
+to use `torch.qr()` instead.
+
+Computes a QR decomposition of `a`, but without constructing Q and R as explicit
+separate matrices. Rather, this directly calls the underlying LAPACK function
+ `?geqrf` which produces a sequence of 'elementary reflectors'. See
+[LAPACK documentation](http://www.netlib.org/netlib/lapack/double/dgeqrf.f)
+for further details.
+
+<a name="torch.orgqr"/>
+### torch.orgqr([q], m, tau) ###
+
+This is a low-level function for calling LAPACK directly. You'll generally want
+to use `torch.qr()` instead.
+
+Constructs a Q matrix from a sequence of elementary reflectors, such as that
+given by `torch.geqrf`. See
+ [LAPACK documentation](http://www.netlib.org/netlib/lapack/double/dorgqr.f) for
+further details.
+
 <a name="torch.logical.dok"/>
 ## Logical Operations on Tensors ##
 
