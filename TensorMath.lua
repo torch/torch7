@@ -1061,6 +1061,36 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                      {{name=Tensor, default=true, returned=true, invisible=true},
                       {name=Tensor}}
                   )
+      interface:wrap("qr",
+                     cname("qr"),
+                     {{name=Tensor, returned=true},
+                      {name=Tensor, returned=true},
+                      {name=Tensor}},
+                     cname("qr"),
+                     {{name=Tensor, default=true, returned=true, invisible=true},
+                      {name=Tensor, default=true, returned=true, invisible=true},
+                      {name=Tensor}}
+                  )
+      interface:wrap("geqrf",
+                     cname("geqrf"),
+                     {{name=Tensor, returned=true},
+                      {name=Tensor, returned=true},
+                      {name=Tensor}},
+                     cname("geqrf"),
+                     {{name=Tensor, default=true, returned=true, invisible=true},
+                      {name=Tensor, default=true, returned=true, invisible=true},
+                      {name=Tensor}}
+                  )
+      interface:wrap("orgqr",
+                     cname("orgqr"),
+                     {{name=Tensor, returned=true},
+                      {name=Tensor},
+                      {name=Tensor}},
+                     cname("orgqr"),
+                     {{name=Tensor, default=true, returned=true, invisible=true},
+                      {name=Tensor},
+                      {name=Tensor}}
+                  )
    end
 
    method:register(string.format("m_torch_%sMath__", Tensor))
