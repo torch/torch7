@@ -94,5 +94,8 @@ int luaopen_libtorch(lua_State *L)
   torch_utils_init(L);
   torch_random_init(L);
 
+  // Create 'torch.Allocator' type.
+  luaT_newmetatable(L, "torch.Allocator", NULL, NULL, NULL, NULL);
+
   return 1;
 }
