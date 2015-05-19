@@ -1782,6 +1782,113 @@ function torchtest.indexCopy()
    mytester:assertTensorEq(dest, dest2, 0.000001, "indexCopy scalar error")
 end
 
+-- Fill idx with valid indices.
+local function fillIdx(idx, dim, dim_size, elems_per_row, m, n, o)
+   for i = 1, (dim == 1 and 1 or m) do
+      for j = 1, (dim == 2 and 1 or n) do
+         for k = 1, (dim == 3 and 1 or o) do
+            local ii = {i, j, k}
+            ii[dim] = {}
+            idx[ii] = torch.randperm(dim_size)[{{1, elems_per_row}}]
+         end
+      end
+   end
+end
+
+function torchtest.gather()
+   local m, n, o = torch.random(10, 20), torch.random(10, 20), torch.random(10, 20)
+   local elems_per_row = torch.random(10)
+   local dim = torch.random(3)
+
+   local src = torch.randn(m, n, o)
+   local idx_size = {m, n, o}
+   idx_size[dim] = elems_per_row
+   local idx = torch.LongTensor():resize(unpack(idx_size))
+   fillIdx(idx, dim, src:size(dim), elems_per_row, m, n, o)
+
+   local actual = torch.gather(src, dim, idx)
+   local expected = torch.Tensor():resize(unpack(idx_size))
+   for i = 1, idx_size[1] do
+      for j = 1, idx_size[2] do
+         for k = 1, idx_size[3] do
+            local ii = {i, j, k}
+            ii[dim] = idx[i][j][k]
+            expected[i][j][k] = src[ii]
+         end
+      end
+   end
+   mytester:assertTensorEq(actual, expected, 0, "Wrong values for gather")
+
+   idx[1][1][1] = 23
+   mytester:assertError(function() torch.gather(src, dim, idx) end,
+                        "Invalid index not detected")
+end
+
+function torchtest.gatherMax()
+   local src = torch.randn(3, 4, 5)
+   local expected, idx = src:max(3)
+   local actual = torch.gather(src, 3, idx)
+   mytester:assertTensorEq(actual, expected, 0, "Wrong values for gather")
+end
+
+function torchtest.scatter()
+   local m, n, o = torch.random(10, 20), torch.random(10, 20), torch.random(10, 20)
+   local elems_per_row = torch.random(10)
+   local dim = torch.random(3)
+
+   local idx_size = {m, n, o}
+   idx_size[dim] = elems_per_row
+   local idx = torch.LongTensor():resize(unpack(idx_size))
+   fillIdx(idx, dim, ({m, n, o})[dim], elems_per_row, m, n, o)
+   local src = torch.Tensor():resize(unpack(idx_size)):normal()
+
+   local actual = torch.zeros(m, n, o):scatter(dim, idx, src)
+   local expected = torch.zeros(m, n, o)
+   for i = 1, idx_size[1] do
+      for j = 1, idx_size[2] do
+         for k = 1, idx_size[3] do
+            local ii = {i, j, k}
+            ii[dim] = idx[i][j][k]
+           expected[ii] = src[i][j][k]
+         end
+      end
+   end
+   mytester:assertTensorEq(actual, expected, 0, "Wrong values for scatter")
+
+   idx[1][1][1] = 34
+   mytester:assertError(function() torch.scatter(1, idx, src) end,
+                        "Invalid index not detected")
+end
+
+function torchtest.scatterFill()
+   local m, n, o = torch.random(10, 20), torch.random(10, 20), torch.random(10, 20)
+   local elems_per_row = torch.random(10)
+   local dim = torch.random(3)
+
+   local val = torch.uniform()
+   local idx_size = {m, n, o}
+   idx_size[dim] = elems_per_row
+   local idx = torch.LongTensor():resize(unpack(idx_size))
+   fillIdx(idx, dim, ({m, n, o})[dim], elems_per_row, m, n, o)
+
+   local actual = torch.zeros(m, n, o):scatter(dim, idx, val)
+   local expected = torch.zeros(m, n, o)
+   for i = 1, idx_size[1] do
+      for j = 1, idx_size[2] do
+         for k = 1, idx_size[3] do
+            local ii = {i, j, k}
+            ii[dim] = idx[i][j][k]
+            expected[ii] = val
+         end
+      end
+   end
+   mytester:assertTensorEq(actual, expected, 0, "Wrong values for scatter")
+
+   idx[1][1][1] = 28
+   mytester:assertError(function() torch.scatter(1, idx, src) end,
+                        "Invalid index not detected")
+end
+
 function torchtest.maskedCopy()
    local nCopy, nDest = 3, 10
    local dest = torch.randn(nDest)

@@ -189,6 +189,35 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor},
          {name="LongArg"}})
 
+   wrap("gather",
+        cname("gather"),
+        {{name=Tensor, default=true, returned=true,
+          init=function(arg)
+                  return table.concat(
+                     {
+                        arg.__metatable.init(arg),
+                        string.format("THLongStorage* %s_size = THLongTensor_newSizeOf(%s);", arg:carg(), arg.args[4]:carg()),
+                        string.format("TH%s_resize(%s, %s_size, NULL);", Tensor, arg:carg(), arg:carg()),
+                        string.format("THLongStorage_free(%s_size);", arg:carg())
+                     }, '\n')
+               end
+         },
+         {name=Tensor},
+         {name="index"},
+         {name="IndexTensor", noreadadd=true}})
+
+   wrap("scatter",
+        cname("scatter"),
+        {{name=Tensor, returned=true},
+         {name="index"},
+         {name="IndexTensor", noreadadd=true},
+         {name=Tensor}},
+        cname("scatterFill"),
+        {{name=Tensor, returned=true},
+         {name="index"},
+         {name="IndexTensor", noreadadd=true},
+         {name=real}})
+
    wrap("dot",
         cname("dot"),
         {{name=Tensor},
