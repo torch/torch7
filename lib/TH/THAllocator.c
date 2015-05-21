@@ -161,8 +161,8 @@ static void *THMapAllocator_alloc(void* ctx_, long size)
     else
       data = MapViewOfFile(hmfile, FILE_MAP_COPY, 0, 0, 0);
 
-    CloseHandle(hfile); 
-    CloseHandle(hmfile); 
+    CloseHandle(hfile);
+    CloseHandle(hmfile);
   }
 #else
   {
@@ -213,7 +213,7 @@ static void *THMapAllocator_alloc(void* ctx_, long size)
       size = fdsz;
 
     ctx->size = size; /* if we are here, it must be the right size */
-    
+
     /* map it */
     if(ctx->shared)
       data = mmap(NULL, ctx->size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
@@ -231,11 +231,6 @@ static void *THMapAllocator_alloc(void* ctx_, long size)
   return data;
 }
 
-static void *THMapAllocator_realloc(void* ctx, void* ptr, long size) {
-  THError("cannot realloc mapped data");
-  return NULL;
-}
-
 static void THMapAllocator_free(void* ctx_, void* data) {
   THMapAllocatorContext *ctx = ctx_;
 
@@ -248,6 +243,20 @@ static void THMapAllocator_free(void* ctx_, void* data) {
 #endif
 
   THMapAllocatorContext_free(ctx);
+}
+
+static void *THMapAllocator_realloc(void* ctx_, void* ptr, long size) {
+  THMapAllocatorContext *ctx = ctx_;
+
+  THMapAllocatorContext *tmpctx = THMapAllocatorContext_new(
+      ctx->filename, ctx->shared);
+  void *data = THMapAllocator_alloc(tmpctx, size);
+  if (data) {
+    tmpctx->size = ctx->size;
+    ctx->size = size;
+    THMapAllocator_free(tmpctx, ptr);
+  }
+  return data;
 }
 
 #else
