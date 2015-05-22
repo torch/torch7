@@ -114,6 +114,7 @@ include('CmdLine.lua')
 include('FFI.lua')
 include('Tester.lua')
 include('test.lua')
+include('distribution.lua')
 
 function torch.totable(obj)
   if torch.isTensor(obj) or torch.isStorage(obj) then

@@ -65,7 +65,7 @@ INCLUDE_DIRECTORIES(BEFORE "${CMAKE_CURRENT_SOURCE_DIR}/lib/luaT")
 LINK_DIRECTORIES("${LUA_LIBDIR}")
 
 SET(src DiskFile.c File.c MemoryFile.c PipeFile.c Storage.c Tensor.c Timer.c utils.c init.c TensorOperator.c TensorMath.c random.c Generator.c)
-SET(luasrc init.lua File.lua Tensor.lua CmdLine.lua FFI.lua Tester.lua test/test.lua)
+SET(luasrc init.lua File.lua Tensor.lua CmdLine.lua FFI.lua Tester.lua distribution.lua test/test.lua)
 
 # Necessary do generate wrapper
 ADD_TORCH_WRAP(tensormathwrap TensorMath.lua)
