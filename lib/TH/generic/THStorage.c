@@ -52,7 +52,8 @@ THStorage* THStorage_(newWithMapping)(const char *filename, long size, int share
   if(size <= 0)
     storage->size = THMapAllocatorContext_size(ctx)/sizeof(real);
 
-  THStorage_(clearFlag)(storage, TH_STORAGE_RESIZABLE);
+  if(!shared)
+    THStorage_(clearFlag)(storage, TH_STORAGE_RESIZABLE);
 
   return storage;
 }

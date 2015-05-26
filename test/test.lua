@@ -2229,6 +2229,13 @@ function torchtest.serialize()
    mytester:assertTensorEq(tensObj, torch.deserializeFromStorage(serStorage), 1e-10)
 end
 
+function torchtest.resizeSharedStorage()
+  local filename = paths.tmpname()
+  local s = torch.Storage(filename, true, 1)
+  s:resize(4)
+  mytester:asserteq(s:size(), 4)
+end
+
 function torch.test(tests)
    math.randomseed(os.time())
    if torch.getdefaulttensortype() == 'torch.FloatTensor' then
