@@ -45,10 +45,6 @@ static int torch_Storage_(new)(lua_State *L)
       THError("Passing allocator not supported when using storage views");
 
     THStorage *src = luaT_checkudata(L, index, torch_Storage);
-    if (src->flag & TH_STORAGE_VIEW) {
-      // don't allow chained views
-      src = src->view;
-    }
     real *ptr = src->data;
     long offset = luaL_optlong(L, index + 1, 1) - 1;
     if (offset < 0 || offset >= src->size) {
