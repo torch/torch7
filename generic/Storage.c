@@ -41,6 +41,9 @@ static int torch_Storage_(new)(lua_State *L)
   }
   else if(lua_type(L, index) == LUA_TUSERDATA)
   {
+    if (allocator)
+      THError("Passing allocator not supported when using storage views");
+
     THStorage *src = luaT_checkudata(L, index, torch_Storage);
     if (src->flag & TH_STORAGE_VIEW) {
       // don't allow chained views
@@ -231,7 +234,7 @@ static int torch_Storage_(write)(lua_State *L)
 {
   THStorage *storage = luaT_checkudata(L, 1, torch_Storage);
   THFile *file = luaT_checkudata(L, 2, "torch.File");
- 
+
   THFile_writeLongScalar(file, storage->size);
   THFile_writeRealRaw(file, storage->data, storage->size);
 
