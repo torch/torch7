@@ -2135,6 +2135,32 @@ function torchtest.elementSize()
   mytester:assert(double >= float)
 end
 
+function torchtest.elementType()
+  local byte = torch.ByteStorage():elementType()
+  local char = torch.CharStorage():elementType()
+  local short = torch.ShortStorage():elementType()
+  local int = torch.IntStorage():elementType()
+  local long = torch.LongStorage():elementType()
+  local float = torch.FloatStorage():elementType()
+  local double = torch.DoubleStorage():elementType()
+
+  mytester:assert(byte == torch.ByteTensor():elementType(), "Expected Byte")
+  mytester:assert(char == torch.CharTensor():elementType(), "Expected Char")
+  mytester:assert(short == torch.ShortTensor():elementType(), "Expected Short")
+  mytester:assert(int == torch.IntTensor():elementType(), "Expected Int")
+  mytester:assert(long == torch.LongTensor():elementType(), "Expected Long")
+  mytester:assert(float == torch.FloatTensor():elementType(), "Expected Float")
+  mytester:assert(double == torch.DoubleTensor():elementType(), "Expected Double")
+
+  mytester:assert(byte == "Byte", "Expected Byte")
+  mytester:assert(char == "Char", "Expected Char")
+  mytester:assert(short == "Short", "Expected Short")
+  mytester:assert(int == "Int", "Expected Int")
+  mytester:assert(long == "Long", "Expected Long")
+  mytester:assert(float == "Float", "Expected Float")
+  mytester:assert(double == "Double", "Expected Double")
+end
+
 function torchtest.split()
    local result = {}
    local tensor = torch.rand(7,4)

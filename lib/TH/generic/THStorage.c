@@ -17,6 +17,31 @@ int THStorage_(elementSize)()
   return sizeof(real);
 }
 
+const char* THStorage_(elementType)()
+{
+  #ifdef TH_REAL_IS_BYTE
+    return "Byte";
+  #endif
+  #ifdef TH_REAL_IS_CHAR
+    return "Char";
+  #endif
+  #ifdef TH_REAL_IS_SHORT
+    return "Short";
+  #endif
+  #ifdef TH_REAL_IS_INT
+    return "Int";
+  #endif
+  #ifdef TH_REAL_IS_LONG
+    return "Long";
+  #endif
+  #ifdef TH_REAL_IS_FLOAT
+    return "Float";
+  #endif
+  #ifdef TH_REAL_IS_DOUBLE
+    return "Double";
+  #endif
+}
+
 THStorage* THStorage_(new)(void)
 {
   return THStorage_(newWithSize)(0);

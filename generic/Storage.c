@@ -146,6 +146,12 @@ static int torch_Storage_(elementSize)(lua_State *L)
   return 1;
 }
 
+static int torch_Storage_(elementType)(lua_State *L)
+{
+  lua_pushstring(L, THStorage_(elementType)());
+  return 1;
+}
+
 static int torch_Storage_(__len__)(lua_State *L)
 {
   THStorage *storage = luaT_checkudata(L, 1, torch_Storage);
@@ -254,6 +260,7 @@ static const struct luaL_Reg torch_Storage_(_) [] = {
   {"free", torch_Storage_(free)},
   {"size", torch_Storage_(__len__)},
   {"elementSize", torch_Storage_(elementSize)},
+  {"elementType", torch_Storage_(elementType)},
   {"__len__", torch_Storage_(__len__)},
   {"__newindex__", torch_Storage_(__newindex__)},
   {"__index__", torch_Storage_(__index__)},
