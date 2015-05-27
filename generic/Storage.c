@@ -39,6 +39,26 @@ static int torch_Storage_(new)(lua_State *L)
       lua_pop(L, 1);
     }
   }
+  else if(lua_type(L, index) == LUA_TUSERDATA)
+  {
+    if (allocator)
+      THError("Passing allocator not supported when using storage views");
+
+    THStorage *src = luaT_checkudata(L, index, torch_Storage);
+    real *ptr = src->data;
+    long offset = luaL_optlong(L, index + 1, 1) - 1;
+    if (offset < 0 || offset >= src->size) {
+      luaL_error(L, "offset out of bounds");
+    }
+    long size = luaL_optlong(L, index + 2, src->size - offset);
+    if (size < 1 || size > (src->size - offset)) {
+      luaL_error(L, "size out of bounds");
+    }
+    storage = THStorage_(newWithData)(ptr + offset, size);
+    storage->flag = TH_STORAGE_REFCOUNTED | TH_STORAGE_VIEW;
+    storage->view = src;
+    THStorage_(retain)(storage->view);
+  }
   else if(lua_type(L, index + 1) == LUA_TNUMBER)
   {
     long size = luaL_optlong(L, index, 0);
@@ -47,7 +67,7 @@ static int torch_Storage_(new)(lua_State *L)
       storage = THStorage_(newWithDataAndAllocator)(ptr, size, allocator, NULL);
     else
       storage = THStorage_(newWithData)(ptr, size);
-    storage->flag = 0;
+    storage->flag = TH_STORAGE_REFCOUNTED;
   }
   else
   {
@@ -210,7 +230,7 @@ static int torch_Storage_(write)(lua_State *L)
 {
   THStorage *storage = luaT_checkudata(L, 1, torch_Storage);
   THFile *file = luaT_checkudata(L, 2, "torch.File");
- 
+
   THFile_writeLongScalar(file, storage->size);
   THFile_writeRealRaw(file, storage->data, storage->size);
 

@@ -70,6 +70,36 @@ Example:
 ```
 
 <a name="torch.Storage"/>
+### torch.TYPEStorage(storage [, offset [, size]]) ###
+
+Returns a new `Storage` of type `TYPE`, which is a view on the first argument. The first argument must be of the same type `TYPE`. An optional offset can be provided (defaults to 1). An optional size can also be provided to restrict the size of the new storage (defaults to `storage:size()-(offset-1)`).
+
+Example:
+```lua
+-- Creates a Storage of 10 double:
+> x = torch.DoubleStorage(10)
+
+-- Creates a view on this Storage, starting at offset 3, with a size of 5:
+> y = torch.DoubleStorage(x, 3, 5)
+
+-- Modifying elements of y will modify x:
+> x:fill(0)
+> y:fill(1)
+> print(x)
+ 0
+ 0
+ 1
+ 1
+ 1
+ 1
+ 1
+ 0
+ 0
+ 0
+[torch.DoubleStorage of size 10]
+```
+
+<a name="torch.Storage"/>
 ### torch.TYPEStorage(filename [, shared [, size]]) ###
 <a name="__torch.StorageMap"/>
 
