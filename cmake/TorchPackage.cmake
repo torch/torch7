@@ -8,7 +8,8 @@ MACRO(ADD_TORCH_PACKAGE package src luasrc)
   IF(src)      
 
     ADD_LIBRARY(${package} MODULE ${src})
-    
+    ADD_LIBRARY(${package}_static STATIC ${src})
+
     ### Torch packages supposes libraries prefix is "lib"
     SET_TARGET_PROPERTIES(${package} PROPERTIES
       PREFIX "lib"
