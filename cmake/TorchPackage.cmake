@@ -20,8 +20,11 @@ MACRO(ADD_TORCH_PACKAGE package src luasrc)
       SET_TARGET_PROPERTIES(${package} PROPERTIES
         LINK_FLAGS "-undefined dynamic_lookup")
     ENDIF()
-    
-    INSTALL(TARGETS ${package} 
+
+    SET_TARGET_PROPERTIES(${package}_static PROPERTIES
+      COMPILE_FLAGS "-fPIC")
+
+    INSTALL(TARGETS ${package}
       RUNTIME DESTINATION ${Torch_INSTALL_LUA_CPATH_SUBDIR}
       LIBRARY DESTINATION ${Torch_INSTALL_LUA_CPATH_SUBDIR})
     
