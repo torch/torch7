@@ -2179,3 +2179,21 @@ Increment the reference counter of the tensor.
 
 Decrement the reference counter of the tensor. Free the tensor if the
 counter is at 0.
+
+<a name="torch.Storage.elementSize"/>
+### [number] elementSize() ###
+
+Returns the size in bytes of an element in the storage. This is platform
+dependent and is not guaranteed to be the same everywhere.
+
+<a name="torch.Storage.elementType"/>
+### [number] elementType() ###
+
+Returns a string describing the type of element in the storage. This
+is the closest thing to RTTI for storage instantiations.
+
+```lua
+> x = torch.CharStorage()
+> print(x:elementType())
+Char
+```

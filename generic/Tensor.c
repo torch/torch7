@@ -31,6 +31,12 @@ static int torch_Tensor_(elementSize)(lua_State *L)
   return 1;
 }
 
+static int torch_Tensor_(elementType)(lua_State *L)
+{
+  lua_pushstring(L, THStorage_(elementType)());
+  return 1;
+}
+
 static int torch_Tensor_(stride)(lua_State *L)
 {
   THTensor *tensor = luaT_checkudata(L, 1, torch_Tensor);
@@ -312,7 +318,7 @@ static int torch_Tensor_(sub)(lua_State *L)
       d1e += tensor->size[1]+1;
     THArgCheck(tensor->nDimension > 1, 4, "invalid dimension");
     THArgCheck(d1s >= 0 && d1s < tensor->size[1], 4, "out of range");
-    THArgCheck(d1e >= 0 && d1e < tensor->size[1], 5, "out of range");    
+    THArgCheck(d1e >= 0 && d1e < tensor->size[1], 5, "out of range");
     THArgCheck(d1e >= d1s, 5, "end smaller than beginning");
 
     if(!lua_isnone(L, 6))
@@ -325,7 +331,7 @@ static int torch_Tensor_(sub)(lua_State *L)
         d2e += tensor->size[2]+1;
       THArgCheck(tensor->nDimension > 2, 6, "invalid dimension");
       THArgCheck(d2s >= 0 && d2s < tensor->size[2], 6, "out of range");
-      THArgCheck(d2e >= 0 && d2e < tensor->size[2], 7, "out of range");    
+      THArgCheck(d2e >= 0 && d2e < tensor->size[2], 7, "out of range");
       THArgCheck(d2e >= d2s, 7, "end smaller than beginning");
 
       if(!lua_isnone(L, 8))
@@ -338,7 +344,7 @@ static int torch_Tensor_(sub)(lua_State *L)
           d3e += tensor->size[3]+1;
         THArgCheck(tensor->nDimension > 3, 8, "invalid dimension");
         THArgCheck(d3s >= 0 && d3s < tensor->size[3], 8, "out of range");
-        THArgCheck(d3e >= 0 && d3e < tensor->size[3], 9, "out of range");    
+        THArgCheck(d3e >= 0 && d3e < tensor->size[3], 9, "out of range");
         THArgCheck(d3e >= d3s, 9, "end smaller than beginning");
       }
     }
@@ -871,7 +877,7 @@ static int torch_Tensor_(__index__)(lua_State *L)
     int dim;
 
     THArgCheck(idx->size == tensor->nDimension, 2, "invalid size");
-    
+
     for(dim = 0; dim < idx->size; dim++)
     {
       long z = idx->data[dim]-1;
@@ -1236,6 +1242,7 @@ static const struct luaL_Reg torch_Tensor_(_) [] = {
   {"contiguous", torch_Tensor_(contiguous)},
   {"size", torch_Tensor_(size)},
   {"elementSize", torch_Tensor_(elementSize)},
+  {"elementType", torch_Tensor_(elementType)},
   {"__len__", torch_Tensor_(size)},
   {"stride", torch_Tensor_(stride)},
   {"dim", torch_Tensor_(nDimension)},
