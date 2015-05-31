@@ -1390,6 +1390,24 @@ function torchtest.eig()
    mytester:assertlt(maxdiff(vv,vvv),1e-12,'torch.eig value')
    mytester:assertlt(maxdiff(vv,tv),1e-12,'torch.eig value')
 end
+function torchtest.test_symeig()
+  local xval = torch.rand(100,3)
+  local cov = torch.mm(xval:t(), xval)
+  local rese = torch.zeros(3)
+  local resv = torch.zeros(3,3)
+
+  -- First call to symeig
+  mytester:assert(resv:isContiguous(), 'resv is not contiguous') -- PASS
+  torch.symeig(rese, resv, cov:clone(), 'V')
+  local ahat = resv*torch.diag(rese)*resv:t()
+  mytester:assertTensorEq(cov, ahat, 1e-8, 'USV\' wrong') -- PASS
+
+  -- Second call to symeig
+  mytester:assert(not resv:isContiguous(), 'resv is contiguous') -- FAIL
+  torch.symeig(rese, resv, cov:clone(), 'V')
+  local ahat = torch.mm(torch.mm(resv, torch.diag(rese)), resv:t())
+  mytester:assertTensorEq(cov, ahat, 1e-8, 'USV\' wrong') -- FAIL
+end
 function torchtest.svd()
    if not torch.svd then return end
    local a=torch.Tensor({{8.79,  6.11, -9.15,  9.57, -3.49,  9.84},
