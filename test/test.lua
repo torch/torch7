@@ -1800,6 +1800,129 @@ function torchtest.indexCopy()
    mytester:assertTensorEq(dest, dest2, 0.000001, "indexCopy scalar error")
 end
 
+function torchtest.sub2ind()
+   local nSrc = 12
+
+   local shapes = {
+      torch.LongStorage{12},
+      torch.LongStorage{12, 1},
+      torch.LongStorage{1, 12},
+      torch.LongStorage{6, 2},
+      torch.LongStorage{3, 2, 2},
+   }
+
+   for _, shape in ipairs(shapes) do
+      local tensor = torch.rand(nSrc):mul(2):floor():reshape(shape)
+      local subs = torch.find(tensor)
+      local real_inds = torch.find(tensor:view(-1))
+      local inds = torch.sub2ind(subs, shape)
+      mytester:assertTensorEq(real_inds, inds, 0, "sub3ind error")
+   end
+end
+
+function torchtest.ind2sub()
+   local nSrc = 12
+
+   local shapes = {
+      torch.LongStorage{12},
+      torch.LongStorage{12, 1},
+      torch.LongStorage{1, 12},
+      torch.LongStorage{6, 2},
+      torch.LongStorage{3, 2, 2},
+   }
+
+   local indices = torch.randperm(nSrc)[{{1, 6}}]:long()
+
+   for _, shape in ipairs(shapes) do
+      -- Construct Mock Tensor
+      local mock = torch.zeros(nSrc)
+      for i = 1, 6 do
+         mock[indices[i]] = 1
+      end
+      mock = mock:reshape(shape)
+      -- Produce Indices
+      local t = torch.ind2sub(indices, shape)
+      -- Check that all these indices are one
+      if shape:size() == 1 then
+         for i = 1, 6 do
+            mytester:assert(mock[t[i][1]] == 1, 'ind2sub failure')
+         end
+      elseif shape:size() == 2 then
+         for i = 1, 6 do
+            mytester:assert(mock[t[i][1]][t[i][2]] == 1, 'ind2sub failure')
+         end
+      elseif shape:size() == 3 then
+         for i = 1, 6 do
+            mytester:assert(mock[t[i][1]][t[i][2]][t[i][3]] == 1, 'ind2sub failure')
+         end
+      end
+   end
+end
+
+function torchtest.find()
+   local nSrc = 12
+
+   local types = {
+         'torch.ByteTensor',
+         'torch.CharTensor',
+         'torch.ShortTensor',
+         'torch.IntTensor',
+         'torch.FloatTensor',
+         'torch.DoubleTensor',
+         'torch.LongTensor',
+   }
+
+   local shapes = {
+         torch.LongStorage{12},
+         torch.LongStorage{12, 1},
+         torch.LongStorage{1, 12},
+         torch.LongStorage{6, 2},
+         torch.LongStorage{3, 2, 2},
+   }
+
+   for _, type in ipairs(types) do
+      local tensor = torch.rand(nSrc):mul(2):floor():type(type)
+      for _, shape in ipairs(shapes) do
+         tensor = tensor:reshape(shape)
+         local dst1 = torch.find(tensor)
+         local dst2 = tensor:find()
+         -- Does not work. Torch uses the first argument to determine what
+         -- type the Tensor is expected to be. In our case the second argument
+         -- determines the type of Tensor.
+         --local dst3 = torch.LongTensor()
+         --torch.find(dst3, tensor)
+         if shape.size == 1 then
+            local dst = {}
+            for i=1,nSrc do
+               if tensor[i] ~= 0 then
+                  table.insert(dst, i)
+               end
+            end
+            mytester:assertTensorEq(dst1, torch.LongTensor(dst), 0.0,
+                                    "find error")
+            mytester:assertTensorEq(dst2, torch.LongTensor(dst), 0.0,
+                                    "find error")
+            --mytester:assertTensorEq(dst3, torch.LongTensor(dst), 0.0,
+            --                        "find error")
+         elseif shape:size() == 2 then
+            -- This test will allow through some false positives. It only checks
+            -- that the elements flagged positive are indeed non-zero.
+            for i=1,dst1:size()[1] do
+               mytester:assert(tensor[dst1[i][1]][dst1[i][2]] ~= 0)
+            end
+         elseif shape:size() == 3 then
+            -- This test will allow through some false positives. It only checks
+            -- that the elements flagged positive are indeed non-zero.
+            for i=1,dst1:size()[1] do
+               mytester:assert(tensor[dst1[i][1]][dst1[i][2]][dst1[i][3]] ~= 0)
+            end
+         end
+      end
+   end
+
+end
+
+
 -- Fill idx with valid indices.
 local function fillIdx(idx, dim, dim_size, elems_per_row, m, n, o)
    for i = 1, (dim == 1 and 1 or m) do
@@ -2271,3 +2394,4 @@ function torch.test(tests)
    mytester:run(tests)
    return mytester
 end
+
