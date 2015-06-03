@@ -19,7 +19,7 @@ and [submitting pull requests](#pull-requests), but please respect the following
 restrictions:
 
 * Please **do not** use the issue tracker for personal support requests (use
-  [mailing-list](groups.google.com/forum/#!forum/torch7)).
+  [mailing-list](https://groups.google.com/forum/#!forum/torch7)).
 
 * Please **do not** open issues regarding the code in a torch package 
   outside the core. For example don't open issues about the 
