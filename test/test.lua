@@ -1020,6 +1020,18 @@ function torchtest.rangeequalbounds()
    torch.range(mxx,1,1,1)
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.range value for equal bounds step')
 end
+function torchtest.rangefloat()
+   local mx = torch.FloatTensor():range(0.6, 0.9, 0.1)
+   mytester:asserteq(mx:size(1), 4, 'wrong size for FloatTensor range')
+   mx = torch.FloatTensor():range(1, 10, 0.3)
+   mytester:asserteq(mx:size(1), 31, 'wrong size for FloatTensor range')
+end
+function torchtest.rangedouble()
+   local mx = torch.DoubleTensor():range(0.6, 0.9, 0.1)
+   mytester:asserteq(mx:size(1), 4, 'wrong size for DoubleTensor range')
+   mx = torch.DoubleTensor():range(1, 10, 0.3)
+   mytester:asserteq(mx:size(1), 31, 'wrong size for DoubleTensor range')
+end
 function torchtest.randperm()
    local t=os.time()
    torch.manualSeed(t)

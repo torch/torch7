@@ -483,9 +483,9 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
    wrap("range",
         cname("range"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
-         {name=real},
-         {name=real},
-         {name=real, default=1}})
+         {name=accreal},
+         {name=accreal},
+         {name=accreal, default=1}})
 
    wrap("randperm",
         cname("randperm"),
