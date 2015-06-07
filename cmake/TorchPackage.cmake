@@ -23,6 +23,8 @@ MACRO(ADD_TORCH_PACKAGE package src luasrc)
 
     SET_TARGET_PROPERTIES(${package}_static PROPERTIES
       COMPILE_FLAGS "-fPIC")
+    SET_TARGET_PROPERTIES(${package}_static PROPERTIES
+      PREFIX "lib" IMPORT_PREFIX "lib" OUTPUT_NAME "${package}")
 
     INSTALL(TARGETS ${package}
       RUNTIME DESTINATION ${Torch_INSTALL_LUA_CPATH_SUBDIR}
