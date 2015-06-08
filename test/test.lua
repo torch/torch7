@@ -16,19 +16,25 @@ local function maxdiff(x,y)
 end
 
 function torchtest.dot()
-   local v1 = torch.randn(100)
-   local v2 = torch.randn(100)
+   local types = {
+      ['torch.DoubleTensor'] = 1e-8, -- for ddot
+      ['torch.FloatTensor']  = 1e-4, -- for sdot
+   }
+   for tname, prec in pairs(types) do
+      local v1 = torch.randn(100):type(tname)
+      local v2 = torch.randn(100):type(tname)
 
-   local res1 = torch.dot(v1,v2)
+      local res1 = torch.dot(v1,v2)
 
-   local res2 = 0
-   for i = 1,v1:size(1) do
-      res2 = res2 + v1[i] * v2[i]
+      local res2 = 0
+      for i = 1,v1:size(1) do
+         res2 = res2 + v1[i] * v2[i]
+      end
+
+      local err = math.abs(res1-res2)
+
+      mytester:assertlt(err, prec, 'error in torch.dot (' .. tname .. ')')
    end
-
-   local err = math.abs(res1-res2)
-
-   mytester:assertlt(err, precision, 'error in torch.dot')
 end
 
 local genericSingleOpTest = [[
