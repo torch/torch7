@@ -24,6 +24,6 @@ void torch_Generator_init(lua_State *L)
 {
   luaT_newmetatable(L, torch_Generator, NULL,
                     torch_Generator_new, torch_Generator_free, torch_Generator_factory);
-  luaL_register(L, NULL, torch_Generator_table_);
+  luaT_setfuncs(L, torch_Generator_table_, 0);
   lua_pop(L, 1);
 }

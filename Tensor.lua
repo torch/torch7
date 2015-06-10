@@ -7,6 +7,9 @@ local Tensor = {}
 -- types
 local types = {'Byte', 'Char', 'Short', 'Int', 'Long', 'Float', 'Double'}
 
+-- Lua 5.2 compatibility
+local log10 = math.log10 or function(x) return math.log(x, 10) end
+
 -- tostring() functions for Tensor and Storage
 local function Storage__printformat(self)
    if self:size() == 0 then 
@@ -25,13 +28,13 @@ local function Storage__printformat(self)
    local tensor = torch.DoubleTensor(torch.DoubleStorage(self:size()):copy(self), 1, self:size()):abs()
    local expMin = tensor:min()
    if expMin ~= 0 then
-      expMin = math.floor(math.log10(expMin)) + 1
+      expMin = math.floor(log10(expMin)) + 1
    else
       expMin = 1
    end
    local expMax = tensor:max()
    if expMax ~= 0 then
-      expMax = math.floor(math.log10(expMax)) + 1
+      expMax = math.floor(log10(expMax)) + 1
    else
       expMax = 1
    end

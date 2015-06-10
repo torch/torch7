@@ -120,7 +120,8 @@ local function wrap(...)
          end
       end
    end
-   method:wrap(unpack(args))
+   local unpack = unpack or table.unpack
+    method:wrap(unpack(args))
 end
 
 local reals = {ByteTensor='unsigned char',
@@ -1133,12 +1134,12 @@ static void torch_TensorMath_init(lua_State *L)
   luaT_pushmetatable(L, "torch.Tensor");
 
   /* register methods */
-  luaL_register(L, NULL, m_torch_TensorMath__);
+  luaT_setfuncs(L, m_torch_TensorMath__, 0);
 
   /* register functions into the "torch" field of the tensor metaclass */
   lua_pushstring(L, "torch");
   lua_newtable(L);
-  luaL_register(L, NULL, torch_TensorMath__);
+  luaT_setfuncs(L, torch_TensorMath__, 0);
   lua_rawset(L, -3);
   lua_pop(L, 1);
 }
@@ -1157,7 +1158,7 @@ void torch_TensorMath_init(lua_State *L)
   torch_LongTensorMath_init(L);
   torch_FloatTensorMath_init(L);
   torch_DoubleTensorMath_init(L);
-  luaL_register(L, NULL, torch_TensorMath__);
+  luaT_setfuncs(L, torch_TensorMath__, 0);
 }
 ]])
 

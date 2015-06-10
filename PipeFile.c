@@ -38,6 +38,6 @@ void torch_PipeFile_init(lua_State *L)
 {
   luaT_newmetatable(L, "torch.PipeFile", "torch.DiskFile",
                     torch_PipeFile_new, torch_PipeFile_free, NULL);
-  luaL_register(L, NULL, torch_PipeFile__);
+  luaT_setfuncs(L, torch_PipeFile__, 0);
   lua_pop(L, 1);
 }

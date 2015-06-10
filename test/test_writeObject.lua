@@ -28,6 +28,28 @@ function tests.test_can_write_a_nil_closure()
   myTester:assert(copyClosure() == closure(), 'the closures should give same output')
 end
 
+function tests.test_nil_upvalues_in_closure()
+  local a = 1
+  local b
+  local c = 2
+  local function closure()
+    if not b then return c end
+    return a
+  end
+
+  local copyClosure = serializeAndDeserialize(closure)
+  myTester:assert(copyClosure() == closure(), 'the closures should give same output')
+end
+
+function tests.test_global_function_in_closure()
+  local x = "5"
+  local function closure(str)
+    return tonumber(str .. x)
+  end
+
+  local copyClosure = serializeAndDeserialize(closure)
+  myTester:assert(copyClosure("3") == closure("3"), 'the closures should give same output')
+end
 
 function tests.test_a_recursive_closure()
   local foo

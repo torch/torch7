@@ -10,7 +10,8 @@ cmd:option('-r', 20, 'Number of repetitions')
 
 local options = cmd:parse(arg or {})
 function main()
-    local pow10 = torch.linspace(1,math.log10(options.N), options.p)
+    local log10 = math.log10 or function(x) return math.log(x, 10) end
+    local pow10 = torch.linspace(1,log10(options.N), options.p)
     local num_sizes = options.p
     local num_reps = options.r
 
@@ -128,11 +129,11 @@ function main()
     gnuplot.xlabel('N')
     gnuplot.ylabel('Speed-up Factor (s)')
     gnuplot.figprint('benchmarkRatio.png')
-    
+
     torch.save('benchmark.t7', {
                new_rnd=new_rnd,
                new_srt=new_srt,
-               new_cst=new_cst, 
+               new_cst=new_cst,
                old_rnd=old_rnd,
                old_srt=old_srt,
                old_cst=old_cst,

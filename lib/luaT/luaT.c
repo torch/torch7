@@ -45,6 +45,24 @@ void luaT_free(lua_State *L, void *ptr)
   free(ptr);
 }
 
+void luaT_setfuncs(lua_State *L, const luaL_Reg *l, int nup)
+{
+#if LUA_VERSION_NUM == 501
+  luaL_checkstack(L, nup+1, "too many upvalues");
+  for (; l->name != NULL; l++) {  /* fill the table with given functions */
+    int i;
+    lua_pushstring(L, l->name);
+    for (i = 0; i < nup; i++)  /* copy upvalues to the top */
+      lua_pushvalue(L, -(nup+1));
+    lua_pushcclosure(L, l->func, nup);  /* closure with those upvalues */
+    lua_settable(L, -(nup + 3));
+  }
+  lua_pop(L, nup);  /* remove upvalues */
+#else
+  luaL_setfuncs(L, l, nup);
+#endif
+}
+
 void luaT_stackdump(lua_State *L)
 {
   int i;
@@ -159,11 +177,16 @@ const char *luaT_typenameid(lua_State *L, const char *tname)
 }
 
 static const char cdataname[] = ""
-  "local _, ffi = pcall(require, 'ffi')\n"
-  "if ffi then\n"
+  "local ok, ffi = pcall(require, 'ffi')\n"
+  "if ok then\n"
   "  local id2name = {}\n"
   "  return function(cdata, name)\n"
-  "    local id = tonumber(ffi.typeof(cdata))\n"
+  "    local id\n"
+  "    if jit then\n"
+  "      id = tonumber(ffi.typeof(cdata))\n"
+  "    else\n"
+  "      id = tostring(ffi.typeof(cdata))\n"
+  "    end\n"
   "    if id then\n"
   "      if name then\n"
   "        id2name[id] = name\n"
@@ -208,9 +231,47 @@ static const char* luaT_cdataname(lua_State *L, int ud, const char *tname)
   return tname;
 }
 
+static void* CDATA_MT_KEY = &CDATA_MT_KEY;
+static const char cdatamt[] = ""
+  "local ok, ffi = pcall(require, 'ffi')\n"
+  "if ok and not jit then\n"
+  "  return ffi.debug().cdata_mt\n"
+  "else\n"
+  "  return {}\n"
+  "end\n";
+
+static int luaT_iscdata(lua_State *L, int ud)
+{
+  int type = lua_type(L, ud);
+  if(type == 10)
+    return 1;
+  if(type != LUA_TUSERDATA)
+    return 0;
+  if(!lua_getmetatable(L, ud))
+    return 0;
+
+  lua_pushlightuserdata(L, CDATA_MT_KEY);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  if (lua_isnil(L, -1))
+  {
+    // initialize cdata metatable
+    lua_pop(L, 1);
+    if(luaL_dostring(L, cdatamt))
+      luaL_error(L, "internal error (could not load cdata mt): %s", lua_tostring(L, -1));
+
+    lua_pushlightuserdata(L, CDATA_MT_KEY);
+    lua_pushvalue(L, -2);
+    lua_rawset(L, LUA_REGISTRYINDEX);
+  }
+
+  int iscdata = lua_rawequal(L, -1, -2);
+  lua_pop(L, 2);
+  return iscdata;
+}
+
 const char* luaT_typename(lua_State *L, int ud)
 {
-  if(lua_type(L, ud) == 10)
+  if(luaT_iscdata(L, ud))
     return luaT_cdataname(L, ud, NULL);
   else if(lua_getmetatable(L, ud))
   {
@@ -405,7 +466,7 @@ void luaT_registeratname(lua_State *L, const struct luaL_Reg *methods, const cha
     lua_rawget(L, idx);
   }
 
-  luaL_register(L, NULL, methods);
+  luaT_setfuncs(L, methods, 0);
   lua_pop(L, 1);
 }
 
@@ -451,9 +512,9 @@ int luaT_lua_newmetatable(lua_State *L)
   luaL_argcheck(L, lua_isnoneornil(L, 5) || lua_isfunction(L, 5), 5, "factory function or nil expected");
 
   if(is_in_module)
-    lua_getfield(L, LUA_GLOBALSINDEX, module_name);
+    lua_getglobal(L, module_name);
   else
-    lua_pushvalue(L, LUA_GLOBALSINDEX);
+    lua_pushglobaltable(L);
   if(!lua_istable(L, 6))
     luaL_error(L, "while creating metatable %s: bad argument #1 (%s is an invalid module name)", tname, module_name);
 
@@ -689,6 +750,8 @@ int luaT_lua_pushudata(lua_State *L)
 
   if(lua_type(L, 1) == 10)
     udata = *((void**)lua_topointer(L, 1));
+  else if(luaT_iscdata(L, 1))
+    udata = ((void**)lua_topointer(L, 1))[4];
   else if(lua_isnumber(L, 1))
     udata = (void*)(long)lua_tonumber(L, 1);
   else
@@ -763,7 +826,21 @@ int luaT_lua_isequal(lua_State *L)
 
 int luaT_lua_pointer(lua_State *L)
 {
-  if(lua_isuserdata(L, 1))
+  if(lua_type(L, 1) == 10) /* luajit cdata */
+  {
+    /* we want the pointer holded by cdata */
+    /* not the pointer on the cdata object */
+    const void* ptr = *((void**)lua_topointer(L, 1));
+    lua_pushnumber(L, (long)(ptr));
+    return 1;
+  }
+  else if (luaT_iscdata(L, 1)) /* luaffi cdata */
+  {
+    void** ptr = (void**)lua_touserdata(L, 1);
+    lua_pushnumber(L, (long)(ptr[4]));
+    return 1;
+  }
+  else if(lua_isuserdata(L, 1))
   {
     void **ptr;
     luaL_argcheck(L, luaT_typename(L, 1), 1, "Torch object expected");
@@ -774,14 +851,6 @@ int luaT_lua_pointer(lua_State *L)
   else if(lua_istable(L, 1) || lua_isthread(L, 1) || lua_isfunction(L, 1))
   {
     const void* ptr = lua_topointer(L, 1);
-    lua_pushnumber(L, (long)(ptr));
-    return 1;
-  }
-  else if(lua_type(L, 1) == 10) /* cdata */
-  {
-    /* we want the pointer holded by cdata */
-    /* not the pointer on the cdata object */
-    const void* ptr = *((void**)lua_topointer(L, 1));
     lua_pushnumber(L, (long)(ptr));
     return 1;
   }
@@ -802,7 +871,7 @@ int luaT_lua_setenv(lua_State *L)
   if(!lua_isfunction(L, 1) && !lua_isuserdata(L, 1))
     luaL_typerror(L, 1, "function or userdata");
   luaL_checktype(L, 2, LUA_TTABLE);
-  lua_setfenv(L, 1);
+  lua_setuservalue(L, 1);
   return 0;
 }
 
@@ -810,7 +879,9 @@ int luaT_lua_getenv(lua_State *L)
 {
   if(!lua_isfunction(L, 1) && !lua_isuserdata(L, 1))
     luaL_typerror(L, 1, "function or userdata");
-  lua_getfenv(L, 1);
+  lua_getuservalue(L, 1);
+  if (lua_isnil(L, -1))
+    lua_newtable(L);
   return 1;
 }
 
@@ -826,7 +897,7 @@ int luaT_lua_version(lua_State *L)
 {
   luaL_checkany(L, 1);
 
-  if(lua_type(L, 1) == 10)
+  if(luaT_iscdata(L, 1))
   {
     const char *tname = luaT_cdataname(L, 1, NULL);
     if(tname)

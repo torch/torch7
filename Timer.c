@@ -165,6 +165,6 @@ static const struct luaL_Reg torch_Timer__ [] = {
 void torch_Timer_init(lua_State *L)
 {
   luaT_newmetatable(L, "torch.Timer", NULL, torch_Timer_new, torch_Timer_free, NULL);
-  luaL_register(L, NULL, torch_Timer__);
+  luaT_setfuncs(L, torch_Timer__, 0);
   lua_pop(L, 1);
 }
