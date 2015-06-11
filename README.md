@@ -1,5 +1,6 @@
 [![Join the chat at https://gitter.im/torch/torch7](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/torch/torch7?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/torch/torch7.svg)](https://travis-ci.org/torch/torch7)
+[![Coverity Bug Scanner](https://scan.coverity.com/projects/5417/badge.svg)](https://scan.coverity.com/projects/5417)
 
 <a name="torch.reference.dok"/>
 # Torch Package Reference Manual #
