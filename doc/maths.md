@@ -1251,6 +1251,8 @@ a specific dimension `d`, in __descending__ order.
 <a name="torch.matrixwide.dok"/>
 ## Matrix-wide operations  (tensor-wide operations) ##
 
+Note that many of the operations in [dimension-wise operations](#torch.columnwise.dok) can also be used as matrix-wide operations, by just omitting the `dim` parameter.
+
 <a name="torch.norm"/>
 ### torch.norm(x [,p] [,dim]) ###
 
