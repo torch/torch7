@@ -168,9 +168,9 @@ range.
 ### [res] torch.logspace([res,] x1, x2, [,n]) ###
 <a name="torch.logspace"/>
 
-`y=torch.logspace(x1,x2)` returns a one-dimensional tensor of 50 logarithmically eqally spaced points between `x1` and `x2`.
+`y=torch.logspace(x1,x2)` returns a one-dimensional tensor of 50 logarithmically eqally spaced points between `10^x1` and `10^x2`.
 
-`y=torch.logspace(x1,x2,n)` returns a one-dimensional tensor of `n` logarithmically equally spaced points between `x1` and `x2`.
+`y=torch.logspace(x1,x2,n)` returns a one-dimensional tensor of `n` logarithmically equally spaced points between `10^x1` and `10^x2`.
 
 <a name="torch.multinomial"/>
 ### [res] torch.multinomial([res,], p, n, [,replacement]) ###
