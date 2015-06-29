@@ -1896,7 +1896,7 @@ function torchtest.scatter()
    mytester:assertTensorEq(actual, expected, 0, "Wrong values for scatter")
 
    idx[1][1][1] = 34
-   mytester:assertError(function() torch.scatter(1, idx, src) end,
+   mytester:assertError(function() torch.zeros(m, n, o):scatter(dim, idx, src) end,
                         "Invalid index not detected")
 end
 
@@ -1925,7 +1925,7 @@ function torchtest.scatterFill()
    mytester:assertTensorEq(actual, expected, 0, "Wrong values for scatter")
 
    idx[1][1][1] = 28
-   mytester:assertError(function() torch.scatter(1, idx, src) end,
+   mytester:assertError(function() torch.zeros(m, n, o):scatter(dim, idx, val) end,
                         "Invalid index not detected")
 end
 
