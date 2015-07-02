@@ -58,7 +58,7 @@ static int torch_NAME(lua_State *L)
   else if(narg >= 2 && (tname = torch_istensortype(L, luaT_typename(L, 2)))) /* second? */
   {
   }
-  else if(narg >= 1 && lua_isstring(L, narg)
+  else if(narg >= 1 && lua_type(L, narg) == LUA_TSTRING
 	  && (tname = torch_istensortype(L, lua_tostring(L, narg)))) /* do we have a valid tensor type string then? */
   {
     lua_remove(L, -2);
