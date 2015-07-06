@@ -331,6 +331,17 @@ Example:
 [torch.DoubleTensor of dimension 2x4]
 ```
 
+## A note on function calls ##
+
+The rest of this guide will present many functions that can be used to manipulate tensors. Most functions have been
+defined so that they can be called flexibly, either in an object-oriented "method call" style i.e. `src:function(...)`
+or a more "functional" style `torch.function(src, ...)`, where `src` is a tensor. Note that these different invocations
+may differ in whether they modify the tensor in-place, or create a new tensor. Additionally, some functions can be
+called in the form `dst:function(src, ...)` which usually suggests that the result of the operation on the `src` tensor
+will be stored in the tensor `dst`.  Further details are given in the individual function definitions, below, but it
+should be noted that the documentation is currently incomplete in this regard, and readers are encouraged to experiment
+in an interactive session.
+
 ## Cloning ##
 
 <a name="torch.Tensor.clone"/>
@@ -753,8 +764,9 @@ Elements of a tensor can be retrieved with the `[index]` operator.
 
 If `index` is a number, `[index]` operator is equivalent to a
 [`select(1, index)`](#torch.Tensor.select) if the tensor has more
-than one dimension. If the tensor is a 1D tensor, it returns the value
-at `index` in this tensor.
+than one dimension. This operation returns a slice of the tensor that
+shares the same underlying storage. If the tensor is a 1D tensor, it 
+returns the value at `index` in this tensor.
 
 If `index` is a table, the table must contain _n_ numbers, where
 _n_ is the [number of dimensions](#torch.nDimension) of the
@@ -900,7 +912,7 @@ It works up to 4 dimensions. `szi` is the size of the `i`-th dimension of the te
 <a name="torch.Tensor.copy"/>
 ### [self] copy(tensor) ###
 
-Copy the elements of the given `tensor`. The
+Replace the elements of the `Tensor` by copying the elements of the given `tensor`. The
 [number of elements](#torch.Tensor.nElement) must match, but the
 sizes might be different.
 
@@ -1201,10 +1213,11 @@ x[torch.lt(x,0)] = -2 -- sets all negative elements to -2 via a mask
 <a name="torch.Tensor.index"/>
 ### [Tensor] index(dim, index) ###
 
-Returns a new Tensor which indexes the given tensor along dimension `dim` 
-and using the entries in `torch.LongTensor` `index`. 
-The returned tensor has the same number of dimensions as the original tensor. 
-The returned tensor does __not__ use the same storage as the original tensor -- see below for storing the result in an existing tensor.
+Returns a new `Tensor` which indexes the original `Tensor` along dimension `dim` 
+using the entries in `torch.LongTensor` `index`. 
+The returned `Tensor` has the same number of dimensions as the original `Tensor`. 
+The returned `Tensor` does __not__ use the same storage as the original `Tensor` -- see below for storing the result
+ in an existing `Tensor`.
 
 ```lua
 x = torch.rand(5,5)
@@ -1267,7 +1280,8 @@ y:index(x,1,torch.LongTensor{3,1})
 <a name="torch.Tensor.indexCopy"/>
 ### [Tensor] indexCopy(dim, index, tensor) ###
 
-Copies the elements of `tensor` into itself by selecting the indices in the order defined by the order given in `index`.
+Copies the elements of `tensor` into the original tensor by selecting the indices in the order
+given in `index`. The shape of `tensor` must exactly match the elements indexed or an error will be thrown. 
 
 ```lua
 > x
@@ -1303,7 +1317,8 @@ x:indexCopy(2,torch.LongTensor{5,1},z)
 <a name="torch.Tensor.indexFill"/>
 ### [Tensor] indexFill(dim, index, val) ###
 
-Fills the elements of itself with value `val` by selecting the indices in the order defined by the order given in `index`.
+Fills the elements of the original `Tensor` with value `val` by selecting the indices in the order
+given in `index`.
 
 ```lua
 x=torch.rand(5,5)
@@ -1327,36 +1342,70 @@ x:indexFill(2,torch.LongTensor{4,2},-10)
 ```
 
 <a name="torch.Tensor.gather"/>
-### [Tensor] gather(src, dim, index) ###
+### [Tensor] gather(dim, index) ###
 
-Reads values from `src` at the specified indices into the output tensor, selecting a fixed number of values in each row of `src` along the specified dimension.
-The values of `index` must be between 1 and `src->size(dim)` and all values in a row along the specified dimension must be unique.
-All tensors have the same dimensionality and both `index` and the output tensor are of the same size at the specified dimension.
+Creates a new `Tensor` from the original tensor by gathering a number of values from
+each "row", where the rows are along the dimension `dim`. The values in a `LongTensor`, passed as `index`,
+specify which values to take from each row. Specifically, the resulting `Tensor`, which will have the same size as 
+the `index` tensor, is given by
+
+```lua
+-- dim = 1
+result[i][j][k]... = src[index[i][j][k]...][j][k]...
+
+-- dim = 2
+result[i][j][k]... = src[i][index[i][j][k]...][k]...
+
+-- etc.
+```
+where `src` is the original `Tensor`.
+
+The same number of values are selected from each row, and the same value cannot be selected from a row more than
+once. The values in the `index` tensor must not be larger than the length of the row, that is they must be between
+1 and `src:size(dim)` inclusive. It can be somewhat confusing to ensure that the `index` tensor has the correct shape.
+Viewed pictorially:
+
+![The gather operation](gather.png)
+
+Numerically, to give an example, if `src` has size `n x m x p x q`, we are gathering along `dim = 3`, and we wish to
+gather `k` elements from each row (where `k <= p`) then `index` must have size `n x m x k x q`.
+
+It is possible to store the result into an existing Tensor with `result:gather(src, ...)`.
 
 ```lua
 x = torch.rand(5, 5)
 > x
- 0.6066  0.9862  0.1543  0.8633  0.5110
- 0.1853  0.1215  0.1245  0.6549  0.1822
- 0.2412  0.3336  0.5208  0.6858  0.5415
- 0.0147  0.9215  0.5092  0.9192  0.8051
- 0.2136  0.1595  0.7943  0.4572  0.1562
+ 0.7259  0.5291  0.4559  0.4367  0.4133
+ 0.0513  0.4404  0.4741  0.0658  0.0653
+ 0.3393  0.1735  0.6439  0.1011  0.7923
+ 0.7606  0.5025  0.5706  0.7193  0.1572
+ 0.1720  0.3546  0.8354  0.8339  0.3025
 [torch.DoubleTensor of size 5x5]
 
 y = x:gather(1, torch.LongTensor{{1, 2, 3, 4, 5}, {2, 3, 4, 5, 1}})
 > y
- 0.6066  0.1215  0.5208  0.9192  0.1562
- 0.1853  0.3336  0.5092  0.4572  0.5110
+ 0.7259  0.4404  0.6439  0.7193  0.3025
+ 0.0513  0.1735  0.5706  0.8339  0.4133
 [torch.DoubleTensor of size 2x5]
+
+z = x:gather(2, torch.LongTensor{{1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 1}})
+> z
+ 0.7259  0.5291
+ 0.4404  0.4741
+ 0.6439  0.1011
+ 0.7193  0.1572
+ 0.3025  0.1720
+[torch.DoubleTensor of size 5x2]
 
 ```
 
 <a name="torch.Tensor.scatter"/>
 ### [Tensor] scatter(dim, index, src|val) ###
 
-Writes all values from tensor `src` or the scalar `val` into `self` at the specified indices, writing a fixed number of elements into each row of `self` along the specified dimension.
-The values of `index` must be between 1 and `self->size(dim)` and all values in a row along the specified dimension must be unique.
-All tensors have the same dimensionality and both `src` and `index` are of the same size at the specified dimension.
+Writes all values from tensor `src` or the scalar `val` into `self` at the specified indices. The indices are specified
+with respect to the given dimension, `dim`, in the manner described in [gather](#torch.Tensor.gather). Note that, as
+for gather, the values of index must be between 1 and `self:size(dim)` inclusive and all values in a row along the
+specified dimension must be unique. 
 
 ```lua
 x = torch.rand(2, 5)
@@ -1500,7 +1549,8 @@ original tensor.
 `sizes` can either be a `torch.LongStorage` or numbers. Expanding a tensor
 does not allocate new memory, but only creates a new view on the existing tensor where
 singleton dimensions can be expanded to multiple ones by setting the `stride` to 0. 
-Any dimension that is 1 can be expanded to arbitrary value without any new memory allocation.
+Any dimension that has size 1 can be expanded to arbitrary value without any new memory allocation. Attempting to
+expand along a dimension that does not have size 1 will result in an error.
 
 ```lua
 x = torch.rand(10,1)

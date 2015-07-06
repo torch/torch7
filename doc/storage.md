@@ -27,8 +27,9 @@ y = torch.DoubleStorage(10):copy(x)
 ```
 
 [Classical storages](#torch.Storage) are [serializable](file.md#torch.File.serialization).
-[Storages mapping a file](#__torch.StorageMap) are also [serializable](#FileSerialization),
-but _will be saved as a normal storage_.
+[Storages mapping a file](#__torch.StorageMap) are also [serializable](file.md#torch.File.serialization),
+but _will be saved as a normal storage_. High-level serialization commands are described in the
+[serialization](serialization.md) section.
 
 An alias `torch.Storage()` is made over your preferred Storage type,
 controlled by the
