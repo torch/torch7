@@ -1,6 +1,6 @@
 #include "general.h"
 
-#ifdef _MSC_VER
+#if (defined(_MSC_VER) || defined(__MINGW32__))
 #include <time.h>
 #else
 #include <sys/time.h>
@@ -19,7 +19,7 @@ typedef struct _Timer
     double startusertime;
     double startsystime;
 
-#ifdef _MSC_VER
+#if (defined(_MSC_VER) || defined(__MINGW32__))
   time_t base_time;
 #endif
 

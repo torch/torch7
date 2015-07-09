@@ -7,7 +7,7 @@
 #include "luaT.h"
 #include "TH.h"
 
-#ifdef _MSC_VER
+#if (defined(_MSC_VER) || defined(__MINGW32__))
 
 #define snprintf _snprintf
 #define popen _popen
