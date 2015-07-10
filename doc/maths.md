@@ -1146,6 +1146,90 @@ each column of `x`.
 
 `y,i=torch.min(x,n)` performs the min operation over the dimension `n`.
 
+<a name="torch.cmax"/>
+### [res] torch.cmax([res,] tensor1, tensor2) ###
+
+Compute the maximum of each pair of values in `tensor1` and `tensor2`.
+
+`c=torch.cmax(a, b)` returns a new tensor containing the element-wise maximum of `a` and `b`.
+
+`a:cmax(b)` stores the element-wise maximum of `a` and `b` in `a`.
+
+`c:max(a, b)` stores the element-wise maximum of `a` and `b` in `c`.
+
+```lua
+> a = torch.Tensor{1, 2, 3}
+> b = torch.Tensor{3, 2, 1}
+> = torch.cmax(a, b)
+ 3
+ 2
+ 3
+[torch.DoubleTensor of size 3]
+```
+
+<a name="torch.cmax"/>
+### [res] torch.cmax([res,] tensor, value) ###
+
+Compute the maximum between each value in `tensor` and `value`.
+
+`c=torch.cmax(a, v)` returns a new tensor containing the maxima of each element
+in `a` and `v`.
+
+`a:cmax(v)` stores the maxima of each element in `a` and `v` in `a`.
+
+`c:max(a, v)` stores the maxima of each element in `a` and `v` in `c`.
+
+```lua
+> a = torch.Tensor{1, 2, 3}
+> = torch.cmax(a, 2)
+ 2
+ 2
+ 3
+[torch.DoubleTensor of size 3]
+```
+
+<a name="torch.cmin"/>
+### [res] torch.cmin([res,] tensor1, tensor2) ###
+
+Compute the minimum of each pair of values in `tensor1` and `tensor2`.
+
+`c=torch.cmin(a, b)` returns a new tensor containing the element-wise minimum of `a` and `b`.
+
+`a:cmin(b)` stores the element-wise minimum of `a` and `b` in `a`.
+
+`c:min(a, b)` stores the element-wise minimum of `a` and `b` in `c`.
+
+```lua
+> a = torch.Tensor{1, 2, 3}
+> b = torch.Tensor{3, 2, 1}
+> = torch.cmin(a, b)
+ 1
+ 2
+ 1
+[torch.DoubleTensor of size 3]
+```
+
+<a name="torch.cmin"/>
+### [res] torch.cmin([res,] tensor, value) ###
+
+Compute the minimum between each value in `tensor` and `value`.
+
+`c=torch.cmin(a, v)` returns a new tensor containing the minima of each element
+in `a` and `v`.
+
+`a:cmin(v)` stores the minima of each element in `a` and `v` in `a`.
+
+`c:min(a, v)` stores the minima of each element in `a` and `v` in `c`.
+
+```lua
+> a = torch.Tensor{1, 2, 3}
+> = torch.cmin(a, 2)
+ 1
+ 2
+ 2
+[torch.DoubleTensor of size 3]
+```
+
 <a name="torch.median"/>
 ### torch.median([resval, resind,] x [,dim]) ###
 
