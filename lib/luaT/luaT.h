@@ -18,7 +18,7 @@ extern "C" {
 # endif
 #endif
 
-#ifdef _MSC_VER
+#if (defined(_MSC_VER) || defined(__MINGW32__))
 # define DLL_EXPORT __declspec(dllexport)
 # define DLL_IMPORT __declspec(dllimport)
 # ifdef luaT_EXPORTS
@@ -108,7 +108,7 @@ LUAT_API int luaT_lua_pushudata(lua_State *L);
 /* comments show what function (that you should use) they call now */
 #if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
 #define LUAT_DEPRECATED  __attribute__((__deprecated__))
-#elif defined(_MSC_VER)
+#elif (defined(_MSC_VER) || defined(__MINGW32__))
 #define LUAT_DEPRECATED __declspec(deprecated)
 #else
 #define LUAT_DEPRECATED

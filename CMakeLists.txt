@@ -11,9 +11,12 @@ SET(CMAKE_MODULE_PATH
   "${CMAKE_MODULE_PATH}")
 
 IF (NOT MSVC)
+  IF (MINGW)
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=format")
+  ELSE()
     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=implicit-function-declaration -Werror=format")
+  ENDIF(MINGW)
 ENDIF(NOT MSVC)
-
 
 # Flags
 # When using MSVC
