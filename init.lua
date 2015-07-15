@@ -127,11 +127,19 @@ function torch.totable(obj)
 end
 
 function torch.isTensor(obj)
-  return type(obj) == 'userdata' and torch.isTypeOf(obj, 'torch.*Tensor')
+   local typename = torch.typename(obj)
+   if typename and typename:find('torch.*Tensor') then
+      return true
+   end
+   return false
 end
 
 function torch.isStorage(obj)
-  return type(obj) == 'userdata' and torch.isTypeOf(obj, 'torch.*Storage')
+   local typename = torch.typename(obj)
+   if typename and typename:find('torch.*Storage') then
+      return true
+   end
+   return false
 end
 -- alias for convenience
 torch.Tensor.isTensor = torch.isTensor
