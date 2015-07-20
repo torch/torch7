@@ -457,6 +457,18 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
             {name="index"}})
    end
 
+   for _,name in ipairs({"cmin", "cmax"}) do
+      wrap(name,
+           cname(name),
+           {{name=Tensor, default=true, returned=true},
+            {name=Tensor, method={default=1}},
+            {name=Tensor}},
+           cname(name .. "Value"),
+           {{name=Tensor, default=true, returned=true},
+            {name=Tensor, method={default=1}},
+            {name=real}})
+   end
+
    wrap("trace",
         cname("trace"),
         {{name=Tensor},

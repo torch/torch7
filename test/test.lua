@@ -344,6 +344,42 @@ function torchtest.min()  -- torch.min([resval, resind,] x [,dim])
    mytester:assertlt(minerr, precision, 'error in torch.min - non-contiguous')
 end
 
+function torchtest.cmax()
+  -- Two tensors.
+  local a = torch.rand(msize, msize)
+  local b = torch.rand(msize, msize)
+  local c = torch.cmax(a, b)
+  local expected_c = torch.zeros(msize, msize)
+  expected_c:map2(a, b, function(_, a, b) return math.max(a, b) end)
+  mytester:assertTensorEq(expected_c, c, 0,
+                          'error in torch.cmax(tensor, tensor)')
+
+  -- Tensor and scalar.
+  local v = torch.uniform()
+  c = torch.cmax(a, v)
+  expected_c:map(a, function(_, a) return math.max(a, v) end)
+  mytester:assertTensorEq(expected_c, c, 0,
+                          'error in torch.cmax(tensor, scalar).')
+end
+
+function torchtest.cmin()
+  -- Two tensors.
+  local a = torch.rand(msize, msize)
+  local b = torch.rand(msize, msize)
+  local c = torch.cmin(a, b)
+  local expected_c = torch.zeros(msize, msize)
+  expected_c:map2(a, b, function(_, a, b) return math.min(a, b) end)
+  mytester:assertTensorEq(expected_c, c, 0,
+                          'error in torch.cmin(tensor, tensor)')
+
+  -- Tensor and scalar.
+  local v = torch.uniform()
+  c = torch.cmin(a, v)
+  expected_c:map(a, function(_, a) return math.min(a, v) end)
+  mytester:assertTensorEq(expected_c, c, 0,
+                          'error in torch.cmin(tensor, scalar).')
+end
+
 for i, v in ipairs{{10}, {5, 5}} do
    torchtest['allAndAny' .. i] =
       function ()
