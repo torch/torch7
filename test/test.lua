@@ -284,6 +284,16 @@ function torchtest.max()  -- torch.max([resval, resind,] x [,dim])
       end
    end
    mytester:assertlt(maxerr, precision, 'error in torch.max - non-contiguous')
+   -- NaNs
+   for index in pairs{1, 5, 100} do
+      local m1 = torch.randn(100)
+      m1[index] = 0/0
+      local res1val, res1ind = torch.max(m1, 1)
+      mytester:assert(res1val[1] ~= res1val[1], 'error in torch.max (value) - NaNs')
+      mytester:assert(res1ind[1] == index, 'error in torch.max (index) - NaNs')
+      local res1val = torch.max(m1)
+      mytester:assert(res1val ~= res1val, 'error in torch.max - NaNs')
+   end
 end
 
 function torchtest.min()  -- torch.min([resval, resind,] x [,dim])
@@ -342,6 +352,16 @@ function torchtest.min()  -- torch.min([resval, resind,] x [,dim])
       end
    end
    mytester:assertlt(minerr, precision, 'error in torch.min - non-contiguous')
+   -- NaNs
+   for index in pairs{1, 5, 100} do
+      local m1 = torch.randn(100)
+      m1[index] = 0/0
+      local res1val, res1ind = torch.min(m1, 1)
+      mytester:assert(res1val[1] ~= res1val[1], 'error in torch.min (value) - NaNs')
+      mytester:assert(res1ind[1] == index, 'error in torch.min (index) - NaNs')
+      local res1val = torch.min(m1)
+      mytester:assert(res1val ~= res1val, 'error in torch.min - NaNs')
+   end
 end
 
 function torchtest.cmax()
