@@ -507,6 +507,72 @@ function torchtest.div()
    mytester:assertlt(err, precision, 'error in torch.div - scalar, non contiguous')
 end
 
+function torchtest.mm()
+   -- helper function
+   local function matrixmultiply(mat1,mat2)
+      local n = mat1:size(1)
+      local m = mat1:size(2)
+      local p = mat2:size(2)
+      local res = torch.zeros(n,p)
+      for i = 1, n do
+         for j = 1, p do
+            local sum = 0
+            for k = 1, m do
+               sum = sum + mat1[i][k]*mat2[k][j]
+            end
+            res[i][j] = sum
+         end
+      end
+      return res
+   end
+
+   -- contiguous case
+   local n, m, p = 10, 10, 5
+   local mat1 = torch.randn(n,m)
+   local mat2 = torch.randn(m,p)
+   local res = torch.mm(mat1,mat2)
+
+   local res2 = matrixmultiply(mat1,mat2)
+   mytester:assertTensorEq(res,res2,precision,'error in torch.mm')
+
+   -- non contiguous case 1
+   local n, m, p = 10, 10, 5
+   local mat1 = torch.randn(n,m)
+   local mat2 = torch.randn(p,m):t()
+   local res = torch.mm(mat1,mat2)
+
+   local res2 = matrixmultiply(mat1,mat2)
+   mytester:assertTensorEq(res,res2,precision,'error in torch.mm, non contiguous')
+
+   -- non contiguous case 2
+   local n, m, p = 10, 10, 5
+   local mat1 = torch.randn(m,n):t()
+   local mat2 = torch.randn(m,p)
+   local res = torch.mm(mat1,mat2)
+
+   local res2 = matrixmultiply(mat1,mat2)
+   mytester:assertTensorEq(res,res2,precision,'error in torch.mm, non contiguous')
+
+   -- non contiguous case 3
+   local n, m, p = 10, 10, 5
+   local mat1 = torch.randn(m,n):t()
+   local mat2 = torch.randn(p,m):t()
+   local res = torch.mm(mat1,mat2)
+
+   local res2 = matrixmultiply(mat1,mat2)
+   mytester:assertTensorEq(res,res2,precision,'error in torch.mm, non contiguous')
+
+   -- test with zero stride
+   local n, m, p = 10, 10, 5
+   local mat1 = torch.randn(n,m)
+   local mat2 = torch.randn(m,1):expand(m,p)
+   local res = torch.mm(mat1,mat2)
+
+   local res2 = matrixmultiply(mat1,mat2)
+   mytester:assertTensorEq(res,res2,precision,'error in torch.mm, non contiguous, zero stride')
+
+end
+
 function torchtest.bmm()
    local num_batches = 10
    local M, N, O = 23, 8, 12
