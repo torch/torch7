@@ -15,8 +15,12 @@ static int torch_Storage_(new)(lua_State *L)
       THError("Passing allocator not supported when using file mapping");
 
     const char *fileName = luaL_checkstring(L, index);
-    int isShared = luaT_optboolean(L, index + 1, 0);
+    int isShared = 0;
+    if(luaT_optboolean(L, index + 1, 0))
+      isShared = TH_ALLOCATOR_MAPPED_SHARED;
     long size = luaL_optlong(L, index + 2, 0);
+    if (isShared && luaT_optboolean(L, index + 3, 0))
+      isShared = TH_ALLOCATOR_MAPPED_SHAREDMEM;
     storage = THStorage_(newWithMapping)(fileName, size, isShared);
   }
   else if(lua_type(L, index) == LUA_TTABLE)
