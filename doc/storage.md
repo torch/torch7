@@ -134,6 +134,11 @@ If `size` is not specified then the [size](#torch.Storage.size) of the returned
 ```
 elements.
 
+if `sharedMem` is true then, the file will be created (or mapped from) the shared
+memory area using [`shm_open()`](http://linux.die.net/man/3/shm_open). On Linux systems 
+this is implemented at `/dev/shm` partition on RAM for interprocess communication.
+
+
 Example:
 ```lua
 $ echo "Hello World" > hello.txt
