@@ -101,7 +101,7 @@ Example:
 ```
 
 <a name="torch.Storage"/>
-### torch.TYPEStorage(filename [, shared [, size]]) ###
+### torch.TYPEStorage(filename [, shared [, size [, sharedMem]]]) ###
 <a name="__torch.StorageMap"/>
 
 Returns a new kind of `Storage` which maps the contents of the given
