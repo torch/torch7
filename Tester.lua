@@ -114,6 +114,10 @@ function Tester:pcall(f)
    -- local res = f()
    local stat, result = xpcall(f, debug.traceback)
    if not stat then
+      if result:find("interrupted!") then
+        self:report()
+        error("interrupted!")
+      end
       self.errors[#self.errors+1] = self.curtestname .. '\n Function call failed \n' .. result .. '\n'
    end
    return stat, result, stat and (nerr == #self.errors)
@@ -210,8 +214,13 @@ end
 function Tester:add(f,name)
    name = name or 'unknown'
    if type(f) == "table" then
-      for i,v in pairs(f) do
-         self:add(v,i)
+      local orderedNames = {}
+      for n,_ in pairs(f) do
+         table.insert(orderedNames, n)
+      end
+      table.sort(orderedNames)
+      for _,n in pairs(orderedNames) do
+         self:add(f[n], n)
       end
    elseif type(f) == "function" then
       self.tests[#self.tests+1] = f
