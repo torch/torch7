@@ -83,7 +83,7 @@ option. In the latter case, one can check if an error occurred with
 <a name="torch.File.writeDouble"/>
 <a name="torch.File.writeFloat"/>
 
-They are two types of reading methods:
+They are two types of writing methods:
   - `[number] writeTYPE(number)`
   - `[number] writeTYPE(TYPEStorage)`
 
