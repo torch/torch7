@@ -1425,6 +1425,24 @@ function torchtest.gesv()
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.gesv value out1')
    mytester:asserteq(maxdiff(mx,mxxx),0,'torch.gesv value out2')
 end
+function torchtest.gesv_reuse()
+   if not torch.gesv then return end
+   local a=torch.Tensor({{6.80, -2.11,  5.66,  5.97,  8.23},
+                         {-6.05, -3.30,  5.36, -4.44,  1.08},
+                         {-0.45,  2.58, -2.70,  0.27,  9.04},
+                         {8.32,  2.71,  4.35, -7.17,  2.14},
+                         {-9.67, -5.14, -7.26,  6.08, -6.87}}):t()
+   local b=torch.Tensor({{4.02,  6.19, -8.22, -7.57, -3.03},
+                         {-1.56,  4.00, -8.67,  1.75,  2.86},
+                         {9.81, -4.09, -4.57, -8.61,  8.99}}):t()
+   local mx = torch.gesv(b,a)
+   local ta = torch.Tensor()
+   local tb = torch.Tensor()
+   torch.gesv(tb,ta,b,a)
+   mytester:asserteq(maxdiff(mx,tb),0,'torch.gesv value temp')
+   torch.gesv(tb,ta,b,a)
+   mytester:asserteq(maxdiff(mx,tb),0,'torch.gesv value reuse')
+end
 function torchtest.gels_uniquely_determined()
    if not torch.gels then return end
    local expectedNorm = 0
@@ -1454,6 +1472,24 @@ function torchtest.gels_uniquely_determined()
    mytester:asserteq(maxdiff(mx,b),0,'torch.gels value flag')
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.gels value out1')
    mytester:asserteq(maxdiff(mx,mxxx),0,'torch.gels value out2')
+end
+function torchtest.gels_reuse()
+   if not torch.gels then return end
+   local expectedNorm = 0
+   local a=torch.Tensor({{ 1.44, -9.96, -7.55,  8.34},
+                         {-7.84, -0.28,  3.24,  8.09},
+                         {-4.39, -3.24,  6.27,  5.28},
+                         {4.53,  3.83, -6.64,  2.06}}):t()
+   local b=torch.Tensor({{8.58,  8.26,  8.48, -5.28},
+                         {9.35, -4.43, -0.70, -0.26}}):t()
+   local ta = torch.Tensor()
+   local tb = torch.Tensor()
+   torch.gels(tb,ta,b,a)
+   mytester:assertalmosteq((torch.mm(a,tb)-b):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
+   torch.gels(tb,ta,b,a)
+   mytester:assertalmosteq((torch.mm(a,tb)-b):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
+   torch.gels(tb,ta,b,a)
+   mytester:assertalmosteq((torch.mm(a,tb)-b):norm(), expectedNorm, 1e-8, 'torch.gels wrong answer')
 end
 function torchtest.gels_overdetermined()
    if not torch.gels then return end
@@ -1535,6 +1571,7 @@ function torchtest.eig()
    mytester:assertlt(maxdiff(vv,tv),1e-12,'torch.eig value')
 end
 function torchtest.eig_reuse()
+   if not torch.eig then return end
    local X = torch.randn(4,4)
    X = X:t()*X
    local e, v = torch.zeros(4,2), torch.zeros(4,4)
@@ -1545,10 +1582,11 @@ function torchtest.eig_reuse()
 
    torch.eig(e, v, X, 'V')
    local Xhat = torch.mm(v, torch.mm(e:select(2,1):diag(), v:t()))
-   mytester:assertTensorEq(X, Xhat, 1e-8, 'USV\' wrong')
+   mytester:assertTensorEq(X, Xhat, 1e-8, 'VeV\' wrong')
    mytester:assert(not v:isContiguous(), 'V is contiguous')
 end
 function torchtest.eig_noncontig()
+   if not torch.eig then return end
    local X = torch.randn(4,4)
    X = X:t()*X
    local e = torch.zeros(4,2,2)[{ {}, 2, {} }]
@@ -1560,6 +1598,7 @@ function torchtest.eig_noncontig()
    mytester:assertTensorEq(X, Xhat, 1e-8, 'VeV\' wrong')
 end
 function torchtest.test_symeig()
+  if not torch.symeig then return end
   local xval = torch.rand(100,3)
   local cov = torch.mm(xval:t(), xval)
   local rese = torch.zeros(3)
@@ -1569,15 +1608,16 @@ function torchtest.test_symeig()
   mytester:assert(resv:isContiguous(), 'resv is not contiguous') -- PASS
   torch.symeig(rese, resv, cov:clone(), 'V')
   local ahat = resv*torch.diag(rese)*resv:t()
-  mytester:assertTensorEq(cov, ahat, 1e-8, 'USV\' wrong') -- PASS
+  mytester:assertTensorEq(cov, ahat, 1e-8, 'VeV\' wrong') -- PASS
 
   -- Second call to symeig
   mytester:assert(not resv:isContiguous(), 'resv is contiguous') -- FAIL
   torch.symeig(rese, resv, cov:clone(), 'V')
   local ahat = torch.mm(torch.mm(resv, torch.diag(rese)), resv:t())
-  mytester:assertTensorEq(cov, ahat, 1e-8, 'USV\' wrong') -- FAIL
+  mytester:assertTensorEq(cov, ahat, 1e-8, 'VeV\' wrong') -- FAIL
 end
 function  torchtest.symeig_noncontig()
+  if not torch.symeig then return end
    local X = torch.rand(5,5)
    X = X:t()*X
    local e = torch.zeros(4,2):select(2,2)
@@ -1608,6 +1648,7 @@ function torchtest.svd()
    mytester:asserteq(maxdiff(v,vvv),0,'torch.svd')
 end
 function torchtest.svd_reuse()
+   if not torch.svd then return end
    local X = torch.randn(4,4)
    local U, S, V = torch.svd(X)
    local Xhat = torch.mm(U, torch.mm(S:diag(), V:t()))
@@ -1619,6 +1660,7 @@ function torchtest.svd_reuse()
    mytester:assertTensorEq(X, Xhat, 1e-8, 'USV\' wrong')
 end
 function torchtest.svd_noncontig()
+   if not torch.svd then return end
    local X = torch.randn(5,5)
    local U = torch.zeros(5,2,5)[{ {}, 2, {} }]
    local S = torch.zeros(5,2)[{ {}, 2 }]
@@ -1630,6 +1672,24 @@ function torchtest.svd_noncontig()
    torch.svd(U, S, V, X)
    local Xhat = torch.mm(U, torch.mm(S:diag(), V:t()))
    mytester:assertTensorEq(X, Xhat, 1e-8, 'USV\' wrong')
+end
+function torchtest.inverse()
+   if not torch.inverse then return end
+   local M = torch.randn(5,5)
+   local MI = torch.inverse(M)
+   local E = torch.eye(5)
+   mytester:assert(not MI:isContiguous(), 'MI is contiguous')
+   mytester:assertalmosteq(maxdiff(E,torch.mm(M,MI)), 0, 1e-8, 'inverse value')
+   mytester:assertalmosteq(maxdiff(E,torch.mm(MI,M)), 0, 1e-8, 'inverse value')
+
+   local MII = torch.Tensor(5,5)
+   torch.inverse(MII, M)
+   mytester:assert(not MII:isContiguous(), 'MII is contiguous')
+   mytester:asserteq(maxdiff(MII, MI), 0, 'inverse value in-place')
+   -- second call, now that MII is transposed
+   torch.inverse(MII, M)
+   mytester:assert(not MII:isContiguous(), 'MII is contiguous')
+   mytester:asserteq(maxdiff(MII, MI), 0, 'inverse value in-place')
 end
 function torchtest.conv2()
    local x = torch.rand(math.floor(torch.uniform(50,100)),math.floor(torch.uniform(50,100)))
