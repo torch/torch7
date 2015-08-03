@@ -507,7 +507,7 @@ Convenience method for the [type](#torch.type) method. Equivalent to
 type(tensor:type())
 ```
 
-<a name="torch.isTensor"?>
+<a name="torch.isTensor"/>
 ### [boolean] isTensor(object) ###
 
 Returns `true` iff the provided `object` is one of the `torch.*Tensor` types.
