@@ -1551,6 +1551,75 @@ x = torch.gesv(b,a)
 
 ```
 
+<a name="torch.trtrs"/>
+### [x] torch.trtrs([resb, resa,] b, a [, 'U' or 'L'] [, 'N' or 'T'] [, 'N' or 'U']) ###
+
+`X=torch.trtrs(B,A)` returns the solution of `AX=B` where `A` is upper-triangular.
+
+`A` has to be a square, triangular, non-singular matrix (2D tensor).
+`A` and `resa` are `m x m`, `X` and `B` are `m x k`.
+(To be very precise: `A` does not have to be triangular and non-singular, rather only its
+upper or lower triangle will be taken into account and that part has to be non-singular.)
+
+The function has several options:
+
+* `uplo` (`'U'` or `'L'`) specifies whether `A` is upper or lower triangular;
+  the default value is `'U'`.
+* `trans` (`'N'` or `'T`') specifies the system of equations: `'N'` for
+  `A * X = B` (no transpose), or `'T'` for `A^T * X = B` (transpose);
+  the default value is `'N'`.
+* `diag` (`'N'` or `'U'`) `'U'` specifies that `A` is non-unit triangular, i.e.,
+   it has ones on its diagonal; `'N'` specifies that `A` is not (necessarily) unit
+   triangular; the default value is `'N'`.
+
+If `resb` and `resa` are given, then they will be used for
+temporary storage and returning the result. `resb` will contain
+the solution `X`.
+
+Note: Irrespective of the original strides, the returned matrices `resb` and
+`resa` will be transposed, i.e. with strides `1,m` instead of `m,1`.
+
+```lua
+a = torch.Tensor({{6.80, -2.11,  5.66,  5.97,  8.23},
+                  {0, -3.30,  5.36, -4.44,  1.08},
+                  {0,  0, -2.70,  0.27,  9.04},
+                  {0,  0,  0,  -7.17,  2.14},
+                  {0,  0,  0,  0, -6.87}})
+
+b = torch.Tensor({{4.02,  6.19, -8.22, -7.57, -3.03},
+                  {-1.56,  4.00, -8.67,  1.75,  2.86},
+                  {9.81, -4.09, -4.57, -8.61,  8.99}}):t()
+
+> b
+ 4.0200 -1.5600  9.8100
+ 6.1900  4.0000 -4.0900
+-8.2200 -8.6700 -4.5700
+-7.5700  1.7500 -8.6100
+-3.0300  2.8600  8.9900
+[torch.DoubleTensor of dimension 5x3]
+
+> a
+ 6.8000 -2.1100  5.6600  5.9700  8.2300
+ 0.0000 -3.3000  5.3600 -4.4400  1.0800
+ 0.0000  0.0000 -2.7000  0.2700  9.0400
+ 0.0000  0.0000  0.0000 -7.1700  2.1400
+ 0.0000  0.0000  0.0000  0.0000 -6.8700
+[torch.DoubleTensor of dimension 5x5]
+
+
+x = torch.trtrs(b, a)
+> x
+-3.5416 -0.2514  3.0847
+ 4.2072  2.0391 -4.5146
+ 4.6399  1.7804 -2.6077
+ 1.1874 -0.3683  0.8103
+ 0.4410 -0.4163 -1.3086
+[torch.DoubleTensor of size 5x3]
+
+> b:dist(a*x)
+4.1895292266754e-15
+```
+
 <a name="torch.gels"/>
 ### torch.gels([resb, resa,] b, a) ###
 

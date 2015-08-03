@@ -1036,6 +1036,24 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                          {name=Tensor}}
                      )
       end
+      interface:wrap("trtrs",
+                     cname("trtrs"),
+                     {{name=Tensor, returned=true},
+                      {name=Tensor, returned=true},
+                      {name=Tensor},
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'},  -- uplo
+                      {name='charoption', values={'N', 'T'}, default='N'},  -- trans
+                      {name='charoption', values={'N', 'U'}, default='N'}}, -- diag
+                     cname("trtrs"),
+                     {{name=Tensor, default=true, returned=true, invisible=true},
+                      {name=Tensor, default=true, returned=true, invisible=true},
+                      {name=Tensor},
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'},  -- uplo
+                      {name='charoption', values={'N', 'T'}, default='N'},  -- trans
+                      {name='charoption', values={'N', 'U'}, default='N'}}  -- diag
+                  )
 
       interface:wrap("symeig",
                      cname("syev"),
