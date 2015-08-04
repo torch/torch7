@@ -1443,6 +1443,71 @@ function torchtest.gesv_reuse()
    torch.gesv(tb,ta,b,a)
    mytester:asserteq(maxdiff(mx,tb),0,'torch.gesv value reuse')
 end
+function torchtest.trtrs()
+   if not torch.trtrs then return end
+   local a=torch.Tensor({{6.80, -2.11,  5.66,  5.97,  8.23},
+                         {-6.05, -3.30,  5.36, -4.44,  1.08},
+                         {-0.45,  2.58, -2.70,  0.27,  9.04},
+                         {8.32,  2.71,  4.35, -7.17,  2.14},
+                         {-9.67, -5.14, -7.26,  6.08, -6.87}}):t()
+   local b=torch.Tensor({{4.02,  6.19, -8.22, -7.57, -3.03},
+                         {-1.56,  4.00, -8.67,  1.75,  2.86},
+                         {9.81, -4.09, -4.57, -8.61,  8.99}}):t()
+
+   local U = torch.triu(a)
+   local L = torch.tril(a)
+
+   -- solve Ux = b
+   local x = torch.trtrs(b, U)
+   mytester:assertlt(b:dist(U*x),1e-12,'torch.trtrs')
+   x = torch.trtrs(b, U, 'U', 'N', 'N')
+   mytester:assertlt(b:dist(U*x),1e-12,'torch.trtrs')
+
+   -- solve Lx = b
+   x = torch.trtrs(b, L, 'L')
+   mytester:assertlt(b:dist(L*x),1e-12,'torch.trtrs')
+   x = torch.trtrs(b, L, 'L', 'N', 'N')
+   mytester:assertlt(b:dist(L*x),1e-12,'torch.trtrs')
+
+   -- solve U'x = b
+   x = torch.trtrs(b, U, 'U', 'T')
+   mytester:assertlt(b:dist(U:t()*x),1e-12,'torch.trtrs')
+   x = torch.trtrs(b, U, 'U', 'T', 'N')
+   mytester:assertlt(b:dist(U:t()*x),1e-12,'torch.trtrs')
+
+   -- solve U'x = b by manual transposition
+   y = torch.trtrs(b, U:t(), 'L', 'N')
+   mytester:assertlt(x:dist(y),1e-12,'torch.trtrs')
+
+   -- solve L'x = b
+   x = torch.trtrs(b, L, 'L', 'T')
+   mytester:assertlt(b:dist(L:t()*x),1e-12,'torch.trtrs')
+   x = torch.trtrs(b, L, 'L', 'T', 'N')
+   mytester:assertlt(b:dist(L:t()*x),1e-12,'torch.trtrs')
+
+   -- solve L'x = b by manual transposition
+   y = torch.trtrs(b, L:t(), 'U', 'N')
+   mytester:assertlt(x:dist(y),1e-12,'torch.trtrs')
+end
+function torchtest.trtrs_reuse()
+   if not torch.trtrs then return end
+   local a=torch.Tensor({{6.80, -2.11,  5.66,  5.97,  8.23},
+                         {-6.05, -3.30,  5.36, -4.44,  1.08},
+                         {-0.45,  2.58, -2.70,  0.27,  9.04},
+                         {8.32,  2.71,  4.35, -7.17,  2.14},
+                         {-9.67, -5.14, -7.26,  6.08, -6.87}}):t()
+   local b=torch.Tensor({{4.02,  6.19, -8.22, -7.57, -3.03},
+                         {-1.56,  4.00, -8.67,  1.75,  2.86},
+                         {9.81, -4.09, -4.57, -8.61,  8.99}}):t()
+   local mx = torch.trtrs(b,a)
+   local ta = torch.Tensor()
+   local tb = torch.Tensor()
+   torch.trtrs(tb,ta,b,a)
+   mytester:asserteq(maxdiff(mx,tb),0,'torch.trtrs value temp')
+   tb:zero()
+   torch.trtrs(tb,ta,b,a)
+   mytester:asserteq(maxdiff(mx,tb),0,'torch.trtrs value reuse')
+end
 function torchtest.gels_uniquely_determined()
    if not torch.gels then return end
    local expectedNorm = 0
