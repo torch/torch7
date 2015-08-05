@@ -47,19 +47,12 @@ static void luaTorchArgErrorHandlerFunction(int argNumber, const char *msg, void
   luaL_argcheck(L, 0, argNumber, msg);
 }
 
-static void luaTorchGCFunction(void *data)
-{
-  lua_State *L = data;
-  lua_gc(L, LUA_GCCOLLECT, 0);
-}
-
 LUA_EXTERNC DLL_EXPORT int luaopen_libtorch(lua_State *L);
 
 int luaopen_libtorch(lua_State *L)
 {
   THSetErrorHandler(luaTorchErrorHandlerFunction, L);
   THSetArgErrorHandler(luaTorchArgErrorHandlerFunction, L);
-  THSetGCHandler(luaTorchGCFunction, L);
 
   lua_newtable(L);
   lua_pushvalue(L, -1);

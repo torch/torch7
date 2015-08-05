@@ -188,6 +188,23 @@ static int torch_getnumcores(lua_State *L)
   return 1;
 }
 
+static void luaTorchGCFunction(void *data)
+{
+  lua_State *L = data;
+  lua_gc(L, LUA_GCCOLLECT, 0);
+}
+
+static int torch_setheaptracking(lua_State *L)
+{
+  int enabled = luaT_checkboolean(L,1);
+  if(enabled) {
+    THSetGCHandler(luaTorchGCFunction, L);
+  } else {
+    THSetGCHandler(NULL, NULL);
+  }
+  return 0;
+}
+
 static const struct luaL_Reg torch_utils__ [] = {
   {"getdefaulttensortype", torch_lua_getdefaulttensortype},
   {"isatty", torch_isatty},
@@ -209,6 +226,7 @@ static const struct luaL_Reg torch_utils__ [] = {
   {"pushudata", luaT_lua_pushudata},
   {"version", luaT_lua_version},
   {"pointer", luaT_lua_pointer},
+  {"setheaptracking", torch_setheaptracking},
   {NULL, NULL}
 };
 
