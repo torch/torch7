@@ -102,7 +102,7 @@ The roadmap focuses on five separate things
 - **[needs discussion]** how about Moses? New lean functional package that's pretty useful
 - **[definite]** A style guide
   - Guidelines are super important:
-    - for Lua: at least impose strict camel case + 3 spaces (no tab)
+    - for Lua: at least impose strict camel case + 2 spaces (no tab)
     - for C: camel case + use of underscore to represent namespace scoping + 2 spaces
 
 ## Documentation + Accessibility
