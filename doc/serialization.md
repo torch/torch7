@@ -1,5 +1,5 @@
 
-<a name="torch.serialization.dok"/>
+<a name="torch.serialization.dok"></a>
 # Serialization #
 
 Torch provides 4 high-level methods to serialize/deserialize arbitrary Lua/Torch objects.
@@ -20,7 +20,7 @@ Serializing to files is useful to save arbitrary data structures, or share them 
 Serializing to strings is useful to store arbitrary data structures in databases, or 3rd party
 software.
 
-<a name="torch.save"/>
+<a name="torch.save"></a>
 ### torch.save(filename, object [, format]) ###
 
 Writes `object` into a file named `filename`. The `format` can be set
@@ -43,7 +43,7 @@ obj = {
 torch.save('test.dat', obj)
 ```
 
-<a name="torch.load"/>
+<a name="torch.load"></a>
 ### [object] torch.load(filename [, format]) ###
 
 Reads `object` from a file named `filename`. The `format` can be set
@@ -63,7 +63,7 @@ print(obj)
 --  [test] = table - size: 0}
 ```
 
-<a name="torch.serialize"/>
+<a name="torch.serialize"></a>
 ### [str] torch.serialize(object [, format]) ###
 
 Serializes `object` into a string. The `format` can be set
@@ -86,7 +86,7 @@ obj = {
 str = torch.serialize(obj)
 ```
 
-<a name="torch.deserialize"/>
+<a name="torch.deserialize"></a>
 ### [object] torch.deserialize(str [, format]) ###
 
 Deserializes `object` from a string. The `format` can be set

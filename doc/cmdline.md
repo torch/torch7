@@ -1,4 +1,4 @@
-<a name="torch.CmdLine.dok"/>
+<a name="torch.CmdLine.dok"></a>
 # CmdLine #
 
 This class provides a parameter parsing framework which is very
@@ -83,7 +83,7 @@ stroption	mycustomstring
 and the output will be logged in
 `experiment,seed=456,stroption=mycustomstring/log`
 
-<a name="torch.CmdLine.addtime"/>
+<a name="torch.CmdLine.addtime"></a>
 ### addTime([name] [,format]) ###
 
 Adds a prefix to every line in the log file with the date/time in the
@@ -103,31 +103,31 @@ The final produced output for the following command is:
 2012-02-07 08:21:56[your project name]: Your log message
 ```
 
-<a name="torch.CmdLine.log"/>
+<a name="torch.CmdLine.log"></a>
 ### log(filename, parameter_table) ###
 
 It sets the log filename to `filename` and prints the values of
 parameters in the `parameter_table`.
 
-<a name="torch.CmdLine.option"/>
+<a name="torch.CmdLine.option"></a>
 ### option(name, default, help) ###
 
 Stores an option argument. The name should always start with '-'.
 
-<a name="torch.CmdLine.parse"/>
+<a name="torch.CmdLine.parse"></a>
 ### [table] parse(arg) ###
 
 Parses a given table, `arg` is by default the argument table that 
 is created by `lua` using the command line arguments passed to the 
 executable. Returns a table of option values.
 
-<a name="torch.CmdLine.silent"/>
+<a name="torch.CmdLine.silent"></a>
 ### silent() ###
 
 Silences the output to standard output. The only output is written to
 the log file.
 
-<a name="torch.CmdLine.string"/>
+<a name="torch.CmdLine.string"></a>
 ### [string] string(prefix, params, ignore) ###
 
 Returns a string representation of the options by concatenating the
@@ -138,7 +138,7 @@ string representation.
 This function is usefull for creating unique experiment directories that
 depend on the parameter settings.
 
-<a name="torch.CmdLine.text"/>
+<a name="torch.CmdLine.text"></a>
 ### text(string) ###
 
 Logs a custom text message.

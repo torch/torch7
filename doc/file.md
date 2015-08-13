@@ -1,4 +1,4 @@
-<a name="torch.File.dok"/>
+<a name="torch.File.dok"></a>
 # File #
 
 This is an _abstract_ class. It defines most methods implemented by its
@@ -28,18 +28,19 @@ or problem in the file. This depends on the choice made between
 is possible to query if an error occured in the last operation by calling
 [hasError()](#torch.File.hasError).
 
-<a name="torch.File.read"/>
+<a name="torch.File.read"></a>
 ## Read methods ##
-<a name="torch.File.readByte"/>
-<a name="torch.File.readBool"/>
-<a name="torch.File.readShort"/>
-<a name="torch.File.readChar"/>
-<a name="torch.File.readLong"/>
-<a name="torch.File.readInt"/>
-<a name="torch.File.readDouble"/>
-<a name="torch.File.readFloat"/>
+<a name="torch.File.readByte"></a>
+<a name="torch.File.readBool"></a>
+<a name="torch.File.readShort"></a>
+<a name="torch.File.readChar"></a>
+<a name="torch.File.readLong"></a>
+<a name="torch.File.readInt"></a>
+<a name="torch.File.readDouble"></a>
+<a name="torch.File.readFloat"></a>
 
 They are three types of reading methods:
+
   - `[number] readTYPE()`
   - `[TYPEStorage] readTYPE(n)`
   - `[number] readTYPE(TYPEStorage)`
@@ -72,18 +73,19 @@ In case of read error, these methods will call the `Lua` error function using th
 option. In the latter case, one can check if an error occurred with
 [hasError()](#torch.File.hasError).
 
-<a name="torch.File.write"/>
+<a name="torch.File.write"></a>
 ## Write methods ##
-<a name="torch.File.writeByte"/>
-<a name="torch.File.writeBool"/>
-<a name="torch.File.writeShort"/>
-<a name="torch.File.writeChar"/>
-<a name="torch.File.writeLong"/>
-<a name="torch.File.writeInt"/>
-<a name="torch.File.writeDouble"/>
-<a name="torch.File.writeFloat"/>
+<a name="torch.File.writeByte"></a>
+<a name="torch.File.writeBool"></a>
+<a name="torch.File.writeShort"></a>
+<a name="torch.File.writeChar"></a>
+<a name="torch.File.writeLong"></a>
+<a name="torch.File.writeInt"></a>
+<a name="torch.File.writeDouble"></a>
+<a name="torch.File.writeFloat"></a>
 
 They are two types of writing methods:
+
   - `[number] writeTYPE(number)`
   - `[number] writeTYPE(TYPEStorage)`
 
@@ -112,7 +114,7 @@ In case of read error, these methods will call the `Lua` error function using th
 option. In the latter case, one can check if an error occurred with
 [hasError()](#torch.File.hasError).
 
-<a name="torch.File.serialization"/>
+<a name="torch.File.serialization"></a>
 ## Serialization methods ##
 
 These methods allow the user to save any serializable objects on disk and
@@ -137,7 +139,7 @@ file:seek(1) -- comes back at the beginning of the file
 objectClone = file:readObject() -- gets a clone of object
 ```
 
-<a name="torch.File.readObject"/>
+<a name="torch.File.readObject"></a>
 ### readObject() ###
 
 Returns the next [serializable](#torch.File.serialization) object saved beforehand
@@ -174,7 +176,7 @@ arrayNew[1][1] = 2.72
 -- arrayNew[1][1] == arrayNew[2][1] == 2.72 !
 ```
 
-<a name="torch.File.writeObject"/>
+<a name="torch.File.writeObject"></a>
 ### writeObject(object) ###
 
 Writes `object` into the file. This object can be read later using
@@ -191,7 +193,7 @@ object again in the same file, the modifications will not be recorded
 in the file, as only a reference to the original will be written. See
 [readObject()](#torch.File.readObject) for an example.
 
-<a name="torch.File.readString"/>
+<a name="torch.File.readString"></a>
 ### [string] readString(format) ###
 
 If `format` starts with ''"*l"` then returns the next line in the `File''. The end-of-line character is skipped.
@@ -204,7 +206,7 @@ it then returns an empty string `''` and after that you'll be able to see that l
 Because Torch is more precised on number typing, the `Lua` format ''"*n"'' is not supported:
 instead use one of the [number read methods](#torch.File.read).
 
-<a name="torch.File.writeString"/>
+<a name="torch.File.writeString"></a>
 ### [number] writeString(str) ###
 
 Writes the string `str` in the `File`. If the string cannot be written completely an error is raised, except
@@ -212,7 +214,7 @@ if `File` is in [quiet()](#torch.File.quiet) mode where it returns the number of
 
 ## General Access and Control Methods ##
 
-<a name="torch.File.ascii"/>
+<a name="torch.File.ascii"></a>
 ### ascii() [default] ###
 
 The data read or written will be in `ASCII` mode: all numbers are converted
@@ -221,7 +223,7 @@ to characters (human readable format) and boolean are converted to `0`
 options [autoSpacing()](#torch.File.autoSpacing) and
 [noAutoSpacing()](#torch.File.noAutoSpacing).
 
-<a name="torch.File.autoSpacing"/>
+<a name="torch.File.autoSpacing"></a>
 ### autoSpacing() [default] ###
 
 In [ASCII](#torch.File.ascii) mode, write additional spaces around the elements
@@ -235,7 +237,7 @@ Those spaces are supposed to exist while reading in this mode.
 This is the default behavior. You can de-activate this option with the
 [noAutoSpacing()](#torch.File.noAutoSpacing) method.
 
-<a name="torch.File.binary"/>
+<a name="torch.File.binary"></a>
 ### binary() ###
 
 The data read or written will be in binary mode: the representation in the
@@ -243,31 +245,31 @@ The data read or written will be in binary mode: the representation in the
 readable).  This mode is faster than [ASCII](#torch.File.ascii) but less
 portable.
 
-<a name="torch.File.clearError"/>
+<a name="torch.File.clearError"></a>
 ### clearError() ###
 
 Clear the error.flag returned by [hasError()](#torch.File.hasError).
 
-<a name="torch.File.close"/>
+<a name="torch.File.close"></a>
 ### close() ###
 
 Close the file. Any subsequent operation will generate a `Lua` error.
 
-<a name="torch.File.noAutoSpacing"/>
+<a name="torch.File.noAutoSpacing"></a>
 ### noAutoSpacing() ###
 
 In [ASCII](#torch.File.ascii) mode, do not put extra spaces between element
 written on disk. This is the contrary of the option
 [autoSpacing()](#torch.File.autoSpacing).
 
-<a name="torch.File.synchronize"/>
+<a name="torch.File.synchronize"></a>
 ### synchronize() ###
 
 If the child class bufferize the data while writing, ensure that the data
 is actually written.
 
 
-<a name="torch.File.pedantic"/>
+<a name="torch.File.pedantic"></a>
 ### pedantic() [default] ###
 
 If this mode is chosen (which is the default), a `Lua` error will be
@@ -276,13 +278,13 @@ generated in case of error (which will cause the program to stop).
 It is possible to use [quiet()](#torch.File.quiet) to avoid `Lua` error generation
 and set a flag instead.
 
-<a name="torch.File.position"/>
+<a name="torch.File.position"></a>
 ### [number] position() ###
 
 Returns the current position (in bytes) in the file.
 The first position is `1` (following Lua standard indexing).
 
-<a name="torch.File.quiet"/>
+<a name="torch.File.quiet"></a>
 ### quiet() ###
 
 If this mode is chosen instead of [pedantic()](#torch.File.pedantic), no `Lua`
@@ -292,13 +294,13 @@ be cleared with [clearError()](#torch.File.clearError)
 
 Checking if a file is quiet can be performed using [isQuiet()](#torch.File.isQuiet).
 
-<a name="torch.File.seek"/>
+<a name="torch.File.seek"></a>
 ### seek(position) ###
 
 Jump into the file at the given `position` (in byte). Might generate/raise
 an error in case of problem. The first position is `1` (following Lua standard indexing).
 
-<a name="torch.File.seekEnd"/>
+<a name="torch.File.seekEnd"></a>
 ### seekEnd() ###
 
 Jump at the end of the file. Might generate/raise an error in case of
@@ -308,38 +310,38 @@ problem.
 
 These methods allow the user to query the state of the given `File`.
 
-<a name="torch.File.hasError"/>
+<a name="torch.File.hasError"></a>
 ### [boolean] hasError() ###
 
 Returns if an error occurred since the last [clearError()](#torch.File.clearError) call, or since
 the opening of the file if `clearError()` has never been called.
 
-<a name="torch.File.isQuiet"/>
+<a name="torch.File.isQuiet"></a>
 ### [boolean] isQuiet() ###
 
 Returns a boolean which tells if the file is in [quiet](#torch.File.quiet) mode or not.
 
-<a name="torch.File.isReadable"/>
+<a name="torch.File.isReadable"></a>
 ### [boolean] isReadable() ###
 
 Tells if one can read the file or not.
 
-<a name="torch.File.isWritable"/>
+<a name="torch.File.isWritable"></a>
 ### [boolean] isWritable() ###
 
 Tells if one can write in the file or not.
 
-<a name="torch.File.isAutoSpacing"/>
+<a name="torch.File.isAutoSpacing"></a>
 ### [boolean] isAutoSpacing() ###
 
 Return `true` if [autoSpacing](#torch.File.autoSpacing) has been chosen.
 
-<a name="torch.File.referenced"/>
+<a name="torch.File.referenced"></a>
 ### referenced(ref) ###
 
 Sets the referenced property of the File to `ref`. `ref` has to be `true` or `false`. By default it is true, which means that a File object keeps track of objects written using [writeObject](#torch.File.writeObject) method. When one needs to push the same tensor repeatedly into a file but everytime changing its contents, calling `referenced(false)` ensures desired behaviour.
 
-<a name="torch.File.isReferenced"/>
+<a name="torch.File.isReferenced"></a>
 ### isReferenced() ###
 
 Return the state set by [referenced](#torch.File.referenced).

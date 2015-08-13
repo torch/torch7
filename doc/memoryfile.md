@@ -1,4 +1,4 @@
-<a name="torch.MemoryFile.dok"/>
+<a name="torch.MemoryFile.dok"></a>
 # MemoryFile #
 
 Parent classes: [File](file.md)
@@ -10,14 +10,14 @@ described in [File](file.md).
 The data of the this `File` is contained into a `NULL` terminated
 [CharStorage](storage.md).
 
-<a name="torch.MemoryFile"/>
+<a name="torch.MemoryFile"></a>
 ### torch.MemoryFile([mode]) ###
 
 _Constructor_ which returns a new `MemoryFile` object using `mode`. Valid
 `mode` are `"r"` (read), `"w"` (write) or `"rw"` (read-write). Default is `"rw"`.
 
 
-<a name="torch.MemoryFile"/>
+<a name="torch.MemoryFile"></a>
 ### torch.MemoryFile(storage, mode) ###
 
 _Constructor_ which returns a new `MemoryFile` object, using the given
@@ -27,7 +27,7 @@ in this storage _must_ be `NULL` or an error will be generated. This allow
 to read existing memory. If used for writing, not that the `storage` might
 be resized by this class if needed. 
 
-<a name="torch.MemoryFile.storage"/>
+<a name="torch.MemoryFile.storage"></a>
 ### [CharStorage] storage() ###
 
 Returns the [storage](storage.md) which contains all the data of the

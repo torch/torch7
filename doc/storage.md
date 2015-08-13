@@ -1,12 +1,12 @@
-<a name="torch.Storage.dok"/>
+<a name="torch.Storage.dok"></a>
 # Storage #
-<a name="torch.CharStorage.dok"/>
-<a name="torch.ByteStorage.dok"/>
-<a name="torch.IntStorage.dok"/>
-<a name="torch.ShortStorage.dok"/>
-<a name="torch.FloatStorage.dok"/>
-<a name="torch.LongStorage.dok"/>
-<a name="torch.DoubleStorage.dok"/>
+<a name="torch.CharStorage.dok"></a>
+<a name="torch.ByteStorage.dok"></a>
+<a name="torch.IntStorage.dok"></a>
+<a name="torch.ShortStorage.dok"></a>
+<a name="torch.FloatStorage.dok"></a>
+<a name="torch.LongStorage.dok"></a>
+<a name="torch.DoubleStorage.dok"></a>
 
 _Storages_ are basically a way for `Lua` to access memory of a `C` pointer
 or array. _Storages_ can also [map the contents of a file to memory](#__torch.StorageMap).
@@ -38,7 +38,7 @@ function. By default, this "points" on `torch.DoubleStorage`.
 
 ## Constructors and Access Methods ##
 
-<a name="torch.Storage"/>
+<a name="torch.Storage"></a>
 ### torch.TYPEStorage([size]) ###
 
 Returns a new `Storage` of type `TYPE`. Valid `TYPE` are `Byte`, `Char`, `Short`,
@@ -53,7 +53,7 @@ x = torch.DoubleStorage(10)
 
 The data in the `Storage` is _uninitialized_.
 
-<a name="torch.Storage"/>
+<a name="torch.Storage"></a>
 ### torch.TYPEStorage(table) ###
 
 The argument is assumed to be a Lua array of numbers. The constructor returns a new storage of the specified 'TYPE', 
@@ -70,7 +70,7 @@ Example:
 [torch.IntStorage of size 4]
 ```
 
-<a name="torch.Storage"/>
+<a name="torch.Storage"></a>
 ### torch.TYPEStorage(storage [, offset [, size]]) ###
 
 Returns a new `Storage` of type `TYPE`, which is a view on the first argument. The first argument must be of the same type `TYPE`. An optional offset can be provided (defaults to 1). An optional size can also be provided to restrict the size of the new storage (defaults to `storage:size()-(offset-1)`).
@@ -100,9 +100,9 @@ Example:
 [torch.DoubleStorage of size 10]
 ```
 
-<a name="torch.Storage"/>
+<a name="torch.Storage"></a>
 ### torch.TYPEStorage(filename [, shared [, size [, sharedMem]]]) ###
-<a name="__torch.StorageMap"/>
+<a name="__torch.StorageMap"></a>
 
 Returns a new kind of `Storage` which maps the contents of the given
 `filename` to memory. Valid `TYPE` are `Byte`, `Char`, `Short`, `Int`, `Long`,
@@ -182,12 +182,12 @@ $ cat hello.txt
 ____________
 ```
 
-<a name="__torch.StorageSharp"/>
+<a name="__torch.StorageSharp"></a>
 ### [number] #self ###
 
 Returns the number of elements in the storage. Equivalent to [size()](#torch.Storage.size).
 
-<a name="torch.Storage.__index__"/>
+<a name="torch.Storage.__index__"></a>
 ### [number] self[index] ###
 
 Returns or set the element at position `index` in the storage. Valid range
@@ -199,7 +199,7 @@ x = torch.DoubleStorage(10)
 print(x[5])
 ```
 
-<a name="torch.Storage.copy"/>
+<a name="torch.Storage.copy"></a>
 ### [self] copy(storage) ###
 
 Copy another `storage`. The types of the two storages might be different: in that case
@@ -210,7 +210,7 @@ x = torch.IntStorage(10):fill(1)
 y = torch.DoubleStorage(10):copy(x) -- y won't be nil!
 ```
 
-<a name="torch.Storage.fill"/>
+<a name="torch.Storage.fill"></a>
 ### [self] fill(value) ###
 
 Fill the `Storage` with the given value. This method returns self, allowing things like:
@@ -218,7 +218,7 @@ Fill the `Storage` with the given value. This method returns self, allowing thin
 x = torch.IntStorage(10):fill(0) -- x won't be nil!
 ```
 
-<a name="torch.Storage.resize"/>
+<a name="torch.Storage.resize"></a>
 ### [self] resize(size) ###
 
 Resize the storage to the provide `size`. _The new contents are undetermined_.
@@ -229,12 +229,12 @@ x = torch.DoubleStorage(10):fill(1)
 y = torch.DoubleStorage():resize(x:size()):copy(x) -- y won't be nil!
 ```
 
-<a name="torch.Storage.size"/>
+<a name="torch.Storage.size"></a>
 ### [number] size() ###
 
 Returns the number of elements in the storage. Equivalent to [#](#__torch.StorageSharp).
 
-<a name="torch.Storage.string"/>
+<a name="torch.Storage.string"></a>
 ### [self] string(str) ###
 
 This function is available only on `ByteStorage` and `CharStorage`.
@@ -257,7 +257,7 @@ but `str` might contain `NULL` characters. The method returns the `Storage`.
 [torch.CharStorage of size 9]
 ```
 
-<a name="torch.Storage.string"/>
+<a name="torch.Storage.string"></a>
 ### [string] string() ###
 
 This function is available only on `ByteStorage` and `CharStorage`.
@@ -283,12 +283,12 @@ never be called, except if you know what you are doing, as the handling of
 references is done automatically. They can be useful in threaded
 environments. Note that these methods are atomic operations.
 
-<a name="torch.Storage.retain"/>
+<a name="torch.Storage.retain"></a>
 ### retain() ###
 
 Increment the reference counter of the storage.
 
-<a name="torch.Storage.free"/>
+<a name="torch.Storage.free"></a>
 ### free() ###
 
 Decrement the reference counter of the storage. Free the storage if the

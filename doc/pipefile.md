@@ -1,4 +1,4 @@
-<a name="torch.PipeFile.dok"/>
+<a name="torch.PipeFile.dok"></a>
 # PipeFile #
 
 Parent classes: [DiskFile](diskfile.md)
@@ -10,7 +10,7 @@ The file might be open in read or write mode, depending on the parameter
 `mode` (which can take the value `"r"` or `"w"`) 
 given to the [torch.PipeFile(fileName, mode)](#torch.PipeFile). Read-write mode is not allowed.
 
-<a name="torch.PipeFile"/>
+<a name="torch.PipeFile"></a>
 ### torch.PipeFile(command, [mode], [quiet]) ###
 
 _Constructor_ which execute `command` by opening a pipe in read or write
