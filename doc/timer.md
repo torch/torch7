@@ -1,4 +1,4 @@
-<a name="torch.Timer.dok"/>
+<a name="torch.Timer.dok"></a>
 # Timer #
 
 This class is able to measure time (in seconds) elapsed in a particular period. Example:
@@ -11,32 +11,32 @@ This class is able to measure time (in seconds) elapsed in a particular period. 
   print('Time elapsed for 1,000,000 sin: ' .. timer:time().real .. ' seconds')
 ```
 
-<a name="torch.Timer"/>
+<a name="torch.Timer"></a>
 ## Timer Class Constructor and Methods ##
 
-<a name="torch.Timer"/>
+<a name="torch.Timer"></a>
 ### torch.Timer() ###
 
 Returns a new `Timer`. The timer starts to count the time now.
 
-<a name="torch.Timer.reset"/>
+<a name="torch.Timer.reset"></a>
 ### [self] reset() ###
 
 Reset the timer accumulated time to `0`. If the timer was running, the timer
 restarts to count the time now. If the timer was stopped, it stays stopped.
 
-<a name="torch.Timer.resume"/>
+<a name="torch.Timer.resume"></a>
 ### [self] resume() ###
 
 Resume a stopped timer. The timer restarts to count the time, and addition
 the accumulated time with the time already counted before being stopped.
 
-<a name="torch.Timer.stop"/>
+<a name="torch.Timer.stop"></a>
 ### [self] stop() ###
 
 Stop the timer. The accumulated time counted until now is stored.
 
-<a name="torch.Timer.time"/>
+<a name="torch.Timer.time"></a>
 ### [table] time() ###
 
 Returns a table reporting the accumulated time elapsed until now. Following the UNIX shell `time` command,

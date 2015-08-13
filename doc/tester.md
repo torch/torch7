@@ -1,4 +1,4 @@
-<a name="torch.Tester.dok"/>
+<a name="torch.Tester.dok"></a>
 # Tester #
 
 This class provides a generic unit testing framework. It is already 
@@ -60,84 +60,84 @@ a ~= b
 ```
 
 
-<a name="torch.Tester"/>
+<a name="torch.Tester"></a>
 ### torch.Tester() ###
 
 Returns a new instance of `torch.Tester` class.
 
-<a name="torch.Tester.add"/>
+<a name="torch.Tester.add"></a>
 ### add(f, 'name') ###
 
 Adds a new test function with name `name`. The test function is stored in `f`.
 The function is supposed to run without any arguments and not return any values.
 
-<a name="torch.Tester.add"/>
+<a name="torch.Tester.add"></a>
 ### add(ftable) ###
 
 Recursively adds all function entries of the table `ftable` as tests. This table 
 can only have functions or nested tables of functions.
 
-<a name="torch.Tester.assert"/>
+<a name="torch.Tester.assert"></a>
 ### assert(condition [, message]) ###
 
 Saves an error if condition is not true with the optional message.
 
-<a name="torch.Tester.assertlt"/>
+<a name="torch.Tester.assertlt"></a>
 ### assertlt(val, condition [, message]) ###
 
 Saves an error if `val < condition` is not true with the optional message.
 
-<a name="torch.Tester.assertgt"/>
+<a name="torch.Tester.assertgt"></a>
 ### assertgt(val, condition [, message]) ###
 
 Saves an error if `val > condition` is not true with the optional message.
 
-<a name="torch.Tester.assertle"/>
+<a name="torch.Tester.assertle"></a>
 ### assertle(val, condition [, message]) ###
 
 Saves an error if `val <= condition` is not true with the optional message.
 
-<a name="torch.Tester.assertge"/>
+<a name="torch.Tester.assertge"></a>
 ### assertge(val, condition [, message]) ###
 
 Saves an error if `val >= condition` is not true with the optional message.
 
-<a name="torch.Tester.asserteq"/>
+<a name="torch.Tester.asserteq"></a>
 ### asserteq(val, condition [, message]) ###
 
 Saves an error if `val == condition` is not true with the optional message.
 
-<a name="torch.Tester.assertne"/>
+<a name="torch.Tester.assertne"></a>
 ### assertne(val, condition [, message]) ###
 
 Saves an error if `val ~= condition` is not true with the optional message.
 
-<a name="torch.Tester.assertTensorEq"/>
+<a name="torch.Tester.assertTensorEq"></a>
 ### assertTensorEq(ta, tb, condition [, message]) ###
 
 Saves an error if `max(abs(ta-tb)) < condition` is not true with the optional message.
 
-<a name="torch.Tester.assertTensorNe"/>
+<a name="torch.Tester.assertTensorNe"></a>
 ### assertTensorNe(ta, tb, condition [, message]) ###
 
 Saves an error if `max(abs(ta-tb)) >= condition` is not true with the optional message.
 
-<a name="torch.Tester.assertTableEq"/>
+<a name="torch.Tester.assertTableEq"></a>
 ### assertTableEq(ta, tb, condition [, message]) ###
 
 Saves an error if `max(abs(ta-tb)) < condition` is not true with the optional message.
 
-<a name="torch.Tester.assertTableNe"/>
+<a name="torch.Tester.assertTableNe"></a>
 ### assertTableNe(ta, tb, condition [, message]) ###
 
 Saves an error if `max(abs(ta-tb)) >= condition` is not true with the optional message.
 
-<a name="torch.Tester.assertError"/>
+<a name="torch.Tester.assertError"></a>
 ### assertError(f [, message]) ###
 
 Saves an error if calling the function f() does not return an error, with the optional message.
 
-<a name="torch.Tester.run"/>
+<a name="torch.Tester.run"></a>
 ### run() ###
 
 Runs all the test functions that are stored using [add()](#torch.Tester.add) function. 

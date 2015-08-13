@@ -1,9 +1,10 @@
-<a name="torch.maths.dok"/>
+<a name="torch.maths.dok"></a>
 # Math Functions #
 
 Torch provides Matlab-like functions for manipulating
 [Tensor](tensor.md) objects.  Functions fall into several types of
 categories:
+
   * [constructors](#torch.construction.dok) like [zeros](#torch.zeros), [ones](#torch.ones)
   * extractors like  [diag](#torch.diag)  and [triu](#torch.triu),
   * [Element-wise](#torch.elementwise.dok) mathematical operations like [abs](#torch.abs) and [pow](#torch.pow),
@@ -58,12 +59,12 @@ end
 0
 ```
 
-<a name="torch.construction.dok"/>
+<a name="torch.construction.dok"></a>
 ## Construction or extraction functions ##
 
-<a name="torch.cat"/>
+<a name="torch.cat"></a>
 ### [res] torch.cat( [res,] x_1, x_2, [dimension] ) ###
-<a name="torch.cat"/>
+<a name="torch.cat"></a>
 `x=torch.cat(x_1,x_2,[dimension])` returns a tensor `x` which is the concatenation of tensors `x_1` and `x_2` along dimension `dimension`.
 
 If `dimension` is not specified it is the last dimension.
@@ -119,9 +120,9 @@ Examples:
 ```
 
 
-<a name="torch.diag"/>
+<a name="torch.diag"></a>
 ### [res] torch.diag([res,] x [,k]) ###
-<a name="torch.diag"/>
+<a name="torch.diag"></a>
 
 `y=torch.diag(x)` when `x` is of dimension 1 returns a diagonal matrix with diagonal elements constructed from `x`.
 
@@ -132,18 +133,18 @@ with elements constructed from the diagonal of `x`.
 where `k = 0` is the main diagonal, `k > 0` is above the main diagonal and `k < 0`
 is below the main diagonal.
 
-<a name="torch.eye"/>
+<a name="torch.eye"></a>
 ### [res] torch.eye([res,] n [,m]) ###
-<a name="torch.eye"/>
+<a name="torch.eye"></a>
 
 `y=torch.eye(n)` returns the `n x n` identity matrix.
 
 `y=torch.eye(n,m)` returns an `n x m` identity matrix with ones on the diagonal and zeros elsewhere.
 
 
-<a name="torch.histc"/>
+<a name="torch.histc"></a>
 ### [res] torch.histc([res,] x [,nbins, min_value, max_value]) ###
-<a name="torch.histc"/>
+<a name="torch.histc"></a>
 
 `y=torch.histc(x)` returns the histogram of the elements in `x`. By default the
 elements are sorted into 100 equally spaced bins between the minimum and maximum
@@ -155,26 +156,26 @@ values of `x`.
 range.
 
 
-<a name="torch.linspace"/>
+<a name="torch.linspace"></a>
 ### [res] torch.linspace([res,] x1, x2, [,n]) ###
-<a name="torch.linspace"/>
+<a name="torch.linspace"></a>
 
 `y=torch.linspace(x1,x2)` returns a one-dimensional tensor of size 100 equally spaced points between `x1` and `x2`.
 
 `y=torch.linspace(x1,x2,n)` returns a one-dimensional tensor of `n` equally spaced points between `x1` and `x2`.
 
 
-<a name="torch.logspace"/>
+<a name="torch.logspace"></a>
 ### [res] torch.logspace([res,] x1, x2, [,n]) ###
-<a name="torch.logspace"/>
+<a name="torch.logspace"></a>
 
 `y=torch.logspace(x1,x2)` returns a one-dimensional tensor of 50 logarithmically eqally spaced points between `10^x1` and `10^x2`.
 
 `y=torch.logspace(x1,x2,n)` returns a one-dimensional tensor of `n` logarithmically equally spaced points between `10^x1` and `10^x2`.
 
-<a name="torch.multinomial"/>
+<a name="torch.multinomial"></a>
 ### [res] torch.multinomial([res,], p, n, [,replacement]) ###
-<a name="torch.multinomial"/>
+<a name="torch.multinomial"></a>
 
 `y=torch.multinomial(p,n)` returns a tensor `y` where each row contains
 `n` indices sampled from the
@@ -212,9 +213,9 @@ a = torch.multinomial(p, 10000, true)
 0
 ```
 
-<a name="torch.ones"/>
+<a name="torch.ones"></a>
 ### [res] torch.ones([res,] m [,n...]) ###
-<a name="torch.ones"/>
+<a name="torch.ones"></a>
 
 `y=torch.ones(n)` returns a one-dimensional tensor of size `n` filled with ones.
 
@@ -223,9 +224,9 @@ a = torch.multinomial(p, 10000, true)
 For more than 4 dimensions, you can use a storage as argument:
 `y=torch.ones(torch.LongStorage{m,n,k,l,o})`.
 
-<a name="torch.rand"/>
+<a name="torch.rand"></a>
 ### [res] torch.rand([res,] m [,n...]) ###
-<a name="torch.rand"/>
+<a name="torch.rand"></a>
 
 `y=torch.rand(n)` returns a one-dimensional tensor of size `n` filled with random numbers from a uniform distribution on the interval `(0,1)`.
 
@@ -234,9 +235,9 @@ For more than 4 dimensions, you can use a storage as argument:
 For more than 4 dimensions, you can use a storage as argument:
 `y=torch.rand(torch.LongStorage{m,n,k,l,o})`
 
-<a name="torch.randn"/>
+<a name="torch.randn"></a>
 ### [res] torch.randn([res,] m [,n...]) ###
-<a name="torch.randn"/>
+<a name="torch.randn"></a>
 
 `y=torch.randn(n)` returns a one-dimensional tensor of size `n` filled with random numbers from a normal distribution with mean zero and variance one.
 
@@ -245,9 +246,9 @@ For more than 4 dimensions, you can use a storage as argument:
 For more than 4 dimensions, you can use a storage as argument:
 `y=torch.rand(torch.LongStorage{m,n,k,l,o})`
 
-<a name="torch.range"/>
+<a name="torch.range"></a>
 ### [res] torch.range([res,] x, y [,step]) ###
-<a name="torch.range"/>
+<a name="torch.range"></a>
 
 `y=torch.range(x,y)` returns a tensor of size `floor((y - x) / step) + 1` with values
 from `x` to `y` with step `step` (default to 1).
@@ -267,15 +268,15 @@ from `x` to `y` with step `step` (default to 1).
 [torch.DoubleTensor of dimension 3]
 ```
 
-<a name="torch.randperm"/>
+<a name="torch.randperm"></a>
 ### [res] torch.randperm([res,] n) ###
-<a name="torch.randperm"/>
+<a name="torch.randperm"></a>
 
 `y=torch.randperm(n)` returns a random permutation of integers from 1 to `n`.
 
-<a name="torch.reshape"/>
+<a name="torch.reshape"></a>
 ### [res] torch.reshape([res,] x, m [,n...]) ###
-<a name="torch.reshape"/>
+<a name="torch.reshape"></a>
 
 `y=torch.reshape(x,m,n)` returns a new `m x n` tensor y whose elements
 are taken rowwise from `x`, which must have `m*n` elements. The elements are copied into the new tensor.
@@ -283,9 +284,9 @@ are taken rowwise from `x`, which must have `m*n` elements. The elements are cop
 For more than 4 dimensions, you can use a storage:
 `y=torch.reshape(x,torch.LongStorage{m,n,k,l,o})`
 
-<a name="torch.tril"/>
+<a name="torch.tril"></a>
 ### [res] torch.tril([res,] x [,k]) ###
-<a name="torch.tril"/>
+<a name="torch.tril"></a>
 
 `y=torch.tril(x)` returns the lower triangular part of `x`, the other elements of `y` are set to 0.
 
@@ -293,9 +294,9 @@ For more than 4 dimensions, you can use a storage:
 `k = 0` is the main diagonal, `k > 0` is above the main diagonal and `k < 0`
 is below the main diagonal.
 
-<a name="torch.triu"/>
+<a name="torch.triu"></a>
 ### [res] torch.triu([res,] x, [,k]) ###
-<a name="torch.triu"/>
+<a name="torch.triu"></a>
 
 `y=torch.triu(x)` returns the upper triangular part of `x`,
 the other elements of `y` are set to 0.
@@ -304,9 +305,9 @@ the other elements of `y` are set to 0.
 `k = 0` is the main diagonal, `k > 0` is above the main diagonal and `k < 0`
 is below the main diagonal.
 
-<a name="torch.zeros"/>
+<a name="torch.zeros"></a>
 ### [res] torch.zeros([res,] x) ###
-<a name="torch.zeros"/>
+<a name="torch.zeros"></a>
 
 `y=torch.zeros(n)` returns a one-dimensional tensor of size n filled with zeros.
 
@@ -316,101 +317,101 @@ For more than 4 dimensions, you can use a storage:
 `y=torch.zeros(torch.LongStorage{m,n,k,l,o})`
 
 
-<a name="torch.elementwise.dok"/>
+<a name="torch.elementwise.dok"></a>
 ## Element-wise Mathematical Operations ##
 
-<a name="torch.abs"/>
+<a name="torch.abs"></a>
 ### [res] torch.abs([res,] x) ###
-<a name="torch.abs"/>
+<a name="torch.abs"></a>
 
 `y=torch.abs(x)` returns a new tensor with the absolute values of the elements of `x`.
 
 `x:abs()` replaces all elements in-place with the absolute values of the elements of `x`.
 
-<a name="torch.acos"/>
+<a name="torch.acos"></a>
 ### [res] torch.acos([res,] x) ###
-<a name="torch.acos"/>
+<a name="torch.acos"></a>
 
 `y=torch.acos(x)` returns a new tensor with the arcosine of the elements of `x`.
 
 `x:acos()` replaces all elements in-place with the arcosine of the elements of `x`.
 
-<a name="torch.asin"/>
+<a name="torch.asin"></a>
 ### [res] torch.asin([res,] x) ###
-<a name="torch.asin"/>
+<a name="torch.asin"></a>
 
 `y=torch.asin(x)` returns a new tensor with the arcsine  of the elements of `x`.
 
 `x:asin()` replaces all elements in-place with the arcsine  of the elements of `x`.
 
-<a name="torch.atan"/>
+<a name="torch.atan"></a>
 ### [res] torch.atan([res,] x) ###
-<a name="torch.atan"/>
+<a name="torch.atan"></a>
 
 `y=torch.atan(x)` returns a new tensor with the arctangent of the elements of `x`.
 
 `x:atan()` replaces all elements in-place with the arctangent of the elements of `x`.
 
-<a name="torch.ceil"/>
+<a name="torch.ceil"></a>
 ### [res] torch.ceil([res,] x) ###
-<a name="torch.ceil"/>
+<a name="torch.ceil"></a>
 
 `y=torch.ceil(x)` returns a new tensor with the values of the elements of `x` rounded up to the nearest integers.
 
 `x:ceil()` replaces all elements in-place with the values of the elements of `x` rounded up to the nearest integers.
 
-<a name="torch.cos"/>
+<a name="torch.cos"></a>
 ### [res] torch.cos([res,] x) ###
-<a name="torch.cos"/>
+<a name="torch.cos"></a>
 
 `y=torch.cos(x)` returns a new tensor with the cosine of the elements of `x`.
 
 `x:cos()` replaces all elements in-place with the cosine of the elements of `x`.
 
-<a name="torch.cosh"/>
+<a name="torch.cosh"></a>
 ### [res] torch.cosh([res,] x) ###
-<a name="torch.cosh"/>
+<a name="torch.cosh"></a>
 
 `y=torch.cosh(x)` returns a new tensor with the hyberbolic cosine of the elements of `x`.
 
 `x:cosh()` replaces all elements in-place with the hyberbolic cosine of the elements of `x`.
 
-<a name="torch.exp"/>
+<a name="torch.exp"></a>
 ### [res] torch.exp([res,] x) ###
-<a name="torch.exp"/>
+<a name="torch.exp"></a>
 
 `y=torch.exp(x)` returns, for each element in x,  e (the base of natural logarithms) raised to the power of the element in x.
 
 `x:exp()` returns, for each element in x,  e (the base of natural logarithms) raised to the power of the element in x.
 
-<a name="torch.floor"/>
+<a name="torch.floor"></a>
 ### [res] torch.floor([res,] x) ###
-<a name="torch.floor"/>
+<a name="torch.floor"></a>
 
 `y=torch.floor(x)` returns a new tensor with the values of the elements of `x` rounded down to the nearest integers.
 
 `x:floor()` replaces all elements in-place with the values of the elements of `x` rounded down to the nearest integers.
 
-<a name="torch.log"/>
+<a name="torch.log"></a>
 ### [res] torch.log([res,] x) ###
-<a name="torch.log"/>
+<a name="torch.log"></a>
 
 `y=torch.log(x)` returns a new tensor with the natural logarithm of the elements of `x`.
 
 `x:log()` replaces all elements in-place with the natural logarithm of the elements of `x`.
 
-<a name="torch.log1p"/>
+<a name="torch.log1p"></a>
 ### [res] torch.log1p([res,] x) ###
-<a name="torch.log1p"/>
+<a name="torch.log1p"></a>
 
 `y=torch.log1p(x)` returns a new tensor with the natural logarithm of the elements of `x+1`.
 
 `x:log1p()` replaces all elements in-place with the natural logarithm of the elements of `x+1`.
 This function is more accurate than [log()](#torch.log) for small values of `x`.
 
-<a name="torch.pow"/>
+<a name="torch.pow"></a>
 ### [res] torch.pow([res,] x, n) ###
-<a name="torch.pow"/>
+<a name="torch.pow"></a>
 
 Let `x` be a tensor and `n` a number.
 
@@ -420,62 +421,62 @@ Let `x` be a tensor and `n` a number.
 
 `x:pow(n)` replaces all elements in-place with the elements of `x` to the power of `n`.
 
-<a name="torch.round"/>
+<a name="torch.round"></a>
 ### [res] torch.round([res,] x) ###
-<a name="torch.round"/>
+<a name="torch.round"></a>
 
 `y=torch.round(x)` returns a new tensor with the values of the elements of `x` rounded to the nearest integers.
 
 `x:round()` replaces all elements in-place with the values of the elements of `x` rounded to the nearest integers.
 
-<a name="torch.sin"/>
+<a name="torch.sin"></a>
 ### [res] torch.sin([res,] x) ###
-<a name="torch.sin"/>
+<a name="torch.sin"></a>
 
 `y=torch.sin(x)` returns a new tensor with the sine  of the elements of `x`.
 
 `x:sin()` replaces all elements in-place with the sine  of the elements of `x`.
 
-<a name="torch.sinh"/>
+<a name="torch.sinh"></a>
 ### [res] torch.sinh([res,] x) ###
-<a name="torch.sinh"/>
+<a name="torch.sinh"></a>
 
 `y=torch.sinh(x)` returns a new tensor with the hyperbolic sine of the elements of `x`.
 
 `x:sinh()` replaces all elements in-place with the hyperbolic sine of the elements of `x`.
 
-<a name="torch.sqrt"/>
+<a name="torch.sqrt"></a>
 ### [res] torch.sqrt([res,] x) ###
-<a name="torch.sqrt"/>
+<a name="torch.sqrt"></a>
 
 `y=torch.sqrt(x)` returns a new tensor with the square root of the elements of `x`.
 
 `x:sqrt()` replaces all elements in-place with the square root of the elements of `x`.
 
-<a name="torch.tan"/>
+<a name="torch.tan"></a>
 ### [res] torch.tan([res,] x) ###
-<a name="torch.tan"/>
+<a name="torch.tan"></a>
 
 `y=torch.tan(x)` returns a new tensor with the tangent of the elements of `x`.
 
 `x:tan()` replaces all elements in-place with the tangent of the elements of `x`.
 
-<a name="torch.tanh"/>
+<a name="torch.tanh"></a>
 ### [res] torch.tanh([res,] x) ###
-<a name="torch.tanh"/>
+<a name="torch.tanh"></a>
 
 `y=torch.tanh(x)` returns a new tensor with the hyperbolic tangent of the elements of `x`.
 
 `x:tanh()` replaces all elements in-place with the hyperbolic tangent of the elements of `x`.
 
-<a name="torch.basicoperations.dok"/>
+<a name="torch.basicoperations.dok"></a>
 ## Basic operations ##
 
 In this section, we explain basic mathematical operations for Tensors.
 
-<a name="torch.add"/>
+<a name="torch.add"></a>
 ### [res] torch.add([res,] tensor, value) ###
-<a name="torch.add"/>
+<a name="torch.add"></a>
 
 Add the given value to all elements in the tensor.
 
@@ -483,9 +484,9 @@ Add the given value to all elements in the tensor.
 
 `x:add(value)` add `value` to all elements in place.
 
-<a name="torch.add"/>
+<a name="torch.add"></a>
 ### [res] torch.add([res,] tensor1, tensor2) ###
-<a name="torch.add"/>
+<a name="torch.add"></a>
 
 Add `tensor1` to `tensor2` and put result into `res`. The number
 of elements must match, but sizes do not matter.
@@ -509,9 +510,9 @@ of elements must match, but sizes do not matter.
 
 `y:add(a,b)` puts `a+b` in `y`.
 
-<a name="torch.add"/>
+<a name="torch.add"></a>
 ### [res] torch.add([res,] tensor1, value, tensor2) ###
-<a name="torch.add"/>
+<a name="torch.add"></a>
 
 Multiply elements of `tensor2` by the scalar `value` and add it to
 `tensor1`. The number of elements must match, but sizes do not
@@ -536,9 +537,9 @@ matter.
 
 `torch.add(z,x,value,y)` puts the result of `x + value*y` in `z`.
 
-<a name="torch.mul"/>
+<a name="torch.mul"></a>
 ### [res] torch.mul([res,] tensor1, value) ###
-<a name="torch.mul"/>
+<a name="torch.mul"></a>
 
 Multiply all elements in the tensor by the given `value`.
 
@@ -550,9 +551,9 @@ Multiply all elements in the tensor by the given `value`.
 
 `z:mul(x,2)` will put the result of `x*2` in `z`.
 
-<a name="torch.clamp"/>
+<a name="torch.clamp"></a>
 ### [res] torch.clamp([res,] tensor1, min_value, max_value) ###
-<a name="torch.mul"/>
+<a name="torch.mul"></a>
 
 Clamp all elements in the tensor into the range `[min_value, max_value]`.  ie:
 
@@ -570,9 +571,9 @@ y_i = x_i,       if x_i >= min_value or x_i <= max_value
 
 `z:clamp(x,0,1)` will put the result in `z`.
 
-<a name="torch.cmul"/>
+<a name="torch.cmul"></a>
 ### [res] torch.cmul([res,] tensor1, tensor2) ###
-<a name="torch.cmul"/>
+<a name="torch.cmul"></a>
 
 Element-wise multiplication of `tensor1` by `tensor2`. The number
 of elements must match, but sizes do not matter.
@@ -596,9 +597,9 @@ of elements must match, but sizes do not matter.
 
 `z:cmul(x,y)` puts the result in `z`.
 
-<a name="torch.cpow"/>
+<a name="torch.cpow"></a>
 ### [res] torch.cpow([res,] tensor1, tensor2) ###
-<a name="torch.cpow"/>
+<a name="torch.cpow"></a>
 
 Element-wise power operation, taking the elements of `tensor1` to the powers
 given by elements of `tensor2`. The number of elements must match,
@@ -624,9 +625,9 @@ corresponding elements of `x`.
 
 `z:cpow(x,y)` puts the result in `z`.
 
-<a name="torch.addcmul"/>
+<a name="torch.addcmul"></a>
 ### [res] torch.addcmul([res,] x [,value], tensor1, tensor2) ###
-<a name="torch.addcmul"/>
+<a name="torch.addcmul"></a>
 
 Performs the element-wise multiplication of `tensor1` by `tensor2`,
 multiply the result by the scalar `value` (1 if not present) and add it
@@ -650,9 +651,9 @@ to `x`. The number of elements must match, but sizes do not matter.
 
 `torch.addcmul(z,z,value,x,y)` puts the result in `z`.
 
-<a name="torch.div"/>
+<a name="torch.div"></a>
 ### [res] torch.div([res,] tensor, value) ###
-<a name="torch.div"/>
+<a name="torch.div"></a>
 
 Divide all elements in the tensor by the given `value`.
 
@@ -664,9 +665,9 @@ Divide all elements in the tensor by the given `value`.
 
 `z:div(x,2)` with put the result of `x/2` in `z`.
 
-<a name="torch.cdiv"/>
+<a name="torch.cdiv"></a>
 ### [res] torch.cdiv([res,] tensor1, tensor2) ###
-<a name="torch.cdiv"/>
+<a name="torch.cdiv"></a>
 
 Performs the element-wise division of `tensor1` by `tensor2`.  The
 number of elements must match, but sizes do not matter.
@@ -691,9 +692,9 @@ number of elements must match, but sizes do not matter.
 
 `z:cdiv(x,y)` puts the result in `z`.
 
-<a name="torch.addcdiv"/>
+<a name="torch.addcdiv"></a>
 ### [res] torch.addcdiv([res,] x [,value], tensor1, tensor2) ###
-<a name="torch.addcdiv"/>
+<a name="torch.addcdiv"></a>
 
 Performs the element-wise division of `tensor1` by `tensor1`,
 multiply the result by the scalar `value` and add it to `x`.
@@ -718,9 +719,9 @@ The number of elements must match, but sizes do not matter.
 
 `torch.addcdiv(z,z,value,x,y)` puts the result in `z`.
 
-<a name="torch.dot"/>
+<a name="torch.dot"></a>
 ### [number] torch.dot(tensor1,tensor2) ###
-<a name="torch.dot"/>
+<a name="torch.dot"></a>
 
 Performs the dot product between `tensor1` and `tensor2`. The number of
 elements must match: both tensors are seen as a 1D vector.
@@ -735,9 +736,9 @@ elements must match: both tensors are seen as a 1D vector.
 `torch.dot(x,y)` returns dot product of `x` and `y`.
 `x:dot(y)` returns dot product of `x` and `y`.
 
-<a name="torch.addmv"/>
+<a name="torch.addmv"></a>
 ### [res] torch.addmv([res,] [beta,] [v1,] vec1, [v2,] mat, vec2) ###
-<a name="torch.addmv"/>
+<a name="torch.addmv"></a>
 
 Performs a matrix-vector multiplication between `mat` (2D tensor)
 and `vec2` (1D tensor) and add it to `vec1`.
@@ -781,9 +782,9 @@ be a vector of size `n`.
 
 
 
-<a name="torch.addr"/>
+<a name="torch.addr"></a>
 ### [res] torch.addr([res,] [v1,] mat, [v2,] vec1, vec2) ###
-<a name="torch.addr"/>
+<a name="torch.addr"></a>
 
 Performs the outer-product between `vec1` (1D tensor) and `vec2` (1D tensor).
 
@@ -824,9 +825,9 @@ then mat must be a matrix of size `n x m`.
 
 
 
-<a name="torch.addmm"/>
+<a name="torch.addmm"></a>
 ### [res] torch.addmm([res,] [beta,] [v1,] M [v2,] mat1, mat2) ###
-<a name="torch.addmm"/>
+<a name="torch.addmm"></a>
 
 Performs a matrix-matrix multiplication between `mat1` (2D tensor)
 and `mat2` (2D tensor).
@@ -854,9 +855,9 @@ If `mat1` is a `n x m` matrix, `mat2` a `m x p` matrix,
 `r:addmm(M,mat1,mat2)` puts the result in `r`.
 
 
-<a name="torch.addbmm"/>
+<a name="torch.addbmm"></a>
 ### [res] torch.addbmm([res,] [v1,] M [v2,] batch1, batch2) ###
-<a name="torch.addbmm"/>
+<a name="torch.addbmm"></a>
 
 Batch matrix matrix product of matrices stored in `batch1` and `batch2`,
 with a reduced add step (all matrix multiplications get accumulated in a
@@ -878,9 +879,9 @@ res = v1 * M + v2 * sum(batch1_i * batch2_i, i=1,b)
 
 `M:addbmm(beta,M2,alpha,x,y)` puts the result in `M`, resizing `M` if necessary.
 
-<a name="torch.baddbmm"/>
+<a name="torch.baddbmm"></a>
 ### [res] torch.baddbmm([res,] [v1,] M [v2,] batch1, batch2) ###
-<a name="torch.baddbmm"/>
+<a name="torch.baddbmm"></a>
 
 Batch matrix matrix product of matrices stored in `batch1` and `batch2`,
 with batch add.
@@ -901,9 +902,9 @@ res_i = v1 * M_i + v2 * batch1_i * batch2_i
 
 `M:baddbmm(beta,M2,alpha,x,y)` puts the result in `M`, resizing `M` if necessary.
 
-<a name="torch.mv"/>
+<a name="torch.mv"></a>
 ### [res] torch.mv([res,] mat, vec) ###
-<a name="torch.mv"/>
+<a name="torch.mv"></a>
 
 Matrix vector product of `mat` and `vec`. Sizes must respect
 the matrix-multiplication operation: if `mat` is a `n x m` matrix,
@@ -915,9 +916,9 @@ the matrix-multiplication operation: if `mat` is a `n x m` matrix,
 
 `M:mv(x,y)` puts the result in `M`.
 
-<a name="torch.mm"/>
+<a name="torch.mm"></a>
 ### [res] torch.mm([res,] mat1, mat2) ###
-<a name="torch.mm"/>
+<a name="torch.mm"></a>
 
 Matrix matrix product of `mat1` and `mat2`. If `mat1` is a
 `n x m` matrix, `mat2` a `m x p` matrix, res must be a
@@ -930,9 +931,9 @@ Matrix matrix product of `mat1` and `mat2`. If `mat1` is a
 
 `M:mm(x,y)` puts the result in `M`.
 
-<a name="torch.bmm"/>
+<a name="torch.bmm"></a>
 ### [res] torch.bmm([res,] batch1, batch2) ###
-<a name="torch.bmm"/>
+<a name="torch.bmm"></a>
 
 Batch matrix matrix product of matrices stored in `batch1` and `batch2`.
 `batch1` and `batch2` must be 3D tensors each containing the same number
@@ -946,9 +947,9 @@ tensor, res will be a `b x n x p` tensor.
 
 `M:bmm(x,y)` puts the result in `M`, resizing `M` if necessary.
 
-<a name="torch.ger"/>
+<a name="torch.ger"></a>
 ### [res] torch.ger([res,] vec1, vec2) ###
-<a name="torch.ger"/>
+<a name="torch.ger"></a>
 
 Outer product of `vec1` and `vec2`. If `vec1` is a vector of
 size `n` and `vec2` is a vector of size `m`, then res must
@@ -1076,10 +1077,10 @@ Example:
 ```
 
 
-<a name="torch.columnwise.dok"/>
+<a name="torch.columnwise.dok"></a>
 ## Column or row-wise operations  (dimension-wise operations) ##
 
-<a name="torch.cross"/>
+<a name="torch.cross"></a>
 ### [res] torch.cross([res,] a, b [,n]) ###
 
 `y=torch.cross(a,b)` returns the cross product of `a` and `b` along the first dimension of length 3.
@@ -1089,7 +1090,7 @@ Example:
 `a` and `b` must have the same size, and both `a:size(n)` and `b:size(n)` must be 3.
 
 
-<a name="torch.cumprod"/>
+<a name="torch.cumprod"></a>
 ### [res] torch.cumprod([res,] x [,dim]) ###
 
 `y=torch.cumprod(x)` returns the cumulative product of the elements
@@ -1098,7 +1099,7 @@ of `x`, performing the operation over the last dimension.
 `y=torch.cumprod(x,n)` returns the cumulative product of the
 elements of `x`, performing the operation over dimension `n`.
 
-<a name="torch.cumsum"/>
+<a name="torch.cumsum"></a>
 ### [res] torch.cumsum([res,] x [,dim]) ###
 
 `y=torch.cumsum(x)` returns the cumulative sum of the elements
@@ -1107,7 +1108,7 @@ of `x`, performing the operation over the first dimension.
 `y=torch.cumsum(x,n)` returns the cumulative sum of the elements
 of `x`, performing the operation over dimension `n`.
 
-<a name="torch.max"/>
+<a name="torch.max"></a>
 ### torch.max([resval, resind,] x [,dim]) ###
 
 `y=torch.max(x)` returns the single largest element of `x`.
@@ -1121,7 +1122,7 @@ of `x`, performing the operation over dimension `n`.
 `y,i=torch.max(x,n)` performs the max operation over the dimension `n`.
 
 
-<a name="torch.mean"/>
+<a name="torch.mean"></a>
 ### [res] torch.mean([res,] x [,dim]) ###
 
 `y=torch.mean(x)` returns the mean of all elements of `x`.
@@ -1133,7 +1134,7 @@ each column of `x`.
 
 `y=torch.mean(x,n)` performs the mean operation over the dimension `n`.
 
-<a name="torch.min"/>
+<a name="torch.min"></a>
 ### torch.min([resval, resind,] x [,dim]) ###
 
 `y=torch.min(x)` returns the single smallest element of `x`.
@@ -1146,7 +1147,7 @@ each column of `x`.
 
 `y,i=torch.min(x,n)` performs the min operation over the dimension `n`.
 
-<a name="torch.cmax"/>
+<a name="torch.cmax"></a>
 ### [res] torch.cmax([res,] tensor1, tensor2) ###
 
 Compute the maximum of each pair of values in `tensor1` and `tensor2`.
@@ -1167,7 +1168,7 @@ Compute the maximum of each pair of values in `tensor1` and `tensor2`.
 [torch.DoubleTensor of size 3]
 ```
 
-<a name="torch.cmax"/>
+<a name="torch.cmax"></a>
 ### [res] torch.cmax([res,] tensor, value) ###
 
 Compute the maximum between each value in `tensor` and `value`.
@@ -1188,7 +1189,7 @@ in `a` and `v`.
 [torch.DoubleTensor of size 3]
 ```
 
-<a name="torch.cmin"/>
+<a name="torch.cmin"></a>
 ### [res] torch.cmin([res,] tensor1, tensor2) ###
 
 Compute the minimum of each pair of values in `tensor1` and `tensor2`.
@@ -1209,7 +1210,7 @@ Compute the minimum of each pair of values in `tensor1` and `tensor2`.
 [torch.DoubleTensor of size 3]
 ```
 
-<a name="torch.cmin"/>
+<a name="torch.cmin"></a>
 ### [res] torch.cmin([res,] tensor, value) ###
 
 Compute the minimum between each value in `tensor` and `value`.
@@ -1230,7 +1231,7 @@ in `a` and `v`.
 [torch.DoubleTensor of size 3]
 ```
 
-<a name="torch.median"/>
+<a name="torch.median"></a>
 ### torch.median([resval, resind,] x [,dim]) ###
 
 `y=torch.median(x)` returns the median element of `x`
@@ -1244,7 +1245,7 @@ in `a` and `v`.
 
 `y,i=torch.median(x,n)` performs the median operation over the dimension `n`.
 
-<a name="torch.kthvalue"/>
+<a name="torch.kthvalue"></a>
 ### torch.kthvalue([resval, resind,] x, k [,dim]) ###
 
 `y=torch.kthvalue(x,k)` returns the k-th smallest element of `x`.
@@ -1258,7 +1259,7 @@ in `a` and `v`.
 `y,i=torch.kthvalue(x,k,n)` performs the median operation over the dimension `n`.
 
 
-<a name="torch.prod"/>
+<a name="torch.prod"></a>
 ### [res] torch.prod([res,] x [,n]) ###
 
 `y=torch.prod(x)` returns the product of all elements in `x`.
@@ -1285,7 +1286,7 @@ in `a` and `v`.
 ```
 
 
-<a name="torch.sort"/>
+<a name="torch.sort"></a>
 ### torch.sort([resval, resind,] x [,d] [,flag]) ###
 
 `y,i=torch.sort(x)` returns a tensor `y` where all entries
@@ -1301,7 +1302,7 @@ a specific dimension `d`.
 `y,i=torch.sort(x,d,true)` performs the sort operation along
 a specific dimension `d`, in __descending__ order.
 
-<a name="torch.std"/>
+<a name="torch.std"></a>
 ### [res] torch.std([res,] x, [,dim] [,flag]) ###
 
 `y=torch.std(x)` returns the standard deviation of the elements of `x`.
@@ -1312,7 +1313,7 @@ a specific dimension `d`, in __descending__ order.
 
 `y=torch.std(x,dim,true)` performs the `std` operation normalizing by `n` instead of `n-1`.
 
-<a name="torch.sum"/>
+<a name="torch.sum"></a>
 ### [res] torch.sum([res,] x) ###
 
 `y=torch.sum(x)` returns the sum of the elements of `x`.
@@ -1321,7 +1322,7 @@ a specific dimension `d`, in __descending__ order.
 
 `y=torch.sum(x,n)` performs the sum operation over the dimension `n`.
 
-<a name="torch.var"/>
+<a name="torch.var"></a>
 ### [res] torch.var([res,] x [,dim] [,flag]) ###
 
 `y=torch.var(x)` returns the variance of the elements of `x`.
@@ -1332,12 +1333,12 @@ a specific dimension `d`, in __descending__ order.
 
 `y=torch.var(x,dim,true)` performs the var operation normalizing by `n` instead of `n-1`.
 
-<a name="torch.matrixwide.dok"/>
+<a name="torch.matrixwide.dok"></a>
 ## Matrix-wide operations  (tensor-wide operations) ##
 
 Note that many of the operations in [dimension-wise operations](#torch.columnwise.dok) can also be used as matrix-wide operations, by just omitting the `dim` parameter.
 
-<a name="torch.norm"/>
+<a name="torch.norm"></a>
 ### torch.norm(x [,p] [,dim]) ###
 
 `y=torch.norm(x)` returns the 2-norm of the tensor `x`.
@@ -1346,7 +1347,7 @@ Note that many of the operations in [dimension-wise operations](#torch.columnwis
 
 `y=torch.norm(x,p,dim)` returns the `p`-norms of the tensor `x` computed over the dimension `dim`.
 
-<a name="torch.renorm"/>
+<a name="torch.renorm"></a>
 ### torch.renorm([res], x, p, dim, maxnorm) ###
 Renormalizes the sub-tensors along dimension `dim` such that they do not exceed norm `maxnorm`.
 
@@ -1375,26 +1376,26 @@ end
 
 Note: this function is particularly useful as a regularizer for constraining the norm of parameter tensors. See [Hinton et al. 2012, p. 2](http://arxiv.org/pdf/1207.0580.pdf).
 
-<a name="torch.dist"/>
+<a name="torch.dist"></a>
 ### torch.dist(x,y) ###
 
 `y=torch.dist(x,y)` returns the 2-norm of `x-y`.
 
 `y=torch.dist(x,y,p)` returns the `p`-norm of `x-y`.
 
-<a name="torch.numel"/>
+<a name="torch.numel"></a>
 ### torch.numel(x) ###
 
 `y=torch.numel(x)` returns the count of the number of elements in the matrix `x`.
 
-<a name="torch.trace"/>
+<a name="torch.trace"></a>
 ### torch.trace(x) ###
 
 `y=torch.trace(x)` returns the trace (sum of the diagonal elements)
 of a matrix `x`. This is  equal  to the sum of the eigenvalues of `x`.
 The returned value `y` is a number, not a tensor.
 
-<a name="torch.conv.dok"/>
+<a name="torch.conv.dok"></a>
 ## Convolution Operations ##
 
 These function implement convolution or cross-correlation of an input
@@ -1403,9 +1404,9 @@ convolution function in Torch can handle different types of
 input/kernel dimensions and produces corresponding outputs. The
 general form of operations always remain the same.
 
-<a name="torch.conv2"/>
+<a name="torch.conv2"></a>
 ### [res] torch.conv2([res,] x, k, [, 'F' or 'V']) ###
-<a name="torch.conv2"/>
+<a name="torch.conv2"></a>
 
 This function computes 2 dimensional convolutions between `x` and `k`. These operations are similar to BLAS operations when number of dimensions of input and kernel are reduced by 2.
 
@@ -1434,17 +1435,17 @@ c = torch.conv2(x,k,'F')
 
 ```
 
-<a name="torch.xcorr2"/>
+<a name="torch.xcorr2"></a>
 ### [res] torch.xcorr2([res,] x, k, [, 'F' or 'V']) ###
-<a name="torch.xcorr2"/>
+<a name="torch.xcorr2"></a>
 
 This function operates with same options and input/output
 configurations as [torch.conv2](#torch.conv2), but performs
 cross-correlation of the input with the kernel `k`.
 
-<a name="torch.conv3"/>
+<a name="torch.conv3"></a>
 ### [res] torch.conv3([res,] x, k, [, 'F' or 'V']) ###
-<a name="torch.conv3"/>
+<a name="torch.conv3"></a>
 
 This function computes 3 dimensional convolutions between `x` and `k`. These operations are similar to BLAS operations when number of dimensions of input and kernel are reduced by 3.
 
@@ -1475,15 +1476,15 @@ c = torch.conv3(x,k,'F')
 
 ```
 
-<a name="torch.xcorr3"/>
+<a name="torch.xcorr3"></a>
 ### [res] torch.xcorr3([res,] x, k, [, 'F' or 'V']) ###
-<a name="torch.xcorr3"/>
+<a name="torch.xcorr3"></a>
 
 This function operates with same options and input/output
 configurations as [torch.conv3](#torch.conv3), but performs
 cross-correlation of the input with the kernel `k`.
 
-<a name="torch.linalg.dok"/>
+<a name="torch.linalg.dok"></a>
 ## Eigenvalues, SVD, Linear System Solution ##
 
 Functions in this section are implemented with an interface to
@@ -1491,7 +1492,7 @@ Functions in this section are implemented with an interface to
 If LAPACK libraries are not found during compilation step,
 then these functions will not be available.
 
-<a name="torch.gesv"/>
+<a name="torch.gesv"></a>
 ### [x,lu] torch.gesv([resb, resa,] b, a) ###
 
 `X,LU=torch.gesv(B,A)` returns the solution of `AX=B` and `LU` contains
@@ -1551,7 +1552,7 @@ x = torch.gesv(b,a)
 
 ```
 
-<a name="torch.trtrs"/>
+<a name="torch.trtrs"></a>
 ### [x] torch.trtrs([resb, resa,] b, a [, 'U' or 'L'] [, 'N' or 'T'] [, 'N' or 'U']) ###
 
 `X=torch.trtrs(B,A)` returns the solution of `AX=B` where `A` is upper-triangular.
@@ -1620,7 +1621,7 @@ x = torch.trtrs(b, a)
 4.1895292266754e-15
 ```
 
-<a name="torch.gels"/>
+<a name="torch.gels"></a>
 ### torch.gels([resb, resa,] b, a) ###
 
 Solution of least squares and least norm problems for a full rank `m x n` matrix `A`.
@@ -1682,7 +1683,7 @@ x = torch.gels(b,a)
 
 ```
 
-<a name="torch.symeig"/>
+<a name="torch.symeig"></a>
 ### torch.symeig([rese, resv,] a [, 'N' or 'V'] [, 'U' or 'L']) ###
 
 `e,V=torch.symeig(A)` returns eigenvalues and eigenvectors of a
@@ -1758,7 +1759,7 @@ e,v = torch.symeig(a,'V')
 
 ```
 
-<a name="torch.eig"/>
+<a name="torch.eig"></a>
 ### torch.eig([rese, resv,] a [, 'N' or 'V']) ###
 
 
@@ -1845,7 +1846,7 @@ e,v = torch.eig(b,'V')
 
 ```
 
-<a name="torch.svd"/>
+<a name="torch.svd"></a>
 ### torch.svd([resu, ress, resv,] a [, 'S' or 'A']) ###
 
 `U,S,V=torch.svd(A)` returns the singular value decomposition of a real matrix `A` of size `n x m`
@@ -1914,7 +1915,7 @@ u,s,v = torch.svd(a)
 
 ```
 
-<a name="torch.inverse"/>
+<a name="torch.inverse"></a>
 ### torch.inverse([res,] x) ###
 
 Computes the inverse of square matrix `x`.
@@ -1948,7 +1949,7 @@ z = x * y
 
 ```
 
-<a name="torch.qr"/>
+<a name="torch.qr"></a>
 ### torch.qr([q, r], x) ###
 
 Compute a QR decomposition of the matrix `x`: matrices `q` and `r` such that
@@ -2004,7 +2005,7 @@ transposed, i.e. with strides `1,m` instead of `m,1`.
 
 ```
 
-<a name="torch.geqrf"/>
+<a name="torch.geqrf"></a>
 ### torch.geqrf([m, tau], a) ###
 
 This is a low-level function for calling LAPACK directly. You'll generally want
@@ -2016,7 +2017,7 @@ separate matrices. Rather, this directly calls the underlying LAPACK function
 [LAPACK documentation](http://www.netlib.org/netlib/lapack/double/dgeqrf.f)
 for further details.
 
-<a name="torch.orgqr"/>
+<a name="torch.orgqr"></a>
 ### torch.orgqr([q], m, tau) ###
 
 This is a low-level function for calling LAPACK directly. You'll generally want
@@ -2027,7 +2028,7 @@ given by `torch.geqrf`. See
  [LAPACK documentation](http://www.netlib.org/netlib/lapack/double/dorgqr.f) for
 further details.
 
-<a name="torch.logical.dok"/>
+<a name="torch.logical.dok"></a>
 ## Logical Operations on Tensors ##
 
 These functions implement logical comparison operators that take a
@@ -2036,37 +2037,37 @@ target.  They return a `ByteTensor` in which each element is 0 or 1
 indicating if the comparison for the corresponding element was
 `false` or `true` respectively.
 
-<a name="torch.lt"/>
+<a name="torch.lt"></a>
 ### torch.lt(a, b) ###
 
 Implements `<` operator comparing each element in `a` with `b`
 (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
-<a name="torch.lt"/>
+<a name="torch.lt"></a>
 ### torch.le(a, b) ###
 
 Implements `<=` operator comparing each element in `a` with `b`
 (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
-<a name="torch.lt"/>
+<a name="torch.lt"></a>
 ### torch.gt(a, b) ###
 
 Implements `>` operator comparing each element in `a` with `b`
 (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
-<a name="torch.lt"/>
+<a name="torch.lt"></a>
 ### torch.ge(a, b) ###
 
 Implements `>=` operator comparing each element in `a` with `b`
 (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
-<a name="torch.lt"/>
+<a name="torch.lt"></a>
 ### torch.eq(a, b) ###
 
 Implements `==` operator comparing each element in `a` with `b`
 (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
-<a name="torch.lt"/>
+<a name="torch.lt"></a>
 ### torch.ne(a, b) ###
 
 Implements `!=` operator comparing each element in `a` with `b`

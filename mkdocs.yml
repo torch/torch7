@@ -1,0 +1,21 @@
+site_name: torch7
+theme : simplex
+repo_url : https://github.com/torch/torch7
+use_directory_urls : false
+markdown_extensions: [extra]
+docs_dir : doc
+pages:
+- [index.md, Home]
+- [tensor.md, Tensor Library, Tensor]
+- [maths.md, Tensor Library, Tensor Math]
+- [storage.md, Tensor Library, Storage]
+- [file.md, File I/O Library, File Interface]
+- [diskfile.md, File I/O Library, Disk File]
+- [memoryfile.md, File I/O Library, Memory File]
+- [pipefile.md, File I/O Library, Pipe File]
+- [serialization.md, File I/O Library, Serialization]
+- [utility.md, Useful Utilities, Class]
+- [timer.md, Useful Utilities, Timer]
+- [tester.md, Useful Utilities, Tester]
+- [cmdline.md, Useful Utilities, CmdLine]
+- [random.md, Useful Utilities, Random]

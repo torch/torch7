@@ -1,11 +1,11 @@
-<a name="torch.random.dok"/>
+<a name="torch.random.dok"></a>
 # Random Numbers #
 
 Torch provides accurate mathematical random generation, based on
 [Mersenne Twister](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html)
 random number generator.
 
-<a name=":torch.seed.dok"/>
+<a name=":torch.seed.dok"></a>
 ## Seed Handling ##
 
 The random number generator is provided with a random seed via
@@ -40,65 +40,65 @@ of random numbers. Example:
 0.28613933874294
 ```
 
-<a name="torch.seed"/>
+<a name="torch.seed"></a>
 ### [number] seed() ###
 
 Set the seed of the random number generator using `/dev/urandom`
 (on Windows the time of the computer with granularity of seconds is used).
 Returns the seed obtained.
 
-<a name="torch.manualSeed"/>
+<a name="torch.manualSeed"></a>
 ### manualSeed(number) ###
 
 Set the seed of the random number generator to the given `number`.
 
-<a name="torch.initialSeed"/>
+<a name="torch.initialSeed"></a>
 ### initialSeed() ###
 
 Returns the initial seed used to initialize the random generator.
 
-<a name="torch.random"/>
+<a name="torch.random"></a>
 ### [number] random() ###
 
 Returns a 32 bit integer random number.
 
-<a name="torch.uniform"/>
+<a name="torch.uniform"></a>
 ### [number] uniform([a],[b]) ###
 
 Returns a random real number according to uniform distribution on [a,b[. By default `a` is 0 and `b` is 1.
 
-<a name="torch.normal"/>
+<a name="torch.normal"></a>
 ### [number] normal([mean],[stdv]) ###
 
 Returns a random real number according to a normal distribution with the given `mean` and standard deviation `stdv`.
 `stdv` must be positive.
 
-<a name="torch.exponential"/>
+<a name="torch.exponential"></a>
 ### [number] exponential(lambda) ###
 
 Returns a random real number according to the exponential distribution
 ''p(x) = lambda * exp(-lambda * x)''
 
-<a name="torch.cauchy"/>
+<a name="torch.cauchy"></a>
 ### [number] cauchy(median, sigma) ###
 
 Returns a random real number according to the Cauchy distribution
 ''p(x) = sigma/(pi*(sigma^2 + (x-median)^2))''
 
-<a name="torch.logNormal"/>
+<a name="torch.logNormal"></a>
 ### [number] logNormal(mean, stdv) ###
 
 Returns a random real number according to the log-normal distribution, with
 the given `mean` and standard deviation `stdv`.
 `stdv` must be positive.
 
-<a name="torch.geometric"/>
+<a name="torch.geometric"></a>
 ### [number] geometric(p) ###
 
 Returns a random integer number according to a geometric distribution
 ''p(i) = (1-p) * p^(i-1)`. `p` must satisfy `0 < p < 1''.
 
-<a name="torch.bernoulli"/>
+<a name="torch.bernoulli"></a>
 ### [number] bernoulli([p]) ###
 
 Returns `1` with probability `p` and `0` with probability `1-p`. `p` must satisfy `0 <= p <= 1`.
