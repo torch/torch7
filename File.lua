@@ -129,8 +129,8 @@ function File:writeObject(object)
          -- else write the object itself
          index = objects.nWriteObject or 0
          index = index + 1
-         objects[torch.pointer(object)] = index
          if not force then
+            objects[torch.pointer(object)] = index
             objectsRef[object] = index -- we make sure the object is not going to disappear
          end
          self:writeInt(index)
@@ -234,7 +234,9 @@ function File:readObject()
          local size = self:readInt()
          local dumped = self:readChar(size):string()
          local func = loadstring(dumped)
-         objects[index] = func
+         if not force then
+             objects[index] = func
+         end
          local upvalues = self:readObject()
          for index,upvalue in ipairs(upvalues) do
             if typeidx == LEGACY_TYPE_RECUR_FUNCTION then
@@ -260,7 +262,9 @@ function File:readObject()
             error(string.format('unknown Torch class <%s>', tostring(className)))
          end
          local object = torch.factory(className)(self)
-         objects[index] = object
+         if not force then
+             objects[index] = object
+         end
          local read = getmetamethod(object, 'read')
          if read then
             read(object, self, versionNumber)
@@ -276,7 +280,9 @@ function File:readObject()
       else -- it is a table
          local size = self:readInt()
          local object = {}
-         objects[index] = object
+         if not force then
+             objects[index] = object
+         end
          for i = 1,size do
             local k = self:readObject()
             local v = self:readObject()
