@@ -2588,6 +2588,7 @@ function torchtest.storageview()
 end
 
 function torch.test(tests)
+   torch.setheaptracking(true)
    math.randomseed(os.time())
    if torch.getdefaulttensortype() == 'torch.FloatTensor' then
       precision = 1e-4
