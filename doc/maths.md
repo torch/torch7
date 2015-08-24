@@ -1256,7 +1256,7 @@ in `a` and `v`.
 
 `y,i=torch.kthvalue(x,k,2)` performs the k-th value operation across rows.
 
-`y,i=torch.kthvalue(x,k,n)` performs the median operation over the dimension `n`.
+`y,i=torch.kthvalue(x,k,n)` performs the k-th value operation over the dimension `n`.
 
 
 <a name="torch.prod"></a>
