@@ -2354,6 +2354,26 @@ function torchtest.isTypeOfInheritance()
    mytester:assert(not torch.isTypeOf(c, B), 'isTypeOf error: common parent')
 end
 
+function torchtest.isTypeOfPartialComposite()
+  print('testing partial and composite')
+  do
+    local TorchDummy =  torch.class('TorchDummy')
+    local OtherTorchDummy = torch.class('OtherTorchDummy')     
+    local Enclosed = torch.class('Enclosed')
+  end
+  local a, b = TorchDummy(), OtherTorchDummy()
+  Enclosing = {}
+  local Enclosing_Enclosed = torch.class('Enclosing.Enclosed')   
+  local enclosed = Enclosed()
+  local enclosing_enclosed = Enclosing.Enclosed()
+  --partial name tests
+  mytester:assert(not torch.isTypeOf(a, OtherTorchDummy), 'isTypeOf error partial name match ctor')
+  mytester:assert(not torch.isTypeOf(a, 'OtherTorchDummy'), 'isTypeOf error partial name match string spec')   
+  --composite name tests
+  mytester:assert(not torch.isTypeOf(enclosed, Enclosing.Enclosed), 'isTypeOf error composite ctor')
+  mytester:assert(not torch.isTypeOf(enclosed, 'Enclosing.Enclosed'), 'isTypeOf error composite string spec')
+  mytester:assert(torch.isTypeOf(enclosing_enclosed, 'Enclosed'),'isTypeOf error composite string spec')
+end
 
 function torchtest.isTensor()
    local t = torch.randn(3,4)

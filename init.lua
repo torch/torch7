@@ -89,19 +89,51 @@ function torch.type(obj)
 end
 
 --[[ See if a given object is an instance of the provided torch class. ]]
+local function exactTypeMatch(obj_mt, typeSpecNameString)
+  return obj_mt.__typename == typeSpecNameString
+end
+
+local function partialTypeMatch(obj_mt, typeSpecNameString)
+  if #obj_mt.__typename < #typeSpecNameString then
+    return false
+  end
+  local objNamesArray = {}
+  local typeSpecNamesArray = {}
+  for name in string.gmatch(obj_mt.__typename, '([^.]+)') do
+    objNamesArray[#objNamesArray +1] = name
+  end
+  for name in string.gmatch(typeSpecNameString, '([^.]+)') do
+    typeSpecNamesArray[#typeSpecNamesArray +1] = name
+  end  
+  
+  local objNamesRevIndex = #objNamesArray
+  for typeSpecNamesRevIndex = #typeSpecNamesArray, 1, -1 do
+    if typeSpecNamesArray[typeSpecNamesRevIndex] ~= objNamesArray[objNamesRevIndex] then
+      return false
+    end
+    objNamesRevIndex = objNamesRevIndex - 1
+  end
+  return true
+end
+
+--[[ See if a given object is an instance of the provided torch class. ]]
 function torch.isTypeOf(obj, typeSpec)
   -- typeSpec can be provided as either a string, regexp, or the constructor. If
   -- the constructor is used, we look in the __typename field of the
   -- metatable to find a string to compare to.
+  local matchFunc
   if type(typeSpec) ~= 'string' then
     typeSpec = getmetatable(typeSpec).__typename
     assert(type(typeSpec) == 'string',
            "type must be provided as [regexp] string, or factory")
+    matchFunc = exactTypeMatch
+  else
+    matchFunc = partialTypeMatch
   end
-
+  
   local mt = getmetatable(obj)
   while mt do
-    if mt.__typename and mt.__typename:find(typeSpec) then
+    if matchFunc(mt,typeSpec) then
       return true
     end
     mt = getmetatable(mt)
