@@ -1538,6 +1538,83 @@ x:maskedFill(mask, -1)
 Note how the dimensions of the above `x` and `mask` do not match, 
 but the number of elements do.
 
+## Search ##
+
+Each of these methods returns a `LongTensor` corresponding to the indices of the
+given search operation.
+
+<a name="torch.Tensor.nonzero"/>
+### [LongTensor] nonzero(tensor)
+
+Finds and returns a `LongTensor` corresponding to the *subcript* indices of all
+non-zero elements in `tensor`.
+
+Note that torch uses the first argument on dispatch to determine the return
+type. Since the first argument is any `torch.TensorType`, but the return type
+is always `torch.LongTensor`, the function call
+`torch.nonzero(torch.LongTensor(), tensor)` does not work. However,
+`tensor.nonzero(torch.LongTensor(), tensor)` does work.
+
+```lua
+> x = torch.rand(4, 4):mul(3):floor():int()
+> x
+ 2  0  2  0
+ 0  0  1  2
+ 0  2  2  1
+ 2  1  2  2
+[torch.IntTensor of dimension 4x4]
+
+> torch.nonzero(x)
+ 1  1
+ 1  3
+ 2  3
+ 2  4
+ 3  2
+ 3  3
+ 3  4
+ 4  1
+ 4  2
+ 4  3
+ 4  4
+[torch.LongTensor of dimension 11x2]
+
+> x:nonzero()
+ 1  1
+ 1  3
+ 2  3
+ 2  4
+ 3  2
+ 3  3
+ 3  4
+ 4  1
+ 4  2
+ 4  3
+ 4  4
+[torch.LongTensor of dimension 11x2]
+
+> indices = torch.LongTensor()
+> x.nonzero(indices, x)
+ 1  1
+ 1  3
+ 2  3
+ 2  4
+ 3  2
+ 3  3
+ 3  4
+ 4  1
+ 4  2
+ 4  3
+ 4  4
+[torch.LongTensor of dimension 11x2]
+
+> x:eq(1):nonzero()
+ 2  3
+ 3  4
+ 4  2
+[torch.LongTensor of dimension 3x2]
+
+```
+
 ## Expanding/Replicating/Squeezing Tensors ##
 
 These methods returns a Tensor which is created by replications of the

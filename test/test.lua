@@ -2587,6 +2587,75 @@ function torchtest.storageview()
    mytester:assert(13 == s1[2], "should have 13 at position 1")
 end
 
+function torchtest.nonzero()
+  local nSrc = 12
+
+  local types = {
+      'torch.ByteTensor',
+      'torch.CharTensor',
+      'torch.ShortTensor',
+      'torch.IntTensor',
+      'torch.FloatTensor',
+      'torch.DoubleTensor',
+      'torch.LongTensor',
+  }
+
+  local shapes = {
+      torch.LongStorage{12},
+      torch.LongStorage{12, 1},
+      torch.LongStorage{1, 12},
+      torch.LongStorage{6, 2},
+      torch.LongStorage{3, 2, 2},
+  }
+
+  for _, type in ipairs(types) do
+    local tensor = torch.rand(nSrc):mul(2):floor():type(type)
+      for _, shape in ipairs(shapes) do
+        tensor = tensor:reshape(shape)
+        local dst1 = torch.nonzero(tensor)
+        local dst2 = tensor:nonzero()
+        -- Does not work. Torch uses the first argument to determine what
+        -- type the Tensor is expected to be. In our case the second argument
+        -- determines the type of Tensor.
+        --local dst3 = torch.LongTensor()
+        --torch.nonzero(dst3, tensor)
+        -- However, there are workarounds to this issue when it is desired to
+        -- use an existing tensor for the result:
+        local dst4 = torch.LongTensor()
+        tensor.nonzero(dst4, tensor)
+        if shape:size() == 1 then
+          local dst = {}
+          for i = 1 , nSrc do
+            if tensor[i] ~= 0 then
+              table.insert(dst, i)
+            end
+          end
+          mytester:assertTensorEq(dst1, torch.LongTensor(dst), 0.0,
+                                  "nonzero error")
+          mytester:assertTensorEq(dst2, torch.LongTensor(dst), 0.0,
+                                  "nonzero error")
+          --mytester:assertTensorEq(dst3, torch.LongTensor(dst), 0.0,
+          --                        "nonzero error")
+          mytester:assertTensorEq(dst4, torch.LongTensor(dst), 0.0,
+                                  "nonzero error")
+        elseif shape:size() == 2 then
+          -- This test will allow through some false positives. It only checks
+          -- that the elements flagged positive are indeed non-zero.
+          for i=1,dst1:size()[1] do
+            mytester:assert(tensor[dst1[i][1]][dst1[i][2]] ~= 0)
+          end
+        elseif shape:size() == 3 then
+          -- This test will allow through some false positives. It only checks
+          -- that the elements flagged positive are indeed non-zero.
+          for i=1,dst1:size()[1] do
+            mytester:assert(tensor[dst1[i][1]][dst1[i][2]][dst1[i][3]] ~= 0)
+          end
+        end
+      end
+   end
+
+end
+
 function torch.test(tests)
    torch.setheaptracking(true)
    math.randomseed(os.time())
