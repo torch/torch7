@@ -1,3 +1,30 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Table of Content
+
+- [Torch utility functions](#torch-utility-functions)
+    - [[metatable] torch.class(name, [parentName])](#metatable-torchclassname-parentname)
+    - [[string] torch.type(object)](#string-torchtypeobject)
+    - [[string] torch.typename(object)](#string-torchtypenameobject)
+    - [[userdata] torch.typename2id(string)](#userdata-torchtypename2idstring)
+    - [[userdata] torch.id(object)](#userdata-torchidobject)
+    - [[boolean] isTypeOf(object, typeSpec)](#boolean-istypeofobject-typespec)
+    - [[table] torch.newmetatable(name, parentName, constructor)](#table-torchnewmetatablename-parentname-constructor)
+    - [[function] torch.factory(name)](#function-torchfactoryname)
+    - [[table] torch.getmetatable(string)](#table-torchgetmetatablestring)
+    - [[boolean] torch.isequal(object1, object2)](#boolean-torchisequalobject1-object2)
+    - [[string] torch.getdefaulttensortype()](#string-torchgetdefaulttensortype)
+    - [[table] torch.getenv(function or userdata)](#table-torchgetenvfunction-or-userdata)
+    - [[number] torch.version(object)](#number-torchversionobject)
+    - [[number] torch.pointer(object)](#number-torchpointerobject)
+    - [torch.setdefaulttensortype([typename])](#torchsetdefaulttensortypetypename)
+    - [torch.setenv(function or userdata, table)](#torchsetenvfunction-or-userdata-table)
+    - [[object] torch.setmetatable(table, classname)](#object-torchsetmetatabletable-classname)
+    - [[table] torch.getconstructortable(string)](#table-torchgetconstructortablestring)
+    - [[table] torch.totable(object)](#table-torchtotableobject)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <a name="torch.utility.dok"></a>
 # Torch utility functions #
 

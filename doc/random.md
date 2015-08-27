@@ -1,3 +1,23 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Table of Content
+
+- [Random Numbers](#random-numbers)
+  - [Seed Handling](#seed-handling)
+    - [[number] seed()](#number-seed)
+    - [manualSeed(number)](#manualseednumber)
+    - [initialSeed()](#initialseed)
+    - [[number] random()](#number-random)
+    - [[number] uniform([a],[b])](#number-uniformab)
+    - [[number] normal([mean],[stdv])](#number-normalmeanstdv)
+    - [[number] exponential(lambda)](#number-exponentiallambda)
+    - [[number] cauchy(median, sigma)](#number-cauchymedian-sigma)
+    - [[number] logNormal(mean, stdv)](#number-lognormalmean-stdv)
+    - [[number] geometric(p)](#number-geometricp)
+    - [[number] bernoulli([p])](#number-bernoullip)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <a name="torch.random.dok"></a>
 # Random Numbers #
 

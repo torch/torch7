@@ -1,3 +1,39 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Table of Content
+
+- [File](#file)
+  - [Read methods](#read-methods)
+  - [Write methods](#write-methods)
+  - [Serialization methods](#serialization-methods)
+    - [readObject()](#readobject)
+    - [writeObject(object)](#writeobjectobject)
+    - [[string] readString(format)](#string-readstringformat)
+    - [[number] writeString(str)](#number-writestringstr)
+  - [General Access and Control Methods](#general-access-and-control-methods)
+    - [ascii() [default]](#ascii-default)
+    - [autoSpacing() [default]](#autospacing-default)
+    - [binary()](#binary)
+    - [clearError()](#clearerror)
+    - [close()](#close)
+    - [noAutoSpacing()](#noautospacing)
+    - [synchronize()](#synchronize)
+    - [pedantic() [default]](#pedantic-default)
+    - [[number] position()](#number-position)
+    - [quiet()](#quiet)
+    - [seek(position)](#seekposition)
+    - [seekEnd()](#seekend)
+  - [File state query](#file-state-query)
+    - [[boolean] hasError()](#boolean-haserror)
+    - [[boolean] isQuiet()](#boolean-isquiet)
+    - [[boolean] isReadable()](#boolean-isreadable)
+    - [[boolean] isWritable()](#boolean-iswritable)
+    - [[boolean] isAutoSpacing()](#boolean-isautospacing)
+    - [referenced(ref)](#referencedref)
+    - [isReferenced()](#isreferenced)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <a name="torch.File.dok"></a>
 # File #
 

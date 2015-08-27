@@ -1,3 +1,18 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Table of Content
+
+- [CmdLine](#cmdline)
+    - [addTime([name] [,format])](#addtimename-format)
+    - [log(filename, parameter_table)](#logfilename-parameter_table)
+    - [option(name, default, help)](#optionname-default-help)
+    - [[table] parse(arg)](#table-parsearg)
+    - [silent()](#silent)
+    - [[string] string(prefix, params, ignore)](#string-stringprefix-params-ignore)
+    - [text(string)](#textstring)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <a name="torch.CmdLine.dok"></a>
 # CmdLine #
 

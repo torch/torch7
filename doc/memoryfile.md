@@ -1,3 +1,14 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Table of Content
+
+- [MemoryFile](#memoryfile)
+    - [torch.MemoryFile([mode])](#torchmemoryfilemode)
+    - [torch.MemoryFile(storage, mode)](#torchmemoryfilestorage-mode)
+    - [[CharStorage] storage()](#charstorage-storage)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <a name="torch.MemoryFile.dok"></a>
 # MemoryFile #
 

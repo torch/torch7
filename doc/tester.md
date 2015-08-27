@@ -1,3 +1,30 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Table of Content
+
+- [Tester](#tester)
+  - [](#)
+  - [](#-1)
+  - [](#-2)
+    - [torch.Tester()](#torchtester)
+    - [add(f, 'name')](#addf-name)
+    - [add(ftable)](#addftable)
+    - [assert(condition [, message])](#assertcondition--message)
+    - [assertlt(val, condition [, message])](#assertltval-condition--message)
+    - [assertgt(val, condition [, message])](#assertgtval-condition--message)
+    - [assertle(val, condition [, message])](#assertleval-condition--message)
+    - [assertge(val, condition [, message])](#assertgeval-condition--message)
+    - [asserteq(val, condition [, message])](#asserteqval-condition--message)
+    - [assertne(val, condition [, message])](#assertneval-condition--message)
+    - [assertTensorEq(ta, tb, condition [, message])](#asserttensoreqta-tb-condition--message)
+    - [assertTensorNe(ta, tb, condition [, message])](#asserttensorneta-tb-condition--message)
+    - [assertTableEq(ta, tb, condition [, message])](#asserttableeqta-tb-condition--message)
+    - [assertTableNe(ta, tb, condition [, message])](#asserttableneta-tb-condition--message)
+    - [assertError(f [, message])](#asserterrorf--message)
+    - [run()](#run)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <a name="torch.Tester.dok"></a>
 # Tester #
 
