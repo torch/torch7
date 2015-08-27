@@ -2354,6 +2354,65 @@ function torchtest.isTypeOfInheritance()
    mytester:assert(not torch.isTypeOf(c, B), 'isTypeOf error: common parent')
 end
 
+function torchtest.isTypeOfPartial()
+    do
+      local TorchDummy = torch.class('TorchDummy')
+      local OtherTorchDummy = torch.class('OtherTorchDummy')
+      local TorchMember = torch.class('TorchMember')
+      local OtherTorchMember = torch.class('OtherTorchMember')
+      local FirstTorchMember = torch.class('FirstTorchMember',
+                                           'TorchMember')
+      local SecondTorchMember = torch.class('SecondTorchMember',
+                                            'TorchMember')
+      local ThirdTorchMember = torch.class('ThirdTorchMember',
+                                           'OtherTorchMember')
+   end
+   local td, otd = TorchDummy(), OtherTorchDummy()
+   local tm, ftm, stm, ttm = TorchMember(), FirstTorchMember(),
+      SecondTorchMember(), ThirdTorchMember()
+
+   mytester:assert(not torch.isTypeOf(td, 'OtherTorchDummy'),
+                   'isTypeOf error: incorrect partial match')
+   mytester:assert(not torch.isTypeOf(otd, 'TorchDummy'),
+                   'isTypeOf error: incorrect partial match')
+   mytester:assert(torch.isTypeOf(tm, 'TorchMember'),
+                   'isTypeOf error, string spec')
+   mytester:assert(torch.isTypeOf(tm, TorchMember),
+                   'isTypeOf error, constructor')
+   mytester:assert(torch.isTypeOf(ftm, 'FirstTorchMember'),
+                   'isTypeOf error child class')
+   mytester:assert(torch.isTypeOf(ftm, FirstTorchMember),
+                   'isTypeOf error child class ctor')
+   mytester:assert(torch.isTypeOf(ftm, 'TorchMember'),
+                   'isTypeOf error: inheritance')
+   mytester:assert(torch.isTypeOf(ftm, TorchMember),
+                   'isTypeOf error: inheritance')
+   mytester:assert(not torch.isTypeOf(stm, 'FirstTorchMember'),
+                   'isTypeOf error: common parent')
+   mytester:assert(not torch.isTypeOf(stm, FirstTorchMember),
+                   'isTypeOf error: common parent')
+   mytester:assert(not torch.isTypeOf(ttm, TorchMember),
+                   'isTypeOf error: inheritance')
+   mytester:assert(not torch.isTypeOf(ttm, 'TorchMember'),
+                   'isTypeOf error: inheritance')
+end
+
+function torchtest.isTypeOfComposite()
+   do
+      local Enclosed = torch.class('Enclosed')
+      rawset(_G, 'Enclosing', {})
+      local Enclosing_Enclosed = torch.class('Enclosing.Enclosed')
+   end
+   local enclosed = Enclosed()
+   local enclosing_enclosed = Enclosing.Enclosed()
+
+   mytester:assert(not torch.isTypeOf(enclosed, Enclosing.Enclosed),
+                   'isTypeOf error: incorrect composite match')
+   mytester:assert(not torch.isTypeOf(enclosed, 'Enclosing.Enclosed'),
+                   'isTypeOf error: incorrect composite match')
+   mytester:assert(torch.isTypeOf(enclosing_enclosed, 'Enclosed'),
+                   'isTypeOf error: incorrect composite match')
+end
 
 function torchtest.isTensor()
    local t = torch.randn(3,4)

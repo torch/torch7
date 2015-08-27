@@ -88,25 +88,51 @@ function torch.type(obj)
    return class
 end
 
+-- Returns true if the type given by the passed-in metatable equals typeSpec.
+local function exactTypeMatch(obj_mt, typeSpec)
+   return obj_mt.__typename == typeSpec
+end
+
+--[[ Returns true if the type given by the passed-in metatable either equals
+typeSpec, or ends with ".<typeSpec>". For example, "ab.cd.ef" matches type specs
+"ef", "cd.ef", and "ab.cd.ef", but not "f" or "d.ef". ]]
+local function partialTypeMatch(obj_mt, typeSpec)
+   local typeName = obj_mt.__typename
+   local diffLen = #typeName - #typeSpec
+
+   if diffLen < 0 then
+      return false
+   end
+   if typeName:sub(diffLen+1) ~= typeSpec then
+      return false
+   end
+
+   return diffLen == 0 or typeName:sub(diffLen, diffLen) == '.'
+end
+
 --[[ See if a given object is an instance of the provided torch class. ]]
 function torch.isTypeOf(obj, typeSpec)
-  -- typeSpec can be provided as either a string, regexp, or the constructor. If
-  -- the constructor is used, we look in the __typename field of the
-  -- metatable to find a string to compare to.
-  if type(typeSpec) ~= 'string' then
-    typeSpec = getmetatable(typeSpec).__typename
-    assert(type(typeSpec) == 'string',
-           "type must be provided as [regexp] string, or factory")
-  end
+   -- typeSpec can be provided as either a string, regexp, or the constructor.
+   -- If the constructor is used, we look in the __typename field of the
+   -- metatable to find a string to compare to.
+   local matchFunc
+   if type(typeSpec) == 'table' then
+      typeSpec = getmetatable(typeSpec).__typename
+      matchFunc = exactTypeMatch
+   elseif type(typeSpec) == 'string' then
+      matchFunc = partialTypeMatch
+   else
+     error("type must be provided as [regexp] string, or factory")
+   end
 
-  local mt = getmetatable(obj)
-  while mt do
-    if mt.__typename and mt.__typename:find(typeSpec) then
-      return true
-    end
-    mt = getmetatable(mt)
-  end
-  return false
+   local mt = getmetatable(obj)
+   while mt do
+      if matchFunc(mt, typeSpec) then
+         return true
+      end
+      mt = getmetatable(mt)
+   end
+   return false
 end
 
 torch.setdefaulttensortype('torch.DoubleTensor')
