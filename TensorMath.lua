@@ -823,6 +823,11 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
             {name=Tensor}})
    end
 
+   wrap("nonzero",
+        cname("nonzero"),
+        {{name="IndexTensor", default=true, returned=true},
+         {name=Tensor}})
+
    if Tensor == 'ByteTensor' then
      -- Logical accumulators only apply to ByteTensor
       for _,name in ipairs({'all', 'any'}) do
