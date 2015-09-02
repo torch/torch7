@@ -164,6 +164,12 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
                 return string.format("TH%s_nDimension(%s)", Tensor, arg.args[argn]:carg())
              end
    end
+
+   local function lastdimarray(argn)
+      return function(arg)
+                return string.format("TH%s_nDimension(arg%d_data[0])", Tensor, arg.args[argn].i)
+             end
+   end
    
    wrap("zero",
         cname("zero"),
@@ -553,7 +559,11 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
         {{name=Tensor, default=true, returned=true},
          {name=Tensor},
          {name=Tensor},
-         {name="index", default=lastdim(2)}})
+         {name="index", default=lastdim(2)}},
+        cname("catArray"),
+        {{name=Tensor, default=true, returned=true},
+         {name=Tensor .. "Array"},
+         {name="index", default=lastdimarray(2)}})
    
    if Tensor == 'ByteTensor' then -- we declare this only once
       interface:print(

@@ -64,12 +64,15 @@ end
 
 <a name="torch.cat"></a>
 ### [res] torch.cat( [res,] x_1, x_2, [dimension] ) ###
+### [res] torch.cat( [res,] {x_1, x_2, ...}, [dimension] ) ###
 <a name="torch.cat"></a>
 `x=torch.cat(x_1,x_2,[dimension])` returns a tensor `x` which is the concatenation of tensors `x_1` and `x_2` along dimension `dimension`.
 
 If `dimension` is not specified it is the last dimension.
 
 The other dimensions of `x_1` and `x_2` have to be equal.
+
+Also supports arrays with arbitrary numbers of tensors as inputs.
 
 Examples:
 ```lua
@@ -107,6 +110,18 @@ Examples:
 
 
 > print(torch.cat(torch.cat(torch.ones(2,2),torch.zeros(2,2),1),torch.rand(3,2),1))
+
+ 1.0000  1.0000
+ 1.0000  1.0000
+ 0.0000  0.0000
+ 0.0000  0.0000
+ 0.3227  0.0493
+ 0.9161  0.1086
+ 0.2206  0.7449
+[torch.DoubleTensor of dimension 7x2]
+
+
+> print(torch.cat({torch.ones(2,2), torch.zeros(2,2), torch.rand(3,2)},1))
 
  1.0000  1.0000
  1.0000  1.0000
