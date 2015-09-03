@@ -1695,7 +1695,7 @@ This function calculates all eigenvalues (and vectors) of `A` such
 that `A = V' diag(e) V`.
 
 Third argument defines computation of eigenvectors or eigenvalues
-only. If it is `'N'`, only eignevalues are computed. If it is `'V'`, both
+only. If it is `'N'`, only eigenvalues are computed. If it is `'V'`, both
 eigenvalues and eigenvectors are computed.
 
 Since the input matrix `A` is supposed to be symmetric, only upper
@@ -1772,7 +1772,7 @@ This function calculates all right eigenvalues (and vectors) of `A` such
 that `A = V' diag(e) V`.
 
 Third argument defines computation of eigenvectors or eigenvalues
-only. If it is `'N'`, only eignevalues are computed. If it is `'V'`, both
+only. If it is `'N'`, only eigenvalues are computed. If it is `'V'`, both
 eigenvalues and eigenvectors are computed.
 
 The eigen values returned follow
