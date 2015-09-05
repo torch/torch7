@@ -88,16 +88,15 @@ function torch.type(obj)
    return class
 end
 
--- Returns true if the type given by the passed-in metatable equals typeSpec.
-local function exactTypeMatch(obj_mt, typeSpec)
-   return obj_mt.__typename == typeSpec
+-- Returns true if the type given by the passed-in typeName equals typeSpec.
+local function exactTypeMatch(typeName, typeSpec)
+   return typeName == typeSpec
 end
 
---[[ Returns true if the type given by the passed-in metatable either equals
+--[[ Returns true if the type given by the passed-in typeName either equals
 typeSpec, or ends with ".<typeSpec>". For example, "ab.cd.ef" matches type specs
 "ef", "cd.ef", and "ab.cd.ef", but not "f" or "d.ef". ]]
-local function partialTypeMatch(obj_mt, typeSpec)
-   local typeName = obj_mt.__typename
+local function partialTypeMatch(typeName, typeSpec)
    local diffLen = #typeName - #typeSpec
 
    if diffLen < 0 then
@@ -127,7 +126,7 @@ function torch.isTypeOf(obj, typeSpec)
 
    local mt = getmetatable(obj)
    while mt do
-      if matchFunc(mt, typeSpec) then
+      if mt.__typename and matchFunc(mt.__typename, typeSpec) then
          return true
       end
       mt = getmetatable(mt)
