@@ -150,16 +150,18 @@ static void maybeTriggerGC(long curHeapSize) {
 
 // hooks into the TH heap tracking
 void THHeapUpdate(long size) {
-  long newHeapSize = THAtomicAddLong(&heapSize, size) + size;
+  if(torchGCFunction) {
+    long newHeapSize = THAtomicAddLong(&heapSize, size) + size;
 
-# ifdef TH_CHECK_HEAP_UPDATE
-  if (newHeapSize < 0) {
-     THError("Torch heap size <0 ?");
-  }
+#ifdef TH_CHECK_HEAP_UPDATE
+    if (newHeapSize < 0) {
+       THError("Torch heap size <0 ?");
+    }
 #endif
 
-  if (size > 0) {
-    maybeTriggerGC(newHeapSize);
+    if (size > 0) {
+      maybeTriggerGC(newHeapSize);
+    }
   }
 }
 
