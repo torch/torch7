@@ -60,7 +60,7 @@ Returns the initial seed used to initialize the random generator.
 <a name="torch.random"></a>
 ### [number] random() ###
 
-Returns a 32 bit integer random number.
+Returns an unsigned 32 bit integer random number.
 
 <a name="torch.uniform"></a>
 ### [number] uniform([a],[b]) ###
