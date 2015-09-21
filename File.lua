@@ -49,7 +49,7 @@ end
 function File:referenced(ref)
    -- we use an environment to keep a record of written objects
    if not torch.getenv(self).writeObjects then
-      torch.setenv(self, {writeObjects={}, writeObjectsRef={}, readObjects={}})
+      torch.setenv(self, {writeObjects={}, writeObjectsRef={}, readObjects={}, objectNameStack={}})
    end
    local env = torch.getenv(self)
    env.force = not ref
@@ -87,10 +87,22 @@ local function getmetamethod(obj, name)
    end
 end
 
-function File:writeObject(object)
+local UPVALUES_TOKEN = {} -- unique object
+local function formatStack(objectNameStack)
+   -- Format object name stack skipping UPVALUES_TOKEN and upvalue index
+   local parts = {}
+   for i, v in ipairs(objectNameStack) do
+      if v ~= UPVALUES_TOKEN and objectNameStack[i-1] ~= UPVALUES_TOKEN then
+         table.insert(parts, v)
+      end
+   end
+   return table.concat(parts, '.')
+end
+
+function File:writeObject(object, debugname)
    -- we use an environment to keep a record of written objects
    if not torch.getenv(self).writeObjects then
-      torch.setenv(self, {writeObjects={}, writeObjectsRef={}, readObjects={}})
+      torch.setenv(self, {writeObjects={}, writeObjectsRef={}, readObjects={}, objectNameStack={}})
    end
 
    local force = torch.getenv(self).force
@@ -101,10 +113,13 @@ function File:writeObject(object)
       return
    end
 
+   local objectNameStack = torch.getenv(self).objectNameStack
+   table.insert(objectNameStack, debugname or '<?>')
+
    -- check the type we are dealing with
    local typeidx = self:isWritableObject(object)
    if not typeidx then
-      error(string.format('Unwritable object <%s>', type(object)))
+      error(string.format('Unwritable object <%s> at %s', type(object), formatStack(objectNameStack)))
    end
    self:writeInt(typeidx)
 
@@ -149,7 +164,7 @@ function File:writeObject(object)
             local stringStorage = torch.CharStorage():string(dumped)
             self:writeInt(#stringStorage)
             self:writeChar(stringStorage)
-            self:writeObject(upvalues)
+            self:writeObject(upvalues, UPVALUES_TOKEN)
          elseif typeidx == TYPE_TORCH then
             local version   = torch.CharStorage():string('V ' .. torch.version(object))
             local className = torch.CharStorage():string(torch.typename(object))
@@ -166,31 +181,38 @@ function File:writeObject(object)
                   if self:isWritableObject(v) then
                      var[k] = v
                   else
-                     print(string.format('$ Warning: cannot write object field <%s>', k))
+                     print(string.format('$ Warning: cannot write object field <%s> of <%s> %s', k, torch.typename(object), self:_writeObjectGetStackStr()))
                   end
                end
-               self:writeObject(var)
+               self:writeObject(var, torch.typename(object))
             else
-               error(string.format('<%s> is a non-serializable Torch object', torch.typename(object)))
+               error(string.format('<%s> is a non-serializable Torch object %s', torch.typename(object), self:_writeObjectGetStackStr()))
             end
          else -- it is a table
             local size = 0; for k,v in pairs(object) do size = size + 1 end
             self:writeInt(size)
             for k,v in pairs(object) do
                self:writeObject(k)
-               self:writeObject(v)
+               local name = (type(k) == 'string' or type(k) == 'number') and tostring(k) or nil
+               -- special case name for upvalues
+               if objectNameStack[#objectNameStack-1] == UPVALUES_TOKEN and
+                  name == 'value' and type(object.name) == 'string' then
+                  name = object.name
+               end
+               self:writeObject(v, name)
             end
          end
       end
    else
       error('Unwritable object')
    end
+   table.remove(objectNameStack)
 end
 
 function File:readObject()
    -- we use an environment to keep a record of read objects
    if not torch.getenv(self).writeObjects then
-      torch.setenv(self, {writeObjects={}, writeObjectsRef={}, readObjects={}})
+      torch.setenv(self, {writeObjects={}, writeObjectsRef={}, readObjects={}, objectNameStack={}})
    end
 
    local force = torch.getenv(self).force
