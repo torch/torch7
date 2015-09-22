@@ -2056,11 +2056,48 @@ function torchtest.testBoxMullerState()
 end
 
 function torchtest.testCholesky()
-    local x = torch.rand(10,10)
-    local A = torch.mm(x, x:t())
-    local C = torch.potrf(A)
-    local B = torch.mm(C:t(), C)
-    mytester:assertTensorEq(A, B, 1e-14, 'potrf did not allow rebuilding the original matrix')
+   local x = torch.rand(10,10)
+   local A = torch.mm(x, x:t())
+
+   ---- Default Case
+   local C = torch.potrf(A)
+   local B = torch.mm(C:t(), C)
+   mytester:assertTensorEq(A, B, 1e-14, 'potrf did not allow rebuilding the original matrix')
+
+    ---- Test Upper Triangular
+    local U = torch.potrf(A, 'U')
+          B = torch.mm(U:t(), U)
+    mytester:assertTensorEq(A, B, 1e-14, 'potrf (upper) did not allow rebuilding the original matrix')
+
+    ---- Test Lower Triangular
+    local L = torch.potrf(A, 'L')
+          B = torch.mm(L, L:t())
+    mytester:assertTensorEq(A, B, 1e-14, 'potrf (lower) did not allow rebuilding the original matrix')          
+end
+
+function torchtest.potrs()
+   if not torch.potrs then return end
+   local a=torch.Tensor({{6.80, -2.11,  5.66,  5.97,  8.23},
+                         {-6.05, -3.30,  5.36, -4.44,  1.08},
+                         {-0.45,  2.58, -2.70,  0.27,  9.04},
+                         {8.32,  2.71,  4.35, -7.17,  2.14},
+                         {-9.67, -5.14, -7.26,  6.08, -6.87}}):t()
+   local b=torch.Tensor({{4.02,  6.19, -8.22, -7.57, -3.03},
+                         {-1.56,  4.00, -8.67,  1.75,  2.86},
+                         {9.81, -4.09, -4.57, -8.61,  8.99}}):t()
+
+   ---- Make sure 'a' is symmetric PSD 
+   a = torch.mm(a, a:t())
+
+   ---- Upper Triangular Test
+   local U = torch.potrf(a, 'U')
+   local x = torch.potrs(b, U, 'U')
+   mytester:assertlt(b:dist(a*x),1e-12,'torch.trtrs')
+
+   ---- Lower Triangular Test
+   local L = torch.potrf(a, 'L')
+   x = torch.potrs(b, L, 'L')
+   mytester:assertlt(b:dist(a*x),1e-12,'torch.trtrs')
 end
 
 function torchtest.testNumel()
@@ -2734,6 +2771,21 @@ function torchtest.nonzero()
       end
    end
 
+end
+
+function torchtest.testheaptracking()
+  local oldheaptracking = torch._heaptracking
+  if oldheaptracking == nil then
+    oldheaptracking = false
+  end
+  torch.setheaptracking(true)
+  mytester:assert(torch._heaptracking == true, 'Heap tracking expected true')
+
+  torch.setheaptracking(false)
+  mytester:assert(torch._heaptracking == false, 'Heap tracking expected false')
+
+  -- put heap tracking to its original state
+  torch.setheaptracking(oldheaptracking)
 end
 
 function torch.test(tests)

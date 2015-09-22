@@ -35,28 +35,16 @@ extern void torch_DoubleTensorOperator_init(lua_State *L);
 
 extern void torch_TensorMath_init(lua_State *L);
 
-static void luaTorchErrorHandlerFunction(const char *msg, void *data)
-{
-  lua_State *L = data;
-  luaL_error(L, msg);
-}
-
-static void luaTorchArgErrorHandlerFunction(int argNumber, const char *msg, void *data)
-{
-  lua_State *L = data;
-  luaL_argcheck(L, 0, argNumber, msg);
-}
-
 LUA_EXTERNC DLL_EXPORT int luaopen_libtorch(lua_State *L);
 
 int luaopen_libtorch(lua_State *L)
 {
-  THSetErrorHandler(luaTorchErrorHandlerFunction, L);
-  THSetArgErrorHandler(luaTorchArgErrorHandlerFunction, L);
 
   lua_newtable(L);
   lua_pushvalue(L, -1);
   lua_setglobal(L, "torch");
+
+  torch_utils_init(L);
 
   torch_File_init(L);
 
@@ -91,7 +79,6 @@ int luaopen_libtorch(lua_State *L)
 
   torch_TensorMath_init(L);
 
-  torch_utils_init(L);
   torch_random_init(L);
 
   // Create 'torch.Allocator' type.

@@ -1119,20 +1119,33 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                      {{name=Tensor, default=true, returned=true, invisible=true},
                       {name=Tensor}}
                   )
-     
+      interface:wrap("potrf",
+                     cname("potrf"),
+                     {{name=Tensor, returned=true},
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'}}, -- uplo
+                     cname("potrf"),
+                     {{name=Tensor, default=true, returned=true, invisible=true},
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'}}
+                  )
+      interface:wrap("potrs",
+                     cname("potrs"),
+                     {{name=Tensor, returned=true},
+                      {name=Tensor},
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'}}, -- uplo
+                     cname("potrs"),
+                     {{name=Tensor, default=true, returned=true, invisible=true},
+                      {name=Tensor},
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'}}
+                  )
       interface:wrap("potri",
                      cname("potri"),
                      {{name=Tensor, returned=true},
                       {name=Tensor}},
                      cname("potri"),
-                     {{name=Tensor, default=true, returned=true, invisible=true},
-                      {name=Tensor}}
-                  )
-      interface:wrap("potrf",
-                     cname("potrf"),
-                     {{name=Tensor, returned=true},
-                      {name=Tensor}},
-                     cname("potrf"),
                      {{name=Tensor, default=true, returned=true, invisible=true},
                       {name=Tensor}}
                   )
