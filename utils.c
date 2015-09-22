@@ -197,11 +197,33 @@ static void luaTorchGCFunction(void *data)
 static int torch_setheaptracking(lua_State *L)
 {
   int enabled = luaT_checkboolean(L,1);
+  lua_getglobal(L, "torch");
+  lua_pushboolean(L, enabled);
+  lua_setfield(L, -2, "_heaptracking");
   if(enabled) {
     THSetGCHandler(luaTorchGCFunction, L);
   } else {
     THSetGCHandler(NULL, NULL);
   }
+  return 0;
+}
+
+static void luaTorchErrorHandlerFunction(const char *msg, void *data)
+{
+  lua_State *L = data;
+  luaL_error(L, msg);
+}
+
+static void luaTorchArgErrorHandlerFunction(int argNumber, const char *msg, void *data)
+{
+  lua_State *L = data;
+  luaL_argcheck(L, 0, argNumber, msg);
+}
+
+static int torch_updateerrorhandlers(lua_State *L)
+{
+  THSetErrorHandler(luaTorchErrorHandlerFunction, L);
+  THSetArgErrorHandler(luaTorchArgErrorHandlerFunction, L);
   return 0;
 }
 
@@ -227,10 +249,12 @@ static const struct luaL_Reg torch_utils__ [] = {
   {"version", luaT_lua_version},
   {"pointer", luaT_lua_pointer},
   {"setheaptracking", torch_setheaptracking},
+  {"updateerrorhandlers", torch_updateerrorhandlers},
   {NULL, NULL}
 };
 
 void torch_utils_init(lua_State *L)
 {
+  torch_updateerrorhandlers(L);
   luaT_setfuncs(L, torch_utils__, 0);
 }

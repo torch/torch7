@@ -497,26 +497,78 @@ int luaT_classmodulename(const char *tname, char *module_name)
   return tname[n] == '.';
 }
 
+/* Method for determining name of class module */
+const char* luaT_classname(const char *tname)
+{
+  int idx;
+  int sz = strlen(tname);
+
+  for(idx = sz-1; idx >= 0 ; idx--)
+  {
+    if(tname[idx] == '.')
+      return tname+idx+1;
+  }
+  return tname;
+}
+
+void traverse_tables(lua_State *L, const char *tname, int *L_idx)
+{
+  /* Local variables */
+  char term[256];
+  char chars[] = {'.', '\0'};
+  const char *tname_full = tname; // used for error case
+
+  /* Get outermost table from Lua */
+  int n = strcspn(tname, chars);
+  strncpy(term, tname, n);
+  term[n] = '\0';
+  lua_getglobal(L, term);
+  tname  += n + 1;
+
+  /* Traverse hierarchy down to last table*/
+  n = strcspn(tname, chars);
+  while(n < strlen(tname))
+  {
+    if(!lua_istable(L, *L_idx)){
+      strncpy(term, tname_full, tname - tname_full - 1);
+      term[tname - tname_full] = '\0';
+      luaL_error(L, "while creating metatable %s: bad argument #1 (%s is an invalid module name)", tname_full, term);
+    }
+    strncpy(term, tname, n);
+    term[n] = '\0';
+    lua_getfield(L, *L_idx, term);
+    *L_idx += 1;
+    tname  += n + 1;
+    n = strcspn(tname, chars); // prepare for next
+  }
+}
+
 /* Lua only functions */
 int luaT_lua_newmetatable(lua_State *L)
 {
-  const char* tname = luaL_checkstring(L, 1);
-  char module_name[256];
-  int is_in_module = 0;
-  is_in_module = luaT_classmodulename(tname, module_name);
-
+  
   lua_settop(L, 5);
   luaL_argcheck(L, lua_isnoneornil(L, 2) || lua_isstring(L, 2), 2, "parent class name or nil expected");
   luaL_argcheck(L, lua_isnoneornil(L, 3) || lua_isfunction(L, 3), 3, "constructor function or nil expected");
   luaL_argcheck(L, lua_isnoneornil(L, 4) || lua_isfunction(L, 4), 4, "destructor function or nil expected");
   luaL_argcheck(L, lua_isnoneornil(L, 5) || lua_isfunction(L, 5), 5, "factory function or nil expected");
 
-  if(is_in_module)
-    lua_getglobal(L, module_name);
+  const char* tname = luaL_checkstring(L, 1);
+  char module_name[256];
+  int is_in_module = 0;
+  
+  is_in_module = luaT_classmodulename(tname, module_name);
+  
+  int L_idx0 = lua_gettop(L) + 1; // stack position of outermost module
+  int L_idx1 = L_idx0;            // stack position of immediate parent
+  if (is_in_module)
+    traverse_tables(L, tname, &L_idx1);
   else
     lua_pushglobaltable(L);
-  if(!lua_istable(L, 6))
-    luaL_error(L, "while creating metatable %s: bad argument #1 (%s is an invalid module name)", tname, module_name);
+
+
+  if(!lua_istable(L, L_idx0))
+      luaL_error(L, "while creating metatable %s: bad argument #1 (%s is an invalid module name)", tname, module_name);
 
   /* we first create the new metaclass if we have to */
   if(!luaT_pushmetatable(L, tname))
@@ -706,7 +758,13 @@ int luaT_lua_newmetatable(lua_State *L)
   }
 
   /* module.name = constructor metatable */
-  lua_setfield(L, 6, luaT_classrootname(tname));
+  lua_setfield(L, L_idx1, luaT_classname(tname));
+
+  // // -------- Expanded Version 
+  // if (L_idx1  > L_idx0) // module depth > 1 (i.e. nested)
+  //   lua_setfield(L, L_idx1, luaT_classname(tname));
+  // else
+  //   lua_setfield(L, L_idx1, luaT_classrootname(tname));
 
   return 1; /* returns the metatable */
 }
