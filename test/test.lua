@@ -1354,12 +1354,33 @@ function torchtest.triu()
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.tril value')
 end
 function torchtest.cat()
-   local x = torch.rand(13,msize,msize)
-   local y = torch.rand(17,msize,msize)
-   local mx = torch.cat(x,y,1)
-   local mxx = torch.Tensor()
-   torch.cat(mxx,x,y,1)
-   mytester:asserteq(maxdiff(mx,mxx),0,'torch.cat value')
+   for dim = 1, 3 do
+      local x = torch.rand(13, msize, msize):transpose(1, dim)
+      local y = torch.rand(17, msize, msize):transpose(1, dim)
+      local mx = torch.cat(x, y, dim)
+      mytester:assertTensorEq(mx:narrow(dim, 1, 13), x, 0, 'torch.cat value')
+      mytester:assertTensorEq(mx:narrow(dim, 14, 17), y, 0, 'torch.cat value')
+
+      local mxx = torch.Tensor()
+      torch.cat(mxx, x, y, dim)
+      mytester:assertTensorEq(mx, mxx, 0, 'torch.cat value')
+   end
+end
+function torchtest.catArray()
+   for dim = 1, 3 do
+      local x = torch.rand(13, msize, msize):transpose(1, dim)
+      local y = torch.rand(17, msize, msize):transpose(1, dim)
+      local z = torch.rand(19, msize, msize):transpose(1, dim)
+
+      local mx = torch.cat({x, y, z}, dim)
+      mytester:assertTensorEq(mx:narrow(dim, 1, 13), x, 0, 'torch.cat value')
+      mytester:assertTensorEq(mx:narrow(dim, 14, 17), y, 0, 'torch.cat value')
+      mytester:assertTensorEq(mx:narrow(dim, 31, 19), z, 0, 'torch.cat value')
+
+      local mxx = torch.Tensor()
+      torch.cat(mxx, {x, y, z}, dim)
+      mytester:assertTensorEq(mx, mxx, 0, 'torch.cat value')
+   end
 end
 function torchtest.sin()
    local x = torch.rand(msize,msize,msize)

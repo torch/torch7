@@ -88,6 +88,7 @@ types.Tensor = {
                  return table.concat(txt, '\n')
               end
 }
+
 types.Generator = {
 
    helpname = function(arg)
@@ -288,6 +289,67 @@ for _,typename in ipairs({"ByteTensor", "CharTensor", "ShortTensor", "IntTensor"
                        table.insert(txt, string.format('luaT_pushudata(L, arg%d, "torch.%s");', arg.i, typename))
                     end
                     return table.concat(txt, '\n')
+                 end
+   }
+
+   types[typename .. 'Array'] = {
+
+      helpname = function(arg)
+                    return string.format('{%s+}', typename)
+               end,
+
+      declare = function(arg)
+                   local txt = {}
+                   table.insert(txt, string.format('TH%s **arg%d_data = NULL;', typename, arg.i))
+                   table.insert(txt, string.format('long arg%d_size = 0;', arg.i))
+                   table.insert(txt, string.format('int arg%d_i = 0;', arg.i))
+                   return table.concat(txt, '\n')
+              end,
+
+      check = function(arg, idx)
+                 return string.format('lua_istable(L, %d)', idx)
+            end,
+
+      read = function(arg, idx)
+                local txt = {}
+                -- Iterate over the array to find its length, leave elements on stack.
+                table.insert(txt, string.format('do'))
+                table.insert(txt, string.format('{'))
+                table.insert(txt, string.format('  arg%d_size++;', arg.i))
+                table.insert(txt, string.format('  lua_rawgeti(L, %d, arg%d_size);', idx, arg.i))
+                table.insert(txt, string.format('}'))
+                table.insert(txt, string.format('while (!lua_isnil(L, -1));'))
+                table.insert(txt, string.format('arg%d_size--;', arg.i))
+                -- Pop nil element from stack.
+                table.insert(txt, string.format('lua_pop(L, 1);'))
+                -- Allocate tensor pointers and read values from stack backwards.
+                table.insert(txt, string.format('arg%d_data = (TH%s**)THAlloc(arg%d_size * sizeof(TH%s*));', arg.i, typename, arg.i, typename))
+                table.insert(txt, string.format('for (arg%d_i = arg%d_size - 1; arg%d_i >= 0; arg%d_i--)', arg.i, arg.i, arg.i, arg.i))
+                table.insert(txt, string.format('{'))
+                table.insert(txt, string.format('  if (!(arg%d_data[arg%d_i] = luaT_toudata(L, -1, "torch.%s")))', arg.i, arg.i, typename))
+                table.insert(txt, string.format('    luaL_error(L, "expected %s in tensor array");', typename))
+                table.insert(txt, string.format('  lua_pop(L, 1);'))
+                table.insert(txt, string.format('}'))
+                table.insert(txt, string.format(''))
+                return table.concat(txt, '\n')
+             end,
+
+      init = function(arg)
+             end,
+
+      carg = function(arg)
+                return string.format('arg%d_data,arg%d_size', arg.i, arg.i)
+             end,
+
+      creturn = function(arg)
+                   error('TensorArray cannot be returned.')
+                end,
+
+      precall = function(arg)
+                end,
+
+      postcall = function(arg)
+                    return string.format('THFree(arg%d_data);', arg.i)
                  end
    }
 end
