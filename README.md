@@ -1,6 +1,7 @@
 [![Join the chat at https://gitter.im/torch/torch7](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/torch/torch7?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/torch/torch7.svg)](https://travis-ci.org/torch/torch7)
 
+## Need help? ##
 Gitter Chat is for developers and users who are familiar with torch. Questions or help on installing Torch should be directed to our [Google Groups mailing list](https://groups.google.com/forum/#!forum/torch7). Posting large blobs of text in our chat windows or asking for install help there is very unwelcome. However we are extremely helpful with such issues on our mailing list :)
 
 <a name="torch.reference.dok"/>
