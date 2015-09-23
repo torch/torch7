@@ -1953,7 +1953,8 @@ z = x * y
 ### torch.qr([q, r], x) ###
 
 Compute a QR decomposition of the matrix `x`: matrices `q` and `r` such that
-`x = q * r`, with `q` orthogonal and `r` upper triangular.
+`x = q * r`, with `q` orthogonal and `r` upper triangular. This returns
+the thin (reduced) QR factorization.
 
 `=torch.qr(x)` returns the Q and R components as new matrices.
 
@@ -2026,6 +2027,23 @@ to use `torch.qr()` instead.
 Constructs a Q matrix from a sequence of elementary reflectors, such as that
 given by `torch.geqrf`. See
  [LAPACK documentation](http://www.netlib.org/netlib/lapack/double/dorgqr.f) for
+further details.
+
+<a name="torch.ormqr"></a>
+### torch.ormqr([res], m, tau, mat [, 'L' or 'R'] [, 'N' or 'T']) ###
+
+Multiply a matrix with `Q` as defined by the elementary reflectors and
+scalar factors returned by `geqrf`. This is a low-level function for
+calling LAPACK directly. You'll generally want to use `torch.qr()`
+instead.
+
+* `side` (`'L'` or `'R'`) specifies whether `mat` should be
+  left-multiplied, `Q * mat`, or right-multiplied, `mat * Q`.
+* `trans` (`'N'` or `'T`') specifies whether `Q` should be transposed
+  before being multiplied.
+
+See [LAPACK
+documentation](http://www.netlib.org/netlib/lapack/double/dormqr.f) for
 further details.
 
 <a name="torch.logical.dok"></a>

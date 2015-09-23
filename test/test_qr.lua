@@ -60,6 +60,21 @@ local function qrManual(geqrfFunc, orgqrFunc)
   end
 end
 
+-- Check that Q multiplied with a matrix with ormqr gives the correct result
+local function checkQM(testOpts, mat1, mat2)
+  local q, r = torch.qr(mat1)
+  local m, tau = torch.geqrf(mat1)
+  local requiredPrecision = 1e-5
+  tester:assertTensorEq(torch.mm(q, mat2), torch.ormqr(m, tau, mat2),
+                        requiredPrecision)
+  tester:assertTensorEq(torch.mm(mat2, q), torch.ormqr(m, tau, mat2, 'R'),
+                        requiredPrecision)
+  tester:assertTensorEq(torch.mm(q:t(), mat2),
+                        torch.ormqr(m, tau, mat2, 'L', 'T'), requiredPrecision)
+  tester:assertTensorEq(torch.mm(mat2, q:t()),
+                        torch.ormqr(m, tau, mat2, 'R', 'T'), requiredPrecision)
+end
+
 -- Check that the given `q`, `r` matrices are a valid QR decomposition of `a`.
 local function checkQR(testOpts, a, q, r)
   local qrFunc = testOpts.qr
@@ -249,6 +264,11 @@ addTestVariations(tests, 'randomNonContiguous', function(testOpts)
     end
   end
 end)
+
+function tests.testQM()
+  checkQM({}, torch.randn(10, 10), torch.randn(10, 10))
+  -- checkQM({}, torch.randn(20, 10), torch.randn(20, 20))
+end
 
 tester:add(tests)
 tester:run()

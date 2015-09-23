@@ -1156,6 +1156,22 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                       {name=Tensor},
                       {name=Tensor}}
                   )
+      interface:wrap("ormqr",
+                     cname("ormqr"),
+                     {{name=Tensor, returned=true},
+                      {name=Tensor},
+                      {name=Tensor},
+                      {name=Tensor},
+                      {name='charoption', values={'L', 'R'}, default='L'},
+                      {name='charoption', values={'N', 'T'}, default='N'}},
+                     cname("ormqr"),
+                     {{name=Tensor, default=true, returned=true, invisible=true},
+                      {name=Tensor},
+                      {name=Tensor},
+                      {name=Tensor},
+                      {name='charoption', values={'L', 'R'}, default='L'},
+                      {name='charoption', values={'N', 'T'}, default='N'}}
+                  )
    end
 
    method:register(string.format("m_torch_%sMath__", Tensor))
