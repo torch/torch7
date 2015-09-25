@@ -1636,6 +1636,102 @@ x = torch.trtrs(b, a)
 4.1895292266754e-15
 ```
 
+<a name="torch."></a>
+### torch.potrf([res,] A [, 'U' or 'L'] ) ###
+
+Cholesky Decomposition of 2D tensor `A`. Matrix `A` has to be a positive-definite and either symetric or complex Hermitian.
+
+Optional character `uplo` = {'U', 'L'} specified whether the upper or lower triangular decomposition should be returned. By default, `uplo` = 'U'.
+
+`X = torch.potrf(A, 'U')` returns the upper triangular Cholesky decomposition of X.
+
+`X = torch.potrf(A, 'L')` returns the lower triangular Cholesky decomposition of X.
+
+If tensor `res` is provided, the resulting decomposition will be stored therein.
+
+```
+A = torch.Tensor({
+    {1.2705,  0.9971,  0.4948,  0.1389,  0.2381},
+    {0.9971,  0.9966,  0.6752,  0.0686,  0.1196},
+    {0.4948,  0.6752,  1.1434,  0.0314,  0.0582},
+    {0.1389,  0.0686,  0.0314,  0.0270,  0.0526},
+    {0.2381,  0.1196,  0.0582,  0.0526,  0.3957}})
+
+chol = torch.potrf(A)
+> chol
+ 1.1272  0.8846  0.4390  0.1232  0.2112
+ 0.0000  0.4626  0.6200 -0.0874 -0.1453
+ 0.0000  0.0000  0.7525  0.0419  0.0738
+ 0.0000  0.0000  0.0000  0.0491  0.2199
+ 0.0000  0.0000  0.0000  0.0000  0.5255
+[torch.DoubleTensor of size 5x5]
+
+torch.potrf(chol, A, 'L')
+> chol
+ 1.1272  0.0000  0.0000  0.0000  0.0000
+ 0.8846  0.4626  0.0000  0.0000  0.0000
+ 0.4390  0.6200  0.7525  0.0000  0.0000
+ 0.1232 -0.0874  0.0419  0.0491  0.0000
+ 0.2112 -0.1453  0.0738  0.2199  0.5255
+[torch.DoubleTensor of size 5x5]
+```
+
+<a name="torch."></a>
+### torch.potrs([res,] chol [, 'U' or 'L'] ) ###
+
+Returns the solution to linear system `AX = B` using the Cholesky decomposition `chol` of 2D tensor `A`.
+
+Square matrix `chol` should be triangular; and, righthand side matrix `B` should be of full rank.
+
+Optional character `uplo` = {'U', 'L'} specified matrix `chol` as being other upper or lower triangular; and, by default, equals 'U'.
+
+If tensor `res` is provided, the resulting decomposition will be stored therein.
+
+```
+A = torch.Tensor({
+    {1.2705,  0.9971,  0.4948,  0.1389,  0.2381},
+    {0.9971,  0.9966,  0.6752,  0.0686,  0.1196},
+    {0.4948,  0.6752,  1.1434,  0.0314,  0.0582},
+    {0.1389,  0.0686,  0.0314,  0.0270,  0.0526},
+    {0.2381,  0.1196,  0.0582,  0.0526,  0.3957}})
+
+B = torch.Tensor({
+    {0.6219,  0.3439,  0.0431},
+    {0.5642,  0.1756,  0.0153},
+    {0.2334,  0.8594,  0.4103},
+    {0.7556,  0.1966,  0.9637},
+    {0.1420,  0.7185,  0.7476}})
+
+chol = torch.potrf(A)
+> chol
+ 1.1272  0.8846  0.4390  0.1232  0.2112
+ 0.0000  0.4626  0.6200 -0.0874 -0.1453
+ 0.0000  0.0000  0.7525  0.0419  0.0738
+ 0.0000  0.0000  0.0000  0.0491  0.2199
+ 0.0000  0.0000  0.0000  0.0000  0.5255
+[torch.DoubleTensor of size 5x5]
+
+solve = torch.potrs(B, chol)
+> solve
+  12.1945   61.8622   92.6882
+ -11.1782  -97.0303 -138.4874
+ -15.3442  -76.6562 -116.8218
+   6.1930   13.5238   25.2056
+  29.9678  251.7346  360.2301
+[torch.DoubleTensor of size 5x3]
+
+> A*solve
+ 0.6219  0.3439  0.0431
+ 0.5642  0.1756  0.0153
+ 0.2334  0.8594  0.4103
+ 0.7556  0.1966  0.9637
+ 0.1420  0.7185  0.7476
+[torch.DoubleTensor of size 5x3]
+
+> B:dist(A*solve)
+4.6783066076306e-14
+```
+
 <a name="torch.gels"></a>
 ### torch.gels([resb, resa,] b, a) ###
 
