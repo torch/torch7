@@ -2773,6 +2773,21 @@ function torchtest.nonzero()
 
 end
 
+function torchtest.testheaptracking()
+  local oldheaptracking = torch._heaptracking
+  if oldheaptracking == nil then
+    oldheaptracking = false
+  end
+  torch.setheaptracking(true)
+  mytester:assert(torch._heaptracking == true, 'Heap tracking expected true')
+
+  torch.setheaptracking(false)
+  mytester:assert(torch._heaptracking == false, 'Heap tracking expected false')
+
+  -- put heap tracking to its original state
+  torch.setheaptracking(oldheaptracking)
+end
+
 function torch.test(tests)
    torch.setheaptracking(true)
    math.randomseed(os.time())
