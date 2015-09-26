@@ -13,6 +13,16 @@ end
 require "paths"
 paths.require "libtorch"
 
+-- Keep track of all thread local variables torch.
+-- if a Lua VM is passed to another thread thread local
+-- variables need to be updated.
+function torch.updatethreadlocals()
+  torch.updateerrorhandlers()
+  local tracking = torch._heaptracking
+  if tracking == nil then tracking = false end
+  torch.setheaptracking(tracking)
+end
+
 --- package stuff
 function torch.packageLuaPath(name)
    if not name then
