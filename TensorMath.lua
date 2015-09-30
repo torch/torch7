@@ -1144,11 +1144,13 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
       interface:wrap("potri",
                      cname("potri"),
                      {{name=Tensor, returned=true},
-                      {name=Tensor}},
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'}}, -- uplo
                      cname("potri"),
                      {{name=Tensor, default=true, returned=true, invisible=true},
-                      {name=Tensor}}
-                  )
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'}} -- uplo
+                    )
       interface:wrap("qr",
                      cname("qr"),
                      {{name=Tensor, returned=true},
