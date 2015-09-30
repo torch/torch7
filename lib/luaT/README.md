@@ -220,16 +220,31 @@ This function assume a table is on the stack. It creates a table field
 <a name="luat_classrootname"/>
 ### const char *luaT_classrootname(const char *tname) ###
 
-Assuming `tname` is of the form `modulename.classname`, returns
-`classname`. The returned value shall not be freed. It is a pointer
-inside `tname` string.
+Assuming `tname` is of the form `A.b.c`, returns 'c'. The returned value
+shall not be freed. It is a pointer inside `tname` string.
 
 <a name="luat_classmodulename"/>
-### const char *luaT_classmodulename(const char *tname) ###
+### int luaT_classmodulename(const char *tname, char *parent_name) ###
+Alias to `luaT_fullparentname ` for ensuring backwards compatibilty; 
+use of `luaT_fullparentname` is preferred.
 
-Assuming `tname` is of the form `modulename.classname`, returns
-`modulename`. The returned value shall not be freed. It is valid until the
-next call to `luaT_classrootname`.
+<a name="luat_fullparentname"/>
+### int luaT_fullparentname(const char *tname, char *parent_name) ###
+
+Returns a 0-1 valued integer indicating whether `tname` has a parent module.
+Assuming `tname` is of the form `A.b.c`, sets `parent_name` to `A.b`.
+
+<a name="luat_classmodulename"/>
+### int luaT_outerparentname(const char *tname, char *parent_name) ###
+
+Returns a 0-1 valued integer indicating whether `tname` has a parent module.
+Assuming `tname` is of the form `A.b.c`, sets `parent_name` to `A`.
+
+<a name="luat_classmodulename"/>
+### int luaT_innerparentname(const char *tname, char *parent_name) ###
+
+Returns a 0-1 valued integer indicating whether `tname` has a parent module.
+Assuming `tname` is of the form `A.b.c`, sets `parent_name` to `b`.
 
 <a name="luat_stackdump"/>
 ### void luaT_stackdump(lua_State *L) ###
