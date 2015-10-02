@@ -1049,7 +1049,6 @@ depends on the sizes of the tensors.
  - 1D and 1D: Returns the dot product between the two tensors (scalar).
  - 2D and 1D: Returns the matrix-vector operation between the two tensors (1D tensor).
  - 2D and 2D: Returns the matrix-matrix operation between the two tensors (2D tensor).
- - 4D and 2D: Returns a tensor product (2D tensor).
 
 Sizes must be relevant for the corresponding operation.
 
