@@ -513,6 +513,9 @@ static int torch_Tensor_(maskedCopy)(lua_State *L)
 
   THTensor_(maskedCopy)(tensor,mask,src);
 
+  /* return destination */
+  lua_pop(L, 2);
+
   return 1;
 }
 
