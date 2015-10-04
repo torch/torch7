@@ -495,6 +495,54 @@ function torchtest.add()
    -- [res] torch.add([res,] tensor1, value, tensor2)
 end
 
+function torchtest.csub()
+   local rngState = torch.getRNGState()
+   torch.manualSeed(123)
+
+   local a = torch.randn(100,90)
+   local b = a:clone():normal()
+
+   local res_add = torch.add(a, -1, b)
+   local res_csub = a:clone()
+   res_csub:csub(b)
+
+   mytester:assertlt((res_add - res_csub):abs():max(), 0.00001)
+
+   local _ = torch.setRNGState(rngState)
+end
+
+function torchtest.csub_scalar()
+   local rngState = torch.getRNGState()
+   torch.manualSeed(123)
+
+   local a = torch.randn(100,100)
+
+   local scalar = 123.5
+   local res_add = torch.add(a, -scalar)
+   local res_csub = a:clone()
+   res_csub:csub(scalar)
+
+   mytester:assertlt((res_add - res_csub):abs():max(), 0.00001)
+
+   local _ = torch.setRNGState(rngState)
+end
+
+function torchtest.neg()
+   local rngState = torch.getRNGState()
+   torch.manualSeed(123)
+
+   local a = torch.randn(100,90)
+   local zeros = torch.Tensor():resizeAs(a):zero()
+
+   local res_add = torch.add(zeros, -1, a)
+   local res_neg = a:clone()
+   res_neg:neg()
+
+   mytester:assertlt((res_add - res_neg):abs():max(), 0.00001)
+
+   local _ = torch.setRNGState(rngState)
+end
+
 function torchtest.mul()
    local m1 = torch.randn(10,10)
    local res1 = m1:clone()
