@@ -425,4 +425,167 @@
   THFree(TENSOR##_counter); \
 }
 
+#define TH_TENSOR_APPLY2_PARALLEL(TYPE1, TENSOR1, TYPE2, TENSOR2, CODE) \
+{ \
+  long *TENSOR1##_counter = NULL; \
+  long TENSOR1##_stride = 0, TENSOR1##_size = 0, TENSOR1##_dim = 0, TENSOR1##_i, TENSOR1##_n; \
+  int TENSOR1##_isContiguous = 1; \
+  long *TENSOR2##_counter = NULL; \
+  long TENSOR2##_stride = 0, TENSOR2##_size = 0, TENSOR2##_dim = 0, TENSOR2##_i, TENSOR2##_n; \
+  int TENSOR2##_isContiguous = 1; \
+  int TH_TENSOR_APPLY_hasFinished = 0; \
+\
+  TENSOR1##_n = (TENSOR1->nDimension ? 1 : 0); \
+  for(TENSOR1##_i = 0; TENSOR1##_i < TENSOR1->nDimension; TENSOR1##_i++) \
+    TENSOR1##_n *= TENSOR1->size[TENSOR1##_i]; \
+\
+  TENSOR2##_n = (TENSOR2->nDimension ? 1 : 0); \
+  for(TENSOR2##_i = 0; TENSOR2##_i < TENSOR2->nDimension; TENSOR2##_i++) \
+    TENSOR2##_n *= TENSOR2->size[TENSOR2##_i]; \
+\
+  if(TENSOR1##_n != TENSOR2##_n) /* should we do the check in the function instead? i think so */ \
+    THError("inconsistent tensor size"); \
+\
+  if(TENSOR1->nDimension == 0) \
+    TH_TENSOR_APPLY_hasFinished = 1; \
+  else \
+  { \
+    for(TENSOR1##_dim = TENSOR1->nDimension-1; TENSOR1##_dim >= 0; TENSOR1##_dim--) \
+    { \
+      if(TENSOR1->size[TENSOR1##_dim] != 1) \
+        break; \
+    } \
+    TENSOR1##_stride = (TENSOR1##_dim == -1 ? 0 : TENSOR1->stride[TENSOR1##_dim]); \
+    TENSOR1##_size = 1; \
+    for(TENSOR1##_dim = TENSOR1->nDimension-1; TENSOR1##_dim >= 0; TENSOR1##_dim--) \
+    { \
+      if(TENSOR1->size[TENSOR1##_dim] != 1) \
+      { \
+        if(TENSOR1->stride[TENSOR1##_dim] == TENSOR1##_size) \
+          TENSOR1##_size *= TENSOR1->size[TENSOR1##_dim]; \
+        else \
+        { \
+          TENSOR1##_isContiguous = 0; \
+          break; \
+        } \
+      } \
+    } \
+    TENSOR1##_counter = (long*)THAlloc(sizeof(long)*(TENSOR1##_dim+1)); \
+    for(TENSOR1##_i = 0; TENSOR1##_i <= TENSOR1##_dim; TENSOR1##_i++) \
+      TENSOR1##_counter[TENSOR1##_i] = 0; \
+\
+    for(TENSOR2##_dim = TENSOR2->nDimension-1; TENSOR2##_dim >= 0; TENSOR2##_dim--) \
+    { \
+      if(TENSOR2->size[TENSOR2##_dim] != 1) \
+        break; \
+    } \
+    TENSOR2##_stride = (TENSOR2##_dim == -1 ? 0 : TENSOR2->stride[TENSOR2##_dim]); \
+    TENSOR2##_size = 1; \
+    for(TENSOR2##_dim = TENSOR2->nDimension-1; TENSOR2##_dim >= 0; TENSOR2##_dim--) \
+    { \
+      if(TENSOR2->size[TENSOR2##_dim] != 1) \
+      { \
+        if(TENSOR2->stride[TENSOR2##_dim] == TENSOR2##_size) \
+          TENSOR2##_size *= TENSOR2->size[TENSOR2##_dim]; \
+        else \
+        { \
+          TENSOR2##_isContiguous = 0; \
+          break; \
+        } \
+      } \
+    } \
+    TENSOR2##_counter = (long*)THAlloc(sizeof(long)*(TENSOR2##_dim+1)); \
+    for(TENSOR2##_i = 0; TENSOR2##_i <= TENSOR2##_dim; TENSOR2##_i++) \
+      TENSOR2##_counter[TENSOR2##_i] = 0; \
+  } \
+\
+  TENSOR1##_i = 0; \
+  TENSOR2##_i = 0; \
+  if(TENSOR1##_isContiguous & TENSOR2##_isContiguous) \
+  { \
+    TYPE1 *TENSOR1##_dataT = TENSOR1->storage->data+TENSOR1->storageOffset; \
+    TYPE2 *TENSOR2##_dataT = TENSOR2->storage->data+TENSOR2->storageOffset; \
+    _Pragma("omp parallel for") \
+    for(TENSOR1##_i = 0; TENSOR1##_i < TENSOR1##_size; TENSOR1##_i++) /* 0 et pas TENSOR##_dim! */ \
+    { \
+      TYPE1 *TENSOR1##_data = TENSOR1##_dataT + TENSOR1##_i; \
+      TYPE2 *TENSOR2##_data = TENSOR2##_dataT + TENSOR1##_i; \
+      CODE \
+    } \
+    TH_TENSOR_APPLY_hasFinished = 1; \
+  } \
+  TYPE1 *TENSOR1##_data = TENSOR1->storage->data+TENSOR1->storageOffset; \
+  TYPE2 *TENSOR2##_data = TENSOR2->storage->data+TENSOR2->storageOffset; \
+  while(!TH_TENSOR_APPLY_hasFinished) \
+  { \
+    for(; TENSOR1##_i < TENSOR1##_size && TENSOR2##_i < TENSOR2##_size; TENSOR1##_i++, TENSOR2##_i++, TENSOR1##_data += TENSOR1##_stride, TENSOR2##_data += TENSOR2##_stride) /* 0 et pas TENSOR##_dim! */ \
+    { \
+      CODE \
+    } \
+\
+    if(TENSOR1##_i == TENSOR1##_size) \
+    { \
+      if(TENSOR1##_dim == -1) \
+         break; \
+\
+      TENSOR1##_data -= TENSOR1##_size*TENSOR1##_stride; \
+      for(TENSOR1##_i = TENSOR1##_dim; TENSOR1##_i >= 0; TENSOR1##_i--) \
+      { \
+        TENSOR1##_counter[TENSOR1##_i]++; \
+        TENSOR1##_data += TENSOR1->stride[TENSOR1##_i]; \
+\
+        if(TENSOR1##_counter[TENSOR1##_i]  == TENSOR1->size[TENSOR1##_i]) \
+        { \
+          if(TENSOR1##_i == 0) \
+          { \
+            TH_TENSOR_APPLY_hasFinished = 1; \
+            break; \
+          } \
+            else \
+          { \
+            TENSOR1##_data -= TENSOR1##_counter[TENSOR1##_i]*TENSOR1->stride[TENSOR1##_i]; \
+            TENSOR1##_counter[TENSOR1##_i] = 0; \
+          } \
+        } \
+        else \
+          break; \
+      } \
+      TENSOR1##_i = 0; \
+    } \
+\
+    if(TENSOR2##_i == TENSOR2##_size) \
+    { \
+      if(TENSOR2##_dim == -1) \
+         break; \
+\
+      TENSOR2##_data -= TENSOR2##_size*TENSOR2##_stride; \
+      for(TENSOR2##_i = TENSOR2##_dim; TENSOR2##_i >= 0; TENSOR2##_i--) \
+      { \
+        TENSOR2##_counter[TENSOR2##_i]++; \
+        TENSOR2##_data += TENSOR2->stride[TENSOR2##_i]; \
+\
+        if(TENSOR2##_counter[TENSOR2##_i]  == TENSOR2->size[TENSOR2##_i]) \
+        { \
+          if(TENSOR2##_i == 0) \
+          { \
+            TH_TENSOR_APPLY_hasFinished = 1; \
+            break; \
+          } \
+            else \
+          { \
+            TENSOR2##_data -= TENSOR2##_counter[TENSOR2##_i]*TENSOR2->stride[TENSOR2##_i]; \
+            TENSOR2##_counter[TENSOR2##_i] = 0; \
+          } \
+        } \
+        else \
+          break; \
+      } \
+      TENSOR2##_i = 0; \
+    } \
+  } \
+  THFree(TENSOR1##_counter); \
+  THFree(TENSOR2##_counter); \
+}
+
+
 #endif
