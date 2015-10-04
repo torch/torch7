@@ -228,6 +228,17 @@ a = torch.multinomial(p, 10000, true)
 0
 ```
 
+Note: If you use the function with a given result tensor, 
+i.e. of the function prototype: `torch.multinomial(res, p, n, [,replacement])` 
+then you will have to call it slightly differently as:
+
+```lua
+p.multinomial(res, p, n, replacement) -- p.multinomial instead of torch.multinomial
+```
+
+This is due to the fact that the result here is of a `LongTensor` type, 
+and we do not define a `torch.multinomial` over long tensors.
+
 <a name="torch.ones"></a>
 ### [res] torch.ones([res,] m [,n...]) ###
 <a name="torch.ones"></a>
