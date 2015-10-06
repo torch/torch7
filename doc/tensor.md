@@ -969,7 +969,7 @@ all the elements of the `Tensor`.
 
 __When resizing to a smaller size__, the underlying [Storage](#Storage) is not resized.
 
-__Important note:__ the content of a `Tensor` after resizing is _undertermined_ as [strides](#torch.Tensor.stride)
+__Important note:__ the content of a `Tensor` after resizing is _undetermined_ as [strides](#torch.Tensor.stride)
 might have been completely changed. In particular, _the elements of the resized tensor are contiguous in memory_.
 
 <a name="torch.Tensor.resizeAs"></a>
