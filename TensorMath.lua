@@ -314,6 +314,13 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
                         string.format("TH%s_resize1d(%s, %s->size[0]);", Tensor, arg:carg(), arg.args[5]:carg())
                      }, '\n')
                end,
+          precall=function(arg)
+                  return table.concat(
+                     {
+                        string.format("TH%s_zero(%s);", Tensor, arg:carg()),
+                        arg.__metatable.precall(arg)
+                     }, '\n')
+               end,
        },
          {name=real, default=0, invisible=true},
          {name=Tensor, default=1, invisible=true},
@@ -330,6 +337,13 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
                      {
                         arg.__metatable.init(arg),
                         string.format("TH%s_resize2d(%s, %s->size[0], %s->size[1]);", Tensor, arg:carg(), arg.args[5]:carg(), arg.args[6]:carg())
+                     }, '\n')
+               end,
+          precall=function(arg)
+                  return table.concat(
+                     {
+                        string.format("TH%s_zero(%s);", Tensor, arg:carg()),
+                        arg.__metatable.precall(arg)
                      }, '\n')
                end,
        },
@@ -349,6 +363,13 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
                         arg.__metatable.init(arg),
                         string.format("TH%s_resize3d(%s, %s->size[0], %s->size[1], %s->size[2]);",
                                       Tensor, arg:carg(), arg.args[5]:carg(), arg.args[5]:carg(), arg.args[6]:carg())
+                     }, '\n')
+               end,
+          precall=function(arg)
+                  return table.concat(
+                     {
+                        string.format("TH%s_zero(%s);", Tensor, arg:carg()),
+                        arg.__metatable.precall(arg)
                      }, '\n')
                end,
        },
