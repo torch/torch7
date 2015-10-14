@@ -8,7 +8,7 @@ child classes, like [DiskFile](diskfile.md),
 Methods defined here are intended for basic read/write functionalities.
 Read/write methods might write in [ASCII](#torch.File.ascii) mode or
 [binary](#torch.File.binary) mode.
- 
+
 In [ASCII](#torch.File.ascii) mode, numbers are converted in human readable
 format (characters). Booleans are converted into `0` (false) or `1` (true).
 In [binary](#torch.File.binary) mode, numbers and boolean are directly encoded
@@ -150,7 +150,7 @@ reference have still the same reference after loading.
 
 Example:
 ```lua
--- creates an array which contains twice the same tensor  
+-- creates an array which contains twice the same tensor
 array = {}
 x = torch.Tensor(1)
 table.insert(array, x)
@@ -339,12 +339,26 @@ Return `true` if [autoSpacing](#torch.File.autoSpacing) has been chosen.
 <a name="torch.File.referenced"></a>
 ### referenced(ref) ###
 
-Sets the referenced property of the File to `ref`. `ref` has to be `true` or `false`. By default it is true, which means that a File object keeps track of objects written using [writeObject](#torch.File.writeObject) method. When one needs to push the same tensor repeatedly into a file but everytime changing its contents, calling `referenced(false)` ensures desired behaviour.
+Sets the referenced property of the File to `ref`. `ref` has to be `true`
+or `false`.
+
+By default `ref` is true, which means that a File object keeps track of
+objects written (using [writeObject](#torch.File.writeObject) method) or
+read (using [readObject](#torch.File.readObject) method). Objects with the
+same address will be written or read only once, meaning that this approach
+preserves shared memory structured.
+
+Keeping track of references has a cost: every object which is serialized in
+the file is kept alive (even if one discards the object after
+writing/reading) as File needs to track their pointer. This is not always a
+desirable behavior, especially when dealing with large data structures.
+
+Another typical example when does not want want reference tracking is when
+one needs to push the same tensor repeatedly into a file but everytime
+changing its contents: calling `referenced(false)` ensures desired
+behaviour.
 
 <a name="torch.File.isReferenced"></a>
 ### isReferenced() ###
 
 Return the state set by [referenced](#torch.File.referenced).
-
-
-

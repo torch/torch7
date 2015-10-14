@@ -296,18 +296,26 @@ function File:readObject()
 end
 
 -- simple helpers to save/load arbitrary objects/tables
-function torch.save(filename, object, mode)
+function torch.save(filename, object, mode, referenced)
+   assert(mode == nil or mode == 'binary' or mode == 'ascii', '"binary" or "ascii" (or nil) expected for mode')
+   assert(referenced == nil or referenced == true or referenced == false, 'true or false (or nil) expected for referenced')
    mode = mode or 'binary'
+   referenced = referenced == nil and true or referenced
    local file = torch.DiskFile(filename, 'w')
    file[mode](file)
+   file:referenced(referenced)
    file:writeObject(object)
    file:close()
 end
 
-function torch.load(filename, mode)
+function torch.load(filename, mode, referenced)
+   assert(mode == nil or mode == 'binary' or mode == 'ascii', '"binary" or "ascii" (or nil) expected for mode')
+   assert(referenced == nil or referenced == true or referenced == false, 'true or false (or nil) expected for referenced')
    mode = mode or 'binary'
+   referenced = referenced == nil and true or referenced
    local file = torch.DiskFile(filename, 'r')
    file[mode](file)
+   file:referenced(referenced)
    local object = file:readObject()
    file:close()
    return object
