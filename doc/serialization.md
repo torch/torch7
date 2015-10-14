@@ -8,8 +8,8 @@ for convenience (these are very common routines).
 
 The first two functions are useful to serialize/deserialize data to/from files:
 
-  - `torch.save(filename, object [, format])`
-  - `[object] torch.load(filename [, format])`
+  - `torch.save(filename, object [, format, referenced])`
+  - `[object] torch.load(filename [, format, referenced])`
 
 The next two functions are useful to serialize/deserialize data to/from strings:
 
@@ -21,13 +21,15 @@ Serializing to strings is useful to store arbitrary data structures in databases
 software.
 
 <a name="torch.save"></a>
-### torch.save(filename, object [, format]) ###
+### torch.save(filename, object [, format, referenced]) ###
 
-Writes `object` into a file named `filename`. The `format` can be set
-to `ascii` or `binary` (default is binary). Binary format is platform
+Writes `object` into a file named `filename`. The `format` can be set to
+`ascii` or `binary` (default is binary). Binary format is platform
 dependent, but typically more compact and faster to read/write. The ASCII
 format is platform-independent, and should be used to share data structures
-across platforms.
+across platforms. The option `referenced` specifies if
+[object references](file.md#torch.File.referenced) should be tracked or not
+(`true` by default).
 
 ```
 -- arbitrary object:
@@ -44,13 +46,16 @@ torch.save('test.dat', obj)
 ```
 
 <a name="torch.load"></a>
-### [object] torch.load(filename [, format]) ###
+### [object] torch.load(filename [, format, referenced]) ###
 
-Reads `object` from a file named `filename`. The `format` can be set
-to `ascii` or `binary` (default is binary). Binary format is platform
+Reads `object` from a file named `filename`. The `format` can be set to
+`ascii` or `binary` (default is binary). Binary format is platform
 dependent, but typically more compact and faster to read/write. The ASCII
 format is platform-independent, and should be used to share data structures
-across platforms.
+across platforms. The option `referenced` specifies if
+[object references](file.md#torch.File.referenced) should be tracked or not
+(`true` by default). Note that files written with `referenced` at `true`
+cannot be loaded with `referenced` at `false`.
 
 ```
 -- given serialized object from section above, reload:
