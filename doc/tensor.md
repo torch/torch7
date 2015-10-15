@@ -2146,9 +2146,9 @@ x:map2(y, z, function(xx, yy, zz) return xx+yy*zz end)
 ```
 
 
-## Converting Tensors to tables of Tensors ##
+## Dividing a tensor into a table of tensors ##
 
-These functions divide a Tensor into a table of Tensors.
+These functions divide a tensor into several tensors. Then, the functions return a table which consists of the divided tensors.
 
 <a name="torch.split"></a>
 ### [result] split([result,] tensor, size, [dim]) ###
