@@ -2072,7 +2072,7 @@ function torchtest.testCholesky()
     ---- Test Lower Triangular
     local L = torch.potrf(A, 'L')
           B = torch.mm(L, L:t())
-    mytester:assertTensorEq(A, B, 1e-14, 'potrf (lower) did not allow rebuilding the original matrix')          
+    mytester:assertTensorEq(A, B, 1e-14, 'potrf (lower) did not allow rebuilding the original matrix')
 end
 
 function torchtest.potrs()
@@ -2086,7 +2086,7 @@ function torchtest.potrs()
                          {-1.56,  4.00, -8.67,  1.75,  2.86},
                          {9.81, -4.09, -4.57, -8.61,  8.99}}):t()
 
-   ---- Make sure 'a' is symmetric PSD 
+   ---- Make sure 'a' is symmetric PSD
    a = torch.mm(a, a:t())
 
    ---- Upper Triangular Test
@@ -2108,7 +2108,7 @@ function torchtest.potri()
                          {8.32,  2.71,  4.35, -7.17,  2.14},
                          {-9.67, -5.14, -7.26,  6.08, -6.87}}):t()
 
-   ---- Make sure 'a' is symmetric PSD 
+   ---- Make sure 'a' is symmetric PSD
    a = torch.mm(a, a:t())
 
    ---- Compute inverse directly
@@ -2214,6 +2214,29 @@ function torchtest.indexCopy()
       dest2[idx[i]] = src[i]
    end
    mytester:assertTensorEq(dest, dest2, 0.000001, "indexCopy scalar error")
+end
+
+function torchtest.indexAccum()
+   local nCopy, nDest = 3, 20
+   local dest = torch.randn(nDest,4,5)
+   local src = torch.randn(nCopy,4,5)
+   local idx = torch.randperm(nDest):narrow(1, 1, nCopy):long()
+   local dest2 = dest:clone()
+   dest:indexAccum(1, idx, src)
+   for i=1,idx:size(1) do
+      dest2[idx[i]]:add(src[i])
+   end
+   mytester:assertTensorEq(dest, dest2, 0.000001, "indexAccum tensor error")
+
+   local dest = torch.randn(nDest)
+   local src = torch.randn(nCopy)
+   local idx = torch.randperm(nDest):narrow(1, 1, nCopy):long()
+   local dest2 = dest:clone()
+   dest:indexAccum(1, idx, src)
+   for i=1,idx:size(1) do
+      dest2[idx[i]] = dest2[idx[i]] + src[i]
+   end
+   mytester:assertTensorEq(dest, dest2, 0.000001, "indexAccum scalar error")
 end
 
 -- Fill idx with valid indices.
