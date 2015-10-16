@@ -1339,6 +1339,43 @@ function torchtest.median()
    end
 end
 
+function torchtest.mode()
+   local x = torch.range(1, msize * msize):reshape(msize, msize)
+   x:select(1, 1):fill(1)
+   x:select(1, 2):fill(1)
+   x:select(2, 1):fill(1)
+   x:select(2, 2):fill(1)
+   local x0 = x:clone()
+
+   -- Pre-calculated results.
+   local res = torch.Tensor(msize):fill(1)
+   -- The indices are the position of the last appearance of the mode element.
+   local resix = torch.LongTensor(msize):fill(2)
+   resix[1] = msize
+   resix[2] = msize
+
+   local mx, ix = torch.mode(x)
+
+   mytester:assertTensorEq(res:view(msize, 1), mx, 0, 'torch.mode value')
+   mytester:assertTensorEq(resix:view(msize, 1), ix, 0, 'torch.mode index')
+
+   -- Test use of result tensor
+   local mr = torch.Tensor()
+   local ir = torch.LongTensor()
+   torch.mode(mr, ir, x)
+   mytester:assertTensorEq(mr, mx, 0, 'torch.mode result tensor value')
+   mytester:assertTensorEq(ir, ix, 0, 'torch.mode result tensor index')
+
+   -- Test non-default dim
+   mx, ix = torch.mode(x, 1)
+   mytester:assertTensorEq(res:view(1, msize), mx, 0, 'torch.mode value')
+   mytester:assertTensorEq(resix:view(1, msize), ix, 0, 'torch.mode index')
+
+   -- input unchanged
+   mytester:assertTensorEq(x, x0, 0, 'torch.mode modified input')
+end
+
+
 function torchtest.tril()
    local x = torch.rand(msize,msize)
    local mx = torch.tril(x)
