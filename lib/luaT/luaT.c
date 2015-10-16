@@ -141,13 +141,21 @@ static int luaT_cmt__newindex(lua_State *L);
 const char* luaT_newmetatable(lua_State *L, const char *tname, const char *parent_tname,
                               lua_CFunction constructor, lua_CFunction destructor, lua_CFunction factory)
 {
+  return luaT_newlocalmetatable(L, tname, parent_tname,
+                                constructor, destructor, factory, 0);
+}
+
+const char* luaT_newlocalmetatable(lua_State *L, const char *tname, const char *parent_tname,
+                                   lua_CFunction constructor, lua_CFunction destructor, lua_CFunction factory, int moduleidx)
+{
   lua_pushcfunction(L, luaT_lua_newmetatable);
   lua_pushstring(L, tname);
   (parent_tname ? lua_pushstring(L, parent_tname) : lua_pushnil(L));
   (constructor ? lua_pushcfunction(L, constructor) : lua_pushnil(L));
   (destructor ? lua_pushcfunction(L, destructor) : lua_pushnil(L));
   (factory ? lua_pushcfunction(L, factory) : lua_pushnil(L));
-  lua_call(L, 5, 1);
+  (moduleidx > 0 ? lua_pushvalue(L, moduleidx) : lua_pushnil(L));
+  lua_call(L, 6, 1);
   return luaT_typenameid(L, tname);
 }
 
@@ -502,7 +510,7 @@ int luaT_fullparentname(const char *tname, char *parent_name)
   return tname[idx] == '.';
 }
 
-/* alias for ensuring backwards compatibilty; 
+/* alias for ensuring backwards compatibilty;
  * use of luaT_fullparentname is preferred.
  */
 int luaT_classmodulename(const char *tname, char *parent_name)
@@ -527,7 +535,7 @@ int luaT_outerparentname(const char *tname, char *parent_name)
 
 /* parent_name must be a buffer at least as big as tname.
  * If class has a parent, returns true; and, sets parent
- * name to that of innermost parent (e.g. given class 
+ * name to that of innermost parent (e.g. given class
  * `A.b.c`, sets parent_name to `b`). In the comments
  * below, the inner parent name is abbreviated as IPN.
  */
@@ -535,7 +543,7 @@ int luaT_innerparentname(const char *tname, char *parent_name)
 {
   int sz = strlen(tname);
   int tail, head;
-  for(tail = sz-1; tail >= 0 ; tail--) // tail points to 
+  for(tail = sz-1; tail >= 0 ; tail--) // tail points to
     if(tname[tail] == '.') break;      // just past IPN
 
   if (tail == 0) return 0;
@@ -600,26 +608,28 @@ int luaT_lua_newmetatable(lua_State *L)
   const char* tname = luaL_checkstring(L, 1);
   char parent_name[256];
   int is_in_module = 0;
-  int L_idx = 0;
 
   /* Argument Checking */
-  lua_settop(L, 5);
+  lua_settop(L, 6);
   luaL_argcheck(L, lua_isnoneornil(L, 2) || lua_isstring(L, 2), 2, "parent class name or nil expected");
   luaL_argcheck(L, lua_isnoneornil(L, 3) || lua_isfunction(L, 3), 3, "constructor function or nil expected");
   luaL_argcheck(L, lua_isnoneornil(L, 4) || lua_isfunction(L, 4), 4, "destructor function or nil expected");
   luaL_argcheck(L, lua_isnoneornil(L, 5) || lua_isfunction(L, 5), 5, "factory function or nil expected");
+  luaL_argcheck(L, lua_isnoneornil(L, 6) || lua_istable(L, 6), 6, "module table or nil expected");
 
   /* Push immediate parent module to stack */
-  is_in_module = luaT_fullparentname(tname, parent_name);
-  L_idx = lua_gettop(L) + 1; // stack position of immediate parent
-  if (is_in_module)
-    luaT_getinnerparent(L, tname);
-  else
-    lua_pushglobaltable(L);
+  if(lua_isnoneornil(L, 6)) {
+    lua_pop(L, 1); /* remove the nil */
+    is_in_module = luaT_fullparentname(tname, parent_name);
+    if (is_in_module)
+      luaT_getinnerparent(L, tname);
+    else
+      lua_pushglobaltable(L);
+  }
 
-   if(!lua_istable(L, -1))
-      luaL_error(L, "while creating metatable %s: bad argument #1 (%s is an invalid module name)", tname, parent_name);
- 
+  if(!lua_istable(L, -1))
+    luaL_error(L, "while creating metatable %s: bad argument #1 (%s is an invalid module name)", tname, parent_name);
+
   /* we first create the new metaclass if we have to */
   if(!luaT_pushmetatable(L, tname))
   {
@@ -808,7 +818,7 @@ int luaT_lua_newmetatable(lua_State *L)
   }
 
   /* module.name = constructor metatable */
-  lua_setfield(L, L_idx, luaT_classrootname(tname));
+  lua_setfield(L, 6, luaT_classrootname(tname));
 
   return 1; /* returns the metatable */
 }
@@ -1117,13 +1127,13 @@ static int luaT_mt__newindex(lua_State *L)
 }
 
 /* note: check dans metatable pour ca, donc necessaire */
-#define MT_DECLARE_OPERATOR(NAME, NIL_BEHAVIOR)                     \
-  int luaT_mt__##NAME(lua_State *L)                                 \
-  {                                                                 \
-    if(!lua_getmetatable(L, 1))                                     \
-      luaL_error(L, "internal error in __" #NAME ": no metatable"); \
-                                                                    \
-    lua_getfield(L, -1, "__" #NAME "__");                           \
+#define MT_DECLARE_OPERATOR(NAME, NIL_BEHAVIOR)                         \
+  int luaT_mt__##NAME(lua_State *L)                                     \
+  {                                                                     \
+    if(!lua_getmetatable(L, 1))                                         \
+      luaL_error(L, "internal error in __" #NAME ": no metatable");     \
+                                                                        \
+    lua_getfield(L, -1, "__" #NAME "__");                               \
     if(lua_isnil(L, -1))                                                \
     {                                                                   \
       NIL_BEHAVIOR;                                                     \
