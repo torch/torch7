@@ -438,7 +438,7 @@ static int torch_Tensor_(indexCopy)(lua_State *L)
   return 1;
 }
 
-static int torch_Tensor_(indexAccum)(lua_State *L)
+static int torch_Tensor_(indexAdd)(lua_State *L)
 {
   int narg = lua_gettop(L);
   THTensor *tensor, *src;
@@ -457,7 +457,7 @@ static int torch_Tensor_(indexAccum)(lua_State *L)
     return 0;
   }
 
-  THTensor_(indexAccum)(tensor,dim,index,src);
+  THTensor_(indexAdd)(tensor,dim,index,src);
 
   return 1;
 }
@@ -1279,7 +1279,7 @@ static const struct luaL_Reg torch_Tensor_(_) [] = {
   {"select", torch_Tensor_(select)},
   {"index", torch_Tensor_(indexSelect)},
   {"indexCopy", torch_Tensor_(indexCopy)},
-  {"indexAccum", torch_Tensor_(indexAccum)},
+  {"indexAdd", torch_Tensor_(indexAdd)},
   {"indexFill", torch_Tensor_(indexFill)},
   {"maskedSelect", torch_Tensor_(maskedSelect)},
   {"maskedCopy", torch_Tensor_(maskedCopy)},

@@ -2216,27 +2216,27 @@ function torchtest.indexCopy()
    mytester:assertTensorEq(dest, dest2, 0.000001, "indexCopy scalar error")
 end
 
-function torchtest.indexAccum()
+function torchtest.indexAdd()
    local nCopy, nDest = 3, 20
    local dest = torch.randn(nDest,4,5)
    local src = torch.randn(nCopy,4,5)
    local idx = torch.randperm(nDest):narrow(1, 1, nCopy):long()
    local dest2 = dest:clone()
-   dest:indexAccum(1, idx, src)
+   dest:indexAdd(1, idx, src)
    for i=1,idx:size(1) do
       dest2[idx[i]]:add(src[i])
    end
-   mytester:assertTensorEq(dest, dest2, 0.000001, "indexAccum tensor error")
+   mytester:assertTensorEq(dest, dest2, 0.000001, "indexAdd tensor error")
 
    local dest = torch.randn(nDest)
    local src = torch.randn(nCopy)
    local idx = torch.randperm(nDest):narrow(1, 1, nCopy):long()
    local dest2 = dest:clone()
-   dest:indexAccum(1, idx, src)
+   dest:indexAdd(1, idx, src)
    for i=1,idx:size(1) do
       dest2[idx[i]] = dest2[idx[i]] + src[i]
    end
-   mytester:assertTensorEq(dest, dest2, 0.000001, "indexAccum scalar error")
+   mytester:assertTensorEq(dest, dest2, 0.000001, "indexAdd scalar error")
 end
 
 -- Fill idx with valid indices.
