@@ -556,6 +556,13 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name="index"},
          {name="index", default=lastdim(3)}})
 
+   wrap("mode",
+       cname("mode"),
+       {{name=Tensor, default=true, returned=true},
+           {name="IndexTensor", default=true, returned=true, noreadadd=true},
+           {name=Tensor},
+           {name="index", default=lastdim(3)}})
+
    wrap("median",
         cname("median"),
         {{name=Tensor, default=true, returned=true},

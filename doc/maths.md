@@ -1259,7 +1259,7 @@ in `a` and `v`.
 <a name="torch.median"></a>
 ### torch.median([resval, resind,] x [,dim]) ###
 
-`y=torch.median(x)` returns the median element of `x`
+`y=torch.median(x)` performs the median operation over the last dimension of `x`.
 (one-before-middle in the case of an even number of elements).
 
 `y,i=torch.median(x,1)` returns the median element in each column
@@ -1270,10 +1270,23 @@ in `a` and `v`.
 
 `y,i=torch.median(x,n)` performs the median operation over the dimension `n`.
 
+<a name="torch.mode"></a>
+### torch.mode([resval, resind,] x [,dim]) ###
+
+`y=torch.mode(x)` returns the most frequent element of `x` over its last dimension.
+
+`y,i=torch.mode(x,1)` returns the mode element in each column
+(across rows) of `x`, and a tensor `i` of their corresponding indices in
+`x`.
+
+`y,i=torch.mode(x,2)` performs the mode operation across rows.
+
+`y,i=torch.mode(x,n)` performs the mode operation over the dimension `n`.
+
 <a name="torch.kthvalue"></a>
 ### torch.kthvalue([resval, resind,] x, k [,dim]) ###
 
-`y=torch.kthvalue(x,k)` returns the k-th smallest element of `x`.
+`y=torch.kthvalue(x,k)` returns the k-th smallest element of `x` over its last dimension.
 
 `y,i=torch.kthvalue(x,k,1)` returns the k-th smallest element in each column
 (across rows) of `x`, and a tensor `i` of their corresponding indices in
