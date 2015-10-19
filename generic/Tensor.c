@@ -312,7 +312,7 @@ static int torch_Tensor_(sub)(lua_State *L)
       d1e += tensor->size[1]+1;
     THArgCheck(tensor->nDimension > 1, 4, "invalid dimension");
     THArgCheck(d1s >= 0 && d1s < tensor->size[1], 4, "out of range");
-    THArgCheck(d1e >= 0 && d1e < tensor->size[1], 5, "out of range");    
+    THArgCheck(d1e >= 0 && d1e < tensor->size[1], 5, "out of range");
     THArgCheck(d1e >= d1s, 5, "end smaller than beginning");
 
     if(!lua_isnone(L, 6))
@@ -325,7 +325,7 @@ static int torch_Tensor_(sub)(lua_State *L)
         d2e += tensor->size[2]+1;
       THArgCheck(tensor->nDimension > 2, 6, "invalid dimension");
       THArgCheck(d2s >= 0 && d2s < tensor->size[2], 6, "out of range");
-      THArgCheck(d2e >= 0 && d2e < tensor->size[2], 7, "out of range");    
+      THArgCheck(d2e >= 0 && d2e < tensor->size[2], 7, "out of range");
       THArgCheck(d2e >= d2s, 7, "end smaller than beginning");
 
       if(!lua_isnone(L, 8))
@@ -338,7 +338,7 @@ static int torch_Tensor_(sub)(lua_State *L)
           d3e += tensor->size[3]+1;
         THArgCheck(tensor->nDimension > 3, 8, "invalid dimension");
         THArgCheck(d3s >= 0 && d3s < tensor->size[3], 8, "out of range");
-        THArgCheck(d3e >= 0 && d3e < tensor->size[3], 9, "out of range");    
+        THArgCheck(d3e >= 0 && d3e < tensor->size[3], 9, "out of range");
         THArgCheck(d3e >= d3s, 9, "end smaller than beginning");
       }
     }
@@ -434,6 +434,30 @@ static int torch_Tensor_(indexCopy)(lua_State *L)
   }
 
   THTensor_(indexCopy)(tensor,dim,index,src);
+
+  return 1;
+}
+
+static int torch_Tensor_(indexAdd)(lua_State *L)
+{
+  int narg = lua_gettop(L);
+  THTensor *tensor, *src;
+  THLongTensor *index;
+  int dim;
+  if(narg == 4)
+  {
+    dim = luaL_checkint(L, 2) - 1;
+    index = luaT_checkudata(L, 3, "torch.LongTensor");
+    src = luaT_checkudata(L, 4, torch_Tensor);
+    tensor = luaT_checkudata(L,1,torch_Tensor);
+  }
+  else
+  {
+    THError("Tensor, number, LongTensor, Tensor expected");
+    return 0;
+  }
+
+  THTensor_(indexAdd)(tensor,dim,index,src);
 
   return 1;
 }
@@ -874,7 +898,7 @@ static int torch_Tensor_(__index__)(lua_State *L)
     int dim;
 
     THArgCheck(idx->size == tensor->nDimension, 2, "invalid size");
-    
+
     for(dim = 0; dim < idx->size; dim++)
     {
       long z = idx->data[dim]-1;
@@ -1255,6 +1279,7 @@ static const struct luaL_Reg torch_Tensor_(_) [] = {
   {"select", torch_Tensor_(select)},
   {"index", torch_Tensor_(indexSelect)},
   {"indexCopy", torch_Tensor_(indexCopy)},
+  {"indexAdd", torch_Tensor_(indexAdd)},
   {"indexFill", torch_Tensor_(indexFill)},
   {"maskedSelect", torch_Tensor_(maskedSelect)},
   {"maskedCopy", torch_Tensor_(maskedCopy)},
