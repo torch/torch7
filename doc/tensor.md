@@ -313,7 +313,7 @@ x:zero()
 
 Convenience constructor (for the previous constructor) assuming a
 number of dimensions inferior or equal to 4. `szi` is the size in
-the `i-th` dimension, and `sti` is the stride in the `i-th`
+the `i-th` dimension, and `sti` it the stride in the `i-th`
 dimension.
 
 <a name="torch.Tensor"></a>
@@ -703,7 +703,7 @@ y = x:select(2, 3)
 false
 
 -- indeed, to jump to one element to
--- the next one, the stride is 5
+-- the next one, the stride is 4
 > y:stride()
  5
 [torch.LongStorage of size 1]
@@ -737,7 +737,7 @@ y = torch.Tensor(4,5)
 > x:isSameSizeAs(y)
 true
 
-y = torch.Tensor(4,6)
+y = torch.Tensor(4, 6)
 > x:isSameSizeAs(y)
 false
 ```
@@ -763,8 +763,8 @@ Return the first index (starting at 1) used in the tensor's [storage](#torch.sto
 Elements of a tensor can be retrieved with the `[index]` operator.
 
 If `index` is a number, `[index]` operator is equivalent to a
-[`select(1, index)`](#torch.Tensor.select). If the tensor has more
-than one dimension, this operation returns a slice of the tensor that
+[`select(1, index)`](#torch.Tensor.select) if the tensor has more
+than one dimension. This operation returns a slice of the tensor that
 shares the same underlying storage. If the tensor is a 1D tensor, it 
 returns the value at `index` in this tensor.
 
@@ -903,7 +903,7 @@ x:zero()
 <a name="torch.Tensor.set"></a>
 ### [self] set(storage, [storageOffset, sz1 [, st1 ... [, sz4 [, st4]]]]) ###
 
-This is a "shortcut" for previous method.
+This is a "shorcut" for previous method.
 It works up to 4 dimensions. `szi` is the size of the `i`-th dimension of the tensor.
 `sti` is the stride in the `i`-th dimension.
 
@@ -980,7 +980,7 @@ Resize the `tensor` as the given `tensor` (of the same type).
 <a name="torch.resize"></a>
 ### [self] resize(sizes) ###
 
-Resize the `tensor` according to the given [LongStorage](storage.md) `sizes`.
+Resize the `tensor` according to the given [LongStorage](storage.md) `size`.
 
 <a name="torch.resize"></a>
 ### [self] resize(sz1 [,sz2 [,sz3 [,sz4]]]]) ###
@@ -1404,7 +1404,7 @@ z = x:gather(2, torch.LongTensor{{1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 1}})
 
 Writes all values from tensor `src` or the scalar `val` into `self` at the specified indices. The indices are specified
 with respect to the given dimension, `dim`, in the manner described in [gather](#torch.Tensor.gather). Note that, as
-for gather, the values of `index` must be between 1 and `self:size(dim)` inclusive and all values in a row along the
+for gather, the values of index must be between 1 and `self:size(dim)` inclusive and all values in a row along the
 specified dimension must be unique. 
 
 ```lua
@@ -1480,7 +1480,7 @@ Also note how an existing tensor `z` can be used to store the results.
 Copies the masked elements of `tensor` into itself. The masked elements are those elements having a 
 corresponding `1` in the `mask` Tensor. This `mask` is a `torch.ByteTensor` 
 of zeros and ones. The destination `Tensor` and the `mask` Tensor should have the same number of elements.
-The source `tensor` should have at least as many elements as the number of 1s in the `mask`.
+The source `tensor` should have atleast as many elements as the number of 1s in the `mask`.
 
 ```lua
 x = torch.range(1,4):double():resize(2,2)
@@ -1546,7 +1546,7 @@ given search operation.
 <a name="torch.Tensor.nonzero"/>
 ### [LongTensor] nonzero(tensor)
 
-Finds and returns a `LongTensor` corresponding to the *subscript* indices of all
+Finds and returns a `LongTensor` corresponding to the *subcript* indices of all
 non-zero elements in `tensor`.
 
 Note that torch uses the first argument on dispatch to determine the return
@@ -1717,7 +1717,7 @@ i=0; y:apply(function() i=i+1;return i end)
 <a name="torch.Tensor.expandAs"></a>
 #### [result] expandAs([result,] tensor) ####
 
-This is equivalent to `self:expand(tensor:size())`
+This is equivalent to self:expand(tensor:size())
 
 <a name="torch.repeatTensor"></a>
 #### [Tensor] repeatTensor([result,] sizes) ####
@@ -1812,7 +1812,7 @@ Each of these methods returns a `Tensor` which is another way of viewing
 the `Storage` of the given tensor. Hence, any modification in the memory of
 the sub-tensor will have an impact on the primary tensor, and vice-versa.
 
-These methods are very fast, because they do not involve any memory copy.
+These methods are very fast, are they do not involve any memory copy.
 
 <a name="torch.view"></a>
 ### [result] view([result,] tensor, sizes) ###
@@ -1853,7 +1853,7 @@ x = torch.zeros(4)
 <a name="torch.viewAs"></a>
 ### [result] viewAs([result,] tensor, template) ###
 
-Creates a view with the same dimensions as `template` of the storage associated 
+Creates a view with with the same dimensions as `template` of the storage associated 
 with `tensor`. If `result` is not passed, then a new tensor is returned, otherwise its storage is 
 made to point to storage of `tensor`.
 
@@ -2000,8 +2000,8 @@ for i=1,7 do x[i] = i end
 
 ## Applying a function to a tensor ##
 
-These functions apply a function to each element of the tensor on which called the
-method (self). These methods are much faster than using a `for`
+These functions apply a function to each element of the tensor on which the
+method is called (self). These methods are much faster than using a `for`
 loop in `Lua`. The results is stored in `self` (if the function returns
 something).
 
@@ -2251,7 +2251,7 @@ for i = 0,t:nElement()-1 do t_data[i] = 0 end
 
 WARNING: bear in mind that accessing the raw data like this is dangerous, and should
 only be done on contiguous tensors (if a tensor is not contiguous, then you have to
-use its size and stride information). Making sure a tensor is contiguous is easy: 
+use it size and stride information). Making sure a tensor is contiguous is easy: 
 ```lua
 t = torch.randn(3,2)
 t_noncontiguous = t:transpose(1,2)
