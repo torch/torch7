@@ -691,7 +691,7 @@ end
 Returns `true` iff the elements of the `Tensor` are contiguous in memory.
 ```lua
 -- normal tensors are contiguous in memory
-x = torch.randn(4,5)
+x = torch.Tensor(4,5):zero()
 > x:isContiguous()
 true
 
