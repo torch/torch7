@@ -1081,12 +1081,6 @@ z = x:sub(2,4,3,4):fill(2) -- we now take a new sub-tensor
  0  0  0  0  0  0
 [torch.DoubleTensor of dimension 5x6]
 
-> y
- 1  1  2  2  1  1
- 1  1  2  2  1  1
- 1  1  2  2  1  1
-[torch.DoubleTensor of dimension 3x6]
-
 > y:sub(-1, -1, 3, 4)      -- negative values = bounds
  2  2
 [torch.DoubleTensor of dimension 1x2]
