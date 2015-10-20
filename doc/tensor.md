@@ -1081,7 +1081,7 @@ z = x:sub(2,4,3,4):fill(2) -- we now take a new sub-tensor
  0  0  0  0  0  0
 [torch.DoubleTensor of dimension 5x6]
 
-> y                        -- y has been modified
+> y
  1  1  2  2  1  1
  1  1  2  2  1  1
  1  1  2  2  1  1
