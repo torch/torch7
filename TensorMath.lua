@@ -241,7 +241,18 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor, method={default=1}},
          {name=real, default=1},
          {name=Tensor}})
-   
+
+   wrap("csub",
+     cname("sub"),
+     {{name=Tensor, default=true, returned=true, method={default='nil'}},
+       {name=Tensor, method={default=1}},
+       {name=real}},
+     cname("csub"),
+     {{name=Tensor, default=true, returned=true, method={default='nil'}},
+       {name=Tensor, method={default=1}},
+       {name=real, default=1},
+       {name=Tensor}})
+
    wrap("mul",
         cname("mul"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -988,6 +999,11 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
               "fabs",
               {{name=real},
                {name=real, creturned=true}})
+
+      wrap("neg",
+           cname("neg"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=Tensor, method={default=1}}})
 
       wrap("atan2",
            cname("atan2"),
