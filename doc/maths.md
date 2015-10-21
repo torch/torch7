@@ -705,8 +705,8 @@ number of elements must match, but sizes do not matter.
 > x:cdiv(y)
 > = x
 
- 1.0000  0.3333
- 0.5000  0.2500
+ 1.0000  0.5000
+ 0.3333  0.2500
 [torch.Tensor of dimension 2x2]
 ```
 
@@ -734,8 +734,8 @@ The number of elements must match, but sizes do not matter.
 > x:addcdiv(2, y, z)
 > = x
 
- 1.4000  2.2000
- 1.8000  2.6000
+ 1.4000  1.8000
+ 2.2000  2.6000
 [torch.Tensor of dimension 2x2]
 ```
 
