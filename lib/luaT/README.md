@@ -67,8 +67,8 @@ metaclass, these operators must follow a particular scheme:
 
 Other metaclass operators like `__tostring__`, `__add__`, etc... do not have any particular constraint.
 
-<a name="luat_newmetatable"/>
-### const char* luaT_newmetatable(lua_State *L, const char *tname, const char *parenttname, lua_CFunction constructor, lua_CFunction destructor, lua_CFunction factory) ###
+<a name="luat_newlocalmetatable"/>
+### const char* luaT_newlocalmetatable(lua_State *L, const char *tname, const char *parenttname, lua_CFunction constructor, lua_CFunction destructor, lua_CFunction factory, int moduleidx) ###
 
 This function creates a new metatable, which is the Lua way to define a new
 object class. As for `luaL_newmetatable`, the metatable is registered in
@@ -76,12 +76,18 @@ the Lua registry table, with the key `tname`. In addition, `tname` is
 also registered in the Lua registry, with the metatable as key (the
 typename of a given object can be thus easily retrieved).
 
-The class name `tname` must be of the form `modulename.classname`. The module name
-If not NULL, `parenttname` must be a valid typename corresponding to the
-parent class of the new class.
+The class name `tname` must be of the form `modulename.classname`. If not
+NULL, `parenttname` must be a valid typename corresponding to the parent
+class of the new class.
 
-If not NULL, `constructor`, a function `new` will be added to the metatable, pointing to this given function. The constructor might also
-be called through `modulename.classname()`, which is an alias setup by `luaT_metatable`.
+If `constructor` is not NULL, a function `new` will be added to the
+metatable, pointing to this given function.
+
+A "constructor table" will be created by `luaT_newlocalmetatable`: it will
+contain all the class methods, and be callable, calling the constructor, if
+a constructor has been passed. The constructor table is either stored into
+`modulename.classname` (that is in the global namespace) if `moduleidx <=
+0` or in the table at index `moduleidx` in the stack (if `moduleidx > 0`).
 
 If not NULL, `destructor` will be called when garbage collecting the object.
 
@@ -93,6 +99,12 @@ once the metatable is created in C, it can be filled up with additional
 methods in Lua.
 
 The return value is the value returned by [luaT_typenameid](#luat_typenameid).
+
+<a name="luat_newmetatable"/>
+### const char* luaT_newmetatable(lua_State *L, const char *tname, const char *parenttname, lua_CFunction constructor, lua_CFunction destructor, lua_CFunction factory) ###
+
+Same as [luaT_newlocalmetatable](#luat_newmetatable), but where the
+constructor table is assigned in the global namespace (`moduleidx = 0`).
 
 <a name="luat_pushmetatable"/>
 ### int luaT_pushmetatable(lua_State *L, const name *tname) ###

@@ -10,14 +10,19 @@ The other functions are more for advanced users.
 
 
 <a name="torch.class"></a>
-### [metatable] torch.class(name, [parentName]) ###
+### [metatable] torch.class(name, [parentName], [module]) ###
 
 Creates a new `Torch` class called `name`. If `parentName` is provided, the class will inherit
 `parentName` methods. A class is a table which has a particular metatable.
 
-If `name` is of the form `package.className` then the class `className` will be added to the specified `package`.
-In that case, `package` has to be a valid (and already loaded) package. If `name` does not contain any `.`,
-then the class will be defined in the global environment.
+If `module` is not provided and if `name` is of the form
+`package.className` then the class `className` will be added to the
+specified `package`. In that case, `package` has to be a valid (and
+already loaded) package. If `name` does not contain any `.`, then the class
+will be defined in the global environment.
+
+If `module` is provided table, the class will be defined in this table at
+key `className`.
 
 One \[or two\] (meta)tables are returned. These tables contain all the method
 provided by the class [and its parent class if it has been provided]. After
