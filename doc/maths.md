@@ -228,15 +228,15 @@ a = torch.multinomial(p, 10000, true)
 0
 ```
 
-Note: If you use the function with a given result tensor, 
-i.e. of the function prototype: `torch.multinomial(res, p, n, [,replacement])` 
+Note: If you use the function with a given result tensor,
+i.e. of the function prototype: `torch.multinomial(res, p, n, [,replacement])`
 then you will have to call it slightly differently as:
 
 ```lua
 p.multinomial(res, p, n, replacement) -- p.multinomial instead of torch.multinomial
 ```
 
-This is due to the fact that the result here is of a `LongTensor` type, 
+This is due to the fact that the result here is of a `LongTensor` type,
 and we do not define a `torch.multinomial` over long tensors.
 
 <a name="torch.ones"></a>
@@ -353,6 +353,14 @@ For more than 4 dimensions, you can use a storage:
 `y=torch.abs(x)` returns a new tensor with the absolute values of the elements of `x`.
 
 `x:abs()` replaces all elements in-place with the absolute values of the elements of `x`.
+
+<a name="torch.sign"></a>
+### [res] torch.sign([res,] x) ###
+<a name="torch.sign"></a>
+
+`y=torch.sign(x)` returns a new tensor with the sign (+/- 1) of the elements of `x`.
+
+`x:sign()` replaces all elements in-place with the sign of the elements of `x`.
 
 <a name="torch.acos"></a>
 ### [res] torch.acos([res,] x) ###
@@ -1769,7 +1777,7 @@ chol = torch.potrf(A)
  0.0000  0.0000  0.0000  0.0491  0.2199
  0.0000  0.0000  0.0000  0.0000  0.5255
 [torch.DoubleTensor of size 5x5]
-     
+
 > inv = torch.potri(chol)
 > inv
   42.2781  -39.0824    8.3019 -133.4998    2.8980
