@@ -435,6 +435,12 @@ For more than 4 dimensions, you can use a storage:
 `x:log1p()` replaces all elements in-place with the natural logarithm of the elements of `x+1`.
 This function is more accurate than [log()](#torch.log) for small values of `x`.
 
+<a name="x:neg"></a>
+### x:neg() ###
+<a name="x:neg"></a>
+
+`x:neg()` replaces all elements in-place with the sign-reversed values of the elements of `x`.
+
 <a name="torch.pow"></a>
 ### [res] torch.pow([res,] x, n) ###
 <a name="torch.pow"></a>
@@ -561,6 +567,32 @@ matter.
 `torch.add(x,value,y)` returns a new tensor `x + value*y`.
 
 `torch.add(z,x,value,y)` puts the result of `x + value*y` in `z`.
+
+<a name="x:csub"></a>
+### tensor:csub(value) ###
+<a name="x:csub"></a>
+
+Subtracts the given value from all elements in the tensor, in place.
+
+<a name="x:csub"></a>
+### tensor1:csub(tensor2) ###
+<a name="x:csub"></a>
+
+Subtracts `tensor2` from `tensor1`, in place. The number
+of elements must match, but sizes do not matter.
+
+```lua
+> x = torch.Tensor(2,2):fill(8)
+> y = torch.Tensor(4):fill(3)
+> x:csub(y)
+> = x
+
+ 5  5
+ 5  5
+[torch.Tensor of dimension 2x2]
+```
+
+`a:csub(b)` put `a - b` into `a`.
 
 <a name="torch.mul"></a>
 ### [res] torch.mul([res,] tensor1, value) ###
