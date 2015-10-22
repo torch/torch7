@@ -1382,7 +1382,7 @@ in `a` and `v`.
  2
 [torch.LongTensor of size 3x1]
 
-> y,i=torch.median(a,1)
+> y,i=torch.median(x,1)
 > y
  0.0411  0.5407 -0.5786
 [torch.DoubleTensor of size 1x3]
