@@ -56,7 +56,7 @@ The data in the `Storage` is _uninitialized_.
 <a name="torch.Storage"></a>
 ### torch.TYPEStorage(table) ###
 
-The argument is assumed to be a Lua array of numbers. The constructor returns a new storage of the specified 'TYPE', 
+`table` is assumed to be a Lua array of numbers. The constructor returns a new storage of the specified `TYPE`, 
 of the size of the table, containing all the table elements converted
 
 Example:
@@ -73,7 +73,7 @@ Example:
 <a name="torch.Storage"></a>
 ### torch.TYPEStorage(storage [, offset [, size]]) ###
 
-Returns a new `Storage` of type `TYPE`, which is a view on the first argument. The first argument must be of the same type `TYPE`. An optional offset can be provided (defaults to 1). An optional size can also be provided to restrict the size of the new storage (defaults to `storage:size()-(offset-1)`).
+Returns a new `Storage` of type `TYPE`, which is a view on the first argument. The first argument must be of the same type `TYPE`. An optional `offset` can be provided (defaults to 1). An optional `size` can also be provided to restrict the size of the new storage (defaults to `storage:size()-(offset-1)`).
 
 Example:
 ```lua
@@ -119,12 +119,12 @@ changes made on the file after creation of the storage have an unspecified
 effect on the storage contents.
 
 If `size` is specified, it is the [size](#torch.Storage.size) of the returned
-`Storage` (in elements). In this case, if `shared` is false then the file must
+`Storage` (in elements). In this case, if `shared` is `false` then the file must
 already contain at least
 ```lua
 size*(size of TYPE)
 ```
-bytes. If `shared` is true then the file will be created if necessary, and
+bytes. If `shared` is `true` then the file will be created if necessary, and
 extended if necessary to that many bytes in length.
 
 If `size` is not specified then the [size](#torch.Storage.size) of the returned
@@ -221,7 +221,7 @@ x = torch.IntStorage(10):fill(0) -- x won't be nil!
 <a name="torch.Storage.resize"></a>
 ### [self] resize(size) ###
 
-Resize the storage to the provide `size`. _The new contents are undetermined_.
+Resize the storage to the provided `size`. _The new contents are undetermined_.
 
 This function returns self, allowing things like:
 ```lua
