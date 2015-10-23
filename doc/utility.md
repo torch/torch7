@@ -1,12 +1,12 @@
 <a name="torch.utility.dok"></a>
 # Torch utility functions #
 
-This functions are used in all Torch package for creating and handling classes.
+These functions are used in all Torch package for creating and handling classes.
 The most interesting function is probably [`torch.class()`](#torch.class) which allows
 the user to create easily new classes. [`torch.typename()`](#torch.typename) might
 also be interesting to check what is the class of a given *Torch7* object.
 
-The other functions are more for advanced users.
+The other functions are for more advanced users.
 
 
 <a name="torch.class"></a>
@@ -94,7 +94,7 @@ bar:bip()   -- parent's method
 ```
 
 For advanced users, it is worth mentionning that `torch.class()` actually
-calls [`torch.newmetatable()`](#torch.newmetatable).  with a particular
+calls [`torch.newmetatable()`](#torch.newmetatable) with a particular
 constructor. The constructor creates a Lua table and set the right
 metatable on it, and then calls ```lua__init()``` if it exists in the
 metatable. It also sets a [factory](#torch.factory) field ```lua__factory``` such that it
@@ -125,6 +125,15 @@ number
 Checks if `object` has a metatable. If it does, and if it corresponds to a
 `Torch` class, then returns a string containing the name of the
 class. Returns `nil` in any other cases.
+
+```lua
+> torch.type(torch.Tensor())
+torch.DoubleTensor
+> torch.type({})
+
+> torch.type(7)
+
+```
 
 A Torch class is a class created with [`torch.class()`](#torch.class) or
 [`torch.newmetatable()`](#torch.newmetatable).
@@ -157,11 +166,11 @@ This is different from the `object` id returned by [`torch.pointer()`](#torch.po
 <a name="torch.isTypeOf"></a>
 ### [boolean] isTypeOf(object, typeSpec) ###
 
-Checks if a given object is an instance of the type specified by typeSpec.
-Typespec can be a string (including a string.find pattern) or the constructor
+Checks if a given `object` is an instance of the type specified by `typeSpec`.
+`typeSpec` can be a string (including a `string.find` pattern) or the constructor
 object for a Torch class. This function traverses up the class hierarchy,
 so if b is an instance of B which is a subclass of A, then
-`torch.isTypeOf(b, B)` and `torch.isTypeOf(b, A)` will both return true.
+`torch.isTypeOf(b, B)` and `torch.isTypeOf(b, A)` will both return `true`.
 
 
 <a name="torch.newmetatable"></a>
@@ -309,7 +318,7 @@ Converts a Tensor or a Storage to a lua table. Also available as methods: `tenso
 Multidimensional Tensors are converted to a set of nested tables, matching the shape of the source Tensor.
 
 ```lua
-t7> print(torch.totable(torch.Tensor({1, 2, 3})))
+> print(torch.totable(torch.Tensor({1, 2, 3})))
 {
   1 : 1
   2 : 2
