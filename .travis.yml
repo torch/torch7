@@ -3,21 +3,45 @@ compiler:
   - gcc
   - clang
 cache: apt
+sudo: false
+addons:
+  apt:
+    packages:
+    - cmake
+    - gfortran
+    - gcc-multilib
+    - gfortran-multilib
+    - liblapack-dev
+    - build-essential
+    - gcc 
+    - g++ 
+    - curl
+    - cmake 
+    - libreadline-dev 
+    - git-core 
+    - libqt4-core 
+    - libqt4-gui
+    - libqt4-dev 
+    - libjpeg-dev 
+    - libpng-dev 
+    - ncurses-dev
+    - imagemagick 
+    - libzmq3-dev 
+    - gfortran 
+    - unzip 
+    - gnuplot
+    - gnuplot-x11 
 before_script: 
-- sudo apt-get update -qq >/dev/null 2>&1
-- sudo apt-get install -qq gfortran  >/dev/null 2>&1
-- sudo apt-get install -qq  gcc-multilib gfortran-multilib  >/dev/null 2>&1
-- sudo apt-get install -qq liblapack-dev >/dev/null 2>&1
-- curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | sudo bash 2>&1 >/dev/null
-- git clone https://github.com/torch/distro.git distro --recursive
-- cd distro && git submodule update --init --recursive
-- export INSTALL_PREFIX=$(pwd)/install
+- export ROOT_TRAVIS_DIR=$(pwd)
+- export INSTALL_PREFIX=~/torch/install
+-  cd /tmp/ && git clone https://github.com/xianyi/OpenBLAS.git -b master && cd OpenBLAS && make NO_AFFINITY=1 USE_OPENMP=1 && make install prefix=/tmp/OpenBlasInstall
+- git clone https://github.com/torch/distro.git ~/torch --recursive
+- cd ~/torch && git submodule update --init --recursive
 - mkdir build && cd build
-- export CMAKE_LIBRARY_PATH=/opt/OpenBLAS/include:/opt/OpenBLAS/lib:$CMAKE_LIBRARY_PATH
+- export CMAKE_LIBRARY_PATH=/tmp/OpenBlasInstall/include:/tmp/OpenBlasInstall/lib:$CMAKE_LIBRARY_PATH
 - cmake .. -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DCMAKE_BUILD_TYPE=Release -DWITH_LUAJIT21=ON
 - make && make install
-- cd .. # in distro
-- cd .. # in local folder
+- cd $ROOT_TRAVIS_DIR
 - export LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib:$LD_LIBRARY_PATH
 script: 
 - ${INSTALL_PREFIX}/bin/luarocks make rocks/torch-scm-1.rockspec
