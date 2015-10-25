@@ -36,7 +36,7 @@ addons:
 before_script: 
 - export ROOT_TRAVIS_DIR=$(pwd)
 - export INSTALL_PREFIX=~/torch/install
--  ls $HOME/OpenBlasInstall || (cd /tmp/ && git clone https://github.com/xianyi/OpenBLAS.git -b master && cd OpenBLAS && make NO_AFFINITY=1 -j2 && make PREFIX=$HOME/OpenBlasInstall install)
+-  ls $HOME/OpenBlasInstall/lib || (cd /tmp/ && git clone https://github.com/xianyi/OpenBLAS.git -b master && cd OpenBLAS && make NO_AFFINITY=1 -j2 && make PREFIX=$HOME/OpenBlasInstall install)
 - git clone https://github.com/torch/distro.git ~/torch --recursive
 - cd ~/torch && git submodule update --init --recursive
 - mkdir build && cd build
