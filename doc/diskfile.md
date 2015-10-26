@@ -7,7 +7,7 @@ A `DiskFile` is a particular `File` which is able to perform basic read/write op
 on a file stored on disk. It implements all methods described in [File](file.md), and
 some additional methods relative to _endian_ encoding.
 
-By default, a `DiskFile` is in [ASCII](file.md#torch.File.binary) mode. If changed to
+By default, a `DiskFile` is in [ASCII](file.md#torch.File.ascii) mode. If changed to
 the [binary](file.md#torch.File.binary) mode, the default endian encoding is the native
 computer one.
 
