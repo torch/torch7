@@ -25,6 +25,7 @@ The roadmap focuses on five separate things
 					at load time, so if a bug is fixed (or introduced) you use that.
 					And it starts being ambiguous, what if I load a layer from file and
 					create a new one and their implementation is inconsistent...)
+	- **eulerreich**: I would love it if the class system could play nice with penlight's class system. Right now the problems I encounter are 1) typechecking with both penlight's `types.is_type` and torch's `torch.isTypeOf`, and 2) serialization of penlight objects like `OrderedMap` doesn't work properly; on either `readObject` or `writeObject`, you lose the metatable, so with `OrderedMap` you lose the essential order information. However, I've seen some bugs (or bad features) with penlight's typechecking, so this might require effort from both penlight and torch.
  - **[definite]** Get rid of non-tensor-related stuff (like serialization) in TH, and move it to lua side
  - **[needs discussion]** OpenMP: Should it stay or go? Is Threads sufficient?
        - **Ronan**: I really wonder about this guy, especially now that I have been using threads intensively. I am not sure that fine-grine threading is necessary.
@@ -66,6 +67,7 @@ The roadmap focuses on five separate things
 - **[definite]** Split nn into THNN and nn. THNN would be NN package using TH as backend and nn would be the lua layer. THNN can be used as a standalone C library. Same for cunn
 - **[Definite]** CUDA typed tensor support - CudaHalfTensor CudaDoubleTensor etc.
 - **[Definite]** better plotting support
+	- **eulerreich**: this is probably a hard sell, but I've used [plotly](https://plot.ly/python/)'s python api and it works really well; I would love to see it on torch. I was sold by the ability to do 3D plotting in the (jupyter) notebook setting and have it be interactive (rotation, panning, etc). There's a [REST api](https://plot.ly/rest/) for it that seems simple enough. The only drawbacks I see are 1) graphing is slower because of data traveling back and forth, 2) the free account can only make public graphs, which could be a problem for researchers in private labs.
 - **[needs discussion]** UI package that doesn't suck?
   - **Ronan**: something based on cairo?
     - **clement**: not sure if this would have much adoption
@@ -96,6 +98,7 @@ The roadmap focuses on five separate things
 - **[needs discussion]** How about Penlight? It has many curcial things that people use.
    Should we endorse it, use some things from it? Replicate some things in penlight in torch?
    - **clement**: upvoting this! we use it extensively.
+   - **eulerreich**: +1.
    - **Ronan**: I live better with less abstractions, but I can be convinced there.
           However, I find penlight quite big.
           There are things like the classes that I do not like as well (because of the way they chose for creating classes).
