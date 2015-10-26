@@ -37,6 +37,19 @@ static const void* torch_istensortype(lua_State *L, const char *tname)
 }
 ]])
 
+interface:print([[
+static int torch_isnonemptytable(lua_State *L, int idx)
+{
+  int empty;
+  if (!lua_istable(L, idx)) return 0;
+
+  lua_rawgeti(L, idx, 1);
+  empty = lua_isnil(L, -1);
+  lua_pop(L, 1);
+  return !empty;
+}
+]])
+
 interface.dispatchregistry = {}
 function interface:wrap(name, ...)
    -- usual stuff
