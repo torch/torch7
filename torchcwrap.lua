@@ -307,7 +307,7 @@ for _,typename in ipairs({"ByteTensor", "CharTensor", "ShortTensor", "IntTensor"
               end,
 
       check = function(arg, idx)
-                 return string.format('lua_istable(L, %d)', idx)
+                 return string.format('torch_isnonemptytable(L, %d)', idx)
             end,
 
       read = function(arg, idx)
