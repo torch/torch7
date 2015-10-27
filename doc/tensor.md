@@ -261,6 +261,27 @@ Note that _negative strides are not allowed_, and, if given as
 argument when constructing the Tensor, will be interpreted as //choose
 the right stride such that the Tensor is contiguous in memory//.
 
+Note _this method cannot be used to create `torch.LongTensor`s_.
+The constructor [from a storage](tensor.md#torchtensorstorage-storageoffset-sizes-strides) will be used:
+```lua
+a = torch.LongStorage({1,2}) -- We have a torch.LongStorage containing the values 1 and 2
+-- General case for TYPE ~= Long, e.g. for TYPE = Float:
+b = torch.FloatTensor(a)
+-- Creates a new torch.FloatTensor with 2 dimensions, the first of size 1 and the second of size 2
+> b:size()
+ 1
+ 2
+[torch.LongStorage of size 2]
+
+-- Special case of torch.LongTensor
+c = torch.LongTensor(a)
+-- Creates a new torch.LongTensor that uses a as storage and thus contains the values 1 and 2
+> c
+ 1
+ 2
+[torch.LongTensor of size 2]
+```
+
 <a name="torch.Tensor"></a>
 ### torch.Tensor(storage, [storageOffset, sizes, [strides]]) ###
 
@@ -2290,7 +2311,8 @@ This allows extremely fast access to Tensors and Storages, all from Lua.
 ### [result] data(tensor, [asnumber]) ###
 
 Returns a LuaJIT FFI pointer to the raw data of the tensor.
-If `asnumber` is true, then returns the pointer as a Lua number.
+If `asnumber` is true, then returns the pointer as a `intptr_t` cdata
+that you can transform to a plain lua number with `tonumber()`.
 
 Accessing the raw data of a Tensor like this is extremely efficient, in fact, it's
 almost as fast as C in lots of cases.
@@ -2327,14 +2349,14 @@ t_transposed_and_contiguous = t_noncontiguous:contiguous()
 data = torch.data(t_transposed_and_contiguous)
 ```
 
-Last, the pointer can be returned as a plain Lua number. This can be useful
+Last, the pointer can be returned as a plain `intptr_t` cdata. This can be useful
 to share pointers between threads (warning: this is dangerous, as the second
 tensor doesn't increment the reference counter on the storage. If the first tensor
-gets freed, then the second points to nothing):
+gets freed, then the data of the second tensor becomes a dangling pointer):
 
 ```lua
 t = torch.randn(10)
-p = torch.data(t,true)
+p = tonumber(torch.data(t,true))
 s = torch.Storage(10, p)
 tt = torch.Tensor(s)
 -- tt and t are a view on the same data.
