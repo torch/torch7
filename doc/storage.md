@@ -39,11 +39,16 @@ function. By default, this "points" on `torch.DoubleStorage`.
 ## Constructors and Access Methods ##
 
 <a name="torch.Storage"></a>
-### torch.TYPEStorage([size]) ###
+### torch.TYPEStorage([size [, ptr]]) ###
 
 Returns a new `Storage` of type `TYPE`. Valid `TYPE` are `Byte`, `Char`, `Short`,
 `Int`, `Long`, `Float`, and `Double`. If `size` is given, resize the
 `Storage` accordingly, else create an empty `Storage`.
+The optional second argument `ptr` is a number whose value is a
+pointer to a memory chunk of size `size*sizeof(TYPE)` (for example coming from the
+[`torch.data()`](https://github.com/torch/torch7/blob/master/doc/tensor.md#result-datatensor-asnumber)
+method). The Storage will take care of freeing the memory
+chunk: it _must not be freed by the caller_!
 
 Example:
 ```lua
