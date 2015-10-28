@@ -22,7 +22,7 @@ after each call to a write method. With this option, the spaces are
 supposed to exist while reading. This option can be deactivated with
 [noAutoSpacing()](#torch.File.noAutoSpacing).
 
-A `Lua` error might or might be not generated in case of read/write error
+A `Lua` error might or might not be generated in case of read/write error
 or problem in the file. This depends on the choice made between
 [quiet()](#torch.File.quiet) and [pedantic()](#torch.File.pedantic) options. It
 is possible to query if an error occured in the last operation by calling
@@ -109,7 +109,7 @@ in the storage.
 
 These methods return the number of elements actually written.
 
-In case of read error, these methods will call the `Lua` error function using the default
+In case of write error, these methods will call the `Lua` error function using the default
 [pedantic](#torch.File.pedantic) option, or stay quiet with the [quiet](#torch.File.quiet)
 option. In the latter case, one can check if an error occurred with
 [hasError()](#torch.File.hasError).
@@ -353,7 +353,7 @@ the file is kept alive (even if one discards the object after
 writing/reading) as File needs to track their pointer. This is not always a
 desirable behavior, especially when dealing with large data structures.
 
-Another typical example when does not want want reference tracking is when
+Another typical example when does not want reference tracking is when
 one needs to push the same tensor repeatedly into a file but everytime
 changing its contents: calling `referenced(false)` ensures desired
 behaviour.

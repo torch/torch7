@@ -135,7 +135,7 @@ non-default options. `ignore` is a table `{dir=true}`, which will
 ensure that option named `dir` will be ignored while creating the
 string representation.
 
-This function is usefull for creating unique experiment directories that
+This function is useful for creating unique experiment directories that
 depend on the parameter settings.
 
 <a name="torch.CmdLine.text"></a>
