@@ -405,6 +405,9 @@ accreal THTensor_(sumall)(THTensor *tensor)
 
 accreal THTensor_(prodall)(THTensor *tensor)
 {
+  if ( THTensor_(nDimension)(tensor) == 0 ) {
+    THError("Cannot take the element-wise product of an empty (0-dimensional) tensor");
+  }
   accreal prod = 1;
   TH_TENSOR_APPLY(real, tensor, prod *= *tensor_data;);
   return prod;
