@@ -405,7 +405,7 @@ static int torch_Tensor_(indexSelect)(lua_State *L)
   }
   else
   {
-    THError("Tensor, number, LongTensor | Tensor, Tensor, number, LongTensor expected");
+    THError(torch_Tensor ", number, torch.LongTensor | " torch_Tensor ", " torch_Tensor ", number, torch.LongTensor expected");
     return 0;
   }
 
@@ -429,7 +429,7 @@ static int torch_Tensor_(indexCopy)(lua_State *L)
   }
   else
   {
-    THError("Tensor, number, LongTensor, Tensor expected");
+    THError( torch_Tensor ", number, torch.LongTensor, " torch_Tensor " expected");
     return 0;
   }
 
@@ -453,7 +453,7 @@ static int torch_Tensor_(indexAdd)(lua_State *L)
   }
   else
   {
-    THError("Tensor, number, LongTensor, Tensor expected");
+    THError( torch_Tensor ", number, torch.LongTensor, " torch_Tensor " expected");
     return 0;
   }
 
@@ -478,7 +478,7 @@ static int torch_Tensor_(indexFill)(lua_State *L)
   }
   else
   {
-    THError("Tensor, number, LongTensor, number expected");
+    THError( torch_Tensor ", number, torch.LongTensor, number expected");
     return 0;
   }
 
@@ -508,7 +508,7 @@ static int torch_Tensor_(maskedSelect)(lua_State *L)
   }
   else
   {
-    THError("Tensor, ByteTensor | Tensor, Tensor, ByteTensor expected");
+    THError( torch_Tensor ", torch.ByteTensor | " torch_Tensor ", " torch_Tensor ", torch.ByteTensor expected");
     return 0;
   }
 
@@ -531,7 +531,7 @@ static int torch_Tensor_(maskedCopy)(lua_State *L)
   }
   else
   {
-    THError("Tensor, ByteTensor, Tensor expected");
+    THError( torch_Tensor ", torch.ByteTensor, " torch_Tensor " expected");
     return 0;
   }
 
@@ -557,7 +557,7 @@ static int torch_Tensor_(maskedFill)(lua_State *L)
   }
   else
   {
-    THError("Tensor, ByteTensor, number expected");
+    THError( torch_Tensor ", torch.ByteTensor, number expected");
     return 0;
   }
 
@@ -856,7 +856,7 @@ static int torch_Tensor_(__newindex__)(lua_State *L)
     }
     else
     {
-      THError("number or tensor expected");
+      THError("number or " torch_Tensor " expected");
     }
   }
   else
@@ -1111,13 +1111,12 @@ static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index
 
   *storage_ = NULL;
   *storageOffset_ = 0;
-
   if(allowTensor && allowStorage)
-      THArgCheck(0, index, "expecting number or Tensor or Storage");
+      THArgCheck(0, index, "expecting number or " torch_Tensor " or " torch_Storage );
   else if(allowTensor)
-      THArgCheck(0, index, "expecting number or Tensor");
+      THArgCheck(0, index, "expecting number or " torch_Tensor );
   else if(allowStorage)
-      THArgCheck(0, index, "expecting number or Storage");
+      THArgCheck(0, index, "expecting number or " torch_Storage );
   else
       THArgCheck(0, index, "expecting number");
 }
@@ -1194,7 +1193,7 @@ static int torch_Tensor_(map2)(lua_State *L)
                   else if(lua_isnil(L, 5))
                     lua_pop(L, 1);
                   else
-                    THError("given function should return a number or nothing"););
+                    THError("given function should return a number or nil"););
 
   lua_settop(L, 1);
   return 1;
