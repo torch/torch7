@@ -9,7 +9,7 @@ static int torch_TensorOperator_(__add__)(lua_State *L)
   THTensor *r;
 
   if(!tensor1 && !tensor2)
-    luaL_error(L, "expecting two Tensors or one Tensor and one number");
+    luaL_error(L, "expecting two " torch_Tensor "s or one " torch_Tensor " and one number");
   else
   {
     r = THTensor_(new)();
@@ -44,7 +44,7 @@ static int torch_TensorOperator_(__sub__)(lua_State *L)
   THTensor *r;
 
   if(!tensor1 && !tensor2)
-    luaL_error(L, "expecting two Tensors or one Tensor and one number");
+    luaL_error(L, "expecting two " torch_Tensor "s or one " torch_Tensor " and one number");
   else
   {
     r = THTensor_(new)();
@@ -93,7 +93,7 @@ static int torch_TensorOperator_(__mul__)(lua_State *L)
   THTensor *r;
 
   if(!tensor1 && !tensor2)
-    luaL_error(L, "expecting two Tensors or one Tensor and one number");
+    luaL_error(L, "expecting two " torch_Tensor "s or one " torch_Tensor " and one number");
   else
   {
     r = THTensor_(new)();
