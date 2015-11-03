@@ -61,7 +61,7 @@ The data in the `Storage` is _uninitialized_.
 <a name="torch.Storage"></a>
 ### torch.TYPEStorage(table) ###
 
-`table` is assumed to be a Lua array of numbers. The constructor returns a new storage of the specified `TYPE`, 
+`table` is assumed to be a Lua array of numbers. The constructor returns a new storage of the specified `TYPE`,
 of the size of the table, containing all the table elements converted
 
 Example:
@@ -137,10 +137,10 @@ If `size` is not specified then the [size](#torch.Storage.size) of the returned
 ```lua
 (size of file in byte)/(size of TYPE)
 ```
-elements.
+elements provided a non empty file already exists.
 
-if `sharedMem` is true then, the file will be created (or mapped from) the shared
-memory area using [`shm_open()`](http://linux.die.net/man/3/shm_open). On Linux systems 
+If `sharedMem` is true then, the file will be created (or mapped) from the shared
+memory area using [`shm_open()`](http://linux.die.net/man/3/shm_open). On Linux systems
 this is implemented at `/dev/shm` partition on RAM for interprocess communication.
 
 
@@ -170,9 +170,9 @@ Lua 5.1.3  Copyright (C) 1994-2008 Lua.org, PUC-Rio
 Hello World
 
 > = x:fill(42):string()
-____________
-> 
-$ cat hello.txt 
+************
+>
+$ cat hello.txt
 Hello World
 $ lua
 Lua 5.1.3  Copyright (C) 1994-2008 Lua.org, PUC-Rio
@@ -183,8 +183,8 @@ Hello World
 
 > x:fill(42)
 >
-$ cat hello.txt 
-____________
+$ cat hello.txt
+************
 ```
 
 <a name="__torch.StorageSharp"></a>
