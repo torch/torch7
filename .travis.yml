@@ -6,6 +6,10 @@ cache:
   directories:
   - $HOME/OpenBlasInstall
 sudo: false
+env:
+  - TORCH_LUA_VERSION=LUAJIT21
+  - TORCH_LUA_VERSION=LUA51
+  - TORCH_LUA_VERSION=LUA52
 addons:
   apt:
     packages:
@@ -41,7 +45,7 @@ before_script:
 - cd ~/torch && git submodule update --init --recursive
 - mkdir build && cd build
 - export CMAKE_LIBRARY_PATH=$HOME/OpenBlasInstall/include:$HOME/OpenBlasInstall/lib:$CMAKE_LIBRARY_PATH
-- cmake .. -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DCMAKE_BUILD_TYPE=Release -DWITH_LUAJIT21=ON
+- cmake .. -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DCMAKE_BUILD_TYPE=Release -DWITH_${TORCH_LUA_VERSION}=ON
 - make && make install
 - cd $ROOT_TRAVIS_DIR
 - export LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib:$LD_LIBRARY_PATH
