@@ -1172,7 +1172,7 @@ z = x:select(2,5):fill(5) -- select column 5 and fill up
 ### [Tensor] [{ dim1,dim2,... }] or [{ {dim1s,dim1e}, {dim2s,dim2e} }] ###
 
 The indexing operator [] can be used to combine narrow/sub and
-select in a concise an efficient way. It can also be used
+select in a concise and efficient way. It can also be used
 to copy, and fill (sub) tensors.
 
 This operator also works with an input mask made of a `ByteTensor` with 0 and 1
