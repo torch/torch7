@@ -51,4 +51,6 @@ before_script:
 - export LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib:$LD_LIBRARY_PATH
 script: 
 - ${INSTALL_PREFIX}/bin/luarocks make rocks/torch-scm-1.rockspec
-- ${INSTALL_PREFIX}/bin/luajit -ltorch -e "t=torch.test(); if t.errors[1] then os.exit(1) end"
+- export PATH=${INSTALL_PREFIX}/bin:$PATH
+- export TESTLUA=$(which luajit lua | head -n 1)
+- ${TESTLUA} -ltorch -e "t=torch.test(); if t.errors[1] then os.exit(1) end"
