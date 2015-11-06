@@ -748,7 +748,7 @@ number of elements must match, but sizes do not matter.
 ### [res] torch.addcdiv([res,] x [,value], tensor1, tensor2) ###
 <a name="torch.addcdiv"></a>
 
-Performs the element-wise division of `tensor1` by `tensor1`,
+Performs the element-wise division of `tensor1` by `tensor2`,
 multiply the result by the scalar `value` and add it to `x`.
 The number of elements must match, but sizes do not matter.
 
