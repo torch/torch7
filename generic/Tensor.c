@@ -1004,6 +1004,28 @@ static int torch_Tensor_(free)(lua_State *L)
   return 0;
 }
 
+static int torch_Tensor_(empty)(lua_State *L)
+{
+  THTensor *tensor = luaT_checkudata(L, 1, torch_Tensor);
+
+  THLongStorage *size = THLongStorage_newWithSize(8);
+  THLongStorage *stride = THLongStorage_newWithSize(8);
+  THLongStorage_fill(size, -1);
+  THLongStorage_fill(stride, -1);
+
+  THTensor_(resize)(tensor, size, stride);
+
+  THLongStorage_free(size);
+  THLongStorage_free(stride);
+
+  if(tensor->storage) {
+    THStorage_(free)(tensor->storage);
+    tensor->storage = NULL;
+  }
+
+  return 0;
+}
+
 /* helpful functions */
 static void torch_Tensor_(c_readSizeStride)(lua_State *L, int index, int allowStride, THLongStorage **size_, THLongStorage **stride_)
 {
@@ -1259,6 +1281,7 @@ static int torch_Tensor_(read)(lua_State *L)
 static const struct luaL_Reg torch_Tensor_(_) [] = {
   {"retain", torch_Tensor_(retain)},
   {"free", torch_Tensor_(free)},
+  {"empty", torch_Tensor_(empty)},
   {"contiguous", torch_Tensor_(contiguous)},
   {"size", torch_Tensor_(size)},
   {"elementSize", torch_Tensor_(elementSize)},

@@ -1570,7 +1570,7 @@ The source `tensor` should have at least as many elements as the number of 1s in
 ```lua
 x = torch.range(1,4):double():resize(2,2)
 > x
- 1  2  
+ 1  2
  3  4
 [torch.DoubleTensor of dimension 2x4]
 
@@ -1959,7 +1959,7 @@ y = torch.Tensor(2,2)
 Returns a tensor where dimensions `dim1` and `dim2` have been swapped. For 2D tensors,
 the convenience method of [t()](#torch.Tensor.t) is available.
 ```lua
-x = torch.Tensor(3,4):zero()                  
+x = torch.Tensor(3,4):zero()
 x:select(2,3):fill(7) -- fill column 3 with 7
 > x
  0  0  7  0
@@ -2392,3 +2392,13 @@ Increment the reference counter of the tensor.
 
 Decrement the reference counter of the tensor. Free the tensor if the
 counter is at 0.
+
+<a name="torch.Tensor.empty"></a>
+### empty() ###
+
+Empty the tensor, i.e. free the underlying storage and resize the tensor
+to nil. After this call, the tensor is in a state equivalent to
+`tensor = torch.Tensor()`.
+
+If the underlying storage is only referenced by this tensor, then
+the memory referenced by the storage is released immediatly.
