@@ -2392,13 +2392,3 @@ Increment the reference counter of the tensor.
 
 Decrement the reference counter of the tensor. Free the tensor if the
 counter is at 0.
-
-<a name="torch.Tensor.empty"></a>
-### empty() ###
-
-Empty the tensor, i.e. free the underlying storage and resize the tensor
-to nil. After this call, the tensor is in a state equivalent to
-`tensor = torch.Tensor()`.
-
-If the underlying storage is only referenced by this tensor, then
-the memory referenced by the storage is released immediatly.
