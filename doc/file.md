@@ -22,10 +22,10 @@ after each call to a write method. With this option, the spaces are
 supposed to exist while reading. This option can be deactivated with
 [noAutoSpacing()](#torch.File.noAutoSpacing).
 
-A `Lua` error might or might be not generated in case of read/write error
+A `Lua` error might or might not be generated in case of read/write error
 or problem in the file. This depends on the choice made between
 [quiet()](#torch.File.quiet) and [pedantic()](#torch.File.pedantic) options. It
-is possible to query if an error occured in the last operation by calling
+is possible to query if an error occurred in the last operation by calling
 [hasError()](#torch.File.hasError).
 
 <a name="torch.File.read"></a>
@@ -109,7 +109,7 @@ in the storage.
 
 These methods return the number of elements actually written.
 
-In case of read error, these methods will call the `Lua` error function using the default
+In case of write error, these methods will call the `Lua` error function using the default
 [pedantic](#torch.File.pedantic) option, or stay quiet with the [quiet](#torch.File.quiet)
 option. In the latter case, one can check if an error occurred with
 [hasError()](#torch.File.hasError).
@@ -203,7 +203,7 @@ If `format` starts with ''"*a"` then returns all the remaining contents of the `
 If no data is available, then an error is raised, except if `File` is in [quiet()](#torch.File.quiet) mode where
 it then returns an empty string `''` and after that you'll be able to see that last reading failed due to end of file with your_file:[hasError()](#torch.File.hasError).
 
-Because Torch is more precised on number typing, the `Lua` format ''"*n"'' is not supported:
+Because Torch is more precise on number typing, the `Lua` format ''"*n"'' is not supported:
 instead use one of the [number read methods](#torch.File.read).
 
 <a name="torch.File.writeString"></a>
@@ -353,8 +353,8 @@ the file is kept alive (even if one discards the object after
 writing/reading) as File needs to track their pointer. This is not always a
 desirable behavior, especially when dealing with large data structures.
 
-Another typical example when does not want want reference tracking is when
-one needs to push the same tensor repeatedly into a file but everytime
+Another typical example when does not want reference tracking is when
+one needs to push the same tensor repeatedly into a file but every time
 changing its contents: calling `referenced(false)` ensures desired
 behaviour.
 
