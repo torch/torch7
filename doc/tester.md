@@ -2,7 +2,7 @@
 # Tester #
 
 This class provides a generic unit testing framework. It is already 
-being used in [nn](../nn/index.md) package to verify the correctness of classes.
+being used in [nn](../index.md) package to verify the correctness of classes.
 
 The framework is generally used as follows.
 
@@ -31,8 +31,8 @@ tester:run()
 ```
 
 Running this code will report 2 errors in 2 test functions. Generally it is 
-better to put single test cases in each test function unless several very related
-test cases exit. The error report includes the message and line number of the error.
+better to put a single test case in each test function unless several very related
+test cases exist. The error report includes the message and line number of the error.
 
 ```
 
