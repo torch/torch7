@@ -1,3 +1,5 @@
+require 'torch'
+
 local myTester = torch.Tester()
 
 local tests = {}

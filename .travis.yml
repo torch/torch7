@@ -54,3 +54,5 @@ script:
 - export PATH=${INSTALL_PREFIX}/bin:$PATH
 - export TESTLUA=$(which luajit lua | head -n 1)
 - ${TESTLUA} -ltorch -e "t=torch.test(); if t.errors[1] then os.exit(1) end"
+- cd test
+- ${TESTLUA} test_writeObject.lua
