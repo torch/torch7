@@ -9,7 +9,7 @@ random number generator.
 ## Seed Handling ##
 
 The random number generator is provided with a random seed via
-[seed()](#torch.seed) when torch is being initialised. It can be
+[seed()](#torch.seed) when torch is being initialized. It can be
 reinitialized using [seed()](#torch.seed) or [manualSeed()](#torch.manualSeed).
 
 Initial seed can be obtained using [initialSeed()](#torch.initialSeed).
@@ -65,7 +65,7 @@ Returns an unsigned 32 bit integer random number.
 <a name="torch.uniform"></a>
 ### [number] uniform([a],[b]) ###
 
-Returns a random real number according to uniform distribution on [a,b[. By default `a` is 0 and `b` is 1.
+Returns a random real number according to uniform distribution on [a,b]. By default `a` is 0 and `b` is 1.
 
 <a name="torch.normal"></a>
 ### [number] normal([mean],[stdv]) ###

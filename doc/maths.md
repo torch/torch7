@@ -1908,21 +1908,21 @@ Optional character `uplo` = {'U', 'L'} specifies matrix `chol` as either upper o
 If tensor `res` is provided, the resulting decomposition will be stored therein.
 
 ```lua
-A = torch.Tensor({
+> A = torch.Tensor({
     {1.2705,  0.9971,  0.4948,  0.1389,  0.2381},
     {0.9971,  0.9966,  0.6752,  0.0686,  0.1196},
     {0.4948,  0.6752,  1.1434,  0.0314,  0.0582},
     {0.1389,  0.0686,  0.0314,  0.0270,  0.0526},
     {0.2381,  0.1196,  0.0582,  0.0526,  0.3957}})
 
-B = torch.Tensor({
+> B = torch.Tensor({
     {0.6219,  0.3439,  0.0431},
     {0.5642,  0.1756,  0.0153},
     {0.2334,  0.8594,  0.4103},
     {0.7556,  0.1966,  0.9637},
     {0.1420,  0.7185,  0.7476}})
 
-chol = torch.potrf(A)
+> chol = torch.potrf(A)
 > chol
  1.1272  0.8846  0.4390  0.1232  0.2112
  0.0000  0.4626  0.6200 -0.0874 -0.1453
@@ -1931,7 +1931,7 @@ chol = torch.potrf(A)
  0.0000  0.0000  0.0000  0.0000  0.5255
 [torch.DoubleTensor of size 5x5]
 
-solve = torch.potrs(B, chol)
+> solve = torch.potrs(B, chol)
 > solve
   12.1945   61.8622   92.6882
  -11.1782  -97.0303 -138.4874
