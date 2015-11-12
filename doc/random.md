@@ -65,7 +65,7 @@ Returns an unsigned 32 bit integer random number.
 <a name="torch.uniform"></a>
 ### [number] uniform([a],[b]) ###
 
-Returns a random real number according to uniform distribution on [a,b]. By default `a` is 0 and `b` is 1.
+Returns a random real number according to uniform distribution on [a,b). By default `a` is 0 and `b` is 1.
 
 <a name="torch.normal"></a>
 ### [number] normal([mean],[stdv]) ###
