@@ -35,7 +35,7 @@ extern void torch_DoubleTensorOperator_init(lua_State *L);
 
 extern void torch_TensorMath_init(lua_State *L);
 
-LUA_EXTERNC DLL_EXPORT int luaopen_libtorch(lua_State *L);
+LUAT_API int luaopen_libtorch(lua_State *L);
 
 int luaopen_libtorch(lua_State *L)
 {
