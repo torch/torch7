@@ -33,3 +33,10 @@ useful utilities.
     * [Random](doc/random.md) defines a random number generator package with various distributions.
     * Finally useful [utility](doc/utility.md) functions are provided for easy handling of torch tensor types and class inheritance.
 
+<a name="torch.links.dok"/>
+## Useful Links ##
+
+  * [Community packages](https://github.com/torch/torch7/wiki/Cheatsheet)
+  * [Torch Blog](http://torch.ch/blog/)
+  * [Torch Slides](https://github.com/soumith/cvpr2015/blob/master/cvpr-torch.pdf)
+
