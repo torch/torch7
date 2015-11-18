@@ -2690,6 +2690,17 @@ function torchtest.isSameSizeAs()
    mytester:assert(t1:isSameSizeAs(t4) == true, "wrong answer ")
 end
 
+function torchtest.isSetTo()
+   local t1 = torch.Tensor(3, 4, 9, 10)
+   local t2 = torch.Tensor(3, 4, 9, 10)
+   local t3 = torch.Tensor():set(t1)
+   local t4 = t3:reshape(12, 90)
+   mytester:assert(t1:isSetTo(t2) == false, "tensors do not share storage")
+   mytester:assert(t1:isSetTo(t3) == true, "tensor is set to other")
+   mytester:assert(t3:isSetTo(t1) == true, "isSetTo should be symmetric")
+   mytester:assert(t1:isSetTo(t4) == false, "tensors have different view")
+end
+
 function torchtest.isSize()
   local t1 = torch.Tensor(3, 4, 5)
   local s1 = torch.LongStorage({3, 4, 5})
