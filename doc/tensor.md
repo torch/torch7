@@ -880,6 +880,25 @@ y:zero()
 [torch.DoubleTensor of dimension 2x5]
 ```
 
+<a name="torch.Tensor.isSetTo"></a>
+### [boolean] isSetTo(tensor) ###
+
+Returns true iff the `Tensor` is set to the argument `Tensor`. Note: this is
+only true if the tensors are the same size, have the same strides and share the
+same storage and offset.
+
+```lua
+x = torch.Tensor(2,5)
+y = torch.Tensor()
+> y:isSetTo(x)
+ false
+> y:set(x)
+> y:isSetTo(x)
+  true
+> y:t():isSetTo(x)
+  false -- x and y have different strides
+```
+
 <a name="torch.Tensor.set"></a>
 ### [self] set(storage, [storageOffset, sizes, [strides]]) ###
 
