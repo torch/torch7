@@ -58,9 +58,9 @@ Set the seed of the random number generator to the given `number`.
 Returns the initial seed used to initialize the random generator.
 
 <a name="torch.random"></a>
-### [number] random() ###
+### [number] random([a], [b]) ###
 
-Returns an unsigned 32 bit integer random number.
+Returns an unsigned 32 bit integer random number from [a,b]. By default `a` is 1 and `b` is 2^32.
 
 <a name="torch.uniform"></a>
 ### [number] uniform([a],[b]) ###
