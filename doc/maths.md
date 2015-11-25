@@ -246,9 +246,9 @@ For more than 4 dimensions, you can use a storage as argument:
 ### [res] torch.rand([res,] m [,n...]) ###
 <a name="torch.rand"></a>
 
-`y=torch.rand(n)` returns a one-dimensional tensor of size `n` filled with random numbers from a uniform distribution on the interval `(0,1)`.
+`y=torch.rand(n)` returns a one-dimensional tensor of size `n` filled with random numbers from a uniform distribution on the interval `[0,1)`.
 
-`y=torch.rand(m,n)` returns a `m x n` tensor of random numbers from a uniform distribution on the interval `(0,1)`.
+`y=torch.rand(m,n)` returns a `m x n` tensor of random numbers from a uniform distribution on the interval `[0,1)`.
 
 For more than 4 dimensions, you can use a storage as argument:
 `y=torch.rand(torch.LongStorage{m,n,k,l,o})`.
