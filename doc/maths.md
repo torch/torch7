@@ -1859,13 +1859,20 @@ Note: Irrespective of the original strides, the returned matrices `resb` and
 <a name="torch.potrf"></a>
 ### torch.potrf([res,] A [, 'U' or 'L'] ) ###
 
-Cholesky Decomposition of 2D tensor `A`. Matrix `A` has to be a positive-definite and either symetric or complex Hermitian.
+Cholesky Decomposition of 2D tensor `A`. Matrix `A` has to be a positive-definite and either symmetric or complex Hermitian.
 
-Optional character `uplo` = {'U', 'L'} specifies whether the upper or lower triangular decomposition should be returned. By default, `uplo` = 'U'.
+The factorization has the form
 
-`X = torch.potrf(A, 'U')` returns the upper triangular Cholesky decomposition of `X`.
+     A = U**T * U,   if UPLO = 'U', or
+     A = L  * L**T,  if UPLO = 'L',
 
-`X = torch.potrf(A, 'L')` returns the lower triangular Cholesky decomposition of `X`.
+where `U` is an upper triangular matrix and `L` is lower triangular.
+
+The optional character `uplo` = {'U', 'L'} specifies whether the upper or lower triangular decomposition should be returned. By default, `uplo` = 'U'.
+
+`U = torch.potrf(A, 'U')` returns the upper triangular Cholesky decomposition of `A`.
+
+`L = torch.potrf(A, 'L')` returns the lower triangular Cholesky decomposition of `A`.
 
 If tensor `res` is provided, the resulting decomposition will be stored therein.
 
@@ -1894,6 +1901,67 @@ If tensor `res` is provided, the resulting decomposition will be stored therein.
  0.1232 -0.0874  0.0419  0.0491  0.0000
  0.2112 -0.1453  0.0738  0.2199  0.5255
 [torch.DoubleTensor of size 5x5]
+```
+
+<a name="torch.pstrf"></a>
+### torch.pstrf([res, piv, ] A [, 'U' or 'L'] ) ###
+
+Cholesky factorization with complete pivoting of a real symmetric positive semidefinite 2D tensor `A`.
+The matrix `A` has to be a positive semi-definite and symmetric. The factorization has the form
+
+    P**T * A * P = U**T * U ,  if UPLO = 'U',
+    P**T * A * P = L  * L**T,  if UPLO = 'L',
+
+where `U` is an upper triangular matrix and `L` is lower triangular, and
+`P` is stored as the vector `piv`. More specifically, `piv` is such that the nonzero entries are `P[piv[k], k] = 1`.
+
+The optional character argument `uplo` = {'U', 'L'} specifies whether the upper or lower triangular decomposition should be returned. By default, `uplo` = 'U'.
+
+`U, piv = torch.sdtrf(A, 'U')` returns the upper triangular Cholesky decomposition of `A`
+
+`L, piv = torch.potrf(A, 'L')` returns the lower triangular Cholesky decomposition of `A`.
+
+If tensors `res` and `piv` (an `IntTensor`) are provided, the resulting decomposition will be stored therein.
+
+```lua
+> A = torch.Tensor({
+    {1.2705,  0.9971,  0.4948,  0.1389,  0.2381},
+    {0.9971,  0.9966,  0.6752,  0.0686,  0.1196},
+    {0.4948,  0.6752,  1.1434,  0.0314,  0.0582},
+    {0.1389,  0.0686,  0.0314,  0.0270,  0.0526},
+    {0.2381,  0.1196,  0.0582,  0.0526,  0.3957}})
+
+> U, piv = torch.pstrf(A)
+> U
+ 1.1272  0.4390  0.2112  0.8846  0.1232
+ 0.0000  0.9750 -0.0354  0.2942 -0.0233
+ 0.0000  0.0000  0.5915 -0.0961  0.0435
+ 0.0000  0.0000  0.0000  0.3439 -0.0854
+ 0.0000  0.0000  0.0000  0.0000  0.0456
+[torch.DoubleTensor of size 5x5]
+
+> piv
+ 1
+ 3
+ 5
+ 2
+ 4
+[torch.IntTensor of size 5]
+
+> Ap = U:t() * U
+> Ap
+ 1.2705  0.4948  0.2381  0.9971  0.1389
+ 0.4948  1.1434  0.0582  0.6752  0.0314
+ 0.2381  0.0582  0.3957  0.1196  0.0526
+ 0.9971  0.6752  0.1196  0.9966  0.0686
+ 0.1389  0.0314  0.0526  0.0686  0.0270
+[torch.DoubleTensor of size 5x5]
+
+> -- Permute rows and columns
+> Ap:indexCopy(1, piv:long(), Ap:clone())
+> Ap:indexCopy(2, piv:long(), Ap:clone())
+> (Ap - A):norm()
+1.5731560566382e-16
 ```
 
 <a name="torch.potrs"></a>

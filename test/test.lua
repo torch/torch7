@@ -2215,6 +2215,51 @@ function torchtest.potri()
    mytester:assertlt(inv0:dist(inv1),1e-12,"torch.potri; uplo='L'")
 end
 
+function torchtest.pstrf()
+  local function checkPsdCholesky(a, uplo, inplace)
+    local u, piv, args, a_reconstructed
+    if inplace then
+      u = torch.Tensor(a:size())
+      piv = torch.IntTensor(a:size(1))
+      args = {u, piv, a}
+    else
+      args = {a}
+    end
+
+    if uplo then table.insert(args, uplo) end
+
+    u, piv = torch.pstrf(unpack(args))
+
+    if uplo == 'L' then
+      a_reconstructed = torch.mm(u, u:t())
+    else
+      a_reconstructed = torch.mm(u:t(), u)
+    end
+
+    piv = piv:long()
+    local a_permuted = a:index(1, piv):index(2, piv)
+    mytester:assertTensorEq(a_permuted, a_reconstructed, 1e-14,
+                            'torch.pstrf did not allow rebuilding the original matrix;' ..
+                            'uplo=' .. tostring(uplo))
+  end
+
+  local dimensions = { {5, 1}, {5, 3}, {5, 5}, {10, 10} }
+  for _, dim in pairs(dimensions) do
+    local m = torch.Tensor(unpack(dim)):uniform()
+    local a = torch.mm(m, m:t())
+    -- add a small number to the diagonal to make the matrix numerically positive semidefinite
+    for i = 1, m:size(1) do
+      a[i][i] = a[i][i] + 1e-7
+    end
+    checkPsdCholesky(a, nil, false)
+    checkPsdCholesky(a, 'U', false)
+    checkPsdCholesky(a, 'L', false)
+    checkPsdCholesky(a, nil, true)
+    checkPsdCholesky(a, 'U', true)
+    checkPsdCholesky(a, 'L', true)
+  end
+end
+
 function torchtest.testNumel()
     local b = torch.ByteTensor(3, 100, 100)
     mytester:asserteq(b:nElement(), 3*100*100, "nElement not right")
