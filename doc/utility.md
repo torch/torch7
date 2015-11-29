@@ -127,11 +127,11 @@ Checks if `object` has a metatable. If it does, and if it corresponds to a
 class. Returns `nil` in any other cases.
 
 ```lua
-> torch.type(torch.Tensor())
+> torch.typename(torch.Tensor())
 torch.DoubleTensor
-> torch.type({})
+> torch.typename({})
 
-> torch.type(7)
+> torch.typename(7)
 
 ```
 
