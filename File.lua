@@ -213,7 +213,10 @@ function File:readObject()
    elseif typeidx == TYPE_FUNCTION then
        local size = self:readInt()
        local dumped = self:readChar(size):string()
-       local func = loadstring(dumped)
+       local func, err = loadstring(dumped)
+       if not func then
+          error(string.format('Failed to load function from bytecode: %s', err))
+       end
        local upvalues = self:readObject()
        for index,upvalue in ipairs(upvalues) do
           debug.setupvalue(func, index, upvalue)
@@ -233,7 +236,10 @@ function File:readObject()
       if typeidx == TYPE_RECUR_FUNCTION or typeidx == LEGACY_TYPE_RECUR_FUNCTION then
          local size = self:readInt()
          local dumped = self:readChar(size):string()
-         local func = loadstring(dumped)
+         local func, err = loadstring(dumped)
+         if not func then
+            error(string.format('Failed to load function from bytecode: %s', err))
+         end
          if not force then
              objects[index] = func
          end
