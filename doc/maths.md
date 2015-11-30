@@ -1305,7 +1305,7 @@ Compute the maximum of each pair of values in `tensor1` and `tensor2`.
 
 `a:cmax(b)` stores the element-wise maximum of `a` and `b` in `a`.
 
-`c:max(a, b)` stores the element-wise maximum of `a` and `b` in `c`.
+`c:cmax(a, b)` stores the element-wise maximum of `a` and `b` in `c`.
 
 ```lua
 > a = torch.Tensor{1, 2, 3}
@@ -1327,7 +1327,7 @@ in `a` and `v`.
 
 `a:cmax(v)` stores the maxima of each element in `a` and `v` in `a`.
 
-`c:max(a, v)` stores the maxima of each element in `a` and `v` in `c`.
+`c:cmax(a, v)` stores the maxima of each element in `a` and `v` in `c`.
 
 ```lua
 > a = torch.Tensor{1, 2, 3}
@@ -1347,7 +1347,7 @@ Compute the minimum of each pair of values in `tensor1` and `tensor2`.
 
 `a:cmin(b)` stores the element-wise minimum of `a` and `b` in `a`.
 
-`c:min(a, b)` stores the element-wise minimum of `a` and `b` in `c`.
+`c:cmin(a, b)` stores the element-wise minimum of `a` and `b` in `c`.
 
 ```lua
 > a = torch.Tensor{1, 2, 3}
@@ -1369,7 +1369,7 @@ in `a` and `v`.
 
 `a:cmin(v)` stores the minima of each element in `a` and `v` in `a`.
 
-`c:min(a, v)` stores the minima of each element in `a` and `v` in `c`.
+`c:cmin(a, v)` stores the minima of each element in `a` and `v` in `c`.
 
 ```lua
 > a = torch.Tensor{1, 2, 3}
