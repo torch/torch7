@@ -16,6 +16,7 @@ Initial seed can be obtained using [initialSeed()](#torch.initialSeed).
 
 Setting a particular seed allows the user to (re)-generate a particular sequence
 of random numbers. Example:
+
 ```
 > torch.manualSeed(123)
 > = torch.uniform()
@@ -40,6 +41,27 @@ of random numbers. Example:
 0.28613933874294
 ```
 
+To regenerate a sequence of random numbers starting from a specific point
+in the sequence, one can save the state of the random number generator
+using [getRNGState()](#torch.getRNGState) and then reset the random number
+generator to that state using [setRNGState()](#torch.setRNGState). Example:
+
+```
+> torch.manualSeed(123)
+> = torch.uniform()
+0.69646918727085
+> s = torch.getRNGState()
+> return  torch.uniform()
+0.71295532141812
+> return  torch.uniform()
+0.28613933874294
+> torch.setRNGState(s)
+> return  torch.uniform()
+0.71295532141812
+> return  torch.uniform()
+0.28613933874294
+```
+
 <a name="torch.seed"></a>
 ### [number] seed() ###
 
@@ -56,6 +78,19 @@ Set the seed of the random number generator to the given `number`.
 ### initialSeed() ###
 
 Returns the initial seed used to initialize the random generator.
+
+<a name="torch.getRNGState"></a>
+### [Tensor] getRNGState() ###
+Returns the current state of the random number generator as a torch.ByteTensor.
+This can then be used to set the state of the RNG so that the same sequence of
+random numbers is produced.
+
+<a name="torch.setRNGState"></a>
+### [Tensor] setRNGState(state) ###
+Set the state of the random number generator. If `state` was obtained earlier
+using `getRNGState` then the random number generator should now generate the
+same numbers as it did from the point where `state` was obtained. This function
+returns its argument, `state`.
 
 <a name="torch.random"></a>
 ### [number] random([a], [b]) ###
