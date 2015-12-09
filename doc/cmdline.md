@@ -61,7 +61,7 @@ command line and is different than the default value, the `rundir`
 is name is produced to reflect the parameter setting.
 
 ```shell
-# th myscript.th -seed 456 -stroption mycustomstring
+# th myscript.lua -seed 456 -stroption mycustomstring
 ```
 
 This will produce the following output:
