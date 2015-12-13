@@ -35,3 +35,8 @@ Returns the [storage](storage.md) which contains all the data of the
 size of the storage is the size of the data in the `File`, plus one, the
 last character being `NULL`.
 
+<a name="torch.MemoryFile.longSize"/></a>
+### longSize([size]) ###
+
+Longs will be written and read from the file as `size` bytes long, which
+can be 0, 4 or 8. 0 means system default.
