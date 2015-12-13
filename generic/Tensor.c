@@ -2,7 +2,7 @@
 #define TH_GENERIC_FILE "generic/Tensor.c"
 #else
 
-static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index, int allowNone, int allowTensor, int allowStorage, int allowStride,
+static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index, int allowNoStorage,
                                                          THStorage **storage_, long *storageOffset_, THLongStorage **size_, THLongStorage **stride_);
 
 static void torch_Tensor_(c_readSizeStride)(lua_State *L, int index, int allowStride, THLongStorage **size_, THLongStorage **stride_);
@@ -195,7 +195,7 @@ static int torch_Tensor_(new)(lua_State *L)
   {
     THStorage *storage;
 
-    torch_Tensor_(c_readTensorStorageSizeStride)(L, 1, 1, 1, 1, 1,
+    torch_Tensor_(c_readTensorStorageSizeStride)(L, 1, 1,
                                                  &storage, &storageOffset, &size, &stride);
 
     tensor = THTensor_(newWithStorage)(storage, storageOffset, size, stride);
@@ -214,8 +214,7 @@ static int torch_Tensor_(set)(lua_State *L)
   THStorage *storage;
   long storageOffset;
   THLongStorage *size, *stride;
-
-  torch_Tensor_(c_readTensorStorageSizeStride)(L, 2, 1, 1, 1, 1,
+  torch_Tensor_(c_readTensorStorageSizeStride)(L, 2, 0,
                                                &storage, &storageOffset, &size, &stride);
 
   THTensor_(setStorage)(self, storage, storageOffset, size, stride);
@@ -1068,7 +1067,7 @@ static void torch_Tensor_(c_readSizeStride)(lua_State *L, int index, int allowSt
   *stride_ = stride;
 }
 
-static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index, int allowNone, int allowTensor, int allowStorage, int allowStride,
+static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index, int allowNoStorage,
                                                          THStorage **storage_, long *storageOffset_, THLongStorage **size_, THLongStorage **stride_)
 {
   THTensor *src = NULL;
@@ -1076,7 +1075,7 @@ static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index
 
   int arg1Type = lua_type(L, index);
 
-  if( allowNone && (arg1Type == LUA_TNONE) )
+  if( allowNoStorage && (arg1Type == LUA_TNONE) )
   {
     *storage_ = NULL;
     *storageOffset_ = 0;
@@ -1084,7 +1083,7 @@ static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index
     *stride_ = NULL;
     return;
   }
-  else if( allowTensor && (arg1Type == LUA_TUSERDATA) && (src = luaT_toudata(L, index, torch_Tensor)) )
+  else if( (arg1Type == LUA_TUSERDATA) && (src = luaT_toudata(L, index, torch_Tensor)) )
   {
     *storage_ = src->storage;
     *storageOffset_ = src->storageOffset;
@@ -1092,7 +1091,7 @@ static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index
     *stride_ = THTensor_(newStrideOf)(src);
     return;
   }
-  else if( allowStorage && (arg1Type == LUA_TUSERDATA) && (storage = luaT_toudata(L, index, torch_Storage)) )
+  else if( (arg1Type == LUA_TUSERDATA) && (storage = luaT_toudata(L, index, torch_Storage)) )
   {
     *storage_ = storage;
     if(lua_isnone(L, index+1))
@@ -1104,11 +1103,11 @@ static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index
     else
     {
       *storageOffset_ = luaL_checklong(L, index+1)-1;
-      torch_Tensor_(c_readSizeStride)(L, index+2, allowStride, size_, stride_);
+      torch_Tensor_(c_readSizeStride)(L, index+2, 1, size_, stride_);
     }
     return;
   }
-  else if( (arg1Type == LUA_TNUMBER) || (luaT_toudata(L, index, "torch.LongStorage")) )
+  else if( allowNoStorage && ((arg1Type == LUA_TNUMBER) || (luaT_toudata(L, index, "torch.LongStorage"))) )
   {
     *storage_ = NULL;
     *storageOffset_ = 0;
@@ -1119,14 +1118,11 @@ static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index
 
   *storage_ = NULL;
   *storageOffset_ = 0;
-  if(allowTensor && allowStorage)
-      THArgCheck(0, index, "expecting number or " torch_Tensor " or " torch_Storage );
-  else if(allowTensor)
-      THArgCheck(0, index, "expecting number or " torch_Tensor );
-  else if(allowStorage)
-      THArgCheck(0, index, "expecting number or " torch_Storage );
+
+  if(allowNoStorage)
+    THArgCheck(0, index, "expecting nothing or number or " torch_Tensor " or " torch_Storage " or torch.LongStorage");
   else
-      THArgCheck(0, index, "expecting number");
+    THArgCheck(0, index, "expecting " torch_Tensor " or " torch_Storage );
 }
 
 static int torch_Tensor_(apply)(lua_State *L)
