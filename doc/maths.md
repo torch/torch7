@@ -1854,7 +1854,7 @@ Note: Irrespective of the original strides, the returned matrices `resb` and `re
 <a name="torch.potrf"></a>
 ### torch.potrf([res,] A [, 'U' or 'L'] ) ###
 
-Cholesky Decomposition of 2D tensor `A`.
+Cholesky Decomposition of 2D `Tensor` `A`.
 The matrix `A` has to be a positive-definite and either symmetric or complex Hermitian.
 
 The factorization has the form
@@ -1902,7 +1902,7 @@ If `Tensor` `res` is provided, the resulting decomposition will be stored therei
 <a name="torch.pstrf"></a>
 ### torch.pstrf([res, piv, ] A [, 'U' or 'L'] ) ###
 
-Cholesky factorization with complete pivoting of a real symmetric positive semidefinite 2D tensor `A`.
+Cholesky factorization with complete pivoting of a real symmetric positive semidefinite 2D `Tensor` `A`.
 The matrix `A` has to be a positive semi-definite and symmetric. The factorization has the form
 
     P**T * A * P = U**T * U ,  if UPLO = 'U',
