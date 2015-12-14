@@ -62,4 +62,8 @@ addresses)
 
 In [binary](file.md#torch.File.binary) mode, force encoding in _native endian_.
 
+<a name="torch.DiskFile.longSize"/></a>
+### longSize([size]) ###
 
+Longs will be written and read from the file as `size` bytes long, which
+can be 0, 4 or 8. 0 means system default.
