@@ -84,8 +84,8 @@ If `constructor` is not NULL, a function `new` will be added to the
 metatable, pointing to this given function.
 
 A "constructor table" will be created by `luaT_newlocalmetatable`: it will
-contain all the class methods, and be callable, calling the constructor, if
-a constructor has been passed. The constructor table is either stored into
+contain all the class methods, and be callable, calling the `constructor`, if
+a `constructor` has been passed. The constructor table is either stored into
 `modulename.classname` (that is in the global namespace) if `moduleidx <=
 0` or in the table at index `moduleidx` in the stack (if `moduleidx > 0`).
 
@@ -109,7 +109,7 @@ constructor table is assigned in the global namespace (`moduleidx = 0`).
 <a name="luat_pushmetatable"/>
 ### int luaT_pushmetatable(lua_State *L, const name *tname) ###
 
-Push the metatable with type name `tname` on the stack, it `tname` is a
+Push the metatable with type name `tname` on the stack, if `tname` is a
 valid Torch class name (previously registered with luaT_newmetatable).
 
 On success, returns 1. If `tname` is invalid, nothing is pushed and it
@@ -119,7 +119,7 @@ returns 0.
 ### const char* luaT_typenameid(lua_State *L, const char *tname) ###
 
 If `tname` is a valid Torch class name, then returns a unique string (the
-contents will be the same than `tname`) pointing on the string registered
+contents will be the same as `tname`) pointing to the string registered
 in the Lua registry. This string is thus valid as long as Lua is
 running. The returned string shall not be freed.
 
