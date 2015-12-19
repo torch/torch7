@@ -77,5 +77,31 @@ function tests.test_empty_table()
    file:writeObject({})
 end
 
+function tests.test_error_msg()
+   local torch = torch
+   local inner = {
+       baz = function(a) torch.somefunc() end
+   }
+   local outer = {
+       theinner = inner
+   }
+   local function evil_func()
+      outer.prop = 1
+      image.compress(1)
+   end
+   local ok, msg = pcall(torch.save, 'saved.t7', evil_func)
+   myTester:assert(not ok)
+   myTester:assert(msg:find('at <%?>%.outer%.theinner%.baz%.torch'))
+end
+
+function tests.test_referenced()
+   local file = torch.MemoryFile('rw'):binary()
+   file:referenced(false)
+
+   local foo = 'bar'
+   file:writeObject(foo)
+   file:close()
+end
+
 myTester:add(tests)
 myTester:run()
