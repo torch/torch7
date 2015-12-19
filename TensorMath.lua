@@ -620,32 +620,72 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
    if Tensor == 'ByteTensor' then -- we declare this only once
       interface:print(
          [[
+/*
+Exact random integer generation for (b-a) <= 2^53 with nested sampling.
+0.00048828101 = (2^21-1)/(2^32-1) -- Normalize first random val to [0,2^21 - 1]
+2097152 = 2^53 / 2^32 -- Normalize second random val to [0,2^53 - 2^21]
+9007199254740992 = 2^53 -- Significand precision
+*/
 static long THRandom_random2__(THGenerator *gen, long a, long b)
 {
   THArgCheck(b >= a, 2, "upper bound must be larger than lower bound");
-  return((THRandom_random(gen) % (b+1-a)) + a);
+  return (long)(((double)(THRandom_random(gen)) * 0.00048828101
+         + (double)(THRandom_random(gen)) * 2097152)
+         / 9007199254740992.
+         * (double)(b+1UL-a))
+         + a;
 }
-         
+
+/*
+Exact random integer generation for b <= 2^53 with nested sampling.
+0.00048828101 = (2^21-1)/(2^32-1) -- Normalize first random val to [0,2^21 - 1]
+2097152 = 2^53 / 2^32 -- Normalize first random val to [0,2^53 - 2^21]
+9007199254740992 = 2^53 -- Significand precision
+*/
 static long THRandom_random1__(THGenerator *gen, long b)
 {
   THArgCheck(b > 0, 1, "upper bound must be strictly positive");
-  return(THRandom_random(gen) % b + 1);
+  return (long)(((double)(THRandom_random(gen)) * 0.00048828101
+         + (double)(THRandom_random(gen)) * 2097152.)
+         / 9007199254740992.
+         * (double)(b) + 1.);
 }
          ]])
    end
 
    interface:print(string.gsub(
                       [[
+/*
+Exact tensor random integer generation for (b-a) <= 2^53 with nested sampling.
+0.00048828101 = (2^21-1)/(2^32-1) -- Normalize first random val to [0,2^21 - 1]
+2097152 = 2^53 / 2^32 -- Normalize first random val to [0,2^53 - 2^21]
+9007199254740992 = 2^53 -- Significand precision
+*/
 static void THTensor_random2__(THTensor *self, THGenerator *gen, long a, long b)
 {
   THArgCheck(b >= a, 2, "upper bound must be larger than lower bound");
-  TH_TENSOR_APPLY(real, self, *self_data = ((THRandom_random(gen) % (b+1-a)) + a);)
+  TH_TENSOR_APPLY(real, self, *self_data =
+         (long)(((double)(THRandom_random(gen)) * 0.00048828101
+         + (double)(THRandom_random(gen)) * 2097152)
+         / 9007199254740992.
+         * (double)(b+1UL-a))
+         + a;)
 }
 
+/*
+Exact random integer generation for b <= 2^53 with nested sampling.
+0.00048828101 = (2^21-1)/(2^32-1) -- Normalize first random val to [0,2^21 - 1]
+2097152 = 2^53 / 2^32 -- Normalize first random val to [0,2^53 - 2^21]
+9007199254740992 = 2^53 -- Significand precision
+*/
 static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
 {
   THArgCheck(b > 0, 1, "upper bound must be strictly positive");
-  TH_TENSOR_APPLY(real, self, *self_data = (THRandom_random(gen) % b + 1);)
+  TH_TENSOR_APPLY(real, self, *self_data =
+         (long)(((double)(THRandom_random(gen)) * 0.00048828101
+         + (double)(THRandom_random(gen)) * 2097152.)
+         / 9007199254740992.
+         * (double)(b) + 1.);)
 }
 ]], 'Tensor', Tensor):gsub('real', real))
 
