@@ -94,6 +94,22 @@ function tests.test_error_msg()
    myTester:assert(msg:find('at <%?>%.outer%.theinner%.baz%.torch'))
 end
 
+function tests.test_warning_msg()
+  local foo = {}
+  torch.class('Bar', foo)
+
+  local obj = foo.Bar()
+  local tensor = torch.Tensor()
+  obj.data = tensor:cdata() -- pick something NOT writable
+
+  local file = torch.MemoryFile('rw'):binary()
+  local ok, _ = pcall(torch.File.writeObject, file, obj)
+  -- only a warning is printed on STDOUT:
+  --   $ Warning: cannot write object field <data> of <Bar> <?>
+  myTester:assert(ok)
+  file:close()
+end
+
 function tests.test_referenced()
    local file = torch.MemoryFile('rw'):binary()
    file:referenced(false)
