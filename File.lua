@@ -181,12 +181,12 @@ function File:writeObject(object, debugname)
                   if self:isWritableObject(v) then
                      var[k] = v
                   else
-                     print(string.format('$ Warning: cannot write object field <%s> of <%s> %s', k, torch.typename(object), self:_writeObjectGetStackStr()))
+                     print(string.format('$ Warning: cannot write object field <%s> of <%s> %s', k, torch.typename(object), formatStack(objectNameStack)))
                   end
                end
                self:writeObject(var, torch.typename(object))
             else
-               error(string.format('<%s> is a non-serializable Torch object %s', torch.typename(object), self:_writeObjectGetStackStr()))
+               error(string.format('<%s> is a non-serializable Torch object %s', torch.typename(object), formatStack(objectNameStack)))
             end
          else -- it is a table
             local size = 0; for k,v in pairs(object) do size = size + 1 end
