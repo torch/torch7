@@ -39,11 +39,16 @@ function. By default, this "points" on `torch.DoubleStorage`.
 ## Constructors and Access Methods ##
 
 <a name="torch.Storage"></a>
-### torch.TYPEStorage([size]) ###
+### torch.TYPEStorage([size [, ptr]]) ###
 
 Returns a new `Storage` of type `TYPE`. Valid `TYPE` are `Byte`, `Char`, `Short`,
 `Int`, `Long`, `Float`, and `Double`. If `size` is given, resize the
 `Storage` accordingly, else create an empty `Storage`.
+The optional second argument `ptr` is a number whose value is a
+pointer to a memory chunk of size `size*sizeof(TYPE)` (for example coming from the
+[`torch.data()`](https://github.com/torch/torch7/blob/master/doc/tensor.md#result-datatensor-asnumber)
+method). The Storage will take care of freeing the memory
+chunk: it _must not be freed by the caller_!
 
 Example:
 ```lua
@@ -56,7 +61,7 @@ The data in the `Storage` is _uninitialized_.
 <a name="torch.Storage"></a>
 ### torch.TYPEStorage(table) ###
 
-The argument is assumed to be a Lua array of numbers. The constructor returns a new storage of the specified 'TYPE', 
+`table` is assumed to be a Lua array of numbers. The constructor returns a new storage of the specified `TYPE`,
 of the size of the table, containing all the table elements converted
 
 Example:
@@ -73,7 +78,7 @@ Example:
 <a name="torch.Storage"></a>
 ### torch.TYPEStorage(storage [, offset [, size]]) ###
 
-Returns a new `Storage` of type `TYPE`, which is a view on the first argument. The first argument must be of the same type `TYPE`. An optional offset can be provided (defaults to 1). An optional size can also be provided to restrict the size of the new storage (defaults to `storage:size()-(offset-1)`).
+Returns a new `Storage` of type `TYPE`, which is a view on the first argument. The first argument must be of the same type `TYPE`. An optional `offset` can be provided (defaults to 1). An optional `size` can also be provided to restrict the size of the new storage (defaults to `storage:size()-(offset-1)`).
 
 Example:
 ```lua
@@ -119,12 +124,12 @@ changes made on the file after creation of the storage have an unspecified
 effect on the storage contents.
 
 If `size` is specified, it is the [size](#torch.Storage.size) of the returned
-`Storage` (in elements). In this case, if `shared` is false then the file must
+`Storage` (in elements). In this case, if `shared` is `false` then the file must
 already contain at least
 ```lua
 size*(size of TYPE)
 ```
-bytes. If `shared` is true then the file will be created if necessary, and
+bytes. If `shared` is `true` then the file will be created if necessary, and
 extended if necessary to that many bytes in length.
 
 If `size` is not specified then the [size](#torch.Storage.size) of the returned
@@ -132,10 +137,10 @@ If `size` is not specified then the [size](#torch.Storage.size) of the returned
 ```lua
 (size of file in byte)/(size of TYPE)
 ```
-elements.
+elements provided a non empty file already exists.
 
-if `sharedMem` is true then, the file will be created (or mapped from) the shared
-memory area using [`shm_open()`](http://linux.die.net/man/3/shm_open). On Linux systems 
+If `sharedMem` is true then, the file will be created (or mapped) from the shared
+memory area using [`shm_open()`](http://linux.die.net/man/3/shm_open). On Linux systems
 this is implemented at `/dev/shm` partition on RAM for interprocess communication.
 
 
@@ -165,9 +170,9 @@ Lua 5.1.3  Copyright (C) 1994-2008 Lua.org, PUC-Rio
 Hello World
 
 > = x:fill(42):string()
-____________
-> 
-$ cat hello.txt 
+************
+>
+$ cat hello.txt
 Hello World
 $ lua
 Lua 5.1.3  Copyright (C) 1994-2008 Lua.org, PUC-Rio
@@ -178,8 +183,8 @@ Hello World
 
 > x:fill(42)
 >
-$ cat hello.txt 
-____________
+$ cat hello.txt
+************
 ```
 
 <a name="__torch.StorageSharp"></a>
@@ -221,7 +226,7 @@ x = torch.IntStorage(10):fill(0) -- x won't be nil!
 <a name="torch.Storage.resize"></a>
 ### [self] resize(size) ###
 
-Resize the storage to the provide `size`. _The new contents are undetermined_.
+Resize the storage to the provided `size`. _The new contents are undetermined_.
 
 This function returns self, allowing things like:
 ```lua

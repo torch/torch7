@@ -312,7 +312,7 @@ static int torch_Tensor_(sub)(lua_State *L)
       d1e += tensor->size[1]+1;
     THArgCheck(tensor->nDimension > 1, 4, "invalid dimension");
     THArgCheck(d1s >= 0 && d1s < tensor->size[1], 4, "out of range");
-    THArgCheck(d1e >= 0 && d1e < tensor->size[1], 5, "out of range");    
+    THArgCheck(d1e >= 0 && d1e < tensor->size[1], 5, "out of range");
     THArgCheck(d1e >= d1s, 5, "end smaller than beginning");
 
     if(!lua_isnone(L, 6))
@@ -325,7 +325,7 @@ static int torch_Tensor_(sub)(lua_State *L)
         d2e += tensor->size[2]+1;
       THArgCheck(tensor->nDimension > 2, 6, "invalid dimension");
       THArgCheck(d2s >= 0 && d2s < tensor->size[2], 6, "out of range");
-      THArgCheck(d2e >= 0 && d2e < tensor->size[2], 7, "out of range");    
+      THArgCheck(d2e >= 0 && d2e < tensor->size[2], 7, "out of range");
       THArgCheck(d2e >= d2s, 7, "end smaller than beginning");
 
       if(!lua_isnone(L, 8))
@@ -338,7 +338,7 @@ static int torch_Tensor_(sub)(lua_State *L)
           d3e += tensor->size[3]+1;
         THArgCheck(tensor->nDimension > 3, 8, "invalid dimension");
         THArgCheck(d3s >= 0 && d3s < tensor->size[3], 8, "out of range");
-        THArgCheck(d3e >= 0 && d3e < tensor->size[3], 9, "out of range");    
+        THArgCheck(d3e >= 0 && d3e < tensor->size[3], 9, "out of range");
         THArgCheck(d3e >= d3s, 9, "end smaller than beginning");
       }
     }
@@ -405,7 +405,7 @@ static int torch_Tensor_(indexSelect)(lua_State *L)
   }
   else
   {
-    THError("Tensor, number, LongTensor | Tensor, Tensor, number, LongTensor expected");
+    THError(torch_Tensor ", number, torch.LongTensor | " torch_Tensor ", " torch_Tensor ", number, torch.LongTensor expected");
     return 0;
   }
 
@@ -429,11 +429,35 @@ static int torch_Tensor_(indexCopy)(lua_State *L)
   }
   else
   {
-    THError("Tensor, number, LongTensor, Tensor expected");
+    THError( torch_Tensor ", number, torch.LongTensor, " torch_Tensor " expected");
     return 0;
   }
 
   THTensor_(indexCopy)(tensor,dim,index,src);
+
+  return 1;
+}
+
+static int torch_Tensor_(indexAdd)(lua_State *L)
+{
+  int narg = lua_gettop(L);
+  THTensor *tensor, *src;
+  THLongTensor *index;
+  int dim;
+  if(narg == 4)
+  {
+    dim = luaL_checkint(L, 2) - 1;
+    index = luaT_checkudata(L, 3, "torch.LongTensor");
+    src = luaT_checkudata(L, 4, torch_Tensor);
+    tensor = luaT_checkudata(L,1,torch_Tensor);
+  }
+  else
+  {
+    THError( torch_Tensor ", number, torch.LongTensor, " torch_Tensor " expected");
+    return 0;
+  }
+
+  THTensor_(indexAdd)(tensor,dim,index,src);
 
   return 1;
 }
@@ -454,7 +478,7 @@ static int torch_Tensor_(indexFill)(lua_State *L)
   }
   else
   {
-    THError("Tensor, number, LongTensor, number expected");
+    THError( torch_Tensor ", number, torch.LongTensor, number expected");
     return 0;
   }
 
@@ -484,7 +508,7 @@ static int torch_Tensor_(maskedSelect)(lua_State *L)
   }
   else
   {
-    THError("Tensor, ByteTensor | Tensor, Tensor, ByteTensor expected");
+    THError( torch_Tensor ", torch.ByteTensor | " torch_Tensor ", " torch_Tensor ", torch.ByteTensor expected");
     return 0;
   }
 
@@ -507,11 +531,14 @@ static int torch_Tensor_(maskedCopy)(lua_State *L)
   }
   else
   {
-    THError("Tensor, ByteTensor, Tensor expected");
+    THError( torch_Tensor ", torch.ByteTensor, " torch_Tensor " expected");
     return 0;
   }
 
   THTensor_(maskedCopy)(tensor,mask,src);
+
+  /* return destination */
+  lua_pop(L, 2);
 
   return 1;
 }
@@ -530,7 +557,7 @@ static int torch_Tensor_(maskedFill)(lua_State *L)
   }
   else
   {
-    THError("Tensor, ByteTensor, number expected");
+    THError( torch_Tensor ", torch.ByteTensor, number expected");
     return 0;
   }
 
@@ -608,6 +635,14 @@ static int torch_Tensor_(isSameSizeAs)(lua_State *L)
   THTensor *tensor1 = luaT_checkudata(L, 1, torch_Tensor);
   THTensor *tensor2 = luaT_checkudata(L, 2, torch_Tensor);
   lua_pushboolean(L, THTensor_(isSameSizeAs)(tensor1, tensor2));
+  return 1;
+}
+
+static int torch_Tensor_(isSetTo)(lua_State *L)
+{
+  THTensor *tensor1 = luaT_checkudata(L, 1, torch_Tensor);
+  THTensor *tensor2 = luaT_checkudata(L, 2, torch_Tensor);
+  lua_pushboolean(L, THTensor_(isSetTo)(tensor1, tensor2));
   return 1;
 }
 
@@ -829,7 +864,7 @@ static int torch_Tensor_(__newindex__)(lua_State *L)
     }
     else
     {
-      THError("number or tensor expected");
+      THError("number or " torch_Tensor " expected");
     }
   }
   else
@@ -871,7 +906,7 @@ static int torch_Tensor_(__index__)(lua_State *L)
     int dim;
 
     THArgCheck(idx->size == tensor->nDimension, 2, "invalid size");
-    
+
     for(dim = 0; dim < idx->size; dim++)
     {
       long z = idx->data[dim]-1;
@@ -1084,13 +1119,12 @@ static void torch_Tensor_(c_readTensorStorageSizeStride)(lua_State *L, int index
 
   *storage_ = NULL;
   *storageOffset_ = 0;
-
   if(allowTensor && allowStorage)
-      THArgCheck(0, index, "expecting number or Tensor or Storage");
+      THArgCheck(0, index, "expecting number or " torch_Tensor " or " torch_Storage );
   else if(allowTensor)
-      THArgCheck(0, index, "expecting number or Tensor");
+      THArgCheck(0, index, "expecting number or " torch_Tensor );
   else if(allowStorage)
-      THArgCheck(0, index, "expecting number or Storage");
+      THArgCheck(0, index, "expecting number or " torch_Storage );
   else
       THArgCheck(0, index, "expecting number");
 }
@@ -1167,7 +1201,7 @@ static int torch_Tensor_(map2)(lua_State *L)
                   else if(lua_isnil(L, 5))
                     lua_pop(L, 1);
                   else
-                    THError("given function should return a number or nothing"););
+                    THError("given function should return a number or nil"););
 
   lua_settop(L, 1);
   return 1;
@@ -1252,6 +1286,7 @@ static const struct luaL_Reg torch_Tensor_(_) [] = {
   {"select", torch_Tensor_(select)},
   {"index", torch_Tensor_(indexSelect)},
   {"indexCopy", torch_Tensor_(indexCopy)},
+  {"indexAdd", torch_Tensor_(indexAdd)},
   {"indexFill", torch_Tensor_(indexFill)},
   {"maskedSelect", torch_Tensor_(maskedSelect)},
   {"maskedCopy", torch_Tensor_(maskedCopy)},
@@ -1261,6 +1296,7 @@ static const struct luaL_Reg torch_Tensor_(_) [] = {
   {"unfold", torch_Tensor_(unfold)},
   {"isContiguous", torch_Tensor_(isContiguous)},
   {"isSameSizeAs", torch_Tensor_(isSameSizeAs)},
+  {"isSetTo", torch_Tensor_(isSetTo)},
   {"isSize", torch_Tensor_(isSize)},
   {"nElement", torch_Tensor_(nElement)},
   {"copy", torch_Tensor_(copy)},

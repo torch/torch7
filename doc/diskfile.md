@@ -7,7 +7,7 @@ A `DiskFile` is a particular `File` which is able to perform basic read/write op
 on a file stored on disk. It implements all methods described in [File](file.md), and
 some additional methods relative to _endian_ encoding.
 
-By default, a `DiskFile` is in [ASCII](file.md#torch.File.binary) mode. If changed to
+By default, a `DiskFile` is in [ASCII](file.md#torch.File.ascii) mode. If changed to
 the [binary](file.md#torch.File.binary) mode, the default endian encoding is the native
 computer one.
 
@@ -22,7 +22,7 @@ _Constructor_ which opens `fileName` on disk, using the given `mode`. Valid `mod
 `"r"` (read), `"w"` (write) or `"rw"` (read-write). Default is read mode.
 
 If read-write mode, the file _will be created_ if it does not exists. If it
-exists, it will be positionned at the beginning of the file after opening.
+exists, it will be positioned at the beginning of the file after opening.
 
 If (and only if) `quiet` is `true`, no error will be raised in case of
 problem opening the file: instead `nil` will be returned.
@@ -62,4 +62,8 @@ addresses)
 
 In [binary](file.md#torch.File.binary) mode, force encoding in _native endian_.
 
+<a name="torch.DiskFile.longSize"/></a>
+### longSize([size]) ###
 
+Longs will be written and read from the file as `size` bytes long, which
+can be 0, 4 or 8. 0 means system default.

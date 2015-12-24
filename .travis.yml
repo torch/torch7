@@ -2,23 +2,57 @@ language: c
 compiler:
   - gcc
   - clang
-cache: apt
+cache:
+  directories:
+  - $HOME/OpenBlasInstall
+sudo: false
+env:
+  - TORCH_LUA_VERSION=LUAJIT21
+  - TORCH_LUA_VERSION=LUA51
+  - TORCH_LUA_VERSION=LUA52
+addons:
+  apt:
+    packages:
+    - cmake
+    - gfortran
+    - gcc-multilib
+    - gfortran-multilib
+    - liblapack-dev
+    - build-essential
+    - gcc 
+    - g++ 
+    - curl
+    - cmake 
+    - libreadline-dev 
+    - git-core 
+    - libqt4-core 
+    - libqt4-gui
+    - libqt4-dev 
+    - libjpeg-dev 
+    - libpng-dev 
+    - ncurses-dev
+    - imagemagick 
+    - libzmq3-dev 
+    - gfortran 
+    - unzip 
+    - gnuplot
+    - gnuplot-x11 
 before_script: 
-- sudo apt-get update -qq >/dev/null 2>&1
-- sudo apt-get install -qq gfortran  >/dev/null 2>&1
-- sudo apt-get install -qq  gcc-multilib gfortran-multilib  >/dev/null 2>&1
-- sudo apt-get install -qq liblapack-dev >/dev/null 2>&1
-- curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | sudo bash 2>&1 >/dev/null
-- git clone https://github.com/torch/distro.git distro --recursive
-- cd distro && git submodule update --init --recursive
-- export INSTALL_PREFIX=$(pwd)/install
+- export ROOT_TRAVIS_DIR=$(pwd)
+- export INSTALL_PREFIX=~/torch/install
+-  ls $HOME/OpenBlasInstall/lib || (cd /tmp/ && git clone https://github.com/xianyi/OpenBLAS.git -b master && cd OpenBLAS && (make NO_AFFINITY=1 -j$(getconf _NPROCESSORS_ONLN) 2>/dev/null >/dev/null) && make PREFIX=$HOME/OpenBlasInstall install)
+- git clone https://github.com/torch/distro.git ~/torch --recursive
+- cd ~/torch && git submodule update --init --recursive
 - mkdir build && cd build
-- export CMAKE_LIBRARY_PATH=/opt/OpenBLAS/include:/opt/OpenBLAS/lib:$CMAKE_LIBRARY_PATH
-- cmake .. -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DCMAKE_BUILD_TYPE=Release -DWITH_LUAJIT21=ON
+- export CMAKE_LIBRARY_PATH=$HOME/OpenBlasInstall/include:$HOME/OpenBlasInstall/lib:$CMAKE_LIBRARY_PATH
+- cmake .. -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" -DCMAKE_BUILD_TYPE=Release -DWITH_${TORCH_LUA_VERSION}=ON
 - make && make install
-- cd .. # in distro
-- cd .. # in local folder
+- cd $ROOT_TRAVIS_DIR
 - export LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib:$LD_LIBRARY_PATH
 script: 
 - ${INSTALL_PREFIX}/bin/luarocks make rocks/torch-scm-1.rockspec
-- ${INSTALL_PREFIX}/bin/luajit -ltorch -e "t=torch.test(); if t.errors[1] then os.exit(1) end"
+- export PATH=${INSTALL_PREFIX}/bin:$PATH
+- export TESTLUA=$(which luajit lua | head -n 1)
+- ${TESTLUA} -ltorch -e "t=torch.test(); if t.errors[1] then os.exit(1) end"
+- cd test
+- ${TESTLUA} test_writeObject.lua

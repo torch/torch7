@@ -29,6 +29,14 @@ static int torch_MemoryFile_storage(lua_State *L)
   return 1;
 }
 
+static int torch_longSize(lua_State *L)
+{
+  THFile *self = luaT_checkudata(L, 1, "torch.MemoryFile");
+  THMemoryFile_longSize(self, lua_tointeger(L, 2));
+  lua_settop(L, 1);
+  return 1;
+}
+
 static int torch_MemoryFile_free(lua_State *L)
 {
   THFile *self = luaT_checkudata(L, 1, "torch.MemoryFile");
@@ -48,6 +56,7 @@ static int torch_MemoryFile___tostring__(lua_State *L)
 
 static const struct luaL_Reg torch_MemoryFile__ [] = {
   {"storage", torch_MemoryFile_storage},
+  {"longSize", torch_longSize},
   {"__tostring__", torch_MemoryFile___tostring__},
   {NULL, NULL}
 };

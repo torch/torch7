@@ -2,6 +2,8 @@
 #define TH_GENERIC_FILE "generic/THTensorMath.h"
 #else
 
+
+
 TH_API void THTensor_(fill)(THTensor *r_, real value);
 TH_API void THTensor_(zero)(THTensor *r_);
 
@@ -13,6 +15,7 @@ TH_API void THTensor_(nonzero)(THLongTensor *subscript, THTensor *tensor);
 
 TH_API void THTensor_(indexSelect)(THTensor *tensor, THTensor *src, int dim, THLongTensor *index);
 TH_API void THTensor_(indexCopy)(THTensor *tensor, int dim, THLongTensor *index, THTensor *src);
+TH_API void THTensor_(indexAdd)(THTensor *tensor, int dim, THLongTensor *index, THTensor *src);
 TH_API void THTensor_(indexFill)(THTensor *tensor, int dim, THLongTensor *index, real val);
 
 TH_API void THTensor_(gather)(THTensor *tensor, THTensor *src, int dim, THLongTensor *index);
@@ -26,12 +29,16 @@ TH_API real THTensor_(maxall)(THTensor *t);
 TH_API accreal THTensor_(sumall)(THTensor *t);
 TH_API accreal THTensor_(prodall)(THTensor *t);
 
+TH_API void THTensor_(neg)(THTensor *self, THTensor *src);
+
 TH_API void THTensor_(add)(THTensor *r_, THTensor *t, real value);
+TH_API void THTensor_(sub)(THTensor *self, THTensor *src, real value);
 TH_API void THTensor_(mul)(THTensor *r_, THTensor *t, real value);
 TH_API void THTensor_(div)(THTensor *r_, THTensor *t, real value);
 TH_API void THTensor_(clamp)(THTensor *r_, THTensor *t, real min_value, real max_value);
 
 TH_API void THTensor_(cadd)(THTensor *r_, THTensor *t, real value, THTensor *src);
+TH_API void THTensor_(csub)(THTensor *self, THTensor *src1, real value, THTensor *src2);
 TH_API void THTensor_(cmul)(THTensor *r_, THTensor *t, THTensor *src);
 TH_API void THTensor_(cpow)(THTensor *r_, THTensor *t, THTensor *src);
 TH_API void THTensor_(cdiv)(THTensor *r_, THTensor *t, THTensor *src);
@@ -52,6 +59,7 @@ TH_API long THTensor_(numel)(THTensor *t);
 TH_API void THTensor_(max)(THTensor *values_, THLongTensor *indices_, THTensor *t, int dimension);
 TH_API void THTensor_(min)(THTensor *values_, THLongTensor *indices_, THTensor *t, int dimension);
 TH_API void THTensor_(kthvalue)(THTensor *values_, THLongTensor *indices_, THTensor *t, long k, int dimension);
+TH_API void THTensor_(mode)(THTensor *values_, THLongTensor *indices_, THTensor *t, int dimension);
 TH_API void THTensor_(median)(THTensor *values_, THLongTensor *indices_, THTensor *t, int dimension);
 TH_API void THTensor_(sum)(THTensor *r_, THTensor *t, int dimension);
 TH_API void THTensor_(prod)(THTensor *r_, THTensor *t, int dimension);

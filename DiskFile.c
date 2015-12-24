@@ -54,6 +54,14 @@ static int torch_DiskFile_bigEndianEncoding(lua_State *L)
   return 1;
 }
 
+static int torch_DiskFile_longSize(lua_State *L)
+{
+  THFile *self = luaT_checkudata(L, 1, "torch.DiskFile");
+  THDiskFile_longSize(self, lua_tointeger(L, 2));
+  lua_settop(L, 1);
+  return 1;
+}
+
 static int torch_DiskFile___tostring__(lua_State *L)
 {
   THFile *self = luaT_checkudata(L, 1, "torch.DiskFile");
@@ -71,6 +79,7 @@ static const struct luaL_Reg torch_DiskFile__ [] = {
   {"nativeEndianEncoding", torch_DiskFile_nativeEndianEncoding},
   {"littleEndianEncoding", torch_DiskFile_littleEndianEncoding},
   {"bigEndianEncoding", torch_DiskFile_bigEndianEncoding},
+  {"longSize", torch_DiskFile_longSize},
   {"__tostring__", torch_DiskFile___tostring__},
   {NULL, NULL}
 };

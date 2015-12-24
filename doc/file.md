@@ -8,7 +8,7 @@ child classes, like [DiskFile](diskfile.md),
 Methods defined here are intended for basic read/write functionalities.
 Read/write methods might write in [ASCII](#torch.File.ascii) mode or
 [binary](#torch.File.binary) mode.
- 
+
 In [ASCII](#torch.File.ascii) mode, numbers are converted in human readable
 format (characters). Booleans are converted into `0` (false) or `1` (true).
 In [binary](#torch.File.binary) mode, numbers and boolean are directly encoded
@@ -22,10 +22,10 @@ after each call to a write method. With this option, the spaces are
 supposed to exist while reading. This option can be deactivated with
 [noAutoSpacing()](#torch.File.noAutoSpacing).
 
-A `Lua` error might or might be not generated in case of read/write error
+A `Lua` error might or might not be generated in case of read/write error
 or problem in the file. This depends on the choice made between
 [quiet()](#torch.File.quiet) and [pedantic()](#torch.File.pedantic) options. It
-is possible to query if an error occured in the last operation by calling
+is possible to query if an error occurred in the last operation by calling
 [hasError()](#torch.File.hasError).
 
 <a name="torch.File.read"></a>
@@ -109,7 +109,7 @@ in the storage.
 
 These methods return the number of elements actually written.
 
-In case of read error, these methods will call the `Lua` error function using the default
+In case of write error, these methods will call the `Lua` error function using the default
 [pedantic](#torch.File.pedantic) option, or stay quiet with the [quiet](#torch.File.quiet)
 option. In the latter case, one can check if an error occurred with
 [hasError()](#torch.File.hasError).
@@ -150,7 +150,7 @@ reference have still the same reference after loading.
 
 Example:
 ```lua
--- creates an array which contains twice the same tensor  
+-- creates an array which contains twice the same tensor
 array = {}
 x = torch.Tensor(1)
 table.insert(array, x)
@@ -203,7 +203,7 @@ If `format` starts with ''"*a"` then returns all the remaining contents of the `
 If no data is available, then an error is raised, except if `File` is in [quiet()](#torch.File.quiet) mode where
 it then returns an empty string `''` and after that you'll be able to see that last reading failed due to end of file with your_file:[hasError()](#torch.File.hasError).
 
-Because Torch is more precised on number typing, the `Lua` format ''"*n"'' is not supported:
+Because Torch is more precise on number typing, the `Lua` format ''"*n"'' is not supported:
 instead use one of the [number read methods](#torch.File.read).
 
 <a name="torch.File.writeString"></a>
@@ -339,12 +339,26 @@ Return `true` if [autoSpacing](#torch.File.autoSpacing) has been chosen.
 <a name="torch.File.referenced"></a>
 ### referenced(ref) ###
 
-Sets the referenced property of the File to `ref`. `ref` has to be `true` or `false`. By default it is true, which means that a File object keeps track of objects written using [writeObject](#torch.File.writeObject) method. When one needs to push the same tensor repeatedly into a file but everytime changing its contents, calling `referenced(false)` ensures desired behaviour.
+Sets the referenced property of the File to `ref`. `ref` has to be `true`
+or `false`.
+
+By default `ref` is true, which means that a File object keeps track of
+objects written (using [writeObject](#torch.File.writeObject) method) or
+read (using [readObject](#torch.File.readObject) method). Objects with the
+same address will be written or read only once, meaning that this approach
+preserves shared memory structured.
+
+Keeping track of references has a cost: every object which is serialized in
+the file is kept alive (even if one discards the object after
+writing/reading) as File needs to track their pointer. This is not always a
+desirable behavior, especially when dealing with large data structures.
+
+Another typical example when does not want reference tracking is when
+one needs to push the same tensor repeatedly into a file but every time
+changing its contents: calling `referenced(false)` ensures desired
+behaviour.
 
 <a name="torch.File.isReferenced"></a>
 ### isReferenced() ###
 
 Return the state set by [referenced](#torch.File.referenced).
-
-
-

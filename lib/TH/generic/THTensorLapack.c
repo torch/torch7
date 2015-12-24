@@ -431,6 +431,72 @@ void THTensor_(getri)(THTensor *ra_, THTensor *a)
   THIntTensor_free(ipiv);
 } 
 
+void THTensor_(clearUpLoTriangle)(THTensor *a, const char *uplo)
+{
+  THArgCheck(a->nDimension == 2, 1, "A should be 2 dimensional");
+  THArgCheck(a->size[0] == a->size[1], 1, "A should be square");
+
+  int n = a->size[0];
+
+  /* Build full matrix */
+  real *p = THTensor_(data)(a);
+  long i, j;
+
+  /* Upper Triangular Case */
+  if (uplo[0] == 'U')
+  {
+    /* Clear lower triangle (excluding diagonals) */
+    for (i=0; i<n; i++) {
+     for (j=i+1; j<n; j++) {
+        p[n*i + j] = 0;
+      }
+    }
+  }
+  /* Lower Triangular Case */
+  else if (uplo[0] == 'L')
+  {
+    /* Clear upper triangle (excluding diagonals) */
+    for (i=0; i<n; i++) {
+      for (j=0; j<i; j++) {
+        p[n*i + j] = 0;
+      }
+    }
+  }
+}
+
+void THTensor_(copyUpLoTriangle)(THTensor *a, const char *uplo)
+{
+  THArgCheck(a->nDimension == 2, 1, "A should be 2 dimensional");
+  THArgCheck(a->size[0] == a->size[1], 1, "A should be square");
+
+  int n = a->size[0];
+
+  /* Build full matrix */
+  real *p = THTensor_(data)(a);
+  long i, j;
+
+  /* Upper Triangular Case */
+  if (uplo[0] == 'U')
+  {
+    /* Clear lower triangle (excluding diagonals) */
+    for (i=0; i<n; i++) {
+     for (j=i+1; j<n; j++) {
+        p[n*i + j] = p[n*j+i];
+      }
+    }
+  }
+  /* Lower Triangular Case */
+  else if (uplo[0] == 'L')
+  {
+    /* Clear upper triangle (excluding diagonals) */
+    for (i=0; i<n; i++) {
+      for (j=0; j<i; j++) {
+        p[n*i + j] = p[n*j+i];
+      }
+    }
+  }
+}
+
 void THTensor_(potrf)(THTensor *ra_, THTensor *a, const char *uplo)
 {
   if (a == NULL) a = ra_;
@@ -449,29 +515,7 @@ void THTensor_(potrf)(THTensor *ra_, THTensor *a, const char *uplo)
   THLapack_(potrf)(uplo[0], n, THTensor_(data)(ra__), lda, &info);
   THLapackCheck("Lapack Error %s : A(%d,%d) is 0, A cannot be factorized", "potrf", info, info);
 
-  /* Build full matrix */
-  real *p = THTensor_(data)(ra__);
-  long i, j;
-
-  /* Upper Triangular Case */
-  if (uplo[0] == 'U')
-  {
-    for (i=0; i<n; i++) {
-     for (j=i+1; j<n; j++) {
-        p[n*i + j] = 0;
-      }
-    }
-  }
-  /* Lower Triangular Case */
-  else
-  {
-    for (i=0; i<n; i++) {
-      for (j=0; j<i; j++) {
-        p[n*i + j] = 0;
-      }
-    }
-  }
-
+  THTensor_(clearUpLoTriangle)(ra__, uplo);
   THTensor_(freeCopyTo)(ra__, ra_);
 }
 
@@ -504,14 +548,13 @@ void THTensor_(potrs)(THTensor *rb_, THTensor *b, THTensor *a, const char *uplo)
   THTensor_(freeCopyTo)(rb__, rb_);
 }
 
-void THTensor_(potri)(THTensor *ra_, THTensor *a)
+void THTensor_(potri)(THTensor *ra_, THTensor *a, const char *uplo)
 {
   if (a == NULL) a = ra_;
   THArgCheck(a->nDimension == 2, 1, "A should be 2 dimensional");
   THArgCheck(a->size[0] == a->size[1], 1, "A should be square");
 
   int n, lda, info;
-  char uplo = 'U';
   THTensor *ra__ = NULL;
 
   ra__ = THTensor_(cloneColumnMajor)(ra_, a);
@@ -519,26 +562,56 @@ void THTensor_(potri)(THTensor *ra_, THTensor *a)
   n = ra__->size[0];
   lda = n;
 
-  /* Run Factorization */
-  THLapack_(potrf)(uplo, n, THTensor_(data)(ra__), lda, &info);
-  THLapackCheck("Lapack Error %s : A(%d,%d) is 0, A cannot be factorized", "potrf", info, info);
-
   /* Run inverse */
-  THLapack_(potri)(uplo, n, THTensor_(data)(ra__), lda, &info);
+  THLapack_(potri)(uplo[0], n, THTensor_(data)(ra__), lda, &info);
   THLapackCheck("Lapack Error %s : A(%d,%d) is 0, A cannot be factorized", "potri", info, info);
 
-  /* Build full matrix */
-  {
-    real *p = THTensor_(data)(ra__);
-    long i,j;
-    for (i=0; i<n; i++) {
-      for (j=i+1; j<n; j++) {
-        p[i*n+j] = p[j*n+i];
-      }
-    }
-  }
+  THTensor_(copyUpLoTriangle)(ra__, uplo);
+  THTensor_(freeCopyTo)(ra__, ra_);
+}
+
+/*
+ Computes the Cholesky factorization with complete pivoting of a real symmetric
+ positive semidefinite matrix.
+
+ Args:
+ * `ra_`    - result Tensor in which to store the factor U or L from the
+              Cholesky factorization.
+ * `rpiv_`  - result IntTensor containing sparse permutation matrix P, encoded
+              as P[rpiv_[k], k] = 1.
+ * `a`      - input Tensor; the input matrix to factorize.
+ * `uplo`   - string; specifies whether the upper or lower triangular part of
+              the symmetric matrix A is stored. "U"/"L" for upper/lower
+              triangular.
+ * `tol`    - double; user defined tolerance, or < 0 for automatic choice.
+              The algorithm terminates when the pivot <= tol.
+ */
+void THTensor_(pstrf)(THTensor *ra_, THIntTensor *rpiv_, THTensor *a, const char *uplo, real tol) {
+  THArgCheck(a->nDimension == 2, 1, "A should be 2 dimensional");
+  THArgCheck(a->size[0] == a->size[1], 1, "A should be square");
+
+  int n = a->size[0];
+
+  THTensor *ra__ = THTensor_(cloneColumnMajor)(ra_, a);
+  THIntTensor_resize1d(rpiv_, n);
+
+  // Allocate working tensor
+  THTensor *work = THTensor_(newWithSize1d)(2 * n);
+
+  // Run Cholesky factorization
+  int lda = n;
+  int rank, info;
+
+  THLapack_(pstrf)(uplo[0], n, THTensor_(data)(ra__), lda,
+                   THIntTensor_data(rpiv_), &rank, tol,
+                   THTensor_(data)(work), &info);
+
+  THLapackCheck("Lapack Error %s : matrix is rank deficient or not positive semidefinite", "pstrf", info);
+
+  THTensor_(clearUpLoTriangle)(ra__, uplo);
 
   THTensor_(freeCopyTo)(ra__, ra_);
+  THTensor_(free)(work);
 }
 
 /*

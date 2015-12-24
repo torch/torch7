@@ -37,6 +37,19 @@ static const void* torch_istensortype(lua_State *L, const char *tname)
 }
 ]])
 
+interface:print([[
+static int torch_isnonemptytable(lua_State *L, int idx)
+{
+  int empty;
+  if (!lua_istable(L, idx)) return 0;
+
+  lua_rawgeti(L, idx, 1);
+  empty = lua_isnil(L, -1);
+  lua_pop(L, 1);
+  return !empty;
+}
+]])
+
 interface.dispatchregistry = {}
 function interface:wrap(name, ...)
    -- usual stuff
@@ -241,7 +254,18 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor, method={default=1}},
          {name=real, default=1},
          {name=Tensor}})
-   
+
+   wrap("csub",
+     cname("sub"),
+     {{name=Tensor, default=true, returned=true, method={default='nil'}},
+       {name=Tensor, method={default=1}},
+       {name=real}},
+     cname("csub"),
+     {{name=Tensor, default=true, returned=true, method={default='nil'}},
+       {name=Tensor, method={default=1}},
+       {name=real, default=1},
+       {name=Tensor}})
+
    wrap("mul",
         cname("mul"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -314,6 +338,13 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
                         string.format("TH%s_resize1d(%s, %s->size[0]);", Tensor, arg:carg(), arg.args[5]:carg())
                      }, '\n')
                end,
+          precall=function(arg)
+                  return table.concat(
+                     {
+                        string.format("TH%s_zero(%s);", Tensor, arg:carg()),
+                        arg.__metatable.precall(arg)
+                     }, '\n')
+               end,
        },
          {name=real, default=0, invisible=true},
          {name=Tensor, default=1, invisible=true},
@@ -330,6 +361,13 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
                      {
                         arg.__metatable.init(arg),
                         string.format("TH%s_resize2d(%s, %s->size[0], %s->size[1]);", Tensor, arg:carg(), arg.args[5]:carg(), arg.args[6]:carg())
+                     }, '\n')
+               end,
+          precall=function(arg)
+                  return table.concat(
+                     {
+                        string.format("TH%s_zero(%s);", Tensor, arg:carg()),
+                        arg.__metatable.precall(arg)
                      }, '\n')
                end,
        },
@@ -349,6 +387,13 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
                         arg.__metatable.init(arg),
                         string.format("TH%s_resize3d(%s, %s->size[0], %s->size[1], %s->size[2]);",
                                       Tensor, arg:carg(), arg.args[5]:carg(), arg.args[5]:carg(), arg.args[6]:carg())
+                     }, '\n')
+               end,
+          precall=function(arg)
+                  return table.concat(
+                     {
+                        string.format("TH%s_zero(%s);", Tensor, arg:carg()),
+                        arg.__metatable.precall(arg)
                      }, '\n')
                end,
        },
@@ -534,6 +579,13 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor},
          {name="index"},
          {name="index", default=lastdim(3)}})
+
+   wrap("mode",
+       cname("mode"),
+       {{name=Tensor, default=true, returned=true},
+           {name="IndexTensor", default=true, returned=true, noreadadd=true},
+           {name=Tensor},
+           {name="index", default=lastdim(3)}})
 
    wrap("median",
         cname("median"),
@@ -961,6 +1013,11 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
               {{name=real},
                {name=real, creturned=true}})
 
+      wrap("neg",
+           cname("neg"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=Tensor, method={default=1}}})
+
       wrap("atan2",
            cname("atan2"),
            {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -1144,10 +1201,26 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
       interface:wrap("potri",
                      cname("potri"),
                      {{name=Tensor, returned=true},
-                      {name=Tensor}},
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'}}, -- uplo
                      cname("potri"),
                      {{name=Tensor, default=true, returned=true, invisible=true},
-                      {name=Tensor}}
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'}} -- uplo
+                    )
+      interface:wrap("pstrf",
+                     cname("pstrf"),
+                     {{name=Tensor, returned=true},
+                      {name='IntTensor', returned=true},
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'},  -- uplo
+                      {name=real, default=-1}},
+                     cname("pstrf"),
+                     {{name=Tensor, default=true, returned=true, invisible=true},
+                      {name='IntTensor', default=true, returned=true, invisible=true},
+                      {name=Tensor},
+                      {name='charoption', values={'U', 'L'}, default='U'},  -- uplo
+                      {name=real, default=-1}}
                   )
       interface:wrap("qr",
                      cname("qr"),

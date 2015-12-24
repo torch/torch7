@@ -67,8 +67,8 @@ metaclass, these operators must follow a particular scheme:
 
 Other metaclass operators like `__tostring__`, `__add__`, etc... do not have any particular constraint.
 
-<a name="luat_newmetatable"/>
-### const char* luaT_newmetatable(lua_State *L, const char *tname, const char *parenttname, lua_CFunction constructor, lua_CFunction destructor, lua_CFunction factory) ###
+<a name="luat_newlocalmetatable"/>
+### const char* luaT_newlocalmetatable(lua_State *L, const char *tname, const char *parenttname, lua_CFunction constructor, lua_CFunction destructor, lua_CFunction factory, int moduleidx) ###
 
 This function creates a new metatable, which is the Lua way to define a new
 object class. As for `luaL_newmetatable`, the metatable is registered in
@@ -76,12 +76,18 @@ the Lua registry table, with the key `tname`. In addition, `tname` is
 also registered in the Lua registry, with the metatable as key (the
 typename of a given object can be thus easily retrieved).
 
-The class name `tname` must be of the form `modulename.classname`. The module name
-If not NULL, `parenttname` must be a valid typename corresponding to the
-parent class of the new class.
+The class name `tname` must be of the form `modulename.classname`. If not
+NULL, `parenttname` must be a valid typename corresponding to the parent
+class of the new class.
 
-If not NULL, `constructor`, a function `new` will be added to the metatable, pointing to this given function. The constructor might also
-be called through `modulename.classname()`, which is an alias setup by `luaT_metatable`.
+If `constructor` is not NULL, a function `new` will be added to the
+metatable, pointing to this given function.
+
+A "constructor table" will be created by `luaT_newlocalmetatable`: it will
+contain all the class methods, and be callable, calling the `constructor`, if
+a `constructor` has been passed. The constructor table is either stored into
+`modulename.classname` (that is in the global namespace) if `moduleidx <=
+0` or in the table at index `moduleidx` in the stack (if `moduleidx > 0`).
 
 If not NULL, `destructor` will be called when garbage collecting the object.
 
@@ -94,10 +100,16 @@ methods in Lua.
 
 The return value is the value returned by [luaT_typenameid](#luat_typenameid).
 
+<a name="luat_newmetatable"/>
+### const char* luaT_newmetatable(lua_State *L, const char *tname, const char *parenttname, lua_CFunction constructor, lua_CFunction destructor, lua_CFunction factory) ###
+
+Same as [luaT_newlocalmetatable](#luat_newmetatable), but where the
+constructor table is assigned in the global namespace (`moduleidx = 0`).
+
 <a name="luat_pushmetatable"/>
 ### int luaT_pushmetatable(lua_State *L, const name *tname) ###
 
-Push the metatable with type name `tname` on the stack, it `tname` is a
+Push the metatable with type name `tname` on the stack, if `tname` is a
 valid Torch class name (previously registered with luaT_newmetatable).
 
 On success, returns 1. If `tname` is invalid, nothing is pushed and it
@@ -107,7 +119,7 @@ returns 0.
 ### const char* luaT_typenameid(lua_State *L, const char *tname) ###
 
 If `tname` is a valid Torch class name, then returns a unique string (the
-contents will be the same than `tname`) pointing on the string registered
+contents will be the same as `tname`) pointing to the string registered
 in the Lua registry. This string is thus valid as long as Lua is
 running. The returned string shall not be freed.
 
@@ -220,16 +232,31 @@ This function assume a table is on the stack. It creates a table field
 <a name="luat_classrootname"/>
 ### const char *luaT_classrootname(const char *tname) ###
 
-Assuming `tname` is of the form `modulename.classname`, returns
-`classname`. The returned value shall not be freed. It is a pointer
-inside `tname` string.
+Assuming `tname` is of the form `A.b.c`, returns 'c'. The returned value
+shall not be freed. It is a pointer inside `tname` string.
 
 <a name="luat_classmodulename"/>
-### const char *luaT_classmodulename(const char *tname) ###
+### int luaT_classmodulename(const char *tname, char *parent_name) ###
+Alias to `luaT_fullparentname ` for ensuring backwards compatibilty; 
+use of `luaT_fullparentname` is preferred.
 
-Assuming `tname` is of the form `modulename.classname`, returns
-`modulename`. The returned value shall not be freed. It is valid until the
-next call to `luaT_classrootname`.
+<a name="luat_fullparentname"/>
+### int luaT_fullparentname(const char *tname, char *parent_name) ###
+
+Returns a 0-1 valued integer indicating whether `tname` has a parent module.
+Assuming `tname` is of the form `A.b.c`, sets `parent_name` to `A.b`.
+
+<a name="luat_classmodulename"/>
+### int luaT_outerparentname(const char *tname, char *parent_name) ###
+
+Returns a 0-1 valued integer indicating whether `tname` has a parent module.
+Assuming `tname` is of the form `A.b.c`, sets `parent_name` to `A`.
+
+<a name="luat_classmodulename"/>
+### int luaT_innerparentname(const char *tname, char *parent_name) ###
+
+Returns a 0-1 valued integer indicating whether `tname` has a parent module.
+Assuming `tname` is of the form `A.b.c`, sets `parent_name` to `b`.
 
 <a name="luat_stackdump"/>
 ### void luaT_stackdump(lua_State *L) ###

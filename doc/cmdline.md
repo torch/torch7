@@ -2,7 +2,7 @@
 # CmdLine #
 
 This class provides a parameter parsing framework which is very
-usefull when one needs to run several experiments that rely on
+useful when one needs to run several experiments that rely on
 different parameter settings that are passed in the command line.
 This class will also override the default print function to direct
 all the output to a log file as well as screen at the same time.
@@ -34,7 +34,7 @@ cmd:log(params.rundir .. '/log', params)
 
 ```
 
-When this file is run on the th commandline as follows
+When this file is run on the th command line as follows
 ```shell
 # th myscript.lua
 ```
@@ -61,7 +61,7 @@ command line and is different than the default value, the `rundir`
 is name is produced to reflect the parameter setting.
 
 ```shell
-# th myscript.th -seed 456 -stroption mycustomstring
+# th myscript.lua -seed 456 -stroption mycustomstring
 ```
 
 This will produce the following output:
@@ -135,7 +135,7 @@ non-default options. `ignore` is a table `{dir=true}`, which will
 ensure that option named `dir` will be ignored while creating the
 string representation.
 
-This function is usefull for creating unique experiment directories that
+This function is useful for creating unique experiment directories that
 depend on the parameter settings.
 
 <a name="torch.CmdLine.text"></a>

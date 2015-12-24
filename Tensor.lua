@@ -80,7 +80,7 @@ local function Storage__printformat(self)
 end
 
 function Storage.__tostring__(self)
-   local strt = {'\n'}
+   local strt = {}
    local format,scale = Storage__printformat(self)
    if format:sub(2,4) == 'nan' then format = '%f' end
    if scale then
@@ -190,12 +190,10 @@ local function Tensor__printTensor(self)
       table.insert(strt, '.,.) = \n')
       table.insert(strt, Tensor__printMatrix(tensor, ' '))
    end
-   local str = table.concat(strt)
-   return str
+   return table.concat(strt)
 end
 
 function Tensor.__tostring__(self)
-   local str = '\n'
    local strt = {''}
    if self:nDimension() == 0 then
       table.insert(strt, '[' .. torch.typename(self) .. ' with no dimension]\n')
@@ -203,7 +201,7 @@ function Tensor.__tostring__(self)
       local tensor = torch.DoubleTensor():resize(self:size()):copy(self)
       if tensor:nDimension() == 1 then
          local format,scale,sz = Storage__printformat(tensor:storage())
-	 if format:sub(2,4) == 'nan' then format = '%f' end
+         if format:sub(2,4) == 'nan' then format = '%f' end
          if scale then
             table.insert(strt, string.format('%g', scale) .. ' *\n')
             for i = 1,tensor:size(1) do
@@ -230,8 +228,7 @@ function Tensor.__tostring__(self)
          table.insert(strt, ']\n')
       end
    end
-   local str = table.concat(strt)
-   return str
+   return table.concat(strt)
 end
 
 function Tensor.type(self,type)

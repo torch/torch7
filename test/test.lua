@@ -495,6 +495,54 @@ function torchtest.add()
    -- [res] torch.add([res,] tensor1, value, tensor2)
 end
 
+function torchtest.csub()
+   local rngState = torch.getRNGState()
+   torch.manualSeed(123)
+
+   local a = torch.randn(100,90)
+   local b = a:clone():normal()
+
+   local res_add = torch.add(a, -1, b)
+   local res_csub = a:clone()
+   res_csub:csub(b)
+
+   mytester:assertlt((res_add - res_csub):abs():max(), 0.00001)
+
+   local _ = torch.setRNGState(rngState)
+end
+
+function torchtest.csub_scalar()
+   local rngState = torch.getRNGState()
+   torch.manualSeed(123)
+
+   local a = torch.randn(100,100)
+
+   local scalar = 123.5
+   local res_add = torch.add(a, -scalar)
+   local res_csub = a:clone()
+   res_csub:csub(scalar)
+
+   mytester:assertlt((res_add - res_csub):abs():max(), 0.00001)
+
+   local _ = torch.setRNGState(rngState)
+end
+
+function torchtest.neg()
+   local rngState = torch.getRNGState()
+   torch.manualSeed(123)
+
+   local a = torch.randn(100,90)
+   local zeros = torch.Tensor():resizeAs(a):zero()
+
+   local res_add = torch.add(zeros, -1, a)
+   local res_neg = a:clone()
+   res_neg:neg()
+
+   mytester:assertlt((res_add - res_neg):abs():max(), 0.00001)
+
+   local _ = torch.setRNGState(rngState)
+end
+
 function torchtest.mul()
    local m1 = torch.randn(10,10)
    local res1 = m1:clone()
@@ -1339,6 +1387,43 @@ function torchtest.median()
    end
 end
 
+function torchtest.mode()
+   local x = torch.range(1, msize * msize):reshape(msize, msize)
+   x:select(1, 1):fill(1)
+   x:select(1, 2):fill(1)
+   x:select(2, 1):fill(1)
+   x:select(2, 2):fill(1)
+   local x0 = x:clone()
+
+   -- Pre-calculated results.
+   local res = torch.Tensor(msize):fill(1)
+   -- The indices are the position of the last appearance of the mode element.
+   local resix = torch.LongTensor(msize):fill(2)
+   resix[1] = msize
+   resix[2] = msize
+
+   local mx, ix = torch.mode(x)
+
+   mytester:assertTensorEq(res:view(msize, 1), mx, 0, 'torch.mode value')
+   mytester:assertTensorEq(resix:view(msize, 1), ix, 0, 'torch.mode index')
+
+   -- Test use of result tensor
+   local mr = torch.Tensor()
+   local ir = torch.LongTensor()
+   torch.mode(mr, ir, x)
+   mytester:assertTensorEq(mr, mx, 0, 'torch.mode result tensor value')
+   mytester:assertTensorEq(ir, ix, 0, 'torch.mode result tensor index')
+
+   -- Test non-default dim
+   mx, ix = torch.mode(x, 1)
+   mytester:assertTensorEq(res:view(1, msize), mx, 0, 'torch.mode value')
+   mytester:assertTensorEq(resix:view(1, msize), ix, 0, 'torch.mode index')
+
+   -- input unchanged
+   mytester:assertTensorEq(x, x0, 0, 'torch.mode modified input')
+end
+
+
 function torchtest.tril()
    local x = torch.rand(msize,msize)
    local mx = torch.tril(x)
@@ -2072,7 +2157,7 @@ function torchtest.testCholesky()
     ---- Test Lower Triangular
     local L = torch.potrf(A, 'L')
           B = torch.mm(L, L:t())
-    mytester:assertTensorEq(A, B, 1e-14, 'potrf (lower) did not allow rebuilding the original matrix')          
+    mytester:assertTensorEq(A, B, 1e-14, 'potrf (lower) did not allow rebuilding the original matrix')
 end
 
 function torchtest.potrs()
@@ -2086,18 +2171,93 @@ function torchtest.potrs()
                          {-1.56,  4.00, -8.67,  1.75,  2.86},
                          {9.81, -4.09, -4.57, -8.61,  8.99}}):t()
 
-   ---- Make sure 'a' is symmetric PSD 
+   ---- Make sure 'a' is symmetric PSD
    a = torch.mm(a, a:t())
 
    ---- Upper Triangular Test
    local U = torch.potrf(a, 'U')
    local x = torch.potrs(b, U, 'U')
-   mytester:assertlt(b:dist(a*x),1e-12,'torch.trtrs')
+   mytester:assertlt(b:dist(a*x),1e-12,"torch.potrs; uplo='U'")
 
    ---- Lower Triangular Test
    local L = torch.potrf(a, 'L')
    x = torch.potrs(b, L, 'L')
-   mytester:assertlt(b:dist(a*x),1e-12,'torch.trtrs')
+   mytester:assertlt(b:dist(a*x),1e-12,"torch.potrs; uplo='L")
+end
+
+function torchtest.potri()
+   if not torch.potrs then return end
+   local a=torch.Tensor({{6.80, -2.11,  5.66,  5.97,  8.23},
+                         {-6.05, -3.30,  5.36, -4.44,  1.08},
+                         {-0.45,  2.58, -2.70,  0.27,  9.04},
+                         {8.32,  2.71,  4.35, -7.17,  2.14},
+                         {-9.67, -5.14, -7.26,  6.08, -6.87}}):t()
+
+   ---- Make sure 'a' is symmetric PSD
+   a = torch.mm(a, a:t())
+
+   ---- Compute inverse directly
+   local inv0 = torch.inverse(a)
+
+   ---- Default case
+   local chol = torch.potrf(a)
+   local inv1 = torch.potri(chol)
+   mytester:assertlt(inv0:dist(inv1),1e-12,"torch.potri; uplo=''")
+
+   ---- Upper Triangular Test
+   chol = torch.potrf(a, 'U')
+   inv1 = torch.potri(chol, 'U')
+   mytester:assertlt(inv0:dist(inv1),1e-12,"torch.potri; uplo='U'")
+
+   ---- Lower Triangular Test
+   chol = torch.potrf(a, 'L')
+   inv1 = torch.potri(chol, 'L')
+   mytester:assertlt(inv0:dist(inv1),1e-12,"torch.potri; uplo='L'")
+end
+
+function torchtest.pstrf()
+  local function checkPsdCholesky(a, uplo, inplace)
+    local u, piv, args, a_reconstructed
+    if inplace then
+      u = torch.Tensor(a:size())
+      piv = torch.IntTensor(a:size(1))
+      args = {u, piv, a}
+    else
+      args = {a}
+    end
+
+    if uplo then table.insert(args, uplo) end
+
+    u, piv = torch.pstrf(unpack(args))
+
+    if uplo == 'L' then
+      a_reconstructed = torch.mm(u, u:t())
+    else
+      a_reconstructed = torch.mm(u:t(), u)
+    end
+
+    piv = piv:long()
+    local a_permuted = a:index(1, piv):index(2, piv)
+    mytester:assertTensorEq(a_permuted, a_reconstructed, 1e-14,
+                            'torch.pstrf did not allow rebuilding the original matrix;' ..
+                            'uplo=' .. tostring(uplo))
+  end
+
+  local dimensions = { {5, 1}, {5, 3}, {5, 5}, {10, 10} }
+  for _, dim in pairs(dimensions) do
+    local m = torch.Tensor(unpack(dim)):uniform()
+    local a = torch.mm(m, m:t())
+    -- add a small number to the diagonal to make the matrix numerically positive semidefinite
+    for i = 1, m:size(1) do
+      a[i][i] = a[i][i] + 1e-7
+    end
+    checkPsdCholesky(a, nil, false)
+    checkPsdCholesky(a, 'U', false)
+    checkPsdCholesky(a, 'L', false)
+    checkPsdCholesky(a, nil, true)
+    checkPsdCholesky(a, 'U', true)
+    checkPsdCholesky(a, 'L', true)
+  end
 end
 
 function torchtest.testNumel()
@@ -2184,6 +2344,29 @@ function torchtest.indexCopy()
       dest2[idx[i]] = src[i]
    end
    mytester:assertTensorEq(dest, dest2, 0.000001, "indexCopy scalar error")
+end
+
+function torchtest.indexAdd()
+   local nCopy, nDest = 3, 20
+   local dest = torch.randn(nDest,4,5)
+   local src = torch.randn(nCopy,4,5)
+   local idx = torch.randperm(nDest):narrow(1, 1, nCopy):long()
+   local dest2 = dest:clone()
+   dest:indexAdd(1, idx, src)
+   for i=1,idx:size(1) do
+      dest2[idx[i]]:add(src[i])
+   end
+   mytester:assertTensorEq(dest, dest2, 0.000001, "indexAdd tensor error")
+
+   local dest = torch.randn(nDest)
+   local src = torch.randn(nCopy)
+   local idx = torch.randperm(nDest):narrow(1, 1, nCopy):long()
+   local dest2 = dest:clone()
+   dest:indexAdd(1, idx, src)
+   for i=1,idx:size(1) do
+      dest2[idx[i]] = dest2[idx[i]] + src[i]
+   end
+   mytester:assertTensorEq(dest, dest2, 0.000001, "indexAdd scalar error")
 end
 
 -- Fill idx with valid indices.
@@ -2550,6 +2733,17 @@ function torchtest.isSameSizeAs()
    mytester:assert(t1:isSameSizeAs(t2) == false, "wrong answer ")
    mytester:assert(t1:isSameSizeAs(t3) == false, "wrong answer ")
    mytester:assert(t1:isSameSizeAs(t4) == true, "wrong answer ")
+end
+
+function torchtest.isSetTo()
+   local t1 = torch.Tensor(3, 4, 9, 10)
+   local t2 = torch.Tensor(3, 4, 9, 10)
+   local t3 = torch.Tensor():set(t1)
+   local t4 = t3:reshape(12, 90)
+   mytester:assert(t1:isSetTo(t2) == false, "tensors do not share storage")
+   mytester:assert(t1:isSetTo(t3) == true, "tensor is set to other")
+   mytester:assert(t3:isSetTo(t1) == true, "isSetTo should be symmetric")
+   mytester:assert(t1:isSetTo(t4) == false, "tensors have different view")
 end
 
 function torchtest.isSize()

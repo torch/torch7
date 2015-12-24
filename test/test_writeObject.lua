@@ -1,3 +1,5 @@
+require 'torch'
+
 local myTester = torch.Tester()
 
 local tests = {}
@@ -67,6 +69,54 @@ function tests.test_a_tensor()
    local x = torch.rand(5, 10)
    local xcopy = serializeAndDeserialize(x)
    myTester:assert(x:norm() == xcopy:norm(), 'tensors should be the same')
+end
+
+-- Regression test for bug reported in issue 456.
+function tests.test_empty_table()
+   local file = torch.MemoryFile()
+   file:writeObject({})
+end
+
+function tests.test_error_msg()
+   local torch = torch
+   local inner = {
+       baz = function(a) torch.somefunc() end
+   }
+   local outer = {
+       theinner = inner
+   }
+   local function evil_func()
+      outer.prop = 1
+      image.compress(1)
+   end
+   local ok, msg = pcall(torch.save, 'saved.t7', evil_func)
+   myTester:assert(not ok)
+   myTester:assert(msg:find('at <%?>%.outer%.theinner%.baz%.torch'))
+end
+
+function tests.test_warning_msg()
+  local foo = {}
+  torch.class('Bar', foo)
+
+  local obj = foo.Bar()
+  local tensor = torch.Tensor()
+  obj.data = tensor:cdata() -- pick something NOT writable
+
+  local file = torch.MemoryFile('rw'):binary()
+  local ok, _ = pcall(torch.File.writeObject, file, obj)
+  -- only a warning is printed on STDOUT:
+  --   $ Warning: cannot write object field <data> of <Bar> <?>
+  myTester:assert(ok)
+  file:close()
+end
+
+function tests.test_referenced()
+   local file = torch.MemoryFile('rw'):binary()
+   file:referenced(false)
+
+   local foo = 'bar'
+   file:writeObject(foo)
+   file:close()
 end
 
 myTester:add(tests)

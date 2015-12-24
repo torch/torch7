@@ -53,6 +53,9 @@ LUAT_API void luaT_free(lua_State *L, void *ptr);
 
 LUAT_API void luaT_setfuncs(lua_State *L, const luaL_Reg *l, int nup);
 
+LUAT_API const char* luaT_newlocalmetatable(lua_State *L, const char *tname, const char *parent_tname,
+                                            lua_CFunction constructor, lua_CFunction destructor, lua_CFunction factory, int moduleidx);
+
 LUAT_API const char* luaT_newmetatable(lua_State *L, const char *tname, const char *parenttname,
                                        lua_CFunction constructor, lua_CFunction destructor, lua_CFunction factory);
 
