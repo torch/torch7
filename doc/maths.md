@@ -1534,6 +1534,18 @@ It also returns a `Tensor` `i` that provides the corresponding indices from `x`.
 [torch.LongTensor of size 3x3]
 ```
 
+<a name="torch.topk"></a>
+### torch.topk([resval, resind,] x, k, [,dim] [,dir] [,sort]) ###
+
+`y, i = torch.topk(x, k)` returns all `k` smallest elements in `x` over its last dimension including their indices, in unsorted order.
+
+`y, i = torch.topk(x, k, dim)` performs the same operation except over dimension `dim`.
+
+`y, i = torch.topk(x, k, dim, dir)` adds a sorting direction that has the same sense as `torch.sort`; `false` returns the `k` smallest elements in the slice, `true` returns the `k` largest elements in the slice.
+
+`y, i = torch.topk(x, k, dim, dir, true)` specifies that the results in `y` should be sorted with respect to `dir`; by default, the results are potentially unsorted since the computation may be faster, but if sorting is desired, the sort flag may be passed, in which case the results are returned from smallest to `k`-th smallest (`dir == false`) or highest to `k`-th highest (`dir == true`).
+
+The implementation provides no guarantee of the order of selection (indices) among equivalent elements (e.g., topk `k == 2` selection of a vector `{1, 2, 1, 1}`; the values returned could be any pair of `1` entries in the vector).
 
 <a name="torch.std"></a>
 ### [res] torch.std([res,] x, [,dim] [,flag]) ###
