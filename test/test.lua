@@ -1311,6 +1311,71 @@ function torchtest.sortDescending()
    assertIsOrdered('descending', x, mxx, ixx, 'random with duplicate keys')
 end
 
+function torchtest.topK()
+   local function topKViaSort(t, k, dim, dir)
+      local sorted, indices = t:sort(dim, dir)
+      return sorted:narrow(dim, 1, k), indices:narrow(dim, 1, k)
+   end
+
+   local function compareTensors(t, res1, ind1, res2, ind2, msg)
+      -- Values should be exactly equivalent
+      mytester:assertTensorEq(res1, res2, 0, msg)
+
+      -- Indices might differ based on the implementation, since there is
+      -- no guarantee of the relative order of selection
+      if ind1:eq(ind2):min() == 0 then
+         -- To verify that the indices represent equivalent elements,
+         -- gather from the input using the topk indices and compare against
+         -- the sort indices
+         local vals = t:gather(dim, ind2)
+         mytester:assertTensorEq(res1, vals, 0, msg)
+      end
+   end
+
+   local function compare(t, k, dim, dir, msg)
+      local topKVal, topKInd = t:topk(k, dim, dir)
+      local sortKVal, sortKInd = topKViaSort(t, k, dim, dir)
+
+      compareTensors(t, sortKVal, sortKInd, topKVal, topKInd, msg)
+   end
+
+   local t = torch.rand(math.random(1, msize),
+                        math.random(1, msize),
+                        math.random(1, msize))
+
+   for kTries = 1, 3 do
+      for dimTries = 1, 3 do
+         for _, transpose in ipairs({true, false}) do
+            for _, dir in ipairs({true, false}) do
+               local testTensor = t
+
+               local transposeMsg = nil
+               if transpose then
+                  local dim1 = math.random(1, t:nDimension())
+                  local dim2 = dim1
+
+                  while dim1 == dim2 do
+                     dim2 = math.random(1, t:nDimension())
+                  end
+
+                  testTensor = t:transpose(dim1, dim2)
+                  transposeMsg = 'transpose(' .. dim1 .. ', ' .. dim2 .. ')'
+               end
+
+               local dim = math.random(1, testTensor:nDimension())
+               local k = math.random(1, testTensor:size(dim))
+               local msg = 'topk(' .. k .. ', ' .. dim .. ', ' .. tostring(dir) .. ', true)'
+               if transposeMsg then
+                  msg = msg .. ' ' .. transposeMsg
+               end
+
+               compare(testTensor, k, dim, dir, msg)
+            end
+         end
+      end
+   end
+end
+
 function torchtest.kthvalue()
    local x = torch.rand(msize, msize, msize)
    local x0 = x:clone()
