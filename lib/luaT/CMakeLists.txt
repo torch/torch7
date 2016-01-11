@@ -9,7 +9,9 @@ IF(LUALIB)
 ENDIF()
 
 ADD_LIBRARY(luaT SHARED luaT.h luaT.c)
-ADD_LIBRARY(luaT_static STATIC luaT.h luaT.c)
+if(BUILD_STATIC)
+  ADD_LIBRARY(luaT_static STATIC luaT.h luaT.c)
+endif()
 
 IF(APPLE)
   SET_TARGET_PROPERTIES(luaT PROPERTIES
