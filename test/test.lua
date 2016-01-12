@@ -162,6 +162,31 @@ function torchtest.sqrt()
    mytester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
 end
 
+function torchtest.sigmoid()
+   -- cant use genericSingleOpTest, since `math.sigmoid` doesnt exist, have to use
+   -- `torch.sigmoid` instead
+   local inputValues = {-1000,-1,0,0.5,1,2,1000}
+   local expectedOutput = {0.0000, 0.2689, 0.5, 0.6225, 0.7311, 0.8808, 1.000}
+
+   local precision_4dps = 0.0002
+
+   -- float
+   local inputFT = torch.FloatTensor(inputValues)
+   local expectedFT = torch.FloatTensor(expectedOutput)
+   mytester:assertlt((torch.sigmoid(inputFT) - expectedFT):abs():max(), precision_4dps, 'error in torch.sigmoid - single')
+   mytester:assertlt((inputFT - torch.FloatTensor(inputValues)):abs():max(), precision_4dps, 'error in torch.sigmoid - single')
+   local sigmoidFT = torch.FloatTensor(inputValues):sigmoid()
+   mytester:assertlt((sigmoidFT - expectedFT):abs():max(), precision_4dps, 'error in torch.sigmoid - single')
+
+   -- double
+   local inputDT = torch.DoubleTensor(inputValues)
+   local expectedDT = torch.DoubleTensor(expectedOutput)
+   mytester:assertlt((torch.sigmoid(inputDT) - expectedDT):abs():max(), precision_4dps, 'error in torch.sigmoid - double')
+   mytester:assertlt((inputDT - torch.DoubleTensor(inputValues)):abs():max(), precision_4dps, 'error in torch.sigmoid - double')
+   local sigmoidDT = torch.DoubleTensor(inputValues):sigmoid()
+   mytester:assertlt((sigmoidDT - expectedDT):abs():max(), precision_4dps, 'error in torch.sigmoid - double')
+end
+
 function torchtest.exp()
    local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'exp'))
    local maxerrc, maxerrnc = f()

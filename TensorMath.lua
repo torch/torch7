@@ -7,6 +7,7 @@ local method = wrap.CInterface.new()
 
 interface:print([[
 #include "TH.h"
+#include "THMath.h"
 #include "luaT.h"
 #include "utils.h"
                 ]])
@@ -1002,7 +1003,7 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                             "cos", "acos", "cosh",
                             "sin", "asin", "sinh",
                             "tan", "atan", "tanh",
-                            "sqrt",
+                            "sqrt", "sigmoid",
                             "round", "ceil", "floor"}) do
                             --"abs"}) do
 
