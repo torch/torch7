@@ -498,6 +498,15 @@ Let `x` be a `Tensor` and `n` a number.
 `x:tanh()` replaces all elements in-place with the hyperbolic tangent of the elements of `x`.
 
 
+<a name="torch.sigmoid"></a>
+### [res] torch.sigmoid([res,] x) ###
+<a name="torch.sigmoid"></a>
+
+`y = torch.sigmoid(x)` returns a new `Tensor` with the sigmoid of the elements of `x`.
+
+`x:sigmoid()` replaces all elements in-place with the sigmoid of the elements of `x`.
+
+
 <a name="torch.basicoperations.dok"></a>
 ## Basic operations ##
 
