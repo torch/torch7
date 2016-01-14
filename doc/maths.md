@@ -1,7 +1,7 @@
 <a name="torch.maths.dok"></a>
 # Math Functions #
 
-Torch provides Matlab-like functions for manipulating [`Tensor`](tensor.md) objects.  Functions fall into several types of categories:
+Torch provides MATLAB-like functions for manipulating [`Tensor`](tensor.md) objects.  Functions fall into several types of categories:
 
   * [Constructors](#torch.construction.dok) like [`zeros`](#torch.zeros), [`ones`](#torch.ones);
   * Extractors like [`diag`](#torch.diag)  and [`triu`](#torch.triu);
@@ -1026,7 +1026,7 @@ If `vec1` is a vector of size `n` and `vec2` is a vector of size `m`, then `res`
 
 ## Overloaded operators ##
 
-It is possible to use basic mathematic operators like `+`, `-`, `/` and `*` with `Tensor`s.
+It is possible to use basic mathematical operators like `+`, `-`, `/` and `*` with `Tensor`s.
 These operators are provided as a convenience.
 While they might be handy, they create and return a new `Tensor` containing the results.
 They are thus not as fast as the operations available in the [previous section](#torch.BasicOperations.dok).
@@ -1096,7 +1096,7 @@ The result of the multiplication depends on the sizes of the `Tensor`s.
  - 2D and 1D: Returns the matrix-vector operation between the two `Tensor`s (1D `Tensor`).
  - 2D and 2D: Returns the matrix-matrix operation between the two `Tensor`s (2D `Tensor`).
 
-Sizes must be relevant for the corresponding operation.
+Sizes must be conformant for the corresponding operation.
 
 A `Tensor` might also be multiplied by a scalar.
 The scalar might be on the right or left of the operator.
