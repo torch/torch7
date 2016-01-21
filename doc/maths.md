@@ -431,6 +431,13 @@ This function is more accurate than [`log`](#torch.log) for small values of `x`.
 `x:neg()` replaces all elements in-place with the sign-reversed values of the elements of `x`.
 
 
+<a name="x:cinv"></a>
+### x:cinv() ###
+<a name="x:cinv"></a>
+
+`x:cinv()` replaces all elements in-place with `1.0 / x`.
+
+
 <a name="torch.pow"></a>
 ### [res] torch.pow([res,] x, n) ###
 <a name="torch.pow"></a>

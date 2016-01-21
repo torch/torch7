@@ -568,6 +568,22 @@ function torchtest.neg()
    local _ = torch.setRNGState(rngState)
 end
 
+function torchtest.cinv()
+   local rngState = torch.getRNGState()
+   torch.manualSeed(123)
+
+   local a = torch.randn(100,89)
+   local zeros = torch.Tensor():resizeAs(a):zero()
+
+   local res_pow = torch.pow(a, -1)
+   local res_inv = a:clone()
+   res_inv:cinv()
+
+   mytester:assertlt((res_pow - res_inv):abs():max(), 0.00001)
+
+   local _ = torch.setRNGState(rngState)
+end
+
 function torchtest.mul()
    local m1 = torch.randn(10,10)
    local res1 = m1:clone()

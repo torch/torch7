@@ -1003,10 +1003,9 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                             "cos", "acos", "cosh",
                             "sin", "asin", "sinh",
                             "tan", "atan", "tanh",
-                            "sqrt", "sigmoid",
+                            "sqrt",
                             "round", "ceil", "floor"}) do
                             --"abs"}) do
-
          wrap(name,
               cname(name),
               {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -1014,8 +1013,8 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
               name,
               {{name=real},
                {name=real, creturned=true}})
-
       end
+
          wrap("abs",
               cname("abs"),
               {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -1024,8 +1023,21 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
               {{name=real},
                {name=real, creturned=true}})
 
+      wrap("sigmoid",
+           cname("sigmoid"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=Tensor, method={default=1}}},
+           "TH_sigmoid",
+           {{name=real},
+            {name=real, creturned=true}})
+
       wrap("neg",
            cname("neg"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=Tensor, method={default=1}}})
+
+      wrap("cinv",
+           cname("cinv"),
            {{name=Tensor, default=true, returned=true, method={default='nil'}},
             {name=Tensor, method={default=1}}})
 
