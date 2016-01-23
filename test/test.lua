@@ -1358,7 +1358,7 @@ function torchtest.topK()
       return sorted:narrow(dim, 1, k), indices:narrow(dim, 1, k)
    end
 
-   local function compareTensors(t, res1, ind1, res2, ind2, msg)
+   local function compareTensors(t, res1, ind1, res2, ind2, dim, msg)
       -- Values should be exactly equivalent
       mytester:assertTensorEq(res1, res2, 0, msg)
 
@@ -1374,10 +1374,10 @@ function torchtest.topK()
    end
 
    local function compare(t, k, dim, dir, msg)
-      local topKVal, topKInd = t:topk(k, dim, dir)
+      local topKVal, topKInd = t:topk(k, dim, dir, true)
       local sortKVal, sortKInd = topKViaSort(t, k, dim, dir)
 
-      compareTensors(t, sortKVal, sortKInd, topKVal, topKInd, msg)
+      compareTensors(t, sortKVal, sortKInd, topKVal, topKInd, dim, msg)
    end
 
    local t = torch.rand(math.random(1, msize),
