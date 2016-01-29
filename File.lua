@@ -49,7 +49,12 @@ end
 function File:referenced(ref)
    -- we use an environment to keep a record of written objects
    if not torch.getenv(self).writeObjects then
-      torch.setenv(self, {writeObjects={}, writeObjectsRef={}, readObjects={}, objectNameStack={}})
+      torch.setenv(self, {
+            writeObjects={}, writeObjectsRef={},
+            readObjects={},
+            objectNameStack={},
+            upvalueRefToId={}, upvalueIdToClosure={},
+         })
    end
    local env = torch.getenv(self)
    env.force = not ref
@@ -102,7 +107,12 @@ end
 function File:writeObject(object, debugname)
    -- we use an environment to keep a record of written objects
    if not torch.getenv(self).writeObjects then
-      torch.setenv(self, {writeObjects={}, writeObjectsRef={}, readObjects={}, objectNameStack={}})
+      torch.setenv(self, {
+            writeObjects={}, writeObjectsRef={},
+            readObjects={},
+            objectNameStack={},
+            upvalueRefToId={}, upvalueIdToClosure={},
+         })
    end
 
    local force = torch.getenv(self).force
@@ -151,6 +161,10 @@ function File:writeObject(object, debugname)
          self:writeInt(index)
          objects.nWriteObject = index
          if typeidx == TYPE_RECUR_FUNCTION then
+            local upvalueRefToId = torch.getenv(self).upvalueRefToId
+            -- Unique ID for each ref since lightuserdata are not serializable
+            local nextId = 1
+            for _ in pairs(upvalueRefToId) do nextId=nextId+1 end
             local upvalues = {}
             local counter = 0
             while true do
@@ -158,7 +172,17 @@ function File:writeObject(object, debugname)
                local name,value = debug.getupvalue(object, counter)
                if not name then break end
                if name == '_ENV' then value = nil end
-               table.insert(upvalues, {name=name, value=value})
+               local id=nil
+               -- debug.upvalueid exists only for lua>=5.2 and luajit
+               if debug.upvalueid then
+                  local upvalueRef = debug.upvalueid(object, counter)
+                  if not upvalueRefToId[upvalueRef] then
+                     upvalueRefToId[upvalueRef] = nextId
+                     nextId = nextId + 1
+                  end
+                  id = upvalueRefToId[upvalueRef]
+               end
+               table.insert(upvalues, {name=name, id=id, value=value})
             end
             local dumped = string.dump(object)
             local stringStorage = torch.CharStorage():string(dumped)
@@ -212,7 +236,12 @@ end
 function File:readObject()
    -- we use an environment to keep a record of read objects
    if not torch.getenv(self).writeObjects then
-      torch.setenv(self, {writeObjects={}, writeObjectsRef={}, readObjects={}, objectNameStack={}})
+      torch.setenv(self, {
+            writeObjects={}, writeObjectsRef={},
+            readObjects={},
+            objectNameStack={},
+            upvalueRefToId={}, upvalueIdToClosure={},
+         })
    end
 
    local force = torch.getenv(self).force
@@ -265,6 +294,7 @@ function File:readObject()
          if not force then
              objects[index] = func
          end
+         local upvalueIdToClosure = torch.getenv(self).upvalueIdToClosure
          local upvalues = self:readObject()
          for index,upvalue in ipairs(upvalues) do
             if typeidx == LEGACY_TYPE_RECUR_FUNCTION then
@@ -273,6 +303,20 @@ function File:readObject()
                debug.setupvalue(func, index, _ENV)
             else
                debug.setupvalue(func, index, upvalue.value)
+               -- debug.upvaluejoin exists only for lua>=5.2 and luajit
+               if debug.upvaluejoin and upvalue.id then
+                  if upvalueIdToClosure[upvalue.id] then
+                     -- This upvalue is linked to another one
+                     local otherClosure = upvalueIdToClosure[upvalue.id]
+                     debug.upvaluejoin(func, index, otherClosure.func, otherClosure.index)
+                  else
+                     -- Save this closure for next time
+                     upvalueIdToClosure[upvalue.id] = {
+                        func = func,
+                        index = index,
+                     }
+                  end
+               end
             end
          end
          return func
