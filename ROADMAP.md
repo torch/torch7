@@ -18,8 +18,8 @@ The roadmap focuses on five separate things
 
  - New class system:
    - **[definite]** with no global side-effects (i.e. the class constructor should be scoped into its parent package)
-     Get rid of every statement/system that has a global effect on the environement (torch.setdefaultensortype => dangerous and not clean)
-   - **[needs discussion]** fully serializable (i.e. when deserializing/reloading a model, there shouldn't be a need to load libraries that defined the class originally, like nn; the class definition should be serialized as well: this would remove a lot of backward compatibilty hacks that we have to add to class definitions currently
+     Get rid of every statement/system that has a global effect on the environment (torch.setdefaultensortype => dangerous and not clean)
+   - **[needs discussion]** fully serializable (i.e. when deserializing/reloading a model, there shouldn't be a need to load libraries that defined the class originally, like nn; the class definition should be serialized as well: this would remove a lot of backward compatibility hacks that we have to add to class definitions currently
        - **koray**: I like this, but wouldn't it break backward compatibility?
 		            Currently, whatever we serialize, it is just the data and implementation is defined
 					at load time, so if a bug is fixed (or introduced) you use that.
@@ -29,7 +29,7 @@ The roadmap focuses on five separate things
  - **[needs discussion]** OpenMP: Should it stay or go? Is Threads sufficient?
        - **Ronan**: I really wonder about this guy, especially now that I have been using threads intensively. I am not sure that fine-grine threading is necessary.
 	   - **koray**: I guess you mean with threading, there is no need for OpenMP, but I disagree.
-	          Our convolution layer will use multiple threads and then if we run a ReLu over a huge state space, it would become emabarassingly slow.
+	          Our convolution layer will use multiple threads and then if we run a ReLu over a huge state space, it would become embarrassingly slow.
 			  We shouldn't expect everyone to run their experiments in a threading framework. It is more work than necessary sometimes.)
  - **[needs discussion]** Templated C++ in TH Core?
                     - **Ronan**: Should I cleanup TH core? In the end, I am scared to move to C++, but some iterators based taking a closure could be nice (I have some of those that I could add easily).
@@ -39,14 +39,14 @@ The roadmap focuses on five separate things
  - **[definite]** Benchmarking support in Tester
  - **[definite]** Consistent testing scripts across all core projects
  - **[definite]** 'nn' container unified interface between containers and graph
- - **[mostly definite]** Switch to batch only assumption in 'nn'. Right now, the code is unnecesasrily complicated for stochastic/batch confusion, we needed extra functions like nInputDims and such.
+ - **[mostly definite]** Switch to batch only assumption in 'nn'. Right now, the code is unnecessarily complicated for stochastic/batch confusion, we needed extra functions like nInputDims and such.
  - **[needs discussion]** Support named arguments in the constructor for all 'nn' layers.
  - **[definite]** 'rnn' package.
       - **Soumith**: Nicholas Leonard's seems to be a good one.
  - **[mostly definite]** argcheck for all core functions in torch. Get rid of cwrap's ugliness.
  - **[definite]** improve paths to support more file system operations
        - **Clement**: could lfs and penlight be made more standard? penlight is a heavy package but provides so much utility
-	   - **Soumith**: I think penlight is lighweight and provides strong utility, definitely consider dependence.
+	   - **Soumith**: I think penlight is lightweight and provides strong utility, definitely consider dependence.
  - **[definite]** JIT/Lua/FFI/GC:
    - **koray**: I think Torch should be agnostic to whatever is the backend;
    - **clement**: yes!
@@ -93,7 +93,7 @@ The roadmap focuses on five separate things
  	   - This ties to the first question in **Other Questions** section.
  	   - Can we/community do pull requests on iTorch? ( **Soumith**: Yes )
  	   - First step would be to leanify dependencies and/or install procedure (**Soumith**: agreed)
-- **[needs discussion]** How about Penlight? It has many curcial things that people use.
+- **[needs discussion]** How about Penlight? It has many crucial things that people use.
    Should we endorse it, use some things from it? Replicate some things in penlight in torch?
    - **clement**: upvoting this! we use it extensively.
    - **Ronan**: I live better with less abstractions, but I can be convinced there.
@@ -139,6 +139,6 @@ The roadmap focuses on five separate things
  	- being able to do pull requests?
 	- Licensing?
  	- or maybe maintain a list of suggested packages?
- 	- when does existance of a package stop us from developing the same in core torch?
+ 	- when does existence of a package stop us from developing the same in core torch?
 	- **Soumith**: I think this should largely be community driven and by popularity. Top starred or watched repos in the ecosystem would be a good start.
  	
