@@ -119,5 +119,31 @@ function tests.test_referenced()
    file:close()
 end
 
+function tests.test_shared_upvalues()
+  local i=1
+  local j=2
+
+  local func = {}
+
+  func.increment = function()
+    i=i+1
+    j=j+2
+  end
+  func.get_i = function()
+    return i
+  end
+  func.get_j = function()
+    return j
+  end
+
+  local copyFunc = serializeAndDeserialize(func)
+  myTester:assert(copyFunc.get_i()==1)
+  myTester:assert(copyFunc.get_j()==2)
+  copyFunc.increment()
+  myTester:assert(copyFunc.get_i()==2)
+  myTester:assert(copyFunc.get_j()==4)
+end
+
+
 myTester:add(tests)
 myTester:run()
