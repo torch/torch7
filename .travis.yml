@@ -19,25 +19,25 @@ addons:
     - gfortran-multilib
     - liblapack-dev
     - build-essential
-    - gcc 
-    - g++ 
+    - gcc
+    - g++
     - curl
-    - cmake 
-    - libreadline-dev 
-    - git-core 
-    - libqt4-core 
+    - cmake
+    - libreadline-dev
+    - git-core
+    - libqt4-core
     - libqt4-gui
-    - libqt4-dev 
-    - libjpeg-dev 
-    - libpng-dev 
+    - libqt4-dev
+    - libjpeg-dev
+    - libpng-dev
     - ncurses-dev
-    - imagemagick 
-    - libzmq3-dev 
-    - gfortran 
-    - unzip 
+    - imagemagick
+    - libzmq3-dev
+    - gfortran
+    - unzip
     - gnuplot
-    - gnuplot-x11 
-before_script: 
+    - gnuplot-x11
+before_script:
 - export ROOT_TRAVIS_DIR=$(pwd)
 - export INSTALL_PREFIX=~/torch/install
 -  ls $HOME/OpenBlasInstall/lib || (cd /tmp/ && git clone https://github.com/xianyi/OpenBLAS.git -b master && cd OpenBLAS && (make NO_AFFINITY=1 -j$(getconf _NPROCESSORS_ONLN) 2>/dev/null >/dev/null) && make PREFIX=$HOME/OpenBlasInstall install)
@@ -49,8 +49,9 @@ before_script:
 - make && make install
 - cd $ROOT_TRAVIS_DIR
 - export LD_LIBRARY_PATH=${INSTALL_PREFIX}/lib:$LD_LIBRARY_PATH
-script: 
+script:
 - ${INSTALL_PREFIX}/bin/luarocks make rocks/torch-scm-1.rockspec
+- ${INSTALL_PREFIX}/bin/luarocks install luaffi
 - export PATH=${INSTALL_PREFIX}/bin:$PATH
 - export TESTLUA=$(which luajit lua | head -n 1)
 - ${TESTLUA} -ltorch -e "t=torch.test(); if t.errors[1] then os.exit(1) end"

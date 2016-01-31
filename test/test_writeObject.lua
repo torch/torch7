@@ -120,30 +120,35 @@ function tests.test_referenced()
 end
 
 function tests.test_shared_upvalues()
-  local i=1
-  local j=2
+  if debug.upvalueid then
+     local i=1
+     local j=2
 
-  local func = {}
+     local func = {}
 
-  func.increment = function()
-    i=i+1
-    j=j+2
-  end
-  func.get_i = function()
-    return i
-  end
-  func.get_j = function()
-    return j
-  end
+     func.increment = function()
+        i=i+1
+        j=j+2
+     end
+     func.get_i = function()
+        return i
+     end
+     func.get_j = function()
+        return j
+     end
 
-  local copyFunc = serializeAndDeserialize(func)
-  myTester:assert(copyFunc.get_i()==1)
-  myTester:assert(copyFunc.get_j()==2)
-  copyFunc.increment()
-  myTester:assert(copyFunc.get_i()==2)
-  myTester:assert(copyFunc.get_j()==4)
+     local copyFunc = serializeAndDeserialize(func)
+     myTester:assert(copyFunc.get_i()==1)
+     myTester:assert(copyFunc.get_j()==2)
+     copyFunc.increment()
+     myTester:assert(copyFunc.get_i()==2)
+     myTester:assert(copyFunc.get_j()==4)
+  else
+     print('Not running shared upvalues test, as we are in Lua-5.1')
+  end
 end
 
 
 myTester:add(tests)
 myTester:run()
+if myTester.errors[1] then os.exit(1) end
