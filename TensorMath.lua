@@ -500,8 +500,23 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
    for _,name in ipairs({"min", "max"}) do
       wrap(name,
            cname(name .. "all"),
-           {{name=Tensor},
-            {name=real, creturned=true}},
+           {{name=real, creturned=true},
+            {name="IndexTensor", default=true, returned=true, noreadadd=true,
+            precall = function(arg)
+                local txt = {}
+                return table.concat(txt, '\n')
+            end,
+            postcall = function(arg)
+                 local txt = {}
+                 table.insert(txt, string.format('if(arg%d_idx)', arg.i)) -- means it was passed as arg
+                 table.insert(txt, string.format('lua_pushvalue(L, arg%d_idx);', arg.i))
+                 table.insert(txt, string.format('else')) -- means we did a new()
+                 table.insert(txt, string.format('luaT_pushudata(L, arg%d, "torch.LongTensor");', arg.i))
+                 table.insert(txt, string.format("THLongTensor_add(arg%d, arg%d, 1);", arg.i, arg.i));
+                 return table.concat(txt, '\n')
+              end
+            },
+            {name=Tensor}},
            cname(name),
            {{name=Tensor, default=true, returned=true},
             {name="IndexTensor", default=true, returned=true, noreadadd=true},
