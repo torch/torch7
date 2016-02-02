@@ -319,23 +319,6 @@ function torchtest.max()  -- torch.max([resval, resind,] x [,dim])
       local res1val = torch.max(m1)
       mytester:assert(res1val ~= res1val, 'error in torch.max - NaNs')
    end
-   -- Argmax for full tensor
-   for _, t in pairs{torch.Tensor(2, 3, 4, 500):random(),
-                    torch.Tensor(1, 3, 1, 5, 500):random(),
-                    torch.Tensor(12, 1, 1, 500, 1):random(),
-                    torch.FloatTensor(3, 1, 500):random(),
-                    torch.FloatTensor(12, 1, 500):random(),
-                    torch.FloatTensor(3, 5, 500):random(),
-                    torch.IntTensor(12, 500):random(),
-                    torch.IntTensor(3):random(),
-                    torch.IntTensor(13, 500):random(),
-                    torch.ByteTensor(33, 43, 500):random(),
-                    torch.ByteTensor(500):random(),
-                    torch.ByteTensor(1):random()} do
-      local max, argmax = t:max()
-      mytester:assert(max == t[argmax:storage()], 'error in torch.min (argmin) - Argmin')
-   end
-
 end
 
 function torchtest.min()  -- torch.min([resval, resind,] x [,dim])
@@ -404,23 +387,6 @@ function torchtest.min()  -- torch.min([resval, resind,] x [,dim])
       local res1val = torch.min(m1)
       mytester:assert(res1val ~= res1val, 'error in torch.min - NaNs')
    end
-      -- Argmin for full tensor
-   for _, t in pairs{torch.Tensor(2, 3, 4, 500):random(),
-                    torch.Tensor(1, 3, 1, 5, 500):random(),
-                    torch.Tensor(12, 1, 1, 500, 1):random(),
-                    torch.FloatTensor(3, 1, 500):random(),
-                    torch.FloatTensor(12, 1, 500):random(),
-                    torch.FloatTensor(3, 5, 500):random(),
-                    torch.IntTensor(12, 500):random(),
-                    torch.IntTensor(3):random(),
-                    torch.IntTensor(13, 500):random(),
-                    torch.ByteTensor(33, 43, 500):random(),
-                    torch.ByteTensor(500):random(),
-                    torch.ByteTensor(1):random()} do
-      local min, argmin = t:min()
-      mytester:assert(min == t[argmin:storage()], 'error in torch.min (argmin) - Argmin')
-   end
-
 end
 
 function torchtest.cmax()
