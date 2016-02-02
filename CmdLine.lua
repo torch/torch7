@@ -74,7 +74,7 @@ function CmdLine:silent()
 end
 
 function CmdLine:addTime(name, format)
-   format = format or '%F %T'
+   format = format or '%Y-%m-%d %H:%M:%S'
    if type(format) ~= 'string' then
       error('Argument has to be string')
    end
@@ -188,7 +188,7 @@ function CmdLine:string(prefix, params, ignore)
 end
 
 local oprint = print
-function CmdLine:log(file, params)   
+function CmdLine:log(file, params)
    local f = io.open(file, 'w')
    function print(...)
       local n = select("#", ...)
@@ -214,7 +214,7 @@ function CmdLine:log(file, params)
          print(k,v)
       end
    end
-   print('[----------------------]')   
+   print('[----------------------]')
 end
 
 function CmdLine:text(txt)
