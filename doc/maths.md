@@ -1244,7 +1244,7 @@ Example:
 <a name="torch.max"></a>
 ### torch.max([resval, resind,] x [,dim]) ###
 
-`y = torch.max(x)` returns the single largest element of `x`.
+`y, i = torch.max(x)` returns the single largest element of `x`, and a `Tensor` `i` of its corresponding indices in `x`.
 
 `y, i = torch.max(x, 1)` returns the largest element in each column (across rows) of `x`, and a `Tensor` `i` of their corresponding indices in `x`.
 
@@ -1298,7 +1298,7 @@ Example:
 <a name="torch.min"></a>
 ### torch.min([resval, resind,] x [,dim]) ###
 
-`y = torch.min(x)` returns the single smallest element of `x`.
+`y, i = torch.min(x)` returns the single smallest element of `x`, and a `Tensor` `i` of its corresponding indices in `x`.
 
 `y, i = torch.min(x, 1)` returns the smallest element in each column (across rows) of `x`, and a `Tensor` `i` of their corresponding indices in `x`.
 
