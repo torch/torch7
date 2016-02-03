@@ -187,9 +187,10 @@ function CmdLine:string(prefix, params, ignore)
    end
 end
 
-local oprint = print
+local oprint = nil
 function CmdLine:log(file, params)   
    local f = io.open(file, 'w')
+   oprint = oprint or print -- get the current print function lazily
    function print(...)
       local n = select("#", ...)
       local arg = {...}
