@@ -190,7 +190,7 @@ end
 local oprint = print
 function CmdLine:log(file, params)   
    local f = io.open(file, 'w')
-   function print(...)
+   local function print(...)
       local n = select("#", ...)
       local arg = {...}
       if not self.silentio then
