@@ -439,6 +439,10 @@ for i, v in ipairs{{10}, {5, 5}} do
            x:zero()
            mytester:assert(not x:all(), 'error in all()')
            mytester:assert(not x:any(), 'error in any()')
+           
+           x:fill(2)
+           mytester:assert(x:all(), 'error in all()')
+           mytester:assert(x:any(), 'error in any()')
        end
 end
 
