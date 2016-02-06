@@ -154,12 +154,30 @@ static int torch_TensorOperator_(__div__)(lua_State *L)
   return 1;
 }
 
+static int torch_TensorOperator_(__mod__)(lua_State *L)
+{
+  THTensor *tensor = luaT_checkudata(L, 1, torch_Tensor);
+  THTensor *r;
+
+  THArgCheck(lua_isnumber(L,2), 2, "number expected");
+
+  r = THTensor_(new)();
+  luaT_pushudata(L, r, torch_Tensor);
+
+  THTensor_(resizeAs)(r, tensor);
+  THTensor_(copy)(r, tensor);
+  THTensor_(mod)(r, r, lua_tonumber(L, 2));
+
+  return 1;
+}
+
 static const struct luaL_Reg torch_TensorOperator_(_) [] = {
   {"__add__", torch_TensorOperator_(__add__)},
   {"__sub__", torch_TensorOperator_(__sub__)},
   {"__unm__", torch_TensorOperator_(__unm__)},
   {"__mul__", torch_TensorOperator_(__mul__)},
   {"__div__", torch_TensorOperator_(__div__)},
+  {"__mod__", torch_TensorOperator_(__mod__)},
   {NULL, NULL}
 };
 
