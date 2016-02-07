@@ -521,9 +521,10 @@ torch.chunk = Tensor.chunk
 
 function Tensor.totable(tensor)
   local result = {}
-  if tensor:dim() == 1 then
+  local dim = tensor:dim()
+  if dim == 1 then
     tensor:apply(function(i) table.insert(result, i) end)
-  else
+  elseif dim > 0 then
     for i = 1, tensor:size(1) do
       table.insert(result, tensor[i]:totable())
     end

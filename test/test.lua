@@ -2947,6 +2947,10 @@ function torchtest.chunk()
 end
 
 function torchtest.totable()
+  local table0D = {}
+  local tensor0D = torch.Tensor(table0D)
+  mytester:assertTableEq(torch.totable(tensor0D), table0D, 'tensor0D:totable incorrect')
+
   local table1D = {1, 2, 3}
   local tensor1D = torch.Tensor(table1D)
   local storage = torch.Storage(table1D)
