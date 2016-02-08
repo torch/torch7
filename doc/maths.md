@@ -74,7 +74,7 @@ Examples:
  1
  0
  0
-[torch.Tensor of dimension 5]
+[torch.DoubleTensor of size 5]
 
 > torch.cat(torch.ones(3, 2), torch.zeros(2, 2), 1)
  1  1
@@ -82,19 +82,19 @@ Examples:
  1  1
  0  0
  0  0
-[torch.DoubleTensor of dimension 5x2]
+[torch.DoubleTensor of size 5x2]
 
 > torch.cat(torch.ones(2, 2), torch.zeros(2, 2), 1)
  1  1
  1  1
  0  0
  0  0
-[torch.DoubleTensor of dimension 4x2]
+[torch.DoubleTensor of size 4x2]
 
 > torch.cat(torch.ones(2, 2), torch.zeros(2, 2), 2)
  1  1  0  0
  1  1  0  0
-[torch.DoubleTensor of dimension 2x4]
+[torch.DoubleTensor of size 2x4]
 
 > torch.cat(torch.cat(torch.ones(2, 2), torch.zeros(2, 2), 1), torch.rand(3, 2), 1)
  1.0000  1.0000
@@ -104,7 +104,7 @@ Examples:
  0.3227  0.0493
  0.9161  0.1086
  0.2206  0.7449
-[torch.DoubleTensor of dimension 7x2]
+[torch.DoubleTensor of size 7x2]
 
 > torch.cat({torch.ones(2, 2), torch.zeros(2, 2), torch.rand(3, 2)}, 1)
  1.0000  1.0000
@@ -114,7 +114,7 @@ Examples:
  0.3227  0.0493
  0.9161  0.1086
  0.2206  0.7449
-[torch.DoubleTensor of dimension 7x2]
+[torch.DoubleTensor of size 7x2]
 
 ```
 
@@ -255,13 +255,13 @@ For more than 4 dimensions, you can use a storage as argument: `y = torch.randn(
  3
  4
  5
-[torch.Tensor of dimension 4]
+[torch.DoubleTensor of size 4]
 
 > torch.range(2, 5, 1.2)
  2.0000
  3.2000
  4.4000
-[torch.DoubleTensor of dimension 3]
+[torch.DoubleTensor of size 3]
 ```
 
 
@@ -545,7 +545,7 @@ The number of elements must match, but sizes do not matter.
 > x
  5  5
  5  5
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 ```
 
 `y = torch.add(a, b)` returns a new `Tensor`.
@@ -571,7 +571,7 @@ The number of elements must match, but sizes do not matter.
 > x
  8  8
  8  8
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 ```
 
 `x:add(value, y)` multiply-accumulates values of `y` into `x`.
@@ -604,7 +604,7 @@ The number of elements must match, but sizes do not matter.
 > x
  5  5
  5  5
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 ```
 
 `a:csub(b)` put `a - b` into `a`.
@@ -660,7 +660,7 @@ The number of elements must match, but sizes do not matter.
 > = x
  6  6
  6  6
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 ```
 
 `z = torch.cmul(x, y)` returns a new `Tensor`.
@@ -686,7 +686,7 @@ The number of elements must match, but sizes do not matter.
 > x
  8  8
  8  8
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 ```
 
 `z = torch.cpow(x, y)` returns a new `Tensor`.
@@ -713,7 +713,7 @@ The number of elements must match, but sizes do not matter.
 > x
  32  32
  32  32
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 ```
 
 `z:addcmul(value, x, y)` accumulates the result in `z`.
@@ -735,7 +735,7 @@ Divide all elements in the `Tensor` by the given `value`.
 
 `x:div(2)` will divide all elements of `x` with `2` in-place.
 
-`z:div(x, 2)` with put the result of `x / 2` in `z`.
+`z:div(x, 2)` puts the result of `x / 2` in `z`.
 
 
 <a name="torch.cdiv"></a>
@@ -752,7 +752,7 @@ The number of elements must match, but sizes do not matter.
 > x
  1.0000  0.5000
  0.3333  0.2500
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 ```
 
 `z = torch.cdiv(x, y)` returns a new `Tensor`.
@@ -779,7 +779,7 @@ The number of elements must match, but sizes do not matter.
 > x
  1.4000  1.8000
  2.2000  2.6000
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 ```
 
 `z:addcdiv(value, x, y)` accumulates the result in `z`.
@@ -787,6 +787,52 @@ The number of elements must match, but sizes do not matter.
 `torch.addcdiv(z, value, x, y)` returns a new `Tensor` with the result.
 
 `torch.addcdiv(z, z, value, x, y)` puts the result in `z`.
+
+
+<a name="torch.mod"></a>
+### [res] torch.mod([res,] tensor, value) ###
+<a name="torch.mod"></a>
+
+Compute remainder (modulo) of division of all elements in the `Tensor` by `value`.
+This works both for integer and floating point numbers and can be expressed as
+a % b = a - b * floor(a/b).
+
+`z = torch.mod(x, 2)` will return a new `Tensor` with the result of `x % 2`.
+
+`torch.mod(z, x, 2)` will put the result of `x % 2` in `z`.
+
+`x:mod(2)` will replace all elements of `x` the result of `x % 2` in-place.
+
+`z:mod(x, 2)` puts the result of `x % 2` in `z`.
+
+
+<a name="torch.cmod"></a>
+### [res] torch.cmod([res,] tensor1, tensor2) ###
+<a name="torch.cmod"></a>
+
+Computes the element-wise remainder of the division of `tensor1` by `tensor2`.
+The number of elements must match, but sizes do not matter.
+
+```lua
+> x = torch.range(1, 4)
+> y = torch.Tensor(2, 2):fill(3)
+> x:cmod(y)
+> x
+ 1
+ 2
+ 0
+ 1
+[torch.DoubleTensor of size 4]
+```
+
+`z = torch.cmod(x, y)` returns a new `Tensor`.
+
+`torch.cmod(z, x, y)` puts the result in `z`.
+
+`y:cmod(x)` replaces all elements of `y` by their remainder of division by
+corresponding elements of `x`.
+
+`z:cmod(x, y)` puts the result in `z`.
 
 
 <a name="torch.dot"></a>
@@ -835,7 +881,7 @@ Sizes must respect the matrix-multiplication operation: if `mat` is a `n × m` m
  12
  12
  12
-[torch.Tensor of dimension 3]
+[torch.DoubleTensor of size 3]
 ```
 
 `torch.addmv(x, y, z)` returns a new `Tensor` with the result.
@@ -1033,7 +1079,7 @@ If `vec1` is a vector of size `n` and `vec2` is a vector of size `m`, then `res`
 
 ## Overloaded operators ##
 
-It is possible to use basic mathematical operators like `+`, `-`, `/` and `*` with `Tensor`s.
+It is possible to use basic mathematical operators like `+`, `-`, `/`, `*` and `%` with `Tensor`s.
 These operators are provided as a convenience.
 While they might be handy, they create and return a new `Tensor` containing the results.
 They are thus not as fast as the operations available in the [previous section](#torch.BasicOperations.dok).
@@ -1056,17 +1102,17 @@ The size of the returned `Tensor` will be the size of the first `Tensor`.
 ```lua
 > x = torch.Tensor(2, 2):fill(2)
 > y = torch.Tensor(4):fill(3)
-> x + y
+> = x + y
  5  5
  5  5
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 
-> y - x
+> = y - x
  1
  1
  1
  1
-[torch.Tensor of dimension 4]
+[torch.DoubleTensor of size 4]
 ```
 
 A scalar might also be added or subtracted to a `Tensor`.
@@ -1074,10 +1120,10 @@ The scalar needs to be on the right of the operator.
 
 ```lua
 > x = torch.Tensor(2, 2):fill(2)
-> x + 3
+> = x + 3
  5  5
  5  5
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 ```
 
 
@@ -1087,10 +1133,10 @@ A `Tensor` can be negated with the `-` operator placed in front:
 
 ```lua
 > x = torch.Tensor(2, 2):fill(2)
-> -x
+> = -x
 -2 -2
 -2 -2
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 ```
 
 
@@ -1115,22 +1161,22 @@ Examples:
 > N = torch.Tensor(2, 4):fill(3)
 > x = torch.Tensor(2):fill(4)
 > y = torch.Tensor(2):fill(5)
-> x * y -- dot product
+> = x * y -- dot product
 40
 
-> M * x --- matrix-vector
+> = M * x --- matrix-vector
  16
  16
-[torch.Tensor of dimension 2]
+[torch.DoubleTensor of size 2]
 
-> M * N -- matrix-matrix
+> = M * N -- matrix-matrix
  12  12  12  12
  12  12  12  12
-[torch.Tensor of dimension 2x4]
+[torch.DoubleTensor of size 2x4]
 ```
 
 
-### Division ###
+### Division and Modulo (remainder) ###
 
 Only the division of a `Tensor` by a scalar is supported with the operator `/`.
 
@@ -1138,11 +1184,21 @@ Example:
 
 ```lua
 > x = torch.Tensor(2, 2):fill(2)
-> x/3
+> = x/3
  0.6667  0.6667
  0.6667  0.6667
-[torch.Tensor of dimension 2x2]
+[torch.DoubleTensor of size 2x2]
 ```
+
+Similarly, the remainder of the division of a `Tensor`s elements by a scalar
+can be obtained with the operator `%`.
+
+Example:
+> x = torch.Tensor{{1,2},{3,4}}
+> = x % 3
+ 1  2
+ 0  1
+[torch.Tensor of size 2x2]
 
 
 <a name="torch.columnwise.dok"></a>
