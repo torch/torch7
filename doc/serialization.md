@@ -68,6 +68,18 @@ print(obj)
 --  [test] = table - size: 0}
 ```
 
+<a name="torch.load64"></a>
+### [object] torch.load64(filename [, format, referenced]) ###
+
+Reads `object` from a binary file named `filename` which was saved on a 64 bit OS.
+
+
+<a name="torch.load32"></a>
+### [object] torch.load32(filename [, format, referenced]) ###
+
+Reads `object` from a binary file named `filename` which was saved on a 32 bit OS.
+
+
 <a name="torch.serialize"></a>
 ### [str] torch.serialize(object [, format]) ###
 
