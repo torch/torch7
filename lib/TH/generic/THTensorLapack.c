@@ -513,7 +513,10 @@ void THTensor_(potrf)(THTensor *ra_, THTensor *a, const char *uplo)
 
   /* Run Factorization */
   THLapack_(potrf)(uplo[0], n, THTensor_(data)(ra__), lda, &info);
-  THLapackCheck("Lapack Error %s : A(%d,%d) is 0, A cannot be factorized", "potrf", info, info);
+  THLapackCheckWithHandler(
+    "Lapack Error %s : A(%d,%d) is 0, A cannot be factorized",
+    THErrorHandler(THTensor_(freeCopyTo)(ra__, ra_);),
+    "potrf", info, info);
 
   THTensor_(clearUpLoTriangle)(ra__, uplo);
   THTensor_(freeCopyTo)(ra__, ra_);
