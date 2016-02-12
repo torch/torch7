@@ -450,6 +450,7 @@ Let `x` be a `Tensor` and `n` a number.
 
 `x:pow(n)` replaces all elements in-place with the elements of `x` to the power of `n`.
 
+`torch.pow(x, n, x)` replaces all elements in-place with `n` to the power of the elements of `x`.
 
 <a name="torch.round"></a>
 ### [res] torch.round([res,] x) ###
