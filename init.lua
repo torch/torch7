@@ -173,12 +173,12 @@ end
 
 torch.setdefaulttensortype('torch.DoubleTensor')
 
-include('Tensor.lua')
-include('File.lua')
-include('CmdLine.lua')
-include('FFI.lua')
-include('Tester.lua')
-include('test.lua')
+require('torch.Tensor')
+require('torch.File')
+require('torch.CmdLine')
+require('torch.FFI')
+require('torch.Tester')
+require('torch.test')
 
 function torch.totable(obj)
    if torch.isTensor(obj) or torch.isStorage(obj) then
