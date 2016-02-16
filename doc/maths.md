@@ -520,6 +520,24 @@ Let `x` be a `Tensor` and `n` a number.
 
 In this section, we explain basic mathematical operations for `Tensor`s.
 
+<a name="torch.Tensor.equal"></a>
+### [boolean] equal([tensor1,] tensor2) ###
+<a name="torch.Tensor.equal"></a>
+
+Returns `true` iff the dimensions and values of `tensor1` and `tensor2` are exactly the same.
+
+```lua
+x = torch.Tensor{1,2,3}
+y = torch.Tensor{1,2,3}
+> x:equal(y)
+true
+
+y = torch.Tensor{1,2,4}
+> x:equal(y)
+false
+```
+
+Note that `a:equal(b)` is more efficient that `a:eq(b):all()` as it avoids allocation of a temporary tensor and can short-circuit.
 
 <a name="torch.add"></a>
 ### [res] torch.add([res,] tensor, value) ###

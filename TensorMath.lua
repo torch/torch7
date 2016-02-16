@@ -245,6 +245,12 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor},
          {name=accreal, creturned=true}})
 
+   wrap("equal",
+        cname("equal"),
+        {{name=Tensor},
+         {name=Tensor},
+         {name="boolean", creturned=true}})
+
    wrap("add",
         cname("add"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
