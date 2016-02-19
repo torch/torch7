@@ -163,7 +163,8 @@ function torch.isTypeOf(obj, typeSpec)
 
    local mt = getmetatable(obj)
    while mt do
-      if mt.__typename and matchFunc(mt.__typename, typeSpec) then
+      if type(mt) == 'table' and mt.__typename
+      and matchFunc(mt.__typename, typeSpec) then
          return true
       end
       mt = getmetatable(mt)
