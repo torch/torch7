@@ -1806,6 +1806,60 @@ void THTensor_(median)(THTensor *values_, THLongTensor *indices_, THTensor *t, i
   THTensor_(kthvalue)(values_, indices_, t, k, dimension);
 }
 
+#define fixHeap(START_IDX, N_ELEM)                                             \
+long last = START_IDX;                                                         \
+for (;;) {                                                                     \
+    long idx = last;                                                           \
+    if (2*last <= N_ELEM && data[2*last] COMP data[idx])                       \
+        idx = 2*last;                                                          \
+    if (2*last+1 <= N_ELEM && data[2*last+1] COMP data[idx])                   \
+        idx = 2*last+1;                                                        \
+    if (idx != last) {                                                         \
+        real tmp = data[last];                                                 \
+        long tmpi = index[last];                                               \
+        data[last] = data[idx];                                                \
+        data[idx] = tmp;                                                       \
+        index[last] = index[idx];                                              \
+        index[idx] = tmpi;                                                     \
+        last = idx;                                                            \
+    } else {                                                                   \
+        break;                                                                 \
+    }                                                                          \
+}
+
+#define COMP <
+void THTensor_(minHeapRemove)(real *data, long *index, long nElem)
+{
+    data[1] = data[nElem];
+    index[1] = index[nElem];
+    fixHeap(1, nElem-1);
+}
+
+void THTensor_(minHeapMake)(real *data, long *index, long nElem)
+{
+  for (long i = nElem/2; i > 0; i--) {
+    fixHeap(i, nElem);
+  }
+}
+#undef COMP
+
+#define COMP >
+void THTensor_(maxHeapRemove)(real *data, long *index, long nElem)
+{
+    data[1] = data[nElem];
+    index[1] = index[nElem];
+    fixHeap(1, nElem-1);
+}
+
+void THTensor_(maxHeapMake)(real *data, long *index, long nElem)
+{
+  for (long i = nElem/2; i > 0; i--) {
+    fixHeap(i, nElem);
+  }
+}
+#undef COMP
+#undef fixHeap
+
 void THTensor_(topk)(THTensor *rt_, THLongTensor *ri_, THTensor *t, long k, int dim, int dir, int sorted)
 {
   int numDims = THTensor_(nDimension)(t);
@@ -1815,11 +1869,11 @@ void THTensor_(topk)(THTensor *rt_, THLongTensor *ri_, THTensor *t, long k, int 
   THArgCheck(k > 0 && k <= sliceSize, 2, "k not in range for dimension");
 
   THTensor *tmpResults = THTensor_(new)();
-  THTensor_(resize1d)(tmpResults, sliceSize);
+  THTensor_(resize1d)(tmpResults, sliceSize+1);
   real *tmp__data = THTensor_(data)(tmpResults);
 
   THLongTensor *tmpIndices = THLongTensor_new();
-  THLongTensor_resize1d(tmpIndices, sliceSize);
+  THLongTensor_resize1d(tmpIndices, sliceSize+1);
   long *tmpi__data = THLongTensor_data(tmpIndices);
 
   THLongStorage *topKSize = THTensor_(newSizeOf)(t);
@@ -1829,41 +1883,37 @@ void THTensor_(topk)(THTensor *rt_, THLongTensor *ri_, THTensor *t, long k, int 
   THLongStorage_free(topKSize);
 
   if (dir) {
-    /* k largest elements, descending order (optional: see sorted) */
-    long K = sliceSize - k;
+    /* k largest elements, descending order */
     TH_TENSOR_DIM_APPLY3(real, t, real, rt_, long, ri_, dim,
                          long i;
                          for(i = 0; i < sliceSize; i++)
                          {
-                           tmp__data[i] = t_data[i*t_stride];
-                           tmpi__data[i] = i;
+                           tmp__data[i+1] = t_data[i*t_stride];
+                           tmpi__data[i+1] = i;
                          }
-                         if (K > 0)
-                           THTensor_(quickselect)(tmp__data, tmpi__data, K - 1, sliceSize, 1);
-                         if (sorted)
-                           THTensor_(quicksortdescend)(tmp__data + K, tmpi__data + K, k, 1);
+                         THTensor_(maxHeapMake)(tmp__data, tmpi__data, sliceSize);
                          for(i = 0; i < k; i++)
                          {
-                           rt__data[i*rt__stride] = tmp__data[i + K];
-                           ri__data[i*ri__stride] = tmpi__data[i + K];
+                           rt__data[i*rt__stride] = tmp__data[1];
+                           ri__data[i*ri__stride] = tmpi__data[1];
+                           THTensor_(maxHeapRemove)(tmp__data, tmpi__data, sliceSize-i);
                          })
   }
   else {
-    /* k smallest elements, ascending order (optional: see sorted) */
+    /* k smallest elements, ascending order */
     TH_TENSOR_DIM_APPLY3(real, t, real, rt_, long, ri_, dim,
                          long i;
                          for(i = 0; i < sliceSize; i++)
                          {
-                           tmp__data[i] = t_data[i*t_stride];
-                           tmpi__data[i] = i;
+                           tmp__data[i+1] = t_data[i*t_stride];
+                           tmpi__data[i+1] = i;
                          }
-                         THTensor_(quickselect)(tmp__data, tmpi__data, k - 1, sliceSize, 1);
-                         if (sorted)
-                           THTensor_(quicksortascend)(tmp__data, tmpi__data, k - 1, 1);
+                         THTensor_(minHeapMake)(tmp__data, tmpi__data, sliceSize);
                          for(i = 0; i < k; i++)
                          {
-                           rt__data[i*rt__stride] = tmp__data[i];
-                           ri__data[i*ri__stride] = tmpi__data[i];
+                           rt__data[i*rt__stride] = tmp__data[1];
+                           ri__data[i*ri__stride] = tmpi__data[1];
+                           THTensor_(minHeapRemove)(tmp__data, tmpi__data, sliceSize-i);
                          })
   }
 
