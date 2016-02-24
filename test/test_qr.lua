@@ -2,7 +2,7 @@
 -- torch.qr(), torch.geqrf() and torch.orgqr().
 local torch = require 'torch'
 local tester = torch.Tester()
-local tests = {}
+local tests = torch.TestSuite()
 
 -- torch.qr() with result tensors given.
 local function qrInPlace(tensorFunc)

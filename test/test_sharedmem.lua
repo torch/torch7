@@ -1,7 +1,7 @@
 require 'torch'
 
 local tester = torch.Tester()
-local tests = {}
+local tests = torch.TestSuite()
 
 local function createSharedMemStorage(name, size, storageType)
   local storageType = storageType or 'FloatStorage'
