@@ -2,7 +2,7 @@ require 'torch'
 
 local myTester = torch.Tester()
 
-local tests = {}
+local tests = torch.TestSuite()
 
 
 -- checks that an object can be written and unwritten
@@ -91,7 +91,7 @@ function tests.test_error_msg()
    end
    local ok, msg = pcall(torch.save, 'saved.t7', evil_func)
    myTester:assert(not ok)
-   myTester:assert(msg:find('at <%?>%.outer%.theinner%.baz%.torch'))
+   myTester:assert(msg:find('at <%?>%.outer%.theinner%.baz%.torch') ~= nil)
 end
 
 function tests.test_warning_msg()

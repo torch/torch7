@@ -1,7 +1,7 @@
 --require 'torch'
 
 local mytester
-local torchtest = {}
+local torchtest = torch.TestSuite()
 local msize = 100
 local precision
 
@@ -725,22 +725,22 @@ function torchtest.addbmm()
    local res2 = torch.Tensor():resizeAs(res[1]):zero()
 
    res2:addbmm(b1,b2)
-   mytester:assertTensorEq(res2, res:sum(1), precision, 'addbmm result wrong')
+   mytester:assertTensorEq(res2, res:sum(1)[1], precision, 'addbmm result wrong')
 
    res2:addbmm(1,b1,b2)
-   mytester:assertTensorEq(res2, res:sum(1)*2, precision, 'addbmm result wrong')
+   mytester:assertTensorEq(res2, res:sum(1)[1]*2, precision, 'addbmm result wrong')
 
    res2:addbmm(1,res2,.5,b1,b2)
-   mytester:assertTensorEq(res2, res:sum(1)*2.5, precision, 'addbmm result wrong')
+   mytester:assertTensorEq(res2, res:sum(1)[1]*2.5, precision, 'addbmm result wrong')
 
    local res3 = torch.addbmm(1,res2,0,b1,b2)
    mytester:assertTensorEq(res3, res2, precision, 'addbmm result wrong')
 
    local res4 = torch.addbmm(1,res2,.5,b1,b2)
-   mytester:assertTensorEq(res4, res:sum(1)*3, precision, 'addbmm result wrong')
+   mytester:assertTensorEq(res4, res:sum(1)[1]*3, precision, 'addbmm result wrong')
 
    local res5 = torch.addbmm(0,res2,1,b1,b2)
-   mytester:assertTensorEq(res5, res:sum(1), precision, 'addbmm result wrong')
+   mytester:assertTensorEq(res5, res:sum(1)[1], precision, 'addbmm result wrong')
 
    local res6 = torch.addbmm(.1,res2,.5,b1,b2)
    mytester:assertTensorEq(res6, res2*.1 + res:sum(1)*.5, precision, 'addbmm result wrong')
@@ -1510,8 +1510,10 @@ function torchtest.kthvalue()
       local mx, ix = torch.kthvalue(x, k)
       local mxx, ixx = torch.sort(x)
 
-      mytester:assertTensorEq(mxx:select(3, k), mx, 0, 'torch.kthvalue value')
-      mytester:assertTensorEq(ixx:select(3, k), ix, 0, 'torch.kthvalue index')
+      mytester:assertTensorEq(mxx:select(3, k), mx:select(3, 1), 0,
+                              'torch.kthvalue value')
+      mytester:assertTensorEq(ixx:select(3, k), ix:select(3, 1), 0,
+                              'torch.kthvalue index')
    end
    do -- test use of result tensors
       local k = math.random(1, msize)
@@ -1519,15 +1521,19 @@ function torchtest.kthvalue()
       local ix = torch.LongTensor()
       torch.kthvalue(mx, ix, x, k)
       local mxx, ixx = torch.sort(x)
-      mytester:assertTensorEq(mxx:select(3, k), mx, 0, 'torch.kthvalue value')
-      mytester:assertTensorEq(ixx:select(3, k), ix, 0, 'torch.kthvalue index')
+      mytester:assertTensorEq(mxx:select(3, k), mx:select(3, 1), 0,
+                              'torch.kthvalue value')
+      mytester:assertTensorEq(ixx:select(3, k), ix:select(3, 1), 0,
+                              'torch.kthvalue index')
    end
    do -- test non-default dim
       local k = math.random(1, msize)
       local mx, ix = torch.kthvalue(x, k, 1)
       local mxx, ixx = torch.sort(x, 1)
-      mytester:assertTensorEq(mxx:select(1, k), mx, 0, 'torch.kthvalue value')
-      mytester:assertTensorEq(ixx:select(1, k), ix, 0, 'torch.kthvalue index')
+      mytester:assertTensorEq(mxx:select(1, k), mx[1], 0,
+                              'torch.kthvalue value')
+      mytester:assertTensorEq(ixx:select(1, k), ix[1], 0,
+                              'torch.kthvalue index')
    end
    do -- non-contiguous
       local y = x:narrow(2, 1, 1)
@@ -1557,8 +1563,10 @@ function torchtest.median()
       local mxx, ixx = torch.sort(x)
       local ind = math.floor((msize+1)/2)
 
-      mytester:assertTensorEq(mxx:select(2, ind), mx, 0, 'torch.median value')
-      mytester:assertTensorEq(ixx:select(2, ind), ix, 0, 'torch.median index')
+      mytester:assertTensorEq(mxx:select(2, ind), mx:select(2, 1), 0,
+                              'torch.median value')
+      mytester:assertTensorEq(ixx:select(2, ind), ix:select(2, 1), 0,
+                              'torch.median index')
 
       -- Test use of result tensor
       local mr = torch.Tensor()
@@ -1570,8 +1578,10 @@ function torchtest.median()
       -- Test non-default dim
       mx, ix = torch.median(x, 1)
       mxx, ixx = torch.sort(x, 1)
-      mytester:assertTensorEq(mxx:select(1, ind), mx, 0,'torch.median value')
-      mytester:assertTensorEq(ixx:select(1, ind), ix, 0,'torch.median index')
+      mytester:assertTensorEq(mxx:select(1, ind), mx[1], 0,
+                              'torch.median value')
+      mytester:assertTensorEq(ixx:select(1, ind), ix[1], 0,
+                              'torch.median index')
 
       -- input unchanged
       mytester:assertTensorEq(x, x0, 0, 'torch.median modified input')
@@ -1658,7 +1668,7 @@ function torchtest.catArray()
       mytester:assertTensorEq(mx, mxx, 0, 'torch.cat value')
    end
 end
-function torchtest.sin()
+function torchtest.sin_2()
    local x = torch.rand(msize,msize,msize)
    local mx = torch.sin(x)
    local mxx  = torch.Tensor()
@@ -2205,30 +2215,6 @@ function torchtest.conv3_conv2_eq()
     mytester:assertlt(maxdiff(o3,o32),precision,'torch.conv3_conv2_eq')
 end
 
-function torchtest.fxcorr3_fxcorr2_eq()
-    local ix = math.floor(torch.uniform(20,40))
-    local iy = math.floor(torch.uniform(20,40))
-    local iz = math.floor(torch.uniform(20,40))
-    local kx = math.floor(torch.uniform(5,10))
-    local ky = math.floor(torch.uniform(5,10))
-    local kz = math.floor(torch.uniform(5,10))
-
-    local x = torch.rand(ix,iy,iz)
-    local k = torch.rand(kx,ky,kz)
-
-    local o3 = torch.xcorr3(x,k,'F')
-
-    local o32 = torch.zeros(o3:size())
-
-    for i=1,x:size(1) do
-        for j=1,k:size(1) do
-            o32[i+j-1]:add(torch.xcorr2(x[i],k[k:size(1)-j + 1],'F'))
-        end
-    end
-
-    mytester:assertlt(maxdiff(o3,o32),precision,'torch.conv3_conv2_eq')
-end
-
 function torchtest.fconv3_fconv2_eq()
     local ix = math.floor(torch.uniform(20,40))
     local iy = math.floor(torch.uniform(20,40))
@@ -2267,27 +2253,6 @@ function torchtest.logical()
    local all = neqs + xeq
    mytester:asserteq(neqs:sum(), xne:sum(), 'torch.logical')
    mytester:asserteq(x:nElement(),all:double():sum() , 'torch.logical')
-end
-
-function torchtest.TestAsserts()
-   mytester:assertError(function() error('hello') end, 'assertError: Error not caught')
-   mytester:assertErrorPattern(function() error('hello') end, '.*ll.*', 'assertError: ".*ll.*" Error not caught')
-
-   local x = torch.rand(100,100)*2-1;
-   local xx = x:clone();
-   mytester:assertTensorEq(x, xx, 1e-16, 'assertTensorEq: not deemed equal')
-   mytester:assertTensorNe(x, xx+1, 1e-16, 'assertTensorNe: not deemed different')
-   mytester:assertalmosteq(0, 1e-250, 1e-16, 'assertalmosteq: not deemed different')
-end
-
-function torchtest.BugInAssertTableEq()
-   local t = {1,2,3}
-   local tt = {1,2,3}
-   mytester:assertTableEq(t, tt, 'assertTableEq: not deemed equal')
-   mytester:assertTableNe(t, {3,2,1}, 'assertTableNe: not deemed different')
-   mytester:assertTableEq({1,2,{4,5}}, {1,2,{4,5}}, 'assertTableEq: fails on recursive lists')
-   mytester:assertTableNe(t, {1,2}, 'assertTableNe: different size not deemed different')
-   mytester:assertTableNe(t, {1,2,3,4}, 'assertTableNe: different size not deemed different')
 end
 
 function torchtest.RNGState()
@@ -2750,14 +2715,14 @@ function torchtest.classInModule()
     -- Need a global for this module
     _mymodule123 = {}
     local x = torch.class('_mymodule123.myclass')
-    mytester:assert(x, 'Could not create class in module')
+    mytester:assert(x ~= nil, 'Could not create class in module')
     -- Remove the global
     _G['_mymodule123'] = nil
 end
 
 function torchtest.classNoModule()
     local x = torch.class('_myclass123')
-    mytester:assert(x, 'Could not create class in module')
+    mytester:assert(x ~= nil, 'Could not create class in module')
 end
 
 function torchtest.type()
@@ -3003,7 +2968,7 @@ function torchtest.split()
       mytester:assertTensorEq(tensor:narrow(dim, start, targetSize[i][dim]), split, 0.000001, 'Result content error in split '..i)
       start = start + targetSize[i][dim]
    end
-   mytester:asserteq(#splits,#result, 0, 'Non-consistent output size from split')
+   mytester:asserteq(#splits, #result, 'Non-consistent output size from split')
    for i, split in ipairs(splits) do
       mytester:assertTensorEq(split,result[i], 0, 'Non-consistent outputs from split')
    end
@@ -3136,13 +3101,13 @@ function torchtest.nonzero()
               table.insert(dst, i)
             end
           end
-          mytester:assertTensorEq(dst1, torch.LongTensor(dst), 0.0,
+          mytester:assertTensorEq(dst1:select(2, 1), torch.LongTensor(dst), 0.0,
                                   "nonzero error")
-          mytester:assertTensorEq(dst2, torch.LongTensor(dst), 0.0,
+          mytester:assertTensorEq(dst2:select(2, 1), torch.LongTensor(dst), 0.0,
                                   "nonzero error")
-          --mytester:assertTensorEq(dst3, torch.LongTensor(dst), 0.0,
-          --                        "nonzero error")
-          mytester:assertTensorEq(dst4, torch.LongTensor(dst), 0.0,
+          --mytester:assertTensorEq(dst3:select(2, 1), torch.LongTensor(dst),
+          --                        0.0,  "nonzero error")
+          mytester:assertTensorEq(dst4:select(2, 1), torch.LongTensor(dst), 0.0,
                                   "nonzero error")
         elseif shape:size() == 2 then
           -- This test will allow through some false positives. It only checks
