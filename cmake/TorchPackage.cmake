@@ -17,7 +17,6 @@ MACRO(ADD_TORCH_PACKAGE package src luasrc)
     SET_TARGET_PROPERTIES(${package} PROPERTIES
       PREFIX "lib"
       IMPORT_PREFIX "lib"
-      LINKER_LANGUAGE "C"
       INSTALL_NAME_DIR "@executable_path/${Torch_INSTALL_BIN2CPATH}")
 
     IF(APPLE)
