@@ -149,6 +149,70 @@ function tests.test_shared_upvalues()
 end
 
 
+-- checks that the hook function works properly
+-- returns false if an error occurs
+function tests.test_SerializationHook()
+   -- Simpel uuid implementation from [https://gist.github.com/jrus/3197011]
+   -- The only goal is to aoid collisions within the scope of tests,
+   -- so more than enough.
+   local random = math.random
+   local function uuid()
+       local template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+       return string.gsub(template, '[xy]', function (c)
+           local v = (c == 'x') and random(0, 0xf) or random(8, 0xb)
+           return string.format('%x', v)
+       end)
+   end
+   local unique1 = uuid()
+   local unique2 = uuid()
+   local class = {}
+   -- Create 2 classes
+   local spec = torch.class('class.'.. unique1, class)
+   function spec:test()
+      return false
+   end
+   local gen = torch.class('class.' .. unique2, class)
+   function gen:test()
+      return true
+   end
+   local hook = function(object)
+      local class = class
+      local newObject = object
+      if torch.typename(object) == 'class.'..unique1 then
+         newObject = class[unique2]()
+      end
+      return newObject
+   end
+
+   -- Write to 2 files, first without hooking,
+   -- second with hooking
+   local file = torch.MemoryFile('rw')
+   file:binary()
+   local file2 = torch.MemoryFile('rw')
+   file2:binary()
+   local s = class[unique1]()
+   local object = {s1 = s, v = 'test', g = class[unique2](), s2 = s}
+   file:writeObject(object)
+   file2:writeObject(object, nil, hook)
+
+   -- unregister class[unique1] and try to reload the first serialized object
+   if debug and debug.getregistry then
+      local ok, res = pcall(function() classTestSerializationHook1 = nil debug.getregistry()[classTestSerializationHook1] = nil file:seek(1) return file:readObject() end)
+      myTester:assert(not ok)
+   else
+      print('Not running serialization hook failure test because debug is missing.')
+   end
+
+   -- Try to reload the second serialized object
+   local ok, clone = pcall(function() file2:seek(1) return file2:readObject()  end)
+
+   -- Test that everything happened smoothly
+   myTester:assert(clone.v == 'test')
+   myTester:assert(torch.typename(clone.s1) == 'class.' .. unique2)
+   myTester:assert(clone.s1:test() and clone.s2:test())
+   myTester:assert(string.format('%x',torch.pointer(clone.s1)) == string.format('%x',torch.pointer(clone.s2)))
+end
+
 myTester:add(tests)
 myTester:run()
 if myTester.errors[1] then os.exit(1) end
