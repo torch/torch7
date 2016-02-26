@@ -17,6 +17,9 @@ struct THFileVTable
     int (*isOpened)(THFile *self);
 
     size_t (*readByte)(THFile *self, unsigned char *data, size_t n);
+    size_t (*readUShort)(THFile *self, unsigned short *data, size_t n);
+    size_t (*readUInt)(THFile *self, unsigned int *data, size_t n);
+    size_t (*readULong)(THFile *self, unsigned long *data, size_t n);
     size_t (*readChar)(THFile *self, char *data, size_t n);
     size_t (*readShort)(THFile *self, short *data, size_t n);
     size_t (*readInt)(THFile *self, int *data, size_t n);
@@ -26,6 +29,9 @@ struct THFileVTable
     size_t (*readString)(THFile *self, const char *format, char **str_);
 
     size_t (*writeByte)(THFile *self, unsigned char *data, size_t n);
+    size_t (*writeUShort)(THFile *self, unsigned short *data, size_t n);
+    size_t (*writeUInt)(THFile *self, unsigned int *data, size_t n);
+    size_t (*writeULong)(THFile *self, unsigned long *data, size_t n);
     size_t (*writeChar)(THFile *self, char *data, size_t n);
     size_t (*writeShort)(THFile *self, short *data, size_t n);
     size_t (*writeInt)(THFile *self, int *data, size_t n);

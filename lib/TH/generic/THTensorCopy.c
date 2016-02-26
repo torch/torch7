@@ -14,6 +14,9 @@ void THTensor_(copy##TYPENAMESRC)(THTensor *tensor, TH##TYPENAMESRC##Tensor *src
 }
 
 IMPLEMENT_THTensor_COPY(Byte, unsigned char)
+IMPLEMENT_THTensor_COPY(UShort, unsigned short)
+IMPLEMENT_THTensor_COPY(UInt, unsigned int)
+IMPLEMENT_THTensor_COPY(ULong, unsigned long)
 IMPLEMENT_THTensor_COPY(Char, char)
 IMPLEMENT_THTensor_COPY(Short, short)
 IMPLEMENT_THTensor_COPY(Int, int)

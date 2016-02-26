@@ -4,12 +4,12 @@
 
 typedef struct THDiskFile__
 {
-    THFile file;
+  THFile file;
 
-    FILE *handle;
-    char *name;
-    int isNativeEncoding;
-	int longSize;
+  FILE *handle;
+  char *name;
+  int isNativeEncoding;
+  int longSize;
 
 } THDiskFile;
 
@@ -309,6 +309,18 @@ static void THDiskFile_free(THFile *self)
 READ_WRITE_METHODS(unsigned char, Byte,
                    nread = fread(data, 1, n, dfself->handle); break,
                    nwrite = fwrite(data, 1, n, dfself->handle); break)
+                   
+READ_WRITE_METHODS(unsigned short, UShort,
+                   int ret = fscanf(dfself->handle, "%hu", &data[i]); if(ret <= 0) break; else nread++,
+                   int ret = fprintf(dfself->handle, "%hu", data[i]); if(ret <= 0) break; else nwrite++)
+
+READ_WRITE_METHODS(unsigned int, UInt,
+                   int ret = fscanf(dfself->handle, "%u", &data[i]); if(ret <= 0) break; else nread++,
+                   int ret = fprintf(dfself->handle, "%u", data[i]); if(ret <= 0) break; else nwrite++)
+
+READ_WRITE_METHODS(unsigned long, ULong,
+                   int ret = fscanf(dfself->handle, "%lu", &data[i]); if(ret <= 0) break; else nread++,
+                   int ret = fprintf(dfself->handle, "%lu", data[i]); if(ret <= 0) break; else nwrite++)
 
 READ_WRITE_METHODS(char, Char,
                    nread = fread(data, 1, n, dfself->handle); break,
@@ -584,6 +596,9 @@ THFile *THDiskFile_new(const char *name, const char *mode, int isQuiet)
     THDiskFile_isOpened,
 
     THDiskFile_readByte,
+    THDiskFile_readUShort,
+    THDiskFile_readUInt,
+    THDiskFile_readULong,
     THDiskFile_readChar,
     THDiskFile_readShort,
     THDiskFile_readInt,
@@ -593,6 +608,9 @@ THFile *THDiskFile_new(const char *name, const char *mode, int isQuiet)
     THDiskFile_readString,
 
     THDiskFile_writeByte,
+    THDiskFile_writeUShort,
+    THDiskFile_writeUInt,
+    THDiskFile_writeULong,
     THDiskFile_writeChar,
     THDiskFile_writeShort,
     THDiskFile_writeInt,
@@ -696,6 +714,9 @@ THFile *THPipeFile_new(const char *name, const char *mode, int isQuiet)
     THDiskFile_isOpened,
 
     THDiskFile_readByte,
+    THDiskFile_readUShort,
+    THDiskFile_readUInt,
+    THDiskFile_readULong,
     THDiskFile_readChar,
     THDiskFile_readShort,
     THDiskFile_readInt,
@@ -705,6 +726,9 @@ THFile *THPipeFile_new(const char *name, const char *mode, int isQuiet)
     THDiskFile_readString,
 
     THDiskFile_writeByte,
+    THDiskFile_writeUShort,
+    THDiskFile_writeUInt,
+    THDiskFile_writeULong,
     THDiskFile_writeChar,
     THDiskFile_writeShort,
     THDiskFile_writeInt,

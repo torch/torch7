@@ -5,7 +5,7 @@ local Storage = {}
 local Tensor = {}
 
 -- types
-local types = {'Byte', 'Char', 'Short', 'Int', 'Long', 'Float', 'Double'}
+local types = {'Byte', 'UShort', 'UInt', 'ULong', 'Char', 'Short', 'Int', 'Long', 'Float', 'Double'}
 
 -- Lua 5.2 compatibility
 local log10 = math.log10 or function(x) return math.log(x, 10) end
@@ -251,6 +251,18 @@ end
 
 function Tensor.byte(self)
    return self:type('torch.ByteTensor')
+end
+
+function Tensor.ushort(self)
+   return self:type('torch.UShortTensor')
+end
+
+function Tensor.uint(self)
+   return self:type('torch.UIntTensor')
+end
+
+function Tensor.ulong(self)
+   return self:type('torch.ULongTensor')
 end
 
 function Tensor.char(self)

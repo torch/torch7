@@ -6,6 +6,12 @@ void THTensor_(random)(THTensor *self, THGenerator *_generator)
 {
 #if defined(TH_REAL_IS_BYTE)
   TH_TENSOR_APPLY(real, self, *self_data = (unsigned char)(THRandom_random(_generator) % (UCHAR_MAX+1)););
+#elif defined(TH_REAL_IS_USHORT)
+  TH_TENSOR_APPLY(real, self, *self_data = (unsigned short)(THRandom_random(_generator) % (USHRT_MAX+1)););
+#elif defined(TH_REAL_IS_UINT)
+  TH_TENSOR_APPLY(real, self, *self_data = (unsigned int)(THRandom_random(_generator)););
+#elif defined(TH_REAL_IS_ULONG)
+  TH_TENSOR_APPLY(real, self, *self_data = (unsigned long)(THRandom_random(_generator)););
 #elif defined(TH_REAL_IS_CHAR)
   TH_TENSOR_APPLY(real, self, *self_data = (char)(THRandom_random(_generator) % (CHAR_MAX+1)););
 #elif defined(TH_REAL_IS_SHORT)

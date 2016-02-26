@@ -17,6 +17,9 @@ end
 if ok then
    local Real2real = {
       Byte='unsigned char',
+      UShort='unsigned short',
+      UInt='unsigned int',
+      ULong='unsigned long',
       Char='char',
       Short='short',
       Int='int',

@@ -661,6 +661,12 @@ static int torch_Tensor_(copy)(lua_State *L)
     THTensor_(copy)(tensor, src);
   else if( (src = luaT_toudata(L, 2, "torch.ByteTensor")) )
     THTensor_(copyByte)(tensor, src);
+  else if( (src = luaT_toudata(L, 2, "torch.UShortTensor")) )
+    THTensor_(copyUShort)(tensor, src);
+  else if( (src = luaT_toudata(L, 2, "torch.UIntTensor")) )
+    THTensor_(copyUInt)(tensor, src);
+  else if( (src = luaT_toudata(L, 2, "torch.ULongTensor")) )
+    THTensor_(copyULong)(tensor, src);
   else if( (src = luaT_toudata(L, 2, "torch.CharTensor")) )
     THTensor_(copyChar)(tensor, src);
   else if( (src = luaT_toudata(L, 2, "torch.ShortTensor")) )
@@ -712,6 +718,21 @@ static int torch_Tensor_(__newindex__)(lua_State *L)
       tensor = THTensor_(newWithTensor)(tensor);
       THTensor_(narrow)(tensor, NULL, 0, index, 1);
       THTensor_(copyByte)(tensor, src);
+      THTensor_(free)(tensor);
+    } else if( (src = luaT_toudata(L, 3, "torch.UShortTensor")) ) {
+      tensor = THTensor_(newWithTensor)(tensor);
+      THTensor_(narrow)(tensor, NULL, 0, index, 1);
+      THTensor_(copyUShort)(tensor, src);
+      THTensor_(free)(tensor);
+    } else if( (src = luaT_toudata(L, 3, "torch.UIntTensor")) ) {
+      tensor = THTensor_(newWithTensor)(tensor);
+      THTensor_(narrow)(tensor, NULL, 0, index, 1);
+      THTensor_(copyUInt)(tensor, src);
+      THTensor_(free)(tensor);
+    } else if( (src = luaT_toudata(L, 3, "torch.ULongTensor")) ) {
+      tensor = THTensor_(newWithTensor)(tensor);
+      THTensor_(narrow)(tensor, NULL, 0, index, 1);
+      THTensor_(copyULong)(tensor, src);
       THTensor_(free)(tensor);
     } else if( (src = luaT_toudata(L, 3, "torch.CharTensor")) ) {
       tensor = THTensor_(newWithTensor)(tensor);
@@ -832,6 +853,12 @@ static int torch_Tensor_(__newindex__)(lua_State *L)
         THTensor_(copy)(tensor, src);
       } else if( (src = luaT_toudata(L, 3, "torch.ByteTensor")) ) {
         THTensor_(copyByte)(tensor, src);
+      } else if( (src = luaT_toudata(L, 3, "torch.UShortTensor")) ) {
+        THTensor_(copyUShort)(tensor, src);
+      } else if( (src = luaT_toudata(L, 3, "torch.UIntTensor")) ) {
+        THTensor_(copyUInt)(tensor, src);
+      } else if( (src = luaT_toudata(L, 3, "torch.ULongTensor")) ) {
+        THTensor_(copyULong)(tensor, src);
       } else if( (src = luaT_toudata(L, 3, "torch.CharTensor")) ) {
         THTensor_(copyChar)(tensor, src);
       } else if( (src = luaT_toudata(L, 3, "torch.ShortTensor")) ) {

@@ -306,6 +306,21 @@ READ_WRITE_METHODS(unsigned char, Byte,
                      memmove(mfself->storage->data+mfself->position, data, nByteWritten),
                    0)
 
+READ_WRITE_METHODS(unsigned short, UShort,
+                   int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%hu%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
+                   nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%hu", data[i]),
+                   1)
+
+READ_WRITE_METHODS(unsigned int, UInt,
+                   int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%u%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
+                   nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%u", data[i]),
+                   1)
+
+READ_WRITE_METHODS(unsigned long, ULong,
+                   int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%lu%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
+                   nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%lu", data[i]),
+                   1)
+
 /* DEBUG: we should check if %n is count or not as a element (so ret might need to be ret-- on some systems) */
 /* Note that we do a trick for char */
 READ_WRITE_METHODS(char, Char,
@@ -612,6 +627,9 @@ THFile *THMemoryFile_newWithStorage(THCharStorage *storage, const char *mode)
     THMemoryFile_isOpened,
 
     THMemoryFile_readByte,
+    THMemoryFile_readUShort,
+    THMemoryFile_readUInt,
+    THMemoryFile_readULong,
     THMemoryFile_readChar,
     THMemoryFile_readShort,
     THMemoryFile_readInt,
@@ -621,6 +639,9 @@ THFile *THMemoryFile_newWithStorage(THCharStorage *storage, const char *mode)
     THMemoryFile_readString,
 
     THMemoryFile_writeByte,
+    THMemoryFile_writeUShort,
+    THMemoryFile_writeUInt,
+    THMemoryFile_writeULong,
     THMemoryFile_writeChar,
     THMemoryFile_writeShort,
     THMemoryFile_writeInt,

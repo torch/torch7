@@ -121,6 +121,9 @@ IMPLEMENT_TORCH_FILE_FUNC(close)
 
 
 IMPLEMENT_TORCH_FILE_RW(Byte, unsigned char)
+IMPLEMENT_TORCH_FILE_RW(UShort, unsigned short)
+IMPLEMENT_TORCH_FILE_RW(UInt, unsigned int)
+IMPLEMENT_TORCH_FILE_RW(ULong, unsigned long)
 IMPLEMENT_TORCH_FILE_RW(Char, char)
 IMPLEMENT_TORCH_FILE_RW(Short, short)
 IMPLEMENT_TORCH_FILE_RW(Int, int)
@@ -172,6 +175,9 @@ static const struct luaL_Reg torch_File__ [] = {
   /* DEBUG: CHECK DISK FREE & READ/WRITE STRING*/
 
   {"readByte", torch_File_readByte},
+  {"readUShort", torch_File_readUShort},
+  {"readUInt", torch_File_readUInt},
+  {"readULong", torch_File_readULong},
   {"readChar", torch_File_readChar},
   {"readShort", torch_File_readShort},
   {"readInt", torch_File_readInt},
@@ -181,6 +187,9 @@ static const struct luaL_Reg torch_File__ [] = {
   {"readString", torch_File_readString},
 
   {"writeByte", torch_File_writeByte},
+  {"writeUShort", torch_File_writeUShort},
+  {"writeUInt", torch_File_writeUInt},
+  {"writeULong", torch_File_writeULong},
   {"writeChar", torch_File_writeChar},
   {"writeShort", torch_File_writeShort},
   {"writeInt", torch_File_writeInt},

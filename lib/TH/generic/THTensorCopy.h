@@ -6,6 +6,9 @@
 
 TH_API void THTensor_(copy)(THTensor *tensor, THTensor *src);
 TH_API void THTensor_(copyByte)(THTensor *tensor, struct THByteTensor *src);
+TH_API void THTensor_(copyUShort)(THTensor *tensor, struct THUShortTensor *src);
+TH_API void THTensor_(copyUInt)(THTensor *tensor, struct THUIntTensor *src);
+TH_API void THTensor_(copyULong)(THTensor *tensor, struct THULongTensor *src);
 TH_API void THTensor_(copyChar)(THTensor *tensor, struct THCharTensor *src);
 TH_API void THTensor_(copyShort)(THTensor *tensor, struct THShortTensor *src);
 TH_API void THTensor_(copyInt)(THTensor *tensor, struct THIntTensor *src);

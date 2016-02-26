@@ -14,6 +14,39 @@
 #undef Real
 #undef TH_REAL_IS_BYTE
 
+#define real unsigned short
+#define accreal long
+#define Real UShort
+#define TH_REAL_IS_USHORT
+#line 1 TH_GENERIC_FILE
+#include TH_GENERIC_FILE
+#undef real
+#undef accreal
+#undef Real
+#undef TH_REAL_IS_USHORT
+
+#define real unsigned int
+#define accreal unsigned long
+#define Real UInt
+#define TH_REAL_IS_UINT
+#line 1 TH_GENERIC_FILE
+#include TH_GENERIC_FILE
+#undef real
+#undef accreal
+#undef Real
+#undef TH_REAL_IS_UINT
+
+#define real unsigned long
+#define accreal unsigned long
+#define Real ULong
+#define TH_REAL_IS_ULONG
+#line 1 TH_GENERIC_FILE
+#include TH_GENERIC_FILE
+#undef real
+#undef accreal
+#undef Real
+#undef TH_REAL_IS_ULONG
+
 #define real char
 #define accreal long
 #define Real Char

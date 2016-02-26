@@ -127,6 +127,9 @@ void THFile_clearError(THFile *self)
   }
 
 IMPLEMENT_THFILE_SCALAR(Byte, unsigned char)
+IMPLEMENT_THFILE_SCALAR(UShort, unsigned short)
+IMPLEMENT_THFILE_SCALAR(UInt, unsigned int)
+IMPLEMENT_THFILE_SCALAR(ULong, unsigned long)
 IMPLEMENT_THFILE_SCALAR(Char, char)
 IMPLEMENT_THFILE_SCALAR(Short, short)
 IMPLEMENT_THFILE_SCALAR(Int, int)
@@ -146,6 +149,9 @@ IMPLEMENT_THFILE_SCALAR(Double, double)
   }
 
 IMPLEMENT_THFILE_STORAGE(Byte, unsigned char)
+IMPLEMENT_THFILE_STORAGE(UShort, unsigned short)
+IMPLEMENT_THFILE_STORAGE(UInt, unsigned int)
+IMPLEMENT_THFILE_STORAGE(ULong, unsigned long)
 IMPLEMENT_THFILE_STORAGE(Char, char)
 IMPLEMENT_THFILE_STORAGE(Short, short)
 IMPLEMENT_THFILE_STORAGE(Int, int)

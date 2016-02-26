@@ -138,6 +138,9 @@ local function wrap(...)
 end
 
 local reals = {ByteTensor='unsigned char',
+               UShortTensor='unsigned short',
+               UIntTensor='unsigned int',
+               ULongTensor='unsigned long',
                CharTensor='char',
                ShortTensor='short',
                IntTensor='int',
@@ -146,6 +149,9 @@ local reals = {ByteTensor='unsigned char',
                DoubleTensor='double'}
 
 local accreals = {ByteTensor='long',
+               UShortTensor='unsigned short',
+               UIntTensor='unsigned int',
+               ULongTensor='unsigned long',
                CharTensor='long',
                ShortTensor='long',
                IntTensor='long',
@@ -153,8 +159,8 @@ local accreals = {ByteTensor='long',
                FloatTensor='double',
                DoubleTensor='double'}
 
-for _,Tensor in ipairs({"ByteTensor", "CharTensor",
-                        "ShortTensor", "IntTensor", "LongTensor",
+for _,Tensor in ipairs({"ByteTensor", "UShortTensor", "UIntTensor", "ULongTensor",
+                        "CharTensor", "ShortTensor", "IntTensor", "LongTensor",
                         "FloatTensor", "DoubleTensor"}) do
 
    local real = reals[Tensor]
@@ -1309,6 +1315,9 @@ interface:print([[
 void torch_TensorMath_init(lua_State *L)
 {
   torch_ByteTensorMath_init(L);
+  torch_UShortTensorMath_init(L);
+  torch_UIntTensorMath_init(L);
+  torch_ULongTensorMath_init(L);
   torch_CharTensorMath_init(L);
   torch_ShortTensorMath_init(L);
   torch_IntTensorMath_init(L);
