@@ -162,6 +162,26 @@ function torchtest.sqrt()
    mytester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
 end
 
+function torchtest.rsqrt()
+   local function TH_rsqrt(x)
+      return 1 / math.sqrt(x)
+   end
+
+   local f
+   local t = genericSingleOpTest:gsub('functionname', 'rsqrt'):gsub('math.rsqrt', 'TH_rsqrt')
+   local env = { TH_rsqrt=TH_rsqrt, torch=torch, math=math }
+   if not setfenv then -- Lua 5.2
+      f = load(t, 'test', 't', env)
+   else
+      f = loadstring(t)
+      setfenv(f, env)
+   end
+
+   local maxerrc, maxerrnc = f()
+   mytester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   mytester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
 function torchtest.sigmoid()
    -- cant use genericSingleOpTest, since `math.sigmoid` doesnt exist, have to use
    -- `torch.sigmoid` instead
@@ -203,6 +223,46 @@ end
 
 function torchtest.ceil()
    local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'ceil'))
+   local maxerrc, maxerrnc = f()
+   mytester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   mytester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function torchtest.frac()
+   local function TH_frac(x)
+      return math.fmod(x, 1)
+   end
+
+   local f
+   local t = genericSingleOpTest:gsub('functionname', 'frac'):gsub('math.frac', 'TH_frac')   
+   local env = { TH_frac=TH_frac, torch=torch, math=math }
+   if not setfenv then -- Lua 5.2
+      f = load(t, 'test', 't', env)
+   else
+      f = loadstring(t)
+      setfenv(f, env)
+   end
+
+   local maxerrc, maxerrnc = f()
+   mytester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
+   mytester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
+end
+
+function torchtest.trunc()
+   local function TH_trunc(x)
+      return x - math.fmod(x, 1)
+   end
+
+   local f
+   local t = genericSingleOpTest:gsub('functionname', 'trunc'):gsub('math.trunc', 'TH_trunc')
+   local env = { TH_trunc=TH_trunc, torch=torch, math=math }
+   if not setfenv then -- Lua 5.2
+      f = load(t, 'test', 't', env)
+   else
+      f = loadstring(t)
+      setfenv(f, env)
+   end
+
    local maxerrc, maxerrnc = f()
    mytester:assertlt(maxerrc, precision, 'error in torch.functionname - contiguous')
    mytester:assertlt(maxerrnc, precision, 'error in torch.functionname - non-contiguous')
@@ -423,6 +483,27 @@ function torchtest.cmin()
   expected_c:map(a, function(_, a) return math.min(a, v) end)
   mytester:assertTensorEq(expected_c, c, 0,
                           'error in torch.cmin(tensor, scalar).')
+end
+
+function torchtest.lerp()
+   local function TH_lerp(a, b, weight)
+      return a + weight * (b-a);
+   end
+
+   local a = torch.rand(msize, msize)
+   local b = torch.rand(msize, msize)
+   local w = math.random()
+   local result = torch.lerp(a, b, w)
+   local expected = a:new()
+   expected:map2(a, b, function(_, a, b) return TH_lerp(a, b, w) end)
+   mytester:assertTensorEq(expected, result, precision, 'error in torch.lerp(tensor, tensor, weight)')
+
+   local a = (math.random()*2-1) * 100000
+   local b = (math.random()*2-1) * 100000
+   local w = math.random()
+   local result = torch.lerp(a, b, w)
+   local expected = TH_lerp(a, b, w)
+   mytester:assertalmosteq(expected, result, precision, 'error in torch.lerp(scalar, scalar, weight)')
 end
 
 for i, v in ipairs{{10}, {5, 5}} do
