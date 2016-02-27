@@ -465,9 +465,9 @@ Let `x` be a `Tensor` and `n` a number.
 ### [res] torch.sin([res,] x) ###
 <a name="torch.sin"></a>
 
-`y = torch.sin(x)` returns a new `Tensor` with the sine  of the elements of `x`.
+`y = torch.sin(x)` returns a new `Tensor` with the sine of the elements of `x`.
 
-`x:sin()` replaces all elements in-place with the sine  of the elements of `x`.
+`x:sin()` replaces all elements in-place with the sine of the elements of `x`.
 
 
 <a name="torch.sinh"></a>
@@ -486,6 +486,15 @@ Let `x` be a `Tensor` and `n` a number.
 `y = torch.sqrt(x)` returns a new `Tensor` with the square root of the elements of `x`.
 
 `x:sqrt()` replaces all elements in-place with the square root of the elements of `x`.
+
+
+<a name="torch.rsqrt"></a>
+### [res] torch.rsqrt([res,] x) ###
+<a name="torch.rsqrt"></a>
+
+`y = torch.rsqrt(x)` returns a new `Tensor` with the reciprocal of the square root of the elements of `x`.
+
+`x:rsqrt()` replaces all elements in-place with the reciprocal of the square root of the elements of `x`.
 
 
 <a name="torch.tan"></a>
@@ -513,6 +522,24 @@ Let `x` be a `Tensor` and `n` a number.
 `y = torch.sigmoid(x)` returns a new `Tensor` with the sigmoid of the elements of `x`.
 
 `x:sigmoid()` replaces all elements in-place with the sigmoid of the elements of `x`.
+
+
+<a name="torch.trunc"></a>
+### [res] torch.trunc([res,] x) ###
+<a name="torch.trunc"></a>
+
+`y = torch.trunc(x)` returns a new `Tensor` with the truncated integer values of the elements of `x`.
+
+`x:trunc()` replaces all elements in-place with the truncated integer values of the elements of `x`.
+
+
+<a name="torch.frac"></a>
+### [res] torch.frac([res,] x) ###
+<a name="torch.frac"></a>
+
+`y = torch.frac(x)` returns a new `Tensor` with the fractional portion of the elements of `x`.
+
+`x:frac()` replaces all elements in-place with the fractional portion of the elements of `x`.
 
 
 <a name="torch.basicoperations.dok"></a>
@@ -1076,6 +1103,19 @@ If `vec1` is a vector of size `n` and `vec2` is a vector of size `m`, then `res`
 `torch.ger(M, x, y)` puts the result in `M`.
 
 `M:ger(x, y)` puts the result in `M`.
+
+
+<a name="torch.lerp"></a>
+### [res] torch.lerp([res,] a, b, weight) ###
+<a name="torch.lerp"></a>
+
+Linear interpolation of two scalars or tensors based on a weight: `res = a + weight * (b - a)`
+
+`torch.lerp(a, b, weight)` puts the result in a new `Tensor` if `a` and `b` are tensors. If `a` and `b` are scalars the functions returns a number.
+
+`torch.lerp(M, a, b, weight)` puts the result in `M`.
+
+`M:lerp(a, b, weight)` puts the result in `M`.
 
 
 ## Overloaded operators ##
