@@ -1673,7 +1673,7 @@ Note that many of the operations in [dimension-wise operations](#torch.columnwis
 <a name="torch.renorm"></a>
 ### torch.renorm([res], x, p, dim, maxnorm) ###
 
-Renormalizes the sub-`Tensor`s along dimension `dim` such that they exceed norm `maxnorm`.
+Renormalizes the sub-`Tensor`s along dimension `dim` such that they do not exceed norm `maxnorm`.
 
 `y = torch.renorm(x, p, dim, maxnorm)` returns a version of `x` with `p`-norms lower than `maxnorm` over non-`dim` dimensions.
 The `dim` argument is not to be confused with the argument of the same name in function [`norm`](#torch.norm).
