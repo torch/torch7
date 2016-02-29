@@ -380,7 +380,7 @@ function torch.save(filename, object, mode, referenced)
    file:close()
 end
 
-function torch.load(filename, mode, referenced)
+local function loadWithLongSize(filename, mode, referenced, size)
    assert(mode == nil or mode == 'binary' or mode == 'ascii', '"binary" or "ascii" (or nil) expected for mode')
    assert(referenced == nil or referenced == true or referenced == false, 'true or false (or nil) expected for referenced')
    mode = mode or 'binary'
@@ -388,9 +388,24 @@ function torch.load(filename, mode, referenced)
    local file = torch.DiskFile(filename, 'r')
    file[mode](file)
    file:referenced(referenced)
+   file:longSize(size)
    local object = file:readObject()
    file:close()
    return object
+end
+
+function torch.load(filename, mode, referenced)
+   return loadWithLongSize(filename, mode, referenced, 0)
+end
+
+-- Loads binary files saved on a 64 bit OS
+function torch.load64(filename, referenced)
+   return loadWithLongSize(filename, 'binary', referenced, 8)
+end
+
+-- Loads binary files saved on a 32 bit OS
+function torch.load32(filename, referenced)
+   return loadWithLongSize(filename, 'binary', referenced, 4)
 end
 
 -- simple helpers to serialize/deserialize arbitrary objects/tables
