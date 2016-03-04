@@ -2935,6 +2935,9 @@ function torchtest.isSetTo()
    mytester:assert(t1:isSetTo(t3) == true, "tensor is set to other")
    mytester:assert(t3:isSetTo(t1) == true, "isSetTo should be symmetric")
    mytester:assert(t1:isSetTo(t4) == false, "tensors have different view")
+   mytester:assert(not torch.Tensor():isSetTo(torch.Tensor()),
+                   "Tensors with no storages should not appear to be set " ..
+                   "to each other")
 end
 
 function torchtest.isSize()
