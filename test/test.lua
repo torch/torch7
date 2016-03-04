@@ -3145,6 +3145,23 @@ function torchtest.testheaptracking()
   torch.setheaptracking(oldheaptracking)
 end
 
+function torchtest.bernoulli()
+  local size = torch.LongStorage{10, 10}
+  local t = torch.ByteTensor(size)
+
+  local function isBinary(t)
+    return torch.ne(t, 0):cmul(torch.ne(t, 1)):sum() == 0
+  end
+
+  local p = 0.5
+  t:bernoulli(p)
+  mytester:assert(isBinary(t), 'Sample from torch.bernoulli is not binary')
+
+  local p = torch.rand(size)
+  t:bernoulli(p)
+  mytester:assert(isBinary(t), 'Sample from torch.bernoulli is not binary')
+end
+
 function torch.test(tests)
    torch.setheaptracking(true)
    math.randomseed(os.time())
