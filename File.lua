@@ -381,13 +381,22 @@ function torch.save(filename, object, mode, referenced)
 end
 
 function torch.load(filename, mode, referenced)
-   assert(mode == nil or mode == 'binary' or mode == 'ascii', '"binary" or "ascii" (or nil) expected for mode')
-   assert(referenced == nil or referenced == true or referenced == false, 'true or false (or nil) expected for referenced')
+   assert(mode == 'binary' or mode == 'b32' or mode == 'b64' or
+          mode == nil or mode == 'ascii',
+          '"binary", "b32", "b64" or "ascii" (or nil) expected for mode')
+   assert(referenced == nil or referenced == true or referenced == false,
+          'true or false (or nil) expected for referenced')
+   local longSize
+   if mode == 'b32' or mode == 'b64' then
+      longSize = tonumber(mode:match('%d+')) / 8
+      mode = 'binary'
+   end
    mode = mode or 'binary'
    referenced = referenced == nil and true or referenced
    local file = torch.DiskFile(filename, 'r')
    file[mode](file)
    file:referenced(referenced)
+   if longSize then file:longSize(longSize) end
    local object = file:readObject()
    file:close()
    return object
