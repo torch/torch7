@@ -698,19 +698,33 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
         {{name=Tensor, returned=true},
          {name='Generator', default=true}})
 
-   for _,f in ipairs({{name='geometric'},
-                      {name='bernoulli', a=0.5}}) do
+   wrap("geometric",
+     "THRandom_geometric",
+     {{name="Generator", default=true},
+      {name="double"},
+      {name="double", creturned=true}},
+     cname("geometric"),
+     {{name=Tensor, returned=true},
+      {name="Generator", default=true},
+      {name="double"}})
 
-      wrap(f.name,
-           string.format("THRandom_%s", f.name),
-           {{name='Generator', default=true},
-            {name="double", default=f.a},
-            {name="double", creturned=true}},
-           cname(f.name),
-           {{name=Tensor, returned=true},
-            {name='Generator', default=true},
-            {name="double", default=f.a}})
-   end
+   wrap("bernoulli",
+      "THRandom_bernoulli",
+      {{name="Generator", default=true},
+       {name="double", default=0.5},
+       {name="double", creturned=true}},
+      cname("bernoulli"),
+      {{name=Tensor, returned=true},
+       {name="Generator", default=true},
+       {name="double", default=0.5}},
+      cname("bernoulli_FloatTensor"),
+      {{name=Tensor, returned=true},
+       {name="Generator", default=true},
+       {name="FloatTensor"}},
+      cname("bernoulli_DoubleTensor"),
+      {{name=Tensor, returned=true},
+       {name="Generator", default=true},
+       {name="DoubleTensor"}})
 
    wrap("squeeze",
         cname("squeeze"),
