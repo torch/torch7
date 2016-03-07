@@ -16,7 +16,8 @@ description = {
 dependencies = {
    "lua >= 5.1",
    "paths >= 1.0",
-   "cwrap >= 1.0"
+   "cwrap >= 1.0",
+   "sys >= 1.0"
 }
 
 build = {

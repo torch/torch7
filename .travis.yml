@@ -57,3 +57,4 @@ script:
 - ${TESTLUA} -ltorch -e "t=torch.test(); if t.errors[1] then os.exit(1) end"
 - cd test
 - ${TESTLUA} test_writeObject.lua
+- ${TESTLUA} test_Tester.lua
