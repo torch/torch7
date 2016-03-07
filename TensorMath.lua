@@ -10,7 +10,7 @@ interface:print([[
 #include "THMath.h"
 #include "luaT.h"
 #include "utils.h"
-                ]])
+]])
 
 -- specific to torch: we generate a 'dispatch' function
 -- first we create a helper function
@@ -1036,9 +1036,8 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                             "cos", "acos", "cosh",
                             "sin", "asin", "sinh",
                             "tan", "atan", "tanh",
-                            "sqrt",
-                            "round", "ceil", "floor"}) do
-                            --"abs"}) do
+                            "sqrt", "round", "ceil",
+                            "floor", "trunc", }) do
          wrap(name,
               cname(name),
               {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -1048,13 +1047,29 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
                {name=real, creturned=true}})
       end
 
-         wrap("abs",
-              cname("abs"),
-              {{name=Tensor, default=true, returned=true, method={default='nil'}},
-               {name=Tensor, method={default=1}}},
-              "fabs",
-              {{name=real},
-               {name=real, creturned=true}})
+      wrap("abs",
+           cname("abs"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=Tensor, method={default=1}}},
+           "fabs",
+           {{name=real},
+            {name=real, creturned=true}})
+
+      wrap("frac",
+           cname("frac"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=Tensor, method={default=1}}},
+           "TH_frac",
+           {{name=real},
+            {name=real, creturned=true}})
+
+      wrap("rsqrt",
+           cname("rsqrt"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=Tensor, method={default=1}}},
+           "TH_rsqrt",
+           {{name=real},
+            {name=real, creturned=true}})
 
       wrap("sigmoid",
            cname("sigmoid"),
@@ -1074,6 +1089,18 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
            {{name=Tensor, default=true, returned=true, method={default='nil'}},
             {name=Tensor, method={default=1}}})
 
+      wrap("lerp",
+           cname("lerp"),
+           {{name=Tensor, default=true, returned=true, method={default='nil'}},
+            {name=Tensor, method={default=1}},
+            {name=Tensor},
+            {name=real}},
+           "TH_lerp",
+           {{name=real},
+            {name=real},
+            {name=real},
+            {name=real, creturned=true}})
+
       wrap("atan2",
            cname("atan2"),
            {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -1082,8 +1109,7 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
            "atan2",
            {{name=real},
             {name=real},
-            {name=real, creturned=true}}
-            )
+            {name=real, creturned=true}})
 
       wrap("pow",
            cname("pow"),
