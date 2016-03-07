@@ -1744,8 +1744,14 @@ function torchtest.catArray()
       mytester:assertTensorEq(mx:narrow(dim, 14, 17), y, 0, 'torch.cat value')
       mytester:assertTensorEq(mx:narrow(dim, 31, 19), z, 0, 'torch.cat value')
 
+      mytester:assertError(function() torch.cat{} end, 'torch.cat empty table')
+
       local mxx = torch.Tensor()
       torch.cat(mxx, {x, y, z}, dim)
+      mytester:assertTensorEq(mx, mxx, 0, 'torch.cat value')
+      torch.cat(mxx:float(), {x:float(), y:float(), z:float()}, dim)
+      mytester:assertTensorEq(mx, mxx, 0, 'torch.cat value')
+      torch.cat(mxx:double(), {x:double(), y:double(), z:double()}, dim)
       mytester:assertTensorEq(mx, mxx, 0, 'torch.cat value')
    end
 end
