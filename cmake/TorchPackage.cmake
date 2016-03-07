@@ -8,9 +8,16 @@ MACRO(ADD_TORCH_PACKAGE package src luasrc)
  # As per CMake doc, macro arguments are not variables, so simple test syntax not working
   IF(NOT "${src}" STREQUAL "")
 
-    ADD_LIBRARY(${package} MODULE ${src})
-    if(BUILD_STATIC)
-      ADD_LIBRARY(${package}_static STATIC ${src})
+    if ("${src}" MATCHES "cu$" OR "${src}" MATCHES "cu;")
+      CUDA_ADD_LIBRARY(${package} MODULE ${src})
+      if(BUILD_STATIC)
+        CUDA_ADD_LIBRARY(${package}_static STATIC ${src})
+      endif()
+    else()
+      ADD_LIBRARY(${package} MODULE ${src})
+      if(BUILD_STATIC)
+        ADD_LIBRARY(${package}_static STATIC ${src})
+      endif()
     endif()
 
     ### Torch packages supposes libraries prefix is "lib"
