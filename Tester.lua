@@ -1,6 +1,4 @@
 
-require 'sys' -- for sys.COLORS
-
 -- Lua 5.2 compatibility
 local unpack = unpack or table.unpack
 
@@ -380,7 +378,8 @@ end
 local NCOLS = 80
 local coloured
 local c = {}
-if arg then  -- have we been invoked from the commandline?
+local enable_colors = pcall(require, 'sys')
+if arg and enable_colors then  -- have we been invoked from the commandline?
    c = sys.COLORS
    coloured = function(str, colour)
       return colour .. str .. c.none
