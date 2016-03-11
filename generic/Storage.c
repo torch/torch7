@@ -2,6 +2,8 @@
 #define TH_GENERIC_FILE "generic/Storage.c"
 #else
 
+#include "luaG.h"
+
 static int torch_Storage_(new)(lua_State *L)
 {
   int index = 1;
@@ -138,22 +140,22 @@ static int torch_Storage_(copy)(lua_State *L)
 static int torch_Storage_(fill)(lua_State *L)
 {
   THStorage *storage = luaT_checkudata(L, 1, torch_Storage);
-  double value = luaL_checknumber(L, 2);
-  THStorage_(fill)(storage, (real)value);
+  real value = luaG_(checkreal)(L, 2);
+  THStorage_(fill)(storage, value);
   lua_settop(L, 1);
   return 1;
 }
 
 static int torch_Storage_(elementSize)(lua_State *L)
 {
-  lua_pushnumber(L, THStorage_(elementSize)());
+  luaT_pushlong(L, THStorage_(elementSize)());
   return 1;
 }
 
 static int torch_Storage_(__len__)(lua_State *L)
 {
   THStorage *storage = luaT_checkudata(L, 1, torch_Storage);
-  lua_pushnumber(L, storage->size);
+  luaT_pushlong(L, storage->size);
   return 1;
 }
 
@@ -163,8 +165,8 @@ static int torch_Storage_(__newindex__)(lua_State *L)
   {
     THStorage *storage = luaT_checkudata(L, 1, torch_Storage);
     long index = luaL_checklong(L, 2) - 1;
-    double number = luaL_checknumber(L, 3);
-    THStorage_(set)(storage, index, (real)number);
+    real number = luaG_(checkreal)(L, 3);
+    THStorage_(set)(storage, index, number);
     lua_pushboolean(L, 1);
   }
   else
@@ -179,7 +181,7 @@ static int torch_Storage_(__index__)(lua_State *L)
   {
     THStorage *storage = luaT_checkudata(L, 1, torch_Storage);
     long index = luaL_checklong(L, 2) - 1;
-    lua_pushnumber(L, THStorage_(get)(storage, index));
+    luaG_(pushreal)(L, THStorage_(get)(storage, index));
     lua_pushboolean(L, 1);
     return 2;
   }
@@ -217,7 +219,7 @@ static int torch_Storage_(totable)(lua_State *L)
   lua_newtable(L);
   for(i = 0; i < storage->size; i++)
   {
-    lua_pushnumber(L, (lua_Number)storage->data[i]);
+    luaG_(pushreal)(L, storage->data[i]);
     lua_rawseti(L, -2, i+1);
   }
   return 1;
