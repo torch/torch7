@@ -222,7 +222,7 @@ For more than `4` dimensions, you can use a storage as argument: `y = torch.ones
 
 
 <a name="torch.rand"></a>
-### [res] torch.rand([res,] m [,n...]) ###
+### [res] torch.rand([res,] [gen,] m [,n...]) ###
 <a name="torch.rand"></a>
 
 `y = torch.rand(n)` returns a one-dimensional `Tensor` of size `n` filled with random numbers from a uniform distribution on the interval `[0, 1)`.
@@ -231,9 +231,10 @@ For more than `4` dimensions, you can use a storage as argument: `y = torch.ones
 
 For more than 4 dimensions, you can use a storage as argument: `y = torch.rand(torch.LongStorage{m, n, k, l, o})`.
 
+`y = torch.rand(gen, m, n)` returns a `m × n` `Tensor` of random numbers from a uniform distribution on the interval `[0, 1)`, using a non-global random number generator `gen` created by [torch.Generator()](random.md#torch.Generator).
 
 <a name="torch.randn"></a>
-### [res] torch.randn([res,] m [,n...]) ###
+### [res] torch.randn([res,] [gen,] m [,n...]) ###
 <a name="torch.randn"></a>
 
 `y = torch.randn(n)` returns a one-dimensional `Tensor` of size `n` filled with random numbers from a normal distribution with mean zero and variance one.
@@ -242,6 +243,7 @@ For more than 4 dimensions, you can use a storage as argument: `y = torch.rand(t
 
 For more than 4 dimensions, you can use a storage as argument: `y = torch.randn(torch.LongStorage{m, n, k, l, o})`.
 
+`y = torch.randn(gen, m, n)` returns a `m × n` `Tensor` of random numbers from a normal distribution with mean zero and variance one, using a non-global random number generator `gen` created by [torch.Generator()](random.md#torch.Generator).
 
 <a name="torch.range"></a>
 ### [res] torch.range([res,] x, y [,step]) ###
@@ -266,11 +268,12 @@ For more than 4 dimensions, you can use a storage as argument: `y = torch.randn(
 
 
 <a name="torch.randperm"></a>
-### [res] torch.randperm([res,] n) ###
+### [res] torch.randperm([res,] [gen,] n) ###
 <a name="torch.randperm"></a>
 
 `y = torch.randperm(n)` returns a random permutation of integers from 1 to `n`.
 
+`y = torch.randperm(gen, n)` returns a random permutation of integers from 1 to `n`, using a non-global random number generator `gen` created by [torch.Generator()](random.md#torch.Generator).
 
 <a name="torch.reshape"></a>
 ### [res] torch.reshape([res,] x, m [,n...]) ###
