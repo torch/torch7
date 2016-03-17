@@ -2881,21 +2881,22 @@ function torchtest.isTypeOfPartial()
                    'isTypeOf error: inheritance')
 end
 
-function torchtest.isTypeOfComposite()
-   do
-      local Enclosed = torch.class('Enclosed')
-      rawset(_G, 'Enclosing', {})
-      local Enclosing_Enclosed = torch.class('Enclosing.Enclosed')
-   end
-   local enclosed = Enclosed()
-   local enclosing_enclosed = Enclosing.Enclosed()
-
-   mytester:assert(not torch.isTypeOf(enclosed, Enclosing.Enclosed),
-                   'isTypeOf error: incorrect composite match')
-   mytester:assert(not torch.isTypeOf(enclosed, 'Enclosing.Enclosed'),
-                   'isTypeOf error: incorrect composite match')
-   mytester:assert(torch.isTypeOf(enclosing_enclosed, 'Enclosed'),
-                   'isTypeOf error: incorrect composite match')
+function torchtest.isTypeOfPattern()
+   local t = torch.LongTensor()
+   mytester:assert(torch.isTypeOf(t, torch.LongTensor),
+                   'isTypeOf error: incorrect match')
+   mytester:assert(not torch.isTypeOf(t, torch.IntTensor),
+                   'isTypeOf error: incorrect match')
+   mytester:assert(torch.isTypeOf(t, 'torch.LongTensor'),
+                   'isTypeOf error: incorrect match')
+   mytester:assert(not torch.isTypeOf(t, 'torch.Long'),
+                   'isTypeOf error: incorrect match')
+   mytester:assert(torch.isTypeOf(t, 'torch.*Tensor'),
+                   'isTypeOf error: incorrect match')
+   mytester:assert(torch.isTypeOf(t, '.*Long'),
+                   'isTypeOf error: incorrect match')
+   mytester:assert(not torch.isTypeOf(t, 'torch.IntTensor'),
+                   'isTypeOf error: incorrect match')
 end
 
 function torchtest.isTensor()
