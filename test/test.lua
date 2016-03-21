@@ -702,7 +702,7 @@ function torchtest.div()
 end
 
 function torchtest.mod()
-   local m1 = torch.Tensor(10,10):uniform(10)
+   local m1 = torch.Tensor(10, 10):uniform(-10, 10)
    local res1 = m1:clone()
 
    local q = 2.1
@@ -1036,8 +1036,8 @@ end
 
 function torchtest.cmod()  -- [res] torch.cmod([res,] tensor1, tensor2)
    -- contiguous
-   local m1 = torch.Tensor(10, 10, 10):uniform(10)
-   local m2 = torch.Tensor(10, 10 * 10):uniform(3)
+   local m1 = torch.Tensor(10, 10, 10):uniform(-10, 10)
+   local m2 = torch.Tensor(10, 10 * 10):uniform(-3, 3)
    local sm1 = m1[{4, {}, {}}]
    local sm2 = m2[{4, {}}]
    local res1 = torch.cmod(sm1, sm2)
@@ -1067,8 +1067,8 @@ function torchtest.cmod()  -- [res] torch.cmod([res,] tensor1, tensor2)
    mytester:assertlt(maxerr, precision, 'error in torch.cmod - contiguous')
 
    -- non-contiguous
-   local m1 = torch.Tensor(10, 10, 10):uniform(10)
-   local m2 = torch.Tensor(10 * 10, 10 * 10):uniform(3)
+   local m1 = torch.Tensor(10, 10, 10):uniform(-10, 10)
+   local m2 = torch.Tensor(10 * 10, 10 * 10):uniform(-3, 3)
    local sm1 = m1[{{}, 4, {}}]
    local sm2 = m2[{{}, 4}]
    local res1 = torch.cmod(sm1, sm2)
