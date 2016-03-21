@@ -504,9 +504,9 @@ void THTensor_(mod)(THTensor *r_, THTensor *t, real value)
       long i;
       #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
       for (i=0; i<sz; i++)
-          rp[i] = fmod(tp[i], value);
+          rp[i] = tp[i] - value * floor(tp[i] / value);
   } else {
-      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = fmod(*t_data, value););
+      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data - value * floor(*t_data / value););
   }
 }
 
@@ -615,9 +615,9 @@ void THTensor_(cmod)(THTensor *r_, THTensor *t, THTensor *src)
       long i;
       #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
       for (i=0; i<sz; i++)
-        rp[i] = fmod(tp[i], sp[i]);
+        rp[i] = tp[i] - sp[i] * floor(tp[i] / sp[i]);
   } else {
-      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = fmod(*t_data, *src_data););
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data - *src_data * floor(*t_data / *src_data););
   }
 }
 
