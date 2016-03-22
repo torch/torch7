@@ -1167,12 +1167,17 @@ static int luaT_mt__newindex(lua_State *L)
   return 0;
 }
 
-/* note: check dans metatable pour ca, donc necessaire */
-#define MT_DECLARE_OPERATOR(NAME, NIL_BEHAVIOR)                         \
-  int luaT_mt__##NAME(lua_State *L)                                     \
-  {                                                                     \
+
+#define MT_UNI_OPERATOR_GET_HANDLER(NAME)                               \
     if(!lua_getmetatable(L, 1))                                         \
-      luaL_error(L, "internal error in __" #NAME ": no metatable");     \
+      luaL_error(L, "internal error in __" #NAME ": no metatable");     
+
+#define MT_BIN_OPERATOR_GET_HANDLER(NAME)                               \
+    if(!lua_getmetatable(L, 1) && !lua_getmetatable(L,2) )              \
+      luaL_error(L, "internal error in __" #NAME                        \
+              ": no metatable in both operands");     
+
+#define MT_DECLARE_OPERATOR_BODY(NAME, NIL_BEHAVIOR)                    \
                                                                         \
     lua_getfield(L, -1, "__" #NAME "__");                               \
     if(lua_isnil(L, -1))                                                \
@@ -1185,35 +1190,56 @@ static int luaT_mt__newindex(lua_State *L)
       {                                                                 \
         lua_insert(L, 1); /* insert function */                         \
         lua_pop(L, 1); /* remove metatable */                           \
-        lua_call(L, lua_gettop(L)-1, LUA_MULTRET); /* we return the result of the call */ \
+        lua_call(L, lua_gettop(L)-1, LUA_MULTRET);                      \
+          /* we return the result of the call */                        \
         return lua_gettop(L);                                           \
       }                                                                 \
       /* we return the thing the user left in __tostring__ */           \
     }                                                                   \
     return 0;                                                           \
+
+/* note: check dans metatable pour ca, donc necessaire */
+#define MT_DECLARE_OPERATOR(NAME, NIL_BEHAVIOR)                         \
+  int luaT_mt__##NAME(lua_State *L)                                     \
+  {                                                                     \
+    MT_UNI_OPERATOR_GET_HANDLER(NAME)                                   \
+    MT_DECLARE_OPERATOR_BODY(NAME,NIL_BEHAVIOR)                         \
   }
 
-MT_DECLARE_OPERATOR(tostring,
-                    lua_pushstring(L, luaT_typename(L, 1));
-                    return 1;)
-MT_DECLARE_OPERATOR(add, luaL_error(L, "%s has no addition operator", luaT_typename(L, 1)))
-MT_DECLARE_OPERATOR(sub, luaL_error(L, "%s has no substraction operator", luaT_typename(L, 1)))
-MT_DECLARE_OPERATOR(mul, luaL_error(L, "%s has no multiplication operator", luaT_typename(L, 1)))
-MT_DECLARE_OPERATOR(div, luaL_error(L, "%s has no division operator", luaT_typename(L, 1)))
-MT_DECLARE_OPERATOR(mod, luaL_error(L, "%s has no modulo operator", luaT_typename(L, 1)))
-MT_DECLARE_OPERATOR(pow, luaL_error(L, "%s has no power operator", luaT_typename(L, 1)))
-MT_DECLARE_OPERATOR(unm, luaL_error(L, "%s has no negation operator", luaT_typename(L, 1)))
-MT_DECLARE_OPERATOR(concat, luaL_error(L, "%s has no concat operator", luaT_typename(L, 1)))
-MT_DECLARE_OPERATOR(len, luaL_error(L, "%s has no length operator", luaT_typename(L, 1)))
-MT_DECLARE_OPERATOR(eq,
+#define MT_DECLARE_BIN_OPERATOR(NAME, NIL_BEHAVIOR)                     \
+  int luaT_mt__##NAME(lua_State *L)                                     \
+  {                                                                     \
+    MT_BIN_OPERATOR_GET_HANDLER(NAME)                                   \
+    MT_DECLARE_OPERATOR_BODY(NAME,NIL_BEHAVIOR)                         \
+  }
+
+
+#define BIN_OPERATOR_ERROR(NAME)                                        \
+    luaL_error(L, "both %s and %s have no " #NAME " operator",          \
+            luaT_typename(L, 1), luaT_typename(L,2))
+
+MT_DECLARE_BIN_OPERATOR(add,    BIN_OPERATOR_ERROR(addition) )
+MT_DECLARE_BIN_OPERATOR(sub,    BIN_OPERATOR_ERROR(substraction) )
+MT_DECLARE_BIN_OPERATOR(mul,    BIN_OPERATOR_ERROR(multiplication) ) 
+MT_DECLARE_BIN_OPERATOR(div,    BIN_OPERATOR_ERROR(division) )
+MT_DECLARE_BIN_OPERATOR(mod,    BIN_OPERATOR_ERROR(modulo) )
+MT_DECLARE_BIN_OPERATOR(pow,    BIN_OPERATOR_ERROR(power) )
+MT_DECLARE_BIN_OPERATOR(concat, BIN_OPERATOR_ERROR(concat) )
+MT_DECLARE_BIN_OPERATOR(eq,
                     lua_settop(L, 2);
                     lua_pushcfunction(L, luaT_lua_isequal);
                     lua_insert(L, 1);
                     lua_call(L, 2, 1);
                     return 1;)
-MT_DECLARE_OPERATOR(lt, luaL_error(L, "%s has no lower than operator", luaT_typename(L, 1)))
-MT_DECLARE_OPERATOR(le, luaL_error(L, "%s has no lower or equal than operator", luaT_typename(L, 1)))
+MT_DECLARE_BIN_OPERATOR(lt, BIN_OPERATOR_ERROR(less-than) )
+MT_DECLARE_BIN_OPERATOR(le, BIN_OPERATOR_ERROR(less-equal) )
+
+MT_DECLARE_OPERATOR(tostring,
+                    lua_pushstring(L, luaT_typename(L, 1));
+                    return 1;)
 MT_DECLARE_OPERATOR(call, luaL_error(L, "%s has no call operator", luaT_typename(L, 1)))
+MT_DECLARE_OPERATOR(unm, luaL_error(L, "%s has no negation operator", luaT_typename(L, 1)))
+MT_DECLARE_OPERATOR(len, luaL_error(L, "%s has no length operator", luaT_typename(L, 1)))
 
 
 /* constructor metatable methods */
