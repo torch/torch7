@@ -1392,6 +1392,13 @@ function torchtest.range()
    local mxx = torch.Tensor()
    torch.range(mxx,0,1)
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.range value')
+
+   -- Check range for non-contiguous tensors.
+   local x = torch.zeros(2, 3)
+   local y = x:narrow(2, 2, 2)
+   y:range(0, 3)
+   mytester:assertTensorEq(x, torch.Tensor{{0, 0, 1}, {0, 2, 3}}, 1e-16,
+                           'non-contiguous range failed')
 end
 function torchtest.rangenegative()
    local mx = torch.Tensor({1,0})
@@ -1771,6 +1778,19 @@ function torchtest.linspace()
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.linspace value')
    mytester:assertError(function() torch.linspace(0,1,1) end, 'accepted 1 point between 2 distinct endpoints')
    mytester:assertTensorEq(torch.linspace(0,0,1),torch.zeros(1),1e-16, 'failed to generate for torch.linspace(0,0,1)')
+
+   -- Check linspace for generating with start > end.
+   mytester:assertTensorEq(torch.linspace(2,0,3),
+                           torch.Tensor{2,1,0},
+                           1e-16,
+                           'failed to generate for torch.linspace(2,0,3)')
+
+   -- Check linspace for non-contiguous tensors.
+   local x = torch.zeros(2, 3)
+   local y = x:narrow(2, 2, 2)
+   y:linspace(0, 3, 4)
+   mytester:assertTensorEq(x, torch.Tensor{{0, 0, 1}, {0, 2, 3}}, 1e-16,
+                           'non-contiguous linspace failed')
 end
 function torchtest.logspace()
    local from = math.random()
@@ -1781,6 +1801,19 @@ function torchtest.logspace()
    mytester:asserteq(maxdiff(mx,mxx),0,'torch.logspace value')
    mytester:assertError(function() torch.logspace(0,1,1) end, 'accepted 1 point between 2 distinct endpoints')
    mytester:assertTensorEq(torch.logspace(0,0,1),torch.ones(1),1e-16, 'failed to generate for torch.linspace(0,0,1)')
+
+   -- Check logspace for generating with start > end.
+   mytester:assertTensorEq(torch.logspace(1,0,2),
+                           torch.Tensor{10, 1},
+                           1e-16,
+                           'failed to generate for torch.logspace(1,0,2)')
+
+   -- Check logspace for non-contiguous tensors.
+   local x = torch.zeros(2, 3)
+   local y = x:narrow(2, 2, 2)
+   y:logspace(0, 3, 4)
+   mytester:assertTensorEq(x, torch.Tensor{{0, 1, 10}, {0, 100, 1000}}, 1e-16,
+                           'non-contiguous logspace failed')
 end
 function torchtest.rand()
    torch.manualSeed(123456)
