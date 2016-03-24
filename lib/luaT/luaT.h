@@ -69,6 +69,10 @@ LUAT_API void *luaT_toudata(lua_State *L, int ud, const char *tname);
 LUAT_API int luaT_isudata(lua_State *L, int ud, const char *tname);
 LUAT_API void *luaT_checkudata(lua_State *L, int ud, const char *tname);
 
+LUAT_API void luaT_pushlong(lua_State *L, long n);
+LUAT_API long luaT_checklong(lua_State *L, int idx);
+LUAT_API long luaT_tolong(lua_State *L, int idx);
+
 LUAT_API void *luaT_getfieldcheckudata(lua_State *L, int ud, const char *field, const char *tname);
 LUAT_API void *luaT_getfieldchecklightudata(lua_State *L, int ud, const char *field);
 LUAT_API double luaT_getfieldchecknumber(lua_State *L, int ud, const char *field);

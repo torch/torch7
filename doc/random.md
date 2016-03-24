@@ -5,6 +5,33 @@ Torch provides accurate mathematical random generation, based on
 [Mersenne Twister](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html)
 random number generator.
 
+<a name=":torch.gen.dok"></a>
+## Generator handling ##
+
+All of the below functions, as well as [randn()](maths.md#torch.randn),
+[rand()](maths.md#torch.rand) and [randperm()](maths.md#torch.randperm),
+take as optional first argument a random number generator.
+If this argument is not provided, the default global RNG is used.
+
+A non-global RNG can be obtained with [Generator()](#torch.Generator).
+Each RNG has its own state, independent from all other RNG's states.
+
+```
+-- Seed the global RNG
+> torch.manualSeed(0)
+> torch.random()
+2357136044
+-- Creates and seed a non-global RNG
+> gen = torch.Generator()
+> torch.manualSeed(gen, 0)
+> torch.random(gen)
+2357136044
+> torch.random(gen)
+2546248239
+> torch.random()
+2546248239
+```
+
 <a name=":torch.seed.dok"></a>
 ## Seed Handling ##
 
@@ -62,79 +89,85 @@ generator to that state using [setRNGState()](#torch.setRNGState). Example:
 0.28613933874294
 ```
 
+<a name="torch.Generator"></a>
+### [Generator] Generator() ###
+
+Creates a non-global random generator that carries its own state and can be
+passed as the first argument to any function that generates a random number.
+
 <a name="torch.seed"></a>
-### [number] seed() ###
+### [number] seed([gen,]) ###
 
 Set the seed of the random number generator using `/dev/urandom`
 (on Windows the time of the computer with granularity of seconds is used).
 Returns the seed obtained.
 
 <a name="torch.manualSeed"></a>
-### manualSeed(number) ###
+### manualSeed([gen,] number) ###
 
 Set the seed of the random number generator to the given `number`.
 
 <a name="torch.initialSeed"></a>
-### initialSeed() ###
+### initialSeed([gen]) ###
 
 Returns the initial seed used to initialize the random generator.
 
 <a name="torch.getRNGState"></a>
-### [Tensor] getRNGState() ###
+### [Tensor] getRNGState([gen]) ###
 Returns the current state of the random number generator as a torch.ByteTensor.
 This can then be used to set the state of the RNG so that the same sequence of
 random numbers is produced.
 
 <a name="torch.setRNGState"></a>
-### [Tensor] setRNGState(state) ###
+### [Tensor] setRNGState([gen,] state) ###
 Set the state of the random number generator. If `state` was obtained earlier
 using `getRNGState` then the random number generator should now generate the
 same numbers as it did from the point where `state` was obtained. This function
 returns its argument, `state`.
 
 <a name="torch.random"></a>
-### [number] random([a], [b]) ###
+### [number] random([gen,] [a], [b]) ###
 
 Returns an unsigned 32 bit integer random number from [a,b]. By default `a` is 1 and `b` is 2^32.
 
 <a name="torch.uniform"></a>
-### [number] uniform([a],[b]) ###
+### [number] uniform([gen,] [a],[b]) ###
 
 Returns a random real number according to uniform distribution on [a,b). By default `a` is 0 and `b` is 1.
 
 <a name="torch.normal"></a>
-### [number] normal([mean],[stdv]) ###
+### [number] normal([gen,] [mean],[stdv]) ###
 
 Returns a random real number according to a normal distribution with the given `mean` and standard deviation `stdv`.
 `stdv` must be positive.
 
 <a name="torch.exponential"></a>
-### [number] exponential(lambda) ###
+### [number] exponential([gen,] lambda) ###
 
 Returns a random real number according to the exponential distribution
 ''p(x) = lambda * exp(-lambda * x)''
 
 <a name="torch.cauchy"></a>
-### [number] cauchy(median, sigma) ###
+### [number] cauchy([gen,] median, sigma) ###
 
 Returns a random real number according to the Cauchy distribution
 ''p(x) = sigma/(pi*(sigma^2 + (x-median)^2))''
 
 <a name="torch.logNormal"></a>
-### [number] logNormal(mean, stdv) ###
+### [number] logNormal([gen,] mean, stdv) ###
 
 Returns a random real number according to the log-normal distribution, with
 the given `mean` and standard deviation `stdv`.
 `stdv` must be positive.
 
 <a name="torch.geometric"></a>
-### [number] geometric(p) ###
+### [number] geometric([gen,] p) ###
 
 Returns a random integer number according to a geometric distribution
 ''p(i) = (1-p) * p^(i-1)`. `p` must satisfy `0 < p < 1''.
 
 <a name="torch.bernoulli"></a>
-### [number] bernoulli([p]) ###
+### [number] bernoulli([gen,] [p]) ###
 
 Returns `1` with probability `p` and `0` with probability `1-p`. `p` must satisfy `0 <= p <= 1`.
 By default `p` is equal to `0.5`.
