@@ -146,11 +146,17 @@ ENDIF(C_SSE4_2_FOUND)
 
 IF(C_SSE4_1_FOUND OR C_SSE4_2_FOUND)
   IF(MSVC)
-    SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_sse.c PROPERTIES COMPILE_FLAGS "/Ox /fp:fast /std:c99")
+    SET_SOURCE_FILES_PROPERTIES(
+      generic/simd/convolve5x5_sse.c
+      generic/simd/convolve3x3_sse.c
+      PROPERTIES COMPILE_FLAGS "/Ox /fp:fast /std:c99")
   ELSE(MSVC)
-    SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_sse.c PROPERTIES COMPILE_FLAGS "-O3 -ffast-math -std=c99")
+    SET_SOURCE_FILES_PROPERTIES(
+      generic/simd/convolve5x5_sse.c
+      generic/simd/convolve3x3_sse.c
+      PROPERTIES COMPILE_FLAGS "-O3 -ffast-math -std=c99")
   ENDIF(MSVC)
-  SET(simd ${simd} generic/simd/convolve5x5_sse.c)
+  SET(simd ${simd} generic/simd/convolve5x5_sse.c generic/simd/convolve3x3_sse.c)
 ENDIF(C_SSE4_1_FOUND OR C_SSE4_2_FOUND)
 
 IF(MSVC)
@@ -162,11 +168,17 @@ ENDIF(MSVC)
 IF(C_AVX_FOUND OR C_AVX2_FOUND)
   SET(CMAKE_C_FLAGS "-DUSE_AVX ${CMAKE_C_FLAGS}")
   IF(MSVC)
-    SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_avx.c PROPERTIES COMPILE_FLAGS "/Ox /fp:fast /arch:AVX /std:c99")
+    SET_SOURCE_FILES_PROPERTIES(
+      generic/simd/convolve5x5_avx.c
+      generic/simd/convolve3x3_avx.c
+      PROPERTIES COMPILE_FLAGS "/Ox /fp:fast /arch:AVX /std:c99")
   ELSE(MSVC)
-    SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_avx.c PROPERTIES COMPILE_FLAGS "-O3 -ffast-math -mavx -std=c99")
+    SET_SOURCE_FILES_PROPERTIES(
+      generic/simd/convolve5x5_avx.c
+      generic/simd/convolve3x3_avx.c
+      PROPERTIES COMPILE_FLAGS "-O3 -ffast-math -mavx -std=c99")
   ENDIF(MSVC)
-  SET(simd ${simd} generic/simd/convolve5x5_avx.c)
+  SET(simd ${simd} generic/simd/convolve5x5_avx.c generic/simd/convolve3x3_avx.c)
 ENDIF(C_AVX_FOUND OR C_AVX2_FOUND)
 
 SET(hdr

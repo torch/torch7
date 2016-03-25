@@ -1,25 +1,5 @@
 #if defined(USE_AVX)
 
-#ifdef _MSC_VER
-#include <intrin.h>
-
-static __inline int __get_cpuid (unsigned int __level, unsigned int *__eax,
-                                 unsigned int *__ebx, unsigned int *__ecx,
-                                 unsigned int *__edx) {
-  unsigned int cpui[4];
-  __cpuid(cpui, __level);
-  *__eax = cpui[0]; *__ebx = cpui[1]; *__ecx = cpui[2]; *__edx = cpui[3];
-  return 1;
-}
-
-static void xgetbv(unsigned int op, unsigned int* eax, unsigned int* edx) {
-  *eax = 0; *edx = 0;
-  if (op == 0)
-      *eax = _xgetbv(_XCR_XFEATURE_ENABLED_MASK);
-}
-
-#else
-
 #if __i386__
 #define __cpuid(__level, __eax, __ebx, __ecx, __edx) \
 __asm("  pushl  %%ebx\n" \
@@ -45,8 +25,6 @@ static void xgetbv(unsigned int op, unsigned int* eax, unsigned int* edx) {
   __asm__ __volatile__
   (".byte 0x0f, 0x01, 0xd0": "=a" (*eax), "=d" (*edx) : "c" (op) : "cc");
 }
-
-#endif
 
 enum ECPUFeature
 {
@@ -98,19 +76,30 @@ static int haveCPUFeature(unsigned int feature) {
   if (!sDetectedCPUFeatures) {
     sDetectedCPUFeatures = 1;
     sCPUFeatures = checkCPUFeatures();
-    if ((sCPUFeatures & kCPUFeature_AVX) != 0) {
-      printf("torch running avx\n");
-    } else {
-      printf("torch running sse \n");
-    }
   }
   return (sCPUFeatures & feature) != 0;
 }
 
 #endif
 
+void convolve_3x3_sse(float* output, float* input, float* kernel, long outRows, long outCols, long outStride, long inCols);
+void convolve_3x3_avx(float* output, float* input, float* kernel, long outRows, long outCols, long outStride, long inCols);
 void convolve_5x5_sse(float* output, float* input, float* kernel, long outRows, long outCols, long outStride, long inCols);
 void convolve_5x5_avx(float* output, float* input, float* kernel, long outRows, long outCols, long outStride, long inCols);
+
+void convolve_3x3(float* output, float* input, float* kernel, long outRows, long outCols, long inCols) {
+#if defined(USE_AVX)
+  int avx = haveCPUFeature(kCPUFeature_AVX);
+  if (avx)
+  {
+    convolve_3x3_avx(output, input, kernel, outRows, outCols, outCols, inCols);
+  }
+  else
+#endif
+  {
+    convolve_3x3_sse(output, input, kernel, outRows, outCols, outCols, inCols);
+  }
+}
 
 void convolve_5x5(float* output, float* input, float* kernel, long outRows, long outCols, long inCols) {
 #if defined(USE_AVX)
