@@ -142,7 +142,7 @@ static int torch_Tensor_(new)(lua_State *L)
           THTensor_(free)(tensor);
           THError("invalid element (not a number)");
         }
-        THStorage_(set)(THTensor_(storage)(tensor), si++, LUA_NUMBER_TO_REAL(lua_tonumber(L, -1)));
+        THStorage_(set)(THTensor_(storage)(tensor), si++, luaG_(checkreal)(L, -1));
         lua_pop(L, 1);
       }
 
@@ -1172,7 +1172,7 @@ static int torch_Tensor_(apply)(lua_State *L)
                   lua_call(L, 1, 1);
                   if(lua_isnumber(L, 3))
                   {
-                    *tensor_data = LUA_NUMBER_TO_REAL(lua_tonumber(L, 3));
+                    *tensor_data = luaG_(checkreal)(L, 3);
                     lua_pop(L, 1);
                   }
                   else if(lua_isnil(L, 3))
@@ -1198,7 +1198,7 @@ static int torch_Tensor_(map)(lua_State *L)
                   lua_call(L, 2, 1);
                   if(lua_isnumber(L, 4))
                   {
-                    *tensor_data = LUA_NUMBER_TO_REAL(lua_tonumber(L, 4));
+                    *tensor_data = luaG_(checkreal)(L, 4);
                     lua_pop(L, 1);
                   }
                   else if(lua_isnil(L, 4))
@@ -1226,7 +1226,7 @@ static int torch_Tensor_(map2)(lua_State *L)
                   lua_call(L, 3, 1);
                   if(lua_isnumber(L, 5))
                   {
-                    *tensor_data = LUA_NUMBER_TO_REAL(lua_tonumber(L, 5));
+                    *tensor_data = luaG_(checkreal)(L, 5);
                     lua_pop(L, 1);
                   }
                   else if(lua_isnil(L, 5))

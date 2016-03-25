@@ -2,6 +2,8 @@
 #define TH_GENERIC_FILE "generic/TensorOperator.c"
 #else
 
+#include "luaG.h"
+
 static int torch_TensorOperator_(__add__)(lua_State *L)
 {
   THTensor *tensor1 = luaT_toudata(L, 1, torch_Tensor);
@@ -19,13 +21,13 @@ static int torch_TensorOperator_(__add__)(lua_State *L)
     {
       THTensor_(resizeAs)(r, tensor2);
       THTensor_(copy)(r, tensor2);
-      THTensor_(add)(r, r, luaL_checknumber(L, 1));
+      THTensor_(add)(r, r, luaG_(checkreal)(L, 1));
     }
     else if(tensor1 && !tensor2)
     {
       THTensor_(resizeAs)(r, tensor1);
       THTensor_(copy)(r, tensor1);
-      THTensor_(add)(r, r, luaL_checknumber(L, 2));
+      THTensor_(add)(r, r, luaG_(checkreal)(L, 2));
     }
     else
     {
@@ -53,14 +55,14 @@ static int torch_TensorOperator_(__sub__)(lua_State *L)
     if(!tensor1 && tensor2)
     {
       THTensor_(resizeAs)(r, tensor2);
-      THTensor_(fill)(r, luaL_checknumber(L, 1));
+      THTensor_(fill)(r, luaG_(checkreal)(L, 1));
       THTensor_(cadd)(r, r, -1, tensor2);
     }
     else if(tensor1 && !tensor2)
     {
       THTensor_(resizeAs)(r, tensor1);
       THTensor_(copy)(r, tensor1);
-      THTensor_(add)(r, r, -(real)luaL_checknumber(L, 2));
+      THTensor_(add)(r, r, -luaG_(checkreal)(L, 2));
     }
     else
     {
@@ -103,13 +105,13 @@ static int torch_TensorOperator_(__mul__)(lua_State *L)
     {
       THTensor_(resizeAs)(r, tensor2);
       THTensor_(copy)(r, tensor2);
-      THTensor_(mul)(r, r, luaL_checknumber(L, 1));
+      THTensor_(mul)(r, r, luaG_(checkreal)(L, 1));
     }
     else if(tensor1 && !tensor2)
     {
       THTensor_(resizeAs)(r, tensor1);
       THTensor_(copy)(r, tensor1);
-      THTensor_(mul)(r, r, luaL_checknumber(L, 2));
+      THTensor_(mul)(r, r, luaG_(checkreal)(L, 2));
     }
     else
     {
@@ -117,7 +119,7 @@ static int torch_TensorOperator_(__mul__)(lua_State *L)
       int dims = tensor2->nDimension;
 
       if(dimt == 1 && dims == 1)
-        lua_pushnumber(L, THTensor_(dot)(tensor1, tensor2)); /* ok, we wasted r, but who cares */
+        luaG_(pushreal)(L, THTensor_(dot)(tensor1, tensor2)); /* ok, we wasted r, but who cares */
       else if(dimt == 2 && dims == 1)
       {
         THTensor_(resize1d)(r, tensor1->size[0]);
