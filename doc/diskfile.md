@@ -12,7 +12,7 @@ the [binary](file.md#torch.File.binary) mode, the default endian encoding is the
 computer one.
 
 The file might be open in read, write, or read-write mode, depending on the parameter
-`mode` (which can take the value `"r"`, `"w"` or `"rw"` respectively) 
+`mode` (which can take the value `"r"`, `"w"` or `"rw"` respectively)
 given to the [torch.DiskFile(fileName, mode)](#torch.DiskFile).
 
 <a name="torch.DiskFile"></a>
@@ -32,7 +32,7 @@ The file is opened in [ASCII](file.md#torch.File.ascii) mode by default.
 <a name="torch.DiskFile.bigEndianEncoding"></a>
 ### bigEndianEncoding() ###
 
-In [binary](file.md#torch.File.binary) mode, force encoding in _big endian_. 
+In [binary](file.md#torch.File.binary) mode, force encoding in _big endian_.
 (_big end first_: decreasing numeric significance with increasing memory
 addresses)
 
@@ -67,3 +67,8 @@ In [binary](file.md#torch.File.binary) mode, force encoding in _native endian_.
 
 Longs will be written and read from the file as `size` bytes long, which
 can be 0, 4 or 8. 0 means system default.
+
+<a name="torch.DiskFile.noBuffer"/></a>
+### noBuffer() ###
+
+Disables read and write buffering on the `DiskFile`.
