@@ -299,6 +299,12 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor, method={default=1}},
          {name=real}})
 
+   wrap("fmod",
+        cname("fmod"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=Tensor, method={default=1}},
+         {name=real}})
+
    wrap("mod",
         cname("mod"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -335,6 +341,12 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
 
    wrap("cdiv",
         cname("cdiv"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=Tensor, method={default=1}},
+         {name=Tensor}})
+
+   wrap("cfmod",
+        cname("cfmod"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
          {name=Tensor, method={default=1}},
          {name=Tensor}})

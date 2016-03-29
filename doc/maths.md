@@ -820,6 +820,46 @@ The number of elements must match, but sizes do not matter.
 `torch.addcdiv(z, z, value, x, y)` puts the result in `z`.
 
 
+<a name="torch.fmod"></a>
+### [res] torch.fmod([res,] tensor, value) ###
+<a name="torch.fmod"></a>
+
+Compute remainder (rounded towards zero) of division of all elements in the `Tensor` by `value`.
+This works both for integer and floating point numbers. It behaves the same as Lua bulit-in function `math.fmod()` and a little bit different from `torch.remainder()` and `%` operator. For example:
+
+
+```lua
+> x = torch.Tensor({-3, 3})
+> torch.fmod(x, 2)
+-1
+ 1
+[torch.DoubleTensor of size 2]
+
+> torch.fmod(x, -2)
+-1
+ 1
+[torch.DoubleTensor of size 2]
+
+> torch.remainder(x, 2)
+ 1
+ 1
+[torch.DoubleTensor of size 2]
+
+> torch.remainder(x, -2)
+-1
+-1
+[torch.DoubleTensor of size 2]
+```
+
+`z = torch.fmod(x, 2)` will return a new `Tensor` with the result of `math.fmod(x, 2)`.
+
+`torch.fmod(z, x, 2)` will put the result of `math.fmod(x, 2)` in `z`.
+
+`x:fmod(2)` will replace all elements of `x` the result of `math.fmod(x, 2)` in-place.
+
+`z:fmod(x, 2)` puts the result of `math.fmod(x, 2)` in `z`.
+
+
 <a name="torch.mod"></a>
 ### [res] torch.mod([res,] tensor, value) ###
 <a name="torch.mod"></a>
@@ -835,6 +875,32 @@ a % b = a - b * floor(a/b).
 `x:mod(2)` will replace all elements of `x` the result of `x % 2` in-place.
 
 `z:mod(x, 2)` puts the result of `x % 2` in `z`.
+
+
+<a name="torch.cfmod"></a>
+### [res] torch.cfmod([res,] tensor1, tensor2) ###
+<a name="torch.cfmod"></a>
+
+Computes the element-wise remainder of the division (rounded towards zero) of `tensor1` by `tensor2`.
+The number of elements must match, but sizes do not matter.
+
+```lua
+> x = torch.Tensor({{3, 3}, {-3, -3}})
+> y = torch.Tensor({{2, -2}, {2, -2}})
+> x:cfmod(y)
+ 1  1
+-1 -1
+[torch.DoubleTensor of size 2x2]
+```
+
+`z = torch.cfmod(x, y)` returns a new `Tensor`.
+
+`torch.cfmod(z, x, y)` puts the result in `z`.
+
+`y:cfmod(x)` replaces all elements of `y` by their remainders of division (rounded towards zero) by
+corresponding elements of `x`.
+
+`z:cfmod(x, y)` puts the result in `z`.
 
 
 <a name="torch.cmod"></a>
