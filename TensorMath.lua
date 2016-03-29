@@ -311,8 +311,9 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor, method={default=1}},
          {name=real}})
  
+   -- mod alias
    wrap("mod",
-        cname("mod"),
+        cname("fmod"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
          {name=Tensor, method={default=1}},
          {name=real}})
@@ -363,8 +364,9 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor, method={default=1}},
          {name=Tensor}})
 
+   -- cmod alias
    wrap("cmod",
-        cname("cmod"),
+        cname("cfmod"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
          {name=Tensor, method={default=1}},
          {name=Tensor}})

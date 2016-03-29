@@ -735,23 +735,6 @@ function torchtest.remainder()
    mytester:assertlt(err, precision, 'error in torch.remainder - scalar, non contiguous')
 end
 
-function torchtest.mod()
-   local m1 = torch.Tensor(10,10):uniform(10)
-   local res1 = m1:clone()
-
-   local q = 2.1
-   res1[{ {},3 }]:mod(q)
-
-   local res2 = m1:clone()
-   for i = 1,m1:size(1) do
-      res2[{ i,3 }] = res2[{ i,3 }] % q
-   end
-
-   local err = (res1-res2):abs():max()
-
-   mytester:assertlt(err, precision, 'error in torch.mod - scalar, non contiguous')
-end
-
 function torchtest.mm()
    -- helper function
    local function matrixmultiply(mat1,mat2)
@@ -1194,70 +1177,6 @@ function torchtest.cremainder()
       end
    end
    mytester:assertlt(maxerr, precision, 'error in torch.cremainder - non-contiguous')
-end
-
-function torchtest.cmod()  -- [res] torch.cmod([res,] tensor1, tensor2)
-   -- contiguous
-   local m1 = torch.Tensor(10, 10, 10):uniform(10)
-   local m2 = torch.Tensor(10, 10 * 10):uniform(3)
-   local sm1 = m1[{4, {}, {}}]
-   local sm2 = m2[{4, {}}]
-   local res1 = torch.cmod(sm1, sm2)
-   local res2 = res1:clone():zero()
-   for i = 1,sm1:size(1) do
-      for j = 1, sm1:size(2) do
-         local idx1d = (((i-1)*sm1:size(1)))+j
-         res2[i][j] = sm1[i][j] % sm2[idx1d]
-      end
-   end
-   local err = res1:clone():zero()
-   -- find absolute error
-   for i = 1, res1:size(1) do
-      for j = 1, res1:size(2) do
-         err[i][j] = math.abs(res1[i][j] - res2[i][j])
-      end
-   end
-   -- find maximum element of error
-   local maxerr = 0
-   for i = 1, err:size(1) do
-      for j = 1, err:size(2) do
-         if err[i][j] > maxerr then
-            maxerr = err[i][j]
-         end
-      end
-   end
-   mytester:assertlt(maxerr, precision, 'error in torch.cmod - contiguous')
-
-   -- non-contiguous
-   local m1 = torch.Tensor(10, 10, 10):uniform(10)
-   local m2 = torch.Tensor(10 * 10, 10 * 10):uniform(3)
-   local sm1 = m1[{{}, 4, {}}]
-   local sm2 = m2[{{}, 4}]
-   local res1 = torch.cmod(sm1, sm2)
-   local res2 = res1:clone():zero()
-   for i = 1,sm1:size(1) do
-      for j = 1, sm1:size(2) do
-         local idx1d = (((i-1)*sm1:size(1)))+j
-         res2[i][j] = sm1[i][j] % sm2[idx1d]
-      end
-   end
-   local err = res1:clone():zero()
-   -- find absolute error
-   for i = 1, res1:size(1) do
-      for j = 1, res1:size(2) do
-         err[i][j] = math.abs(res1[i][j] - res2[i][j])
-      end
-   end
-   -- find maximum element of error
-   local maxerr = 0
-   for i = 1, err:size(1) do
-      for j = 1, err:size(2) do
-         if err[i][j] > maxerr then
-            maxerr = err[i][j]
-         end
-      end
-   end
-   mytester:assertlt(maxerr, precision, 'error in torch.cmod - non-contiguous')
 end
 
 function torchtest.cmul()  -- [res] torch.cmul([res,] tensor1, tensor2)

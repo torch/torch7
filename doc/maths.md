@@ -879,17 +879,7 @@ This works both for integer and floating point numbers. It behaves the same as `
 ### [res] torch.mod([res,] tensor, value) ###
 <a name="torch.mod"></a>
 
-Compute remainder (modulo) of division of all elements in the `Tensor` by `value`.
-This works both for integer and floating point numbers and can be expressed as
-a % b = a - b * floor(a/b).
-
-`z = torch.mod(x, 2)` will return a new `Tensor` with the result of `x % 2`.
-
-`torch.mod(z, x, 2)` will put the result of `x % 2` in `z`.
-
-`x:mod(2)` will replace all elements of `x` the result of `x % 2` in-place.
-
-`z:mod(x, 2)` puts the result of `x % 2` in `z`.
+This function is deprecated and exists only for compatibility with previous versions. Please use `torch.fmod()` or `torch.remainder()` instead.
 
 
 <a name="torch.cfmod"></a>
@@ -948,29 +938,7 @@ corresponding elements of `x`.
 ### [res] torch.cmod([res,] tensor1, tensor2) ###
 <a name="torch.cmod"></a>
 
-Computes element-wise remainder of the division of `tensor1` by `tensor2`.
-The number of elements must match, but sizes do not matter.
-
-```lua
-> x = torch.range(1, 4)
-> y = torch.Tensor(2, 2):fill(3)
-> x:cmod(y)
-> x
- 1
- 2
- 0
- 1
-[torch.DoubleTensor of size 4]
-```
-
-`z = torch.cmod(x, y)` returns a new `Tensor`.
-
-`torch.cmod(z, x, y)` puts the result in `z`.
-
-`y:cmod(x)` replaces all elements of `y` by their remainder of division by
-corresponding elements of `x`.
-
-`z:cmod(x, y)` puts the result in `z`.
+This function is deprecated and exists only for compatibility with previous versions. Please use `torch.cfmod()` or `torch.cremainder()` instead.
 
 
 <a name="torch.dot"></a>
