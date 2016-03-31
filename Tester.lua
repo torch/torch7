@@ -377,14 +377,13 @@ end
 
 local NCOLS = 80
 local coloured
-local c = {}
-local enable_colors = pcall(require, 'sys')
+local enable_colors, c = pcall(require, 'sys.colors')
 if arg and enable_colors then  -- have we been invoked from the commandline?
-   c = sys.COLORS
    coloured = function(str, colour)
       return colour .. str .. c.none
    end
 else
+   c = {}
    coloured = function(str)
       return str
    end
