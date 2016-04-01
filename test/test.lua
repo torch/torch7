@@ -520,7 +520,7 @@ for i, v in ipairs{{10}, {5, 5}} do
            x:zero()
            mytester:assert(not x:all(), 'error in all()')
            mytester:assert(not x:any(), 'error in any()')
-           
+
            x:fill(2)
            mytester:assert(x:all(), 'error in all()')
            mytester:assert(x:any(), 'error in any()')
@@ -3024,6 +3024,38 @@ function torchtest.isSetTo()
    mytester:assert(not torch.Tensor():isSetTo(torch.Tensor()),
                    "Tensors with no storages should not appear to be set " ..
                    "to each other")
+end
+
+function torchtest.equal()
+  -- Contiguous, 1D
+  local t1 = torch.Tensor{3, 4, 9, 10}
+  local t2 = t1:clone()
+  local t3 = torch.Tensor{1, 9, 3, 10}
+  local t4 = torch.Tensor{3, 4, 9}
+  local t5 = torch.Tensor()
+  mytester:assert(t1:equal(t2) == true, "wrong answer ")
+  mytester:assert(t1:equal(t3) == false, "wrong answer ")
+  mytester:assert(t1:equal(t4) == false, "wrong answer ")
+  mytester:assert(t1:equal(t5) == false, "wrong answer ")
+  mytester:assert(torch.equal(t1, t2) == true, "wrong answer ")
+  mytester:assert(torch.equal(t1, t3) == false, "wrong answer ")
+  mytester:assert(torch.equal(t1, t4) == false, "wrong answer ")
+  mytester:assert(torch.equal(t1, t5) == false, "wrong answer ")
+
+  -- Non contiguous, 2D
+  local s = torch.Tensor({{1, 2, 3, 4}, {5, 6, 7, 8}})
+  local s1 = s[{{}, {2, 3}}]
+  local s2 = s1:clone()
+  local s3 = torch.Tensor({{2, 3}, {6, 7}})
+  local s4 = torch.Tensor({{0, 0}, {0, 0}})
+
+  mytester:assert(not s1:isContiguous(), "wrong answer ")
+  mytester:assert(s1:equal(s2) == true, "wrong answer ")
+  mytester:assert(s1:equal(s3) == true, "wrong answer ")
+  mytester:assert(s1:equal(s4) == false, "wrong answer ")
+  mytester:assert(torch.equal(s1, s2) == true, "wrong answer ")
+  mytester:assert(torch.equal(s1, s3) == true, "wrong answer ")
+  mytester:assert(torch.equal(s1, s4) == false, "wrong answer ")
 end
 
 function torchtest.isSize()
