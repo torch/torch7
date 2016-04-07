@@ -2270,7 +2270,7 @@ Note: Irrespective of the original strides, the returned matrices `resb` and `re
 
 `A` and `V` are `m × m` matrices and `e` is a `m` dimensional vector.
 
-This function calculates all eigenvalues (and vectors) of `A` such that `A = V' diag(e) V`.
+This function calculates all eigenvalues (and vectors) of `A` such that `A = V diag(e) V'`.
 
 Third argument defines computation of eigenvectors or eigenvalues only.
 If it is `'N'`, only eigenvalues are computed.
@@ -2342,7 +2342,7 @@ Note: Irrespective of the original strides, the returned matrix `V` will be tran
 
 `A` and `V` are `m × m` matrices and `e` is a `m` dimensional vector.
 
-This function calculates all right eigenvalues (and vectors) of `A` such that `A = V' diag(e) V`.
+This function calculates all right eigenvalues (and vectors) of `A` such that `A = V diag(e) V'`.
 
 Third argument defines computation of eigenvectors or eigenvalues only.
 If it is `'N'`, only eigenvalues are computed.
