@@ -3,7 +3,7 @@
 # Serialization #
 
 Torch provides 4 high-level methods to serialize/deserialize arbitrary Lua/Torch objects.
-These functions are just abstractions over the [File](#torch.File) object, and were created
+These functions are just abstractions over the [File](file.md) object, and were created
 for convenience (these are very common routines).
 
 The first two functions are useful to serialize/deserialize data to/from files:
