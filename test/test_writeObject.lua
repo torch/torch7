@@ -213,6 +213,17 @@ function tests.test_SerializationHook()
    myTester:assert(string.format('%x',torch.pointer(clone.s1)) == string.format('%x',torch.pointer(clone.s2)))
 end
 
+function tests.test_serializeToStorage()
+   torch.save("foo.t7", "foo")
+   local f = io.open("foo.t7", "rb")
+   local size = f:seek("end")
+   f:close()
+   myTester:eq(
+      torch.serializeToStorage("foo"):size(), size,
+      "memory and disk serializations should have the same size"
+   )
+end
+
 myTester:add(tests)
 myTester:run()
 if myTester.errors[1] then os.exit(1) end
