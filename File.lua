@@ -424,6 +424,8 @@ function torch.serializeToStorage(object, mode)
    f = f[mode](f)
    f:writeObject(object)
    local storage = f:storage()
+   -- the storage includes an extra NULL character: get rid of it
+   storage:resize(storage:size()-1)
    f:close()
    return storage
 end
