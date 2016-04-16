@@ -838,50 +838,125 @@ The number of elements must match, but sizes do not matter.
 `torch.addcdiv(z, z, value, x, y)` puts the result in `z`.
 
 
+<a name="torch.fmod"></a>
+### [res] torch.fmod([res,] tensor, value) ###
+<a name="torch.fmod"></a>
+
+Computes remainder of division (rounded towards zero) of all elements in the `Tensor` by `value`.
+This works both for integer and floating point numbers. It behaves the same as Lua bulit-in function `math.fmod()` and a little bit different from `torch.remainder()` and `%` operator. For example:
+
+```lua
+> x = torch.Tensor({-3, 3})
+> torch.fmod(x, 2)
+-1
+ 1
+[torch.DoubleTensor of size 2]
+
+> torch.fmod(x, -2)
+-1
+ 1
+[torch.DoubleTensor of size 2]
+
+> torch.remainder(x, 2)
+ 1
+ 1
+[torch.DoubleTensor of size 2]
+
+> torch.remainder(x, -2)
+-1
+-1
+[torch.DoubleTensor of size 2]
+```
+
+`z = torch.fmod(x, 2)` will return a new `Tensor` with the result of `math.fmod(x, 2)`.
+
+`torch.fmod(z, x, 2)` will put the result of `math.fmod(x, 2)` in `z`.
+
+`x:fmod(2)` will replace all elements of `x` the result of `math.fmod(x, 2)` in-place.
+
+`z:fmod(x, 2)` puts the result of `math.fmod(x, 2)` in `z`.
+
+
+<a name="torch.remainder"></a>
+### [res] torch.remainder([res,] tensor, value) ###
+<a name="torch.remainder"></a>
+
+Computes remainder of division (rounded to nearest) of all elements in the `Tensor` by `value`.
+This works both for integer and floating point numbers. It behaves the same as `%` operator and can be expressed as `a % b = a - b * floor(a/b)`. See `torch.fmod()` for comparison.
+
+`z = torch.remainder(x, 2)` will return a new `Tensor` with the result of `x % 2`.
+
+`torch.remainder(z, x, 2)` will put the result of `x % 2` in `z`.
+
+`x:remainder(2)` will replace all elements of `x` the result of `x % 2` in-place.
+
+`z:remainder(x, 2)` puts the result of `x % 2` in `z`.
+
+
 <a name="torch.mod"></a>
 ### [res] torch.mod([res,] tensor, value) ###
 <a name="torch.mod"></a>
 
-Compute remainder (modulo) of division of all elements in the `Tensor` by `value`.
-This works both for integer and floating point numbers and can be expressed as
-a % b = a - b * floor(a/b).
+This function is deprecated and exists only for compatibility with previous versions. Please use `torch.fmod()` or `torch.remainder()` instead.
 
-`z = torch.mod(x, 2)` will return a new `Tensor` with the result of `x % 2`.
 
-`torch.mod(z, x, 2)` will put the result of `x % 2` in `z`.
+<a name="torch.cfmod"></a>
+### [res] torch.cfmod([res,] tensor1, tensor2) ###
+<a name="torch.cfmod"></a>
 
-`x:mod(2)` will replace all elements of `x` the result of `x % 2` in-place.
+Computes the element-wise remainder of the division (rounded towards zero) of `tensor1` by `tensor2`.
+The number of elements must match, but sizes do not matter.
 
-`z:mod(x, 2)` puts the result of `x % 2` in `z`.
+```lua
+> x = torch.Tensor({{3, 3}, {-3, -3}})
+> y = torch.Tensor({{2, -2}, {2, -2}})
+> x:cfmod(y)
+ 1  1
+-1 -1
+[torch.DoubleTensor of size 2x2]
+```
+
+`z = torch.cfmod(x, y)` returns a new `Tensor`.
+
+`torch.cfmod(z, x, y)` puts the result in `z`.
+
+`y:cfmod(x)` replaces all elements of `y` by their remainders of division (rounded towards zero) by
+corresponding elements of `x`.
+
+`z:cfmod(x, y)` puts the result in `z`.
+
+
+<a name="torch.cremainder"></a>
+### [res] torch.cremainder([res,] tensor1, tensor2) ###
+<a name="torch.cremainder"></a>
+
+Computes element-wise remainder of the division (rounded to nearest) of `tensor1` by `tensor2`.
+The number of elements must match, but sizes do not matter.
+
+```lua
+> x = torch.Tensor({{3, 3}, {-3, -3}})
+> y = torch.Tensor({{2, -2}, {2, -2}})
+> x:cfmod(y)
+ 1  1
+-1 -1
+[torch.DoubleTensor of size 2x2]
+```
+
+`z = torch.cremainder(x, y)` returns a new `Tensor`.
+
+`torch.cremainder(z, x, y)` puts the result in `z`.
+
+`y:cremainder(x)` replaces all elements of `y` by their remainders of division (rounded to nearest) by
+corresponding elements of `x`.
+
+`z:cremainder(x, y)` puts the result in `z`.
 
 
 <a name="torch.cmod"></a>
 ### [res] torch.cmod([res,] tensor1, tensor2) ###
 <a name="torch.cmod"></a>
 
-Computes the element-wise remainder of the division of `tensor1` by `tensor2`.
-The number of elements must match, but sizes do not matter.
-
-```lua
-> x = torch.range(1, 4)
-> y = torch.Tensor(2, 2):fill(3)
-> x:cmod(y)
-> x
- 1
- 2
- 0
- 1
-[torch.DoubleTensor of size 4]
-```
-
-`z = torch.cmod(x, y)` returns a new `Tensor`.
-
-`torch.cmod(z, x, y)` puts the result in `z`.
-
-`y:cmod(x)` replaces all elements of `y` by their remainder of division by
-corresponding elements of `x`.
-
-`z:cmod(x, y)` puts the result in `z`.
+This function is deprecated and exists only for compatibility with previous versions. Please use `torch.cfmod()` or `torch.cremainder()` instead.
 
 
 <a name="torch.dot"></a>
