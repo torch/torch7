@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "luaT.h"
 
@@ -977,6 +978,14 @@ int luaT_lua_isequal(lua_State *L)
   return 1;
 }
 
+static void luaT_pushpointer(lua_State *L, const void *ptr)
+{
+  // 2^53 - this assumes that lua_Number is a double
+  if ((uintptr_t)ptr > 9007199254740992LLU)
+    luaL_error(L, "Pointer value can't be represented as a Lua number (an overflow would occur)");
+  lua_pushnumber(L, (uintptr_t)(ptr));
+}
+
 int luaT_lua_pointer(lua_State *L)
 {
   if(lua_type(L, 1) == 10) /* luajit cdata */
@@ -984,13 +993,13 @@ int luaT_lua_pointer(lua_State *L)
     /* we want the pointer holded by cdata */
     /* not the pointer on the cdata object */
     const void* ptr = *((void**)lua_topointer(L, 1));
-    lua_pushnumber(L, (long)(ptr));
+    luaT_pushpointer(L, ptr);
     return 1;
   }
   else if (luaT_iscdata(L, 1)) /* luaffi cdata */
   {
     void** ptr = (void**)lua_touserdata(L, 1);
-    lua_pushnumber(L, (long)(ptr[4]));
+    luaT_pushpointer(L, ptr[4]);
     return 1;
   }
   else if(lua_isuserdata(L, 1))
@@ -998,19 +1007,19 @@ int luaT_lua_pointer(lua_State *L)
     void **ptr;
     luaL_argcheck(L, luaT_typename(L, 1), 1, "Torch object expected");
     ptr = lua_touserdata(L, 1);
-    lua_pushnumber(L, (long)(*ptr));
+    luaT_pushpointer(L, *ptr);
     return 1;
   }
   else if(lua_istable(L, 1) || lua_isthread(L, 1) || lua_isfunction(L, 1))
   {
     const void* ptr = lua_topointer(L, 1);
-    lua_pushnumber(L, (long)(ptr));
+    luaT_pushpointer(L, ptr);
     return 1;
   }
   else if(lua_isstring(L, 1))
   {
     const char* ptr = lua_tostring(L, 1);
-    lua_pushnumber(L, (long)(ptr));
+    luaT_pushpointer(L, ptr);
     return 1;
   }
   else
@@ -1170,12 +1179,12 @@ static int luaT_mt__newindex(lua_State *L)
 
 #define MT_UNI_OPERATOR_GET_HANDLER(NAME)                               \
     if(!lua_getmetatable(L, 1))                                         \
-      luaL_error(L, "internal error in __" #NAME ": no metatable");     
+      luaL_error(L, "internal error in __" #NAME ": no metatable");
 
 #define MT_BIN_OPERATOR_GET_HANDLER(NAME)                               \
     if(!lua_getmetatable(L, 1) && !lua_getmetatable(L,2) )              \
       luaL_error(L, "internal error in __" #NAME                        \
-              ": no metatable in both operands");     
+              ": no metatable in both operands");
 
 #define MT_DECLARE_OPERATOR_BODY(NAME, NIL_BEHAVIOR)                    \
                                                                         \
@@ -1220,7 +1229,7 @@ static int luaT_mt__newindex(lua_State *L)
 
 MT_DECLARE_BIN_OPERATOR(add,    BIN_OPERATOR_ERROR(addition) )
 MT_DECLARE_BIN_OPERATOR(sub,    BIN_OPERATOR_ERROR(substraction) )
-MT_DECLARE_BIN_OPERATOR(mul,    BIN_OPERATOR_ERROR(multiplication) ) 
+MT_DECLARE_BIN_OPERATOR(mul,    BIN_OPERATOR_ERROR(multiplication) )
 MT_DECLARE_BIN_OPERATOR(div,    BIN_OPERATOR_ERROR(division) )
 MT_DECLARE_BIN_OPERATOR(mod,    BIN_OPERATOR_ERROR(modulo) )
 MT_DECLARE_BIN_OPERATOR(pow,    BIN_OPERATOR_ERROR(power) )
