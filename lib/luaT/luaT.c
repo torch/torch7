@@ -86,11 +86,11 @@ void luaT_stackdump(lua_State *L)
         break;
       case LUA_TUSERDATA:
         tname = luaT_typename(L, i);
-        printf("userdata %lx [%s]", (long)lua_topointer(L, i), (tname ? tname : "not a Torch object"));
+        printf("userdata %p [%s]", lua_topointer(L, i), (tname ? tname : "not a Torch object"));
         break;
       case 10:
         tname = luaT_typename(L, i);
-        printf("cdata %lx [%s]", (long)lua_topointer(L, i), (tname ? tname : "not a Torch object"));
+        printf("cdata %p [%s]", lua_topointer(L, i), (tname ? tname : "not a Torch object"));
         break;
       case LUA_TTABLE:
         lua_pushvalue(L, i);
@@ -105,7 +105,7 @@ void luaT_stackdump(lua_State *L)
         else
         {
           tname = luaT_typename(L, i);
-          printf("table %lx [%s]", (long)lua_topointer(L, i), (tname ? tname : "not a Torch object"));
+          printf("table %p [%s]", lua_topointer(L, i), (tname ? tname : "not a Torch object"));
         }
         break;
       default:
@@ -907,7 +907,7 @@ int luaT_lua_pushudata(lua_State *L)
   else if(luaT_iscdata(L, 1))
     udata = ((void**)lua_topointer(L, 1))[4];
   else if(lua_isnumber(L, 1))
-    udata = (void*)(long)lua_tonumber(L, 1);
+    udata = (void*)(uintptr_t)lua_tonumber(L, 1);
   else
     luaL_argerror(L, 1, "expecting number or cdata");
 
