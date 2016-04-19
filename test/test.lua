@@ -2483,6 +2483,20 @@ function torchtest.RNGStateAliasing()
     mytester:assertTensorEq(target_value, forked_value, 1e-16, "RNG has not forked correctly.")
 end
 
+function torchtest.serializeGenerator()
+   local generator = torch.Generator()
+   torch.manualSeed(generator, 123)
+   local differentGenerator = torch.Generator()
+   torch.manualSeed(differentGenerator, 124)
+   local serializedGenerator = torch.serialize(generator)
+   local deserializedGenerator = torch.deserialize(serializedGenerator)
+   local generated = torch.random(generator)
+   local differentGenerated = torch.random(differentGenerator)
+   local deserializedGenerated = torch.random(deserializedGenerator)
+   mytester:asserteq(generated, deserializedGenerated, 'torch.Generator changed internal state after being serialized')
+   mytester:assertne(generated, differentGenerated, 'Generators with different random seed should not produce the same output')
+end
+
 function torchtest.testBoxMullerState()
     torch.manualSeed(123)
     local odd_number = 101
