@@ -1030,10 +1030,11 @@ Convenience method of the previous method, working for a number of dimensions up
 ## Extracting sub-tensors ##
 
 Each of these methods returns a `Tensor` which is a sub-tensor of the given
-tensor, _with the same `Storage`_. Hence, any modification in the memory of
-the sub-tensor will have an impact on the primary tensor, and vice-versa.
+tensor. 
 
-These methods are very fast, as they do not involve any memory copy.
+For methods `narrow`, `select` and `sub` the returned tensor _shares the same `Storage`_ as the original. Hence, any modification in the memory of the sub-tensor will have an impact on the primary tensor, and vice-versa. These methods are very fast, as they do not involve any memory copy.
+
+For all other methods in this section such as `index`, `indexCopy` etc., since you cannot extract a shared subtensor (technically), a new tensor is returned. If you make changes in this new tensor, they are not reflected in the original tensor.
 
 <a name="torch.Tensor.narrow"></a>
 ### [self] narrow(dim, index, size) ###
