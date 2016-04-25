@@ -56,6 +56,7 @@ end
 
 -- Add a failure to the test.
 function Tester:_failure(message)
+   if self.rethrow then error(message, 2) end
    local name = self._currentTestName
    self.assertionFail[name] = self.assertionFail[name] + 1
    self.errors[#self.errors + 1] = self:_addDebugInfo(message)
