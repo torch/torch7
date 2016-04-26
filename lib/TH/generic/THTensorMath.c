@@ -4,6 +4,12 @@
 
 #define TH_OMP_OVERHEAD_THRESHOLD 100000
 
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
+    #define BreakIfNaN(value) if (isnan(value)) { break; }
+#else
+    #define BreakIfNaN(value)
+#endif
+
 void THTensor_(fill)(THTensor *r_, real value)
 {
   TH_TENSOR_APPLY(real, r_,
@@ -398,10 +404,7 @@ real THTensor_(minall)(THTensor *tensor)
                   if(!(value >= theMin))
                   {
                     theMin = value;
-#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
-                    if (isnan(value))
-                      break;
-#endif
+                    BreakIfNaN(value);
                   });
   return theMin;
 }
@@ -419,10 +422,7 @@ real THTensor_(maxall)(THTensor *tensor)
                   if(!(value <= theMax))
                   {
                     theMax = value;
-#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
-                    if (isnan(value))
-                      break;
-#endif
+                    BreakIfNaN(value);
                   });
   return theMax;
 }
@@ -1078,10 +1078,7 @@ void THTensor_(max)(THTensor *values_, THLongTensor *indices_, THTensor *t, int 
                          {
                            theIndex = i;
                            theMax = value;
-#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
-                           if (isnan(value))
-                             break;
-#endif
+                           BreakIfNaN(value);
                          }
                        }
                        *indices__data = theIndex;
@@ -1117,10 +1114,7 @@ void THTensor_(min)(THTensor *values_, THLongTensor *indices_, THTensor *t, int 
                          {
                            theIndex = i;
                            theMin = value;
-#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
-                           if (isnan(value))
-                             break;
-#endif
+                           BreakIfNaN(value);
                          }
                        }
                        *indices__data = theIndex;
@@ -2509,4 +2503,5 @@ void THTensor_(histc)(THTensor *hist, THTensor *tensor, long nbins, real minvalu
 }
 
 #endif /* floating point only part */
+#undef BreakIfNaN
 #endif

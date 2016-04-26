@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include "THMemoryFile.h"
 #include "THFilePrivate.h"
 
@@ -177,7 +178,7 @@ static int THMemoryFile_mode(const char *mode, int *isReadable, int *isWritable)
       size_t i;                                                           \
       for(i = 0; i < n; i++)                                            \
       {                                                                 \
-        ssize_t nByteWritten;                                           \
+        ptrdiff_t nByteWritten;                                         \
         while (1)                                                       \
         {                                                               \
           ASCII_WRITE_ELEM;                                             \
@@ -479,7 +480,7 @@ static size_t THMemoryFile_writeLong(THFile *self, long *data, size_t n)
     size_t i;
     for(i = 0; i < n; i++)
     {
-      ssize_t nByteWritten;
+      int nByteWritten;
       while (1)
       {
         nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%ld", data[i]);
