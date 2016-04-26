@@ -118,6 +118,7 @@ ByteTensor -- contains unsigned chars
 CharTensor -- contains signed chars
 ShortTensor -- contains shorts
 IntTensor -- contains ints
+LongTensor -- contains longs
 FloatTensor -- contains floats
 DoubleTensor -- contains doubles
 ```
