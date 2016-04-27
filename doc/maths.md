@@ -550,9 +550,9 @@ Let `x` be a `Tensor` and `n` a number.
 
 In this section, we explain basic mathematical operations for `Tensor`s.
 
-<a name="torch.Tensor.equal"></a>
+<a name="torch.equal"></a>
 ### [boolean] equal([tensor1,] tensor2) ###
-<a name="torch.Tensor.equal"></a>
+<a name="torch.equal"></a>
 
 Returns `true` iff the dimensions and values of `tensor1` and `tensor2` are exactly the same.
 
