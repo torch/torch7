@@ -12,7 +12,10 @@ env:
   - TORCH_LUA_VERSION=LUA52
 os:
   - linux
-  - osx
+matrix:
+  include:
+  - os: osx
+    env: TORCH_LUA_VERSION=LUAJIT21
 addons:
   apt:
     packages:
