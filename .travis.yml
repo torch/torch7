@@ -16,6 +16,7 @@ matrix:
   include:
   - os: osx
     env: TORCH_LUA_VERSION=LUAJIT21
+    compiler: clang
 addons:
   apt:
     packages:
