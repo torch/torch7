@@ -60,7 +60,7 @@ static int torch_TensorOperator_(__sub__)(lua_State *L)
     {
       THTensor_(resizeAs)(r, tensor1);
       THTensor_(copy)(r, tensor1);
-      THTensor_(add)(r, r, -luaL_checknumber(L, 2));
+      THTensor_(add)(r, r, -(real)luaL_checknumber(L, 2));
     }
     else
     {
