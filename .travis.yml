@@ -10,6 +10,13 @@ env:
   - TORCH_LUA_VERSION=LUAJIT21
   - TORCH_LUA_VERSION=LUA51
   - TORCH_LUA_VERSION=LUA52
+os:
+  - linux
+matrix:
+  include:
+  - os: osx
+    env: TORCH_LUA_VERSION=LUAJIT21
+    compiler: clang
 addons:
   apt:
     packages:
