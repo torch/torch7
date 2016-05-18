@@ -460,7 +460,8 @@ function Tester:_run(tests)
       io.write('\n')
       io.flush()
 
-      if self.earlyAbort and (i < ntests) and (not status or not pass) then
+      if self.earlyAbort and (i < ntests) and (not status or not pass)
+            and (not skip) then
          io.write('Aborting on first error, not all tests have been executed\n')
          break
       end
