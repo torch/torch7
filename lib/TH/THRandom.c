@@ -57,7 +57,7 @@ static unsigned long readURandomLong()
   if (randDev < 0) {
     THError("Unable to open /dev/urandom");
   }
-  ssize_t readBytes = read(randDev, &randValue, sizeof(randValue));
+  size_t readBytes = read(randDev, &randValue, sizeof(randValue));
   if (readBytes < sizeof(randValue)) {
     THError("Unable to read from /dev/urandom");
   }
