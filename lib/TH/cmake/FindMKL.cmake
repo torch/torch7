@@ -137,11 +137,11 @@ MACRO(CHECK_ALL_LIBRARIES LIBRARIES _name _list _flags)
   ENDIF(_libraries_work)
 ENDMACRO(CHECK_ALL_LIBRARIES)
 
-if (WIN32)
+if(WIN32)
   set(mkl_m "")
-else
+else(WIN32)
   set(mkl_m "m")
-endif
+endif(WIN32)
 
 
 # Check for version 10/11
