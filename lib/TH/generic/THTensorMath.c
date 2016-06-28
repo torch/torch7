@@ -385,6 +385,14 @@ accreal THTensor_(dot)(THTensor *tensor, THTensor *src)
   return sum;
 }
 
+#undef th_isnan
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
+#define th_isnan(val) \
+if (isnan(value)) break;
+#else
+#define th_isnan(val)
+#endif
+
 real THTensor_(minall)(THTensor *tensor)
 {
   real theMin;
@@ -398,10 +406,7 @@ real THTensor_(minall)(THTensor *tensor)
                   if(!(value >= theMin))
                   {
                     theMin = value;
-#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
-                    if (isnan(value))
-                      break;
-#endif
+                    th_isnan(value)
                   });
   return theMin;
 }
@@ -419,10 +424,7 @@ real THTensor_(maxall)(THTensor *tensor)
                   if(!(value <= theMax))
                   {
                     theMax = value;
-#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
-                    if (isnan(value))
-                      break;
-#endif
+                    th_isnan(value)
                   });
   return theMax;
 }
@@ -1079,10 +1081,7 @@ void THTensor_(max)(THTensor *values_, THLongTensor *indices_, THTensor *t, int 
                          {
                            theIndex = i;
                            theMax = value;
-#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
-                           if (isnan(value))
-                             break;
-#endif
+                           th_isnan(value)
                          }
                        }
                        *indices__data = theIndex;
@@ -1118,10 +1117,7 @@ void THTensor_(min)(THTensor *values_, THLongTensor *indices_, THTensor *t, int 
                          {
                            theIndex = i;
                            theMin = value;
-#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
-                           if (isnan(value))
-                             break;
-#endif
+                           th_isnan(value)
                          }
                        }
                        *indices__data = theIndex;

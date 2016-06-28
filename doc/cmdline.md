@@ -107,7 +107,8 @@ The final produced output for the following command is:
 ### log(filename, parameter_table) ###
 
 It sets the log filename to `filename` and prints the values of
-parameters in the `parameter_table`.
+parameters in the `parameter_table`. If filename is an open file
+descriptor, it will write to the file instead of creating a new one.
 
 <a name="torch.CmdLine.option"></a>
 ### option(name, default, help) ###

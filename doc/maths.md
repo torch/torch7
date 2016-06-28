@@ -1073,7 +1073,7 @@ If `vec1` is a vector of size `n` and `vec2` is a vector of size `m`, then `mat`
 
 
 <a name="torch.addmm"></a>
-### [res] torch.addmm([res,] [beta,] [v1,] M [v2,] mat1, mat2) ###
+### [res] torch.addmm([res,] [beta,] [v1,] M, [v2,] mat1, mat2) ###
 <a name="torch.addmm"></a>
 
 Performs a matrix-matrix multiplication between `mat1` (2D `Tensor`) and `mat2` (2D `Tensor`).
@@ -1101,7 +1101,7 @@ If `mat1` is a `n × m` matrix, `mat2` a `m × p` matrix, `M` must be a `n × p`
 
 
 <a name="torch.addbmm"></a>
-### [res] torch.addbmm([res,] [v1,] M [v2,] batch1, batch2) ###
+### [res] torch.addbmm([res,] [v1,] M, [v2,] batch1, batch2) ###
 <a name="torch.addbmm"></a>
 
 Batch matrix matrix product of matrices stored in `batch1` and `batch2`, with a reduced add step (all matrix multiplications get accumulated in a single place).
@@ -1123,7 +1123,7 @@ res = (v1 * M) + (v2 * sum(batch1_i * batch2_i, i = 1, b))
 
 
 <a name="torch.baddbmm"></a>
-### [res] torch.baddbmm([res,] [v1,] M [v2,] batch1, batch2) ###
+### [res] torch.baddbmm([res,] [v1,] M, [v2,] batch1, batch2) ###
 <a name="torch.baddbmm"></a>
 
 Batch matrix matrix product of matrices stored in `batch1` and `batch2`, with batch add.
