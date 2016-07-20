@@ -61,7 +61,7 @@ static const void* torch_istensorarray(lua_State *L, int idx)
 
   lua_checkstack(L, 3);
   lua_rawgeti(L, idx, 1);
-  tensor_idx = lua_gettop(L);  
+  tensor_idx = lua_gettop(L);
   tname = (torch_istensortype(L, luaT_typename(L, -1)));
   lua_remove(L, tensor_idx);
   return tname;
@@ -316,7 +316,7 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
          {name=Tensor, method={default=1}},
          {name=real}})
- 
+
    -- mod alias
    wrap("mod",
         cname("fmod"),
@@ -652,7 +652,7 @@ wrap("topk",
         {{name=Tensor, default=true, returned=true},
          {name="IndexTensor", default=true, returned=true, noreadadd=true},
          {name=Tensor},
-         {name="index"},
+         {name="long"},
          {name="index", default=lastdim(3)}})
 
    wrap("mode",
