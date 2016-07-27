@@ -1014,7 +1014,9 @@ Sizes must respect the matrix-multiplication operation: if `mat` is a `n × m` m
 
 `x:addmv(y, z)` accumulates `y * z` into `x`.
 
-`r:addmv(x, y, z)` puts the result of `x + y * z` into `r`.
+`r:addmv(x, y, z)` puts the result of `x + y * z` into `r` if `x` is a vector.
+
+`r:addmv(s, y, z)` puts the result of `s * r + y * z` into `r` if `s` is a scalar.
 
 
 <a name="torch.addr"></a>
