@@ -149,7 +149,7 @@ static int torch_TensorOperator_(__div__)(lua_State *L)
 
   THTensor_(resizeAs)(r, tensor);
   THTensor_(copy)(r, tensor);
-  THTensor_(mul)(r, r, 1/lua_tonumber(L, 2));
+  THTensor_(div)(r, r, lua_tonumber(L, 2));
 
   return 1;
 }
