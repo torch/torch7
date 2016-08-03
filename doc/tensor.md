@@ -1583,10 +1583,24 @@ Also note how an existing tensor `z` can be used to store the results.
 <a name="torch.Tensor.maskedCopy"></a>
 ### [Tensor] maskedCopy(mask, tensor) ###
 
-Copies the masked elements of `tensor` into itself. The masked elements are those elements having a
+Copies the elements of `tensor` into `mask` locations of itself. The masked elements are those elements having a
 corresponding `1` in the `mask` Tensor. This `mask` is a `torch.ByteTensor`
 of zeros and ones. The destination `Tensor` and the `mask` Tensor should have the same number of elements.
 The source `tensor` should have at least as many elements as the number of 1s in the `mask`.
+
+```lua
+x = torch.Tensor({0, 0, 0, 0})
+mask = torch.ByteTensor({0, 1, 0, 1})
+y = torch.Tensor({10, 20})
+x:maskedCopy(y)
+print(x)
+
+  0
+ 10
+  0
+ 20
+[torch.DoubleTensor of size 4]
+```
 
 ```lua
 x = torch.range(1,4):double():resize(2,2)
