@@ -17,10 +17,21 @@ static void luaG_(pushreal)(lua_State *L, accreal n) {
 }
 
 static real luaG_(checkreal)(lua_State *L, int idx) {
-#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || LUA_VERSION_NUM < 503
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
 	return (lua_Number)luaL_checknumber(L, idx);
 #elif defined(TH_REAL_IS_BYTE) || defined(TH_REAL_IS_CHAR) || defined(TH_REAL_IS_SHORT) || defined(TH_REAL_IS_INT) || defined(TH_REAL_IS_LONG)
-	return (lua_Integer)luaL_checkinteger(L, idx);
+        int type = lua_type(L, idx);
+        if (type == LUA_TSTRING) {
+          const char *str = lua_tolstring(L, idx, NULL);
+          long int num = strtol(str, NULL, 0);
+          return (real) num;
+        } else {
+#if LUA_VERSION_NUM < 503
+          return (lua_Number)luaL_checkinteger(L, idx);
+#else
+          return (lua_Integer)luaL_checkinteger(L, idx);
+#endif
+        }
 #else
 	#error "unhandled real type in luaG_checkreal"
 #endif
