@@ -183,6 +183,7 @@ static const struct luaL_Reg torch_TensorOperator_(_) [] = {
 
 void torch_TensorOperator_(init)(lua_State *L)
 {
+  THTensor_(cpuDispatchInit)();
   luaT_pushmetatable(L, torch_Tensor);
   luaT_setfuncs(L, torch_TensorOperator_(_), 0);
   lua_pop(L, 1);

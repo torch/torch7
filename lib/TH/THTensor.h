@@ -36,6 +36,11 @@ typedef struct {
 #include "generic/THTensorMath.h"
 #include "THGenerateAllTypes.h"
 
+
+#include "generic/THTensorMathDispatch.h"
+#include "THGenerateAllTypes.h"
+
+
 /* convolutions */
 #include "generic/THTensorConv.h"
 #include "THGenerateAllTypes.h"
