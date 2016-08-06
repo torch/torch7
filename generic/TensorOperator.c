@@ -181,6 +181,8 @@ static const struct luaL_Reg torch_TensorOperator_(_) [] = {
   {NULL, NULL}
 };
 
+extern int THTensor_(cpuDispatchInit)();
+
 void torch_TensorOperator_(init)(lua_State *L)
 {
   THTensor_(cpuDispatchInit)();
