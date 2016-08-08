@@ -13,6 +13,10 @@ if(BUILD_STATIC)
   ADD_LIBRARY(luaT_static STATIC luaT.h luaT.c)
 endif()
 
+SET_TARGET_PROPERTIES(luaT PROPERTIES
+  VERSION   0
+  SOVERSION 0)
+
 IF(APPLE)
   SET_TARGET_PROPERTIES(luaT PROPERTIES
     LINK_FLAGS "-undefined dynamic_lookup")
