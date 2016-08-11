@@ -237,7 +237,7 @@ shall not be freed. It is a pointer inside `tname` string.
 
 <a name="luat_classmodulename"/>
 ### int luaT_classmodulename(const char *tname, char *parent_name) ###
-Alias to `luaT_fullparentname ` for ensuring backwards compatibilty; 
+Alias to `luaT_fullparentname ` for ensuring backwards compatibility; 
 use of `luaT_fullparentname` is preferred.
 
 <a name="luat_fullparentname"/>
