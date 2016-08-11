@@ -183,7 +183,7 @@ function torchtest.rsqrt()
 end
 
 function torchtest.sigmoid()
-   -- cant use genericSingleOpTest, since `math.sigmoid` doesnt exist, have to use
+   -- can't use genericSingleOpTest, since `math.sigmoid` doesn't exist, have to use
    -- `torch.sigmoid` instead
    local inputValues = {-1000,-1,0,0.5,1,2,1000}
    local expectedOutput = {0.0000, 0.2689, 0.5, 0.6225, 0.7311, 0.8808, 1.000}

@@ -84,7 +84,7 @@ The roadmap focuses on five separate things
 		   Also, I agree, I actually could not install iTorch on my laptop 
                    before cvpr tutorial somehow, it did not want to work :).
   - **soumith**: I think we should propose a common display API that any interface can implement, 
-                 that way the users dont need to change scripts across different UI backends.
+                 that way the users don't need to change scripts across different UI backends.
 	         Also, szym/display is a good candidate for the Web UI, ITorch is indeed a bit of a pain to install.
 
   - Should we endorse iTorch for everyone to use? 
