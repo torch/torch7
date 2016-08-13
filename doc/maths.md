@@ -978,20 +978,17 @@ The number of elements must match: both `Tensor`s are seen as a 1D vector.
 
 
 <a name="torch.addmv"></a>
-### [res] torch.addmv([res,] [beta,] [v1,] vec1, [v2,] mat, vec2) ###
+### [res] torch.addmv([res,] [v1,] vec1, [v2,] mat, vec2) ###
 <a name="torch.addmv"></a>
 
 Performs a matrix-vector multiplication between `mat` (2D `Tensor`) and `vec2` (1D `Tensor`) and add it to `vec1`.
 
 Optional values `v1` and `v2` are scalars that multiply `vec1` and `vec2` respectively.
 
-Optional value `beta` is  a scalar that scales the result `Tensor`, before accumulating the result into the `Tensor`.
-Defaults to `1.0`.
-
 In other words,
 
 ```
-res = (beta * res) + (v1 * vec1) + (v2 * (mat * vec2))
+res = (v1 * vec1) + (v2 * (mat * vec2))
 ```
 
 Sizes must respect the matrix-multiplication operation: if `mat` is a `n × m` matrix, `vec2` must be vector of size `m` and `vec1` must be a vector of size `n`.
@@ -1012,12 +1009,21 @@ Sizes must respect the matrix-multiplication operation: if `mat` is a `n × m` m
 
 `torch.addmv(r, x, y, z)` puts the result in `r`.
 
-`x:addmv(y, z)` accumulates `y * z` into `x`.
+**Differences when used as a method**
 
-`r:addmv(x, y, z)` puts the result of `x + y * z` into `r` if `x` is a vector.
+`x:addmv(y, z)` does `x = x + y * z`
 
-`r:addmv(s, y, z)` puts the result of `s * r + y * z` into `r` if `s` is a scalar.
+`r:addmv(x, y, z)`  does `r = x + y * z` if x is a vector
 
+`r:addmv(s, y, z)`   does `r = r + s * y * z` if `s` is a scalar.
+
+`r:addmv(x, s, y, z)`   does `r = x + s * y * z` if `s` is a scalar and `x` is a vector.
+
+`r:addmv(s1, s2, y, z)`   does `r = s1 * r + s2 * y * z` if `s1` and `s2` are scalars.
+
+The last example does not accurately fit into the function signature, and needs a special mention. It changes the function signature to:
+
+`[vec1] = vec1:addmv([v1,] [v2,] mat, vec2)`
 
 <a name="torch.addr"></a>
 ### [res] torch.addr([res,] [v1,] mat, [v2,] vec1, vec2) ###
@@ -1075,20 +1081,17 @@ If `vec1` is a vector of size `n` and `vec2` is a vector of size `m`, then `mat`
 
 
 <a name="torch.addmm"></a>
-### [res] torch.addmm([res,] [beta,] [v1,] M, [v2,] mat1, mat2) ###
+### [res] torch.addmm([res,] [v1,] M, [v2,] mat1, mat2) ###
 <a name="torch.addmm"></a>
 
 Performs a matrix-matrix multiplication between `mat1` (2D `Tensor`) and `mat2` (2D `Tensor`).
 
 Optional values `v1` and `v2` are scalars that multiply `M` and `mat1 * mat2` respectively.
 
-Optional value `beta` is  a scalar that scales the result `Tensor`, before accumulating the result into the `Tensor`.
-Defaults to `1.0`.
-
 In other words,
 
 ```
-res = (res * beta) + (v1 * M) + (v2 * mat1 * mat2)
+res = (v1 * M) + (v2 * mat1 * mat2)
 ```
 
 If `mat1` is a `n × m` matrix, `mat2` a `m × p` matrix, `M` must be a `n × p` matrix.
@@ -1097,9 +1100,19 @@ If `mat1` is a `n × m` matrix, `mat2` a `m × p` matrix, `M` must be a `n × p`
 
 `torch.addmm(r, M, mat1, mat2)` puts the result in `r`.
 
-`M:addmm(mat1, mat2)` puts the result in `M`.
+**Differences when used as a method**
 
-`r:addmm(M, mat1, mat2)` puts the result in `r`.
+`M:addmm(mat1, mat2)` does `M = M + mat1 * mat2`.
+
+`r:addmm(M, mat1, mat2)`  does `r = M + mat1 * mat2`.
+
+`r:addmm(v1, M, v2, mat1, mat2)` does `r = (v1 * M) + (v2 * mat1 * mat2)`.
+
+`M:addmm(v1, v2, mat1, mat2)` does `M = (v1 * M) + (v2 * mat1 * mat2)`.
+
+The last example does not accurately fit into the function signature, and needs a special mention. It changes the function signature to:
+
+`[M] = M:addmm([v1,] [v2,] mat1, mat2)`
 
 
 <a name="torch.addbmm"></a>
