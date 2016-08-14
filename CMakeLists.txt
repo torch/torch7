@@ -14,7 +14,7 @@ IF (NOT MSVC)
   IF (MINGW)
     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=format")
   ELSE()
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=implicit-function-declaration -Werror=format")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror=implicit-function-declaration -Werror=format -march=haswell -mavx")
   ENDIF(MINGW)
 ENDIF(NOT MSVC)
 
