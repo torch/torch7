@@ -2921,7 +2921,12 @@ function torchtest.abs()
    end
 
    -- Checking that the right abs function is called for LongTensor
-   local bignumber = 2^31 + 1
+   local bignumber
+   if torch.LongTensor():elementSize() > 4 then
+      bignumber = 2^31 + 1
+   else
+      bignumber = 2^15 + 1
+   end
    local input = torch.LongTensor{-bignumber}
    mytester:assertgt(input:abs()[1], 0, 'torch.abs(3)')
 end
