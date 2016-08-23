@@ -128,12 +128,12 @@ returns its argument, `state`.
 <a name="torch.random"></a>
 ### [number] random([gen,] [a], [b]) ###
 
-Returns an unsigned 32 bit integer random number from [a,b]. By default `a` is 1 and `b` is 2^32.
+Returns an unsigned 32 bit integer random number from `[a,b]`. By default `a` is `1` and `b` is `2^32`.
 
 <a name="torch.uniform"></a>
 ### [number] uniform([gen,] [a],[b]) ###
 
-Returns a random real number according to uniform distribution on [a,b). By default `a` is 0 and `b` is 1.
+Returns a random real number according to uniform distribution on `[a,b)`. By default `a` is `0` and `b` is `1`.
 
 <a name="torch.normal"></a>
 ### [number] normal([gen,] [mean],[stdv]) ###
@@ -145,13 +145,13 @@ Returns a random real number according to a normal distribution with the given `
 ### [number] exponential([gen,] lambda) ###
 
 Returns a random real number according to the exponential distribution
-''p(x) = lambda * exp(-lambda * x)''
+`p(x) = lambda * exp(-lambda * x)`
 
 <a name="torch.cauchy"></a>
 ### [number] cauchy([gen,] median, sigma) ###
 
 Returns a random real number according to the Cauchy distribution
-''p(x) = sigma/(pi*(sigma^2 + (x-median)^2))''
+`p(x) = sigma/(pi*(sigma^2 + (x-median)^2))`
 
 <a name="torch.logNormal"></a>
 ### [number] logNormal([gen,] mean, stdv) ###
@@ -164,7 +164,7 @@ the given `mean` and standard deviation `stdv`.
 ### [number] geometric([gen,] p) ###
 
 Returns a random integer number according to a geometric distribution
-''p(i) = (1-p) * p^(i-1)`. `p` must satisfy `0 < p < 1''.
+`p(i) = (1-p) * p^(i-1)`. `p` must satisfy `0 < p < 1`.
 
 <a name="torch.bernoulli"></a>
 ### [number] bernoulli([gen,] [p]) ###
