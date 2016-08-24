@@ -275,7 +275,7 @@ function File:readObject()
        local dumped = self:readChar(size):string()
        local func, err = loadstring(dumped)
        if not func then
-          error(string.format('Failed to load function from bytecode: %s', err))
+          io.stderr:write(string.format('Warning: Failed to load function from bytecode: %s', err))
        end
        local upvalues = self:readObject()
        for index,upvalue in ipairs(upvalues) do
@@ -298,7 +298,7 @@ function File:readObject()
          local dumped = self:readChar(size):string()
          local func, err = loadstring(dumped)
          if not func then
-            error(string.format('Failed to load function from bytecode: %s', err))
+	    io.stderr:write(string.format('Warning: Failed to load function from bytecode: %s', err))
          end
          if not force then
              objects[index] = func
