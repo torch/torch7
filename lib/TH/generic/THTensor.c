@@ -232,11 +232,53 @@ void THTensor_(resize)(THTensor *self, THLongStorage *size, THLongStorage *strid
   if(stride)
     THArgCheck(stride->size == size->size, 3, "invalid stride");
 
+  /* If self has zero stride, reset the dimensions */
+  int d;
+  int hasZeroStride = 0;
+  for(d = 0; d < self->nDimension; d++)
+  {
+    if(self->stride[d] == 0)
+    {
+      hasZeroStride = 1;
+      break;
+    }
+  }
+  if(hasZeroStride)
+  {
+    for(d = 0; d < self->nDimension; d++)
+    {
+      self->size[d]   = -1;
+      self->stride[d] = -1;
+    }
+    self->nDimension = 0;
+  }
+
   THTensor_(rawResize)(self, size->size, size->data, (stride ? stride->data : NULL));
 }
 
 void THTensor_(resizeAs)(THTensor *self, THTensor *src)
-{
+{ 
+  /* If self has zero stride, reset the dimensions */
+  int d;
+  int hasZeroStride = 0;
+  for(d = 0; d < self->nDimension; d++)
+  {
+    if(self->stride[d] == 0)
+    {
+      hasZeroStride = 1;
+      break;
+    }
+  }
+  if(hasZeroStride)
+  {
+    for(d = 0; d < self->nDimension; d++)
+    {
+      self->size[d]   = -1;
+      self->stride[d] = -1;
+    }
+    self->nDimension = 0;
+  }
+
   if(!THTensor_(isSameSizeAs)(self, src))
     THTensor_(rawResize)(self, src->nDimension, src->size, NULL);
 }
