@@ -2,7 +2,11 @@
 #define TH_GENERIC_FILE "generic/THVector.c"
 #else
 
+#if defined(__NEON__)
 static TH_INLINE void THVector_(fill)(real *x, const real c, const long n) {
+#else
+static void THVector_(fill_SCALAR)(real *x, const real c, const long n) {
+#endif
   long i = 0;
 
   for(; i < n-4; i += 4)
@@ -17,7 +21,11 @@ static TH_INLINE void THVector_(fill)(real *x, const real c, const long n) {
     x[i] = c;
 }
 
+#if defined(__NEON__)
 static TH_INLINE void THVector_(add)(real *y, const real *x, const real c, const long n)
+#else
+static void THVector_(add_SCALAR)(real *y, const real *x, const real c, const long n)
+#endif
 {
   long i = 0;
 
@@ -33,7 +41,11 @@ static TH_INLINE void THVector_(add)(real *y, const real *x, const real c, const
     y[i] += c * x[i];
 }
 
+#if defined(__NEON__)
 static TH_INLINE void THVector_(diff)(real *z, const real *x, const real *y, const long n)
+#else
+static void THVector_(diff_SCALAR)(real *z, const real *x, const real *y, const long n)
+#endif
 {
   long i = 0;
 
@@ -49,7 +61,11 @@ static TH_INLINE void THVector_(diff)(real *z, const real *x, const real *y, con
     z[i] = x[i] - y[i];
 }
 
+#if defined(__NEON__)
 static TH_INLINE void THVector_(scale)(real *y, const real c, const long n)
+#else
+static void THVector_(scale_SCALAR)(real *y, const real c, const long n)
+#endif
 {
   long i = 0;
 
@@ -65,7 +81,11 @@ static TH_INLINE void THVector_(scale)(real *y, const real c, const long n)
     y[i] *= c;
 }
 
+#if defined(__NEON__)
 static TH_INLINE void THVector_(mul)(real *y, const real *x, const long n)
+#else
+static void THVector_(mul_SCALAR)(real *y, const real *x, const long n)
+#endif
 {
   long i = 0;
 
