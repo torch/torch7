@@ -14,9 +14,20 @@
 
 static void (*THVector_(fill_DISPATCHPTR))(real *, const real, const long) = NULL;
 static FunctionDescription THVector_(fill_DISPATCHTABLE)[] = {
-#if defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT)
-  FUNCTION_IMPL(THVector_(fill_SSE), SIMDExtension_SSE),
+#if defined(__NEON__)
+
+  #if defined(TH_REAL_IS_FLOAT)
+    FUNCTION_IMPL(THVector_(fill_NEON), SIMDExtension_NEON);
+  #endif
+
+#else // x86
+
+  #if defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT)
+    FUNCTION_IMPL(THVector_(fill_SSE), SIMDExtension_SSE),
+  #endif
+
 #endif
+
   FUNCTION_IMPL(THVector_(fill_DEFAULT), SIMDExtension_DEFAULT)
 };
 void THVector_(fill)(real *x, const real c, const long n) {
@@ -27,9 +38,20 @@ void THVector_(fill)(real *x, const real c, const long n) {
 
 static void (*THVector_(add_DISPATCHPTR))(real *, const real *, const real, const long) = NULL;
 static FunctionDescription THVector_(add_DISPATCHTABLE)[] = {
-#if defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT)
-  FUNCTION_IMPL(THVector_(add_SSE), SIMDExtension_SSE),
+#if defined(__NEON__)
+
+  #if defined(TH_REAL_IS_FLOAT)
+    FUNCTION_IMPL(THVector_(add_NEON), SIMDExtension_NEON);
+  #endif
+
+#else // x86
+
+  #if defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT)
+    FUNCTION_IMPL(THVector_(add_SSE), SIMDExtension_SSE),
+  #endif
+
 #endif
+
   FUNCTION_IMPL(THVector_(add_DEFAULT), SIMDExtension_DEFAULT)
 };
 void THVector_(add)(real *y, const real *x, const real c, const long n) {
@@ -40,9 +62,20 @@ void THVector_(add)(real *y, const real *x, const real c, const long n) {
 
 static void (*THVector_(diff_DISPATCHPTR))(real *, const real *, const real *, const long) = NULL;
 static FunctionDescription THVector_(diff_DISPATCHTABLE)[] = {
-#if defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT)
-  FUNCTION_IMPL(THVector_(diff_SSE), SIMDExtension_SSE),
+#if defined(__NEON__)
+
+  #if defined(TH_REAL_IS_FLOAT)
+    FUNCTION_IMPL(THVector_(diff_NEON), SIMDExtension_NEON);
+  #endif
+
+#else // x86
+
+  #if defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT)
+    FUNCTION_IMPL(THVector_(diff_SSE), SIMDExtension_SSE),
+  #endif
+
 #endif
+
   FUNCTION_IMPL(THVector_(diff_DEFAULT), SIMDExtension_DEFAULT)
 };
 void THVector_(diff)(real *z, const real *x, const real *y, const long n) {
@@ -53,9 +86,20 @@ void THVector_(diff)(real *z, const real *x, const real *y, const long n) {
 
 static void (*THVector_(scale_DISPATCHPTR))(real *, const real, const long) = NULL;
 static FunctionDescription THVector_(scale_DISPATCHTABLE)[] = {
-#if defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT)
-  FUNCTION_IMPL(THVector_(scale_SSE), SIMDExtension_SSE),
+#if defined(__NEON__)
+
+  #if defined(TH_REAL_IS_FLOAT)
+    FUNCTION_IMPL(THVector_(scale_NEON), SIMDExtension_NEON);
+  #endif
+
+#else // x86
+
+  #if defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT)
+    FUNCTION_IMPL(THVector_(scale_SSE), SIMDExtension_SSE),
+  #endif
+
 #endif
+
   FUNCTION_IMPL(THVector_(scale_DEFAULT), SIMDExtension_DEFAULT)
 };
 TH_API void THVector_(scale)(real *y, const real c, const long n) {
@@ -66,9 +110,20 @@ TH_API void THVector_(scale)(real *y, const real c, const long n) {
 
 static void (*THVector_(mul_DISPATCHPTR))(real *, const real *, const long) = NULL;
 static FunctionDescription THVector_(mul_DISPATCHTABLE)[] = {
-#if defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT)
-  FUNCTION_IMPL(THVector_(mul_SSE), SIMDExtension_SSE),
+#if defined(__NEON__)
+
+  #if defined(TH_REAL_IS_FLOAT)
+    FUNCTION_IMPL(THVector_(mul_NEON), SIMDExtension_NEON);
+  #endif
+
+#else // x86
+
+  #if defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT)
+    FUNCTION_IMPL(THVector_(mul_SSE), SIMDExtension_SSE),
+  #endif
+
 #endif
+
   FUNCTION_IMPL(THVector_(mul_DEFAULT), SIMDExtension_DEFAULT)
 };
 void THVector_(mul)(real *y, const real *x, const long n) {

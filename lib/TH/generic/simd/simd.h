@@ -35,12 +35,24 @@ typedef struct FunctionDescription
 
 enum SIMDExtensions
 {
+#if defined(__NEON__)
+  SIMDExtension_NEON    = 0x1,
+#else
   SIMDExtension_AVX2    = 0x1,
   SIMDExtension_AVX     = 0x2,
   SIMDExtension_SSE     = 0x4,
+#endif
   SIMDExtension_DEFAULT = 0x0
 };
 
+#if defined(__NEON__)
+
+static inline uint32_t detectHostSIMDExtensions()
+{
+  return SIMDExtension_NEON;
+}
+
+#else // x86
 
 static inline void cpuid(uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx)
 {
@@ -73,5 +85,7 @@ static inline uint32_t detectHostSIMDExtensions()
 
   return hostSimdExts;
 }
+
+#endif // end x86 SIMD extension detection code
 
 #endif
