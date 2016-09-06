@@ -38,7 +38,7 @@ enum SIMDExtensions
   SIMDExtension_AVX2    = 0x1,
   SIMDExtension_AVX     = 0x2,
   SIMDExtension_SSE     = 0x4,
-  SIMDExtension_SCALAR  = 0x0
+  SIMDExtension_DEFAULT = 0x0
 };
 
 

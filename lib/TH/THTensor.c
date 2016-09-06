@@ -1,9 +1,10 @@
 #include "THAtomic.h"
 #include "THTensor.h"
 
-#include "THVectorImpls.h"
-#include "generic/THVectorDispatch.c"
+#include "THVectorSIMD.c"
+#include "generic/THVectorDefault.c"
 #include "THGenerateAllTypes.h"
+#include "THVector.h"
 
 #include "THBlas.h"
 #include "THLapack.h"
