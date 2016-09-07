@@ -1,7 +1,7 @@
 #include <x86intrin.h>
 
 
-void THDoubleVector_fill_SSE(double *x, const double c, const long n) {
+static void THDoubleVector_fill_SSE(double *x, const double c, const long n) {
   long i;
   long off;
   __m128d XMM0 = _mm_set1_pd(c);
@@ -18,7 +18,7 @@ void THDoubleVector_fill_SSE(double *x, const double c, const long n) {
 }
 
 
-void THDoubleVector_add_SSE(double *y, const double *x, const double c, const long n) {
+static void THDoubleVector_add_SSE(double *y, const double *x, const double c, const long n) {
   long i = 0;
   __m128d XMM7 = _mm_set1_pd(c);
   __m128d XMM0,XMM2;
@@ -35,7 +35,7 @@ void THDoubleVector_add_SSE(double *y, const double *x, const double c, const lo
 }
 
 
-void THDoubleVector_diff_SSE(double *z, const double *x, const double *y, const long n) {
+static void THDoubleVector_diff_SSE(double *z, const double *x, const double *y, const long n) {
   long i;
   for (i=0; i<=((n)-8); i+=8) {
     __m128d XMM0 = _mm_loadu_pd((x)+i  );
@@ -62,7 +62,7 @@ void THDoubleVector_diff_SSE(double *z, const double *x, const double *y, const 
 }
 
 
-void THDoubleVector_scale_SSE(double *y, const double c, const long n) {
+static void THDoubleVector_scale_SSE(double *y, const double c, const long n) {
   long i;
   __m128d XMM7 = _mm_set1_pd(c);
   for (i=0; i<=((n)-4); i+=4) {
@@ -80,7 +80,7 @@ void THDoubleVector_scale_SSE(double *y, const double c, const long n) {
 }
 
 
-void THDoubleVector_mul_SSE(double *y, const double *x, const long n) {
+static void THDoubleVector_mul_SSE(double *y, const double *x, const long n) {
   long i;
   for (i=0; i<=((n)-8); i+=8) {
     __m128d XMM0 = _mm_loadu_pd((x)+i  );
@@ -107,7 +107,7 @@ void THDoubleVector_mul_SSE(double *y, const double *x, const long n) {
 }
 
 
-void THFloatVector_fill_SSE(float *x, const float c, const long n) {
+static void THFloatVector_fill_SSE(float *x, const float c, const long n) {
   long i;
   __m128 XMM0 = _mm_set_ps1(c);
   long off;
@@ -124,7 +124,7 @@ void THFloatVector_fill_SSE(float *x, const float c, const long n) {
 }
 
 
-void THFloatVector_add_SSE(float *y, const float *x, const float c, const long n) {
+static void THFloatVector_add_SSE(float *y, const float *x, const float c, const long n) {
   long i = 0;
   __m128 XMM7 = _mm_set_ps1(c);
   __m128 XMM0,XMM2;
@@ -141,7 +141,7 @@ void THFloatVector_add_SSE(float *y, const float *x, const float c, const long n
 }
 
 
-void THFloatVector_diff_SSE(float *z, const float *x, const float *y, const long n) {
+static void THFloatVector_diff_SSE(float *z, const float *x, const float *y, const long n) {
   long i;
   for (i=0; i<=((n)-16); i+=16) {
     __m128 XMM0 = _mm_loadu_ps((x)+i   );
@@ -168,7 +168,7 @@ void THFloatVector_diff_SSE(float *z, const float *x, const float *y, const long
 }
 
 
-void THFloatVector_scale_SSE(float *y, const float c, const long n) {
+static void THFloatVector_scale_SSE(float *y, const float c, const long n) {
   long i;
   __m128 XMM7 = _mm_set_ps1(c);
   for (i=0; i<=((n)-8); i+=8) {
@@ -186,7 +186,7 @@ void THFloatVector_scale_SSE(float *y, const float c, const long n) {
 }
 
 
-void THFloatVector_mul_SSE(float *y, const float *x, const long n) {
+static void THFloatVector_mul_SSE(float *y, const float *x, const long n) {
   long i;
   for (i=0; i<=((n)-16); i+=16) {
     __m128 XMM0 = _mm_loadu_ps((x)+i   );
