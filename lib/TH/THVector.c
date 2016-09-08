@@ -1,5 +1,4 @@
 #include "THVector.h"
-#include <assert.h>
 #include "generic/simd/simd.h"
 
 #ifdef __NEON__

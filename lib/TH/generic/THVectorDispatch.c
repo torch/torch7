@@ -12,7 +12,7 @@
  * 3. A dispatch stub, which is what is actually called by clients, that simply wraps the dispatch pointer.
  */
 
-static void (*THVector_(fill_DISPATCHPTR))(real *, const real, const long) = NULL;
+static void (*THVector_(fill_DISPATCHPTR))(real *, const real, const long) = &THVector_(fill_DEFAULT);
 static FunctionDescription THVector_(fill_DISPATCHTABLE)[] = {
   #if defined(__NEON__)
     #if defined(TH_REAL_IS_FLOAT)
@@ -29,12 +29,11 @@ static FunctionDescription THVector_(fill_DISPATCHTABLE)[] = {
   FUNCTION_IMPL(THVector_(fill_DEFAULT), SIMDExtension_DEFAULT)
 };
 void THVector_(fill)(real *x, const real c, const long n) {
-  assert(THVector_(fill_DISPATCHPTR));
   THVector_(fill_DISPATCHPTR)(x, c, n);
 }
 
 
-static void (*THVector_(add_DISPATCHPTR))(real *, const real *, const real, const long) = NULL;
+static void (*THVector_(add_DISPATCHPTR))(real *, const real *, const real, const long) = &THVector_(add_DEFAULT);
 static FunctionDescription THVector_(add_DISPATCHTABLE)[] = {
   #if defined(__NEON__)
     #if defined(TH_REAL_IS_FLOAT)
@@ -52,12 +51,11 @@ static FunctionDescription THVector_(add_DISPATCHTABLE)[] = {
   FUNCTION_IMPL(THVector_(add_DEFAULT), SIMDExtension_DEFAULT)
 };
 void THVector_(add)(real *y, const real *x, const real c, const long n) {
-  assert(THVector_(add_DISPATCHPTR));
   THVector_(add_DISPATCHPTR)(y, x, c, n);
 }
 
 
-static void (*THVector_(diff_DISPATCHPTR))(real *, const real *, const real *, const long) = NULL;
+static void (*THVector_(diff_DISPATCHPTR))(real *, const real *, const real *, const long) = &THVector_(diff_DEFAULT);
 static FunctionDescription THVector_(diff_DISPATCHTABLE)[] = {
   #if defined(__NEON__)
     #if defined(TH_REAL_IS_FLOAT)
@@ -75,12 +73,11 @@ static FunctionDescription THVector_(diff_DISPATCHTABLE)[] = {
   FUNCTION_IMPL(THVector_(diff_DEFAULT), SIMDExtension_DEFAULT)
 };
 void THVector_(diff)(real *z, const real *x, const real *y, const long n) {
-  assert(THVector_(diff_DISPATCHPTR));
   THVector_(diff_DISPATCHPTR)(z, x, y, n);
 }
 
 
-static void (*THVector_(scale_DISPATCHPTR))(real *, const real, const long) = NULL;
+static void (*THVector_(scale_DISPATCHPTR))(real *, const real, const long) = &THVector_(scale_DEFAULT);
 static FunctionDescription THVector_(scale_DISPATCHTABLE)[] = {
   #if defined(__NEON__)
     #if defined(TH_REAL_IS_FLOAT)
@@ -98,12 +95,11 @@ static FunctionDescription THVector_(scale_DISPATCHTABLE)[] = {
   FUNCTION_IMPL(THVector_(scale_DEFAULT), SIMDExtension_DEFAULT)
 };
 TH_API void THVector_(scale)(real *y, const real c, const long n) {
-  assert(THVector_(scale_DISPATCHPTR));
   THVector_(scale_DISPATCHPTR)(y, c, n);
 }
 
 
-static void (*THVector_(mul_DISPATCHPTR))(real *, const real *, const long) = NULL;
+static void (*THVector_(mul_DISPATCHPTR))(real *, const real *, const long) = &THVector_(mul_DEFAULT);
 static FunctionDescription THVector_(mul_DISPATCHTABLE)[] = {
   #if defined(__NEON__)
     #if defined(TH_REAL_IS_FLOAT)
@@ -121,7 +117,6 @@ static FunctionDescription THVector_(mul_DISPATCHTABLE)[] = {
   FUNCTION_IMPL(THVector_(mul_DEFAULT), SIMDExtension_DEFAULT)
 };
 void THVector_(mul)(real *y, const real *x, const long n) {
-  assert(THVector_(mul_DISPATCHPTR));
   THVector_(mul_DISPATCHPTR);
 }
 
