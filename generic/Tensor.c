@@ -1318,6 +1318,7 @@ void torch_Tensor_(init)(lua_State *L)
                     torch_Tensor_(new), torch_Tensor_(free), torch_Tensor_(factory));
   luaT_setfuncs(L, torch_Tensor_(_), 0);
   lua_pop(L, 1);
+  THVector_(vectorDispatchInit)();
 }
 
 #endif
