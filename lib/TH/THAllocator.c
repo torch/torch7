@@ -242,7 +242,7 @@ static void *_map_alloc(void* ctx_, long size)
         if((fd = shm_open(ctx->filename, flags, (mode_t)0600)) == -1)
           THError("unable to open shared memory object <%s> in read-write mode", ctx->filename);
 #else
-        THError("unable to open file <%s> in sharedmem mode, shm_open unavailable on this platform");
+        THError("unable to open file <%s> in sharedmem mode, shm_open unavailable on this platform", ctx->filename);
 #endif
       }
       else
@@ -278,11 +278,16 @@ static void *_map_alloc(void* ctx_, long size)
             close(fd);
             THError("unable to stretch file <%s> to the right size", ctx->filename);
           }
+/* on OS X write returns with errno 45 (Opperation not supported) when used
+ * with a file descriptor obtained via shm_open
+ */
+#ifndef __APPLE__
           if((write(fd, "", 1)) != 1) /* note that the string "" contains the '\0' byte ... */
           {
             close(fd);
             THError("unable to write to file <%s>", ctx->filename);
           }
+#endif
         }
         else
         {
@@ -462,6 +467,18 @@ static void THRefcountedMapAllocator_free(void* ctx_, void* data) {
   THMapAllocatorContext_free(ctx);
 }
 
+void THRefcountedMapAllocator_incref(THMapAllocatorContext *ctx, void *data)
+{
+  THMapInfo *map_info = (THMapInfo*)(((char*)data) - TH_ALLOC_ALIGNMENT);
+  THAtomicIncrementRef(&map_info->refcount);
+}
+
+int THRefcountedMapAllocator_decref(THMapAllocatorContext *ctx, void *data)
+{
+  THMapInfo *map_info = (THMapInfo*)(((char*)data) - TH_ALLOC_ALIGNMENT);
+  return THAtomicDecrementRef(&map_info->refcount);
+}
+
 #else
 
 static void * THRefcountedMapAllocator_alloc(void *ctx, long size) {
@@ -475,6 +492,16 @@ static void *THRefcountedMapAllocator_realloc(void* ctx, void* ptr, long size) {
 }
 
 static void THRefcountedMapAllocator_free(void* ctx_, void* data) {
+  THError("refcounted file mapping not supported on your system");
+}
+
+void THRefcountedMapAllocator_incref(THMapAllocatorContext *ctx, void *data)
+{
+  THError("refcounted file mapping not supported on your system");
+}
+
+int THRefcountedMapAllocator_decref(THMapAllocatorContext *ctx, void *data)
+{
   THError("refcounted file mapping not supported on your system");
 }
 
