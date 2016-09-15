@@ -234,7 +234,7 @@ function torchtest.frac()
    end
 
    local f
-   local t = genericSingleOpTest:gsub('functionname', 'frac'):gsub('math.frac', 'TH_frac')   
+   local t = genericSingleOpTest:gsub('functionname', 'frac'):gsub('math.frac', 'TH_frac')
    local env = { TH_frac=TH_frac, torch=torch, math=math }
    if not setfenv then -- Lua 5.2
       f = load(t, 'test', 't', env)
@@ -1788,6 +1788,14 @@ function torchtest.mode()
    mx, ix = torch.mode(x, 1)
    mytester:assertTensorEq(res:view(1, msize), mx, 0, 'torch.mode value')
    mytester:assertTensorEq(resix:view(1, msize), ix, 0, 'torch.mode index')
+
+   local input = torch.Tensor({
+       {1, 2, 2, 2, 3, 2},
+       {1.5, 2, 2, 1.5, 1.5, 5},
+   })
+   local value, index = torch.mode(input)
+   local expected_value = torch.Tensor({{2}, {1.5}})
+   mytester:assertTensorEq(value, expected_value)
 
    -- input unchanged
    mytester:assertTensorEq(x, x0, 0, 'torch.mode modified input')
