@@ -1,7 +1,27 @@
 #include "general.h"
 
 #if (defined(_MSC_VER) || defined(__MINGW32__))
-#include <time.h>
+
+#include <sys/timeb.h>
+
+struct timeval {
+  time_t tv_sec;
+  unsigned short tv_usec;
+};
+
+int gettimeofday(struct timeval* tp, void* tzp) {
+  struct _timeb tb;
+  _ftime_s(&tb);
+  tp->tv_sec = tb.time;
+  tp->tv_usec = tb.millitm;
+  return 0;
+}
+
+/*
+ * There is an example of getrusage for windows in following link:
+ * https://github.com/openvswitch/ovs/blob/master/lib/getrusage-windows.c
+ */
+
 #else
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -18,24 +38,13 @@ typedef struct _Timer
     double startrealtime;
     double startusertime;
     double startsystime;
-
-#if (defined(_MSC_VER) || defined(__MINGW32__))
-  time_t base_time;
-#endif
-
 } Timer;
 
 static double torch_Timer_realtime()
 {
-#ifdef WIN32
-  time_t ltime;
-  time(&ltime);
-  return (double)(ltime);
-#else
   struct timeval current;
   gettimeofday(&current, NULL);
   return (current.tv_sec + current.tv_usec/1000000.0);
-#endif
 }
 
 static double torch_Timer_usertime()
@@ -63,11 +72,6 @@ static double torch_Timer_systime()
 static int torch_Timer_new(lua_State *L)
 {
   Timer *timer = luaT_alloc(L, sizeof(Timer));
-#ifdef _MSC_VER
-  timer->base_time = 0;
-  while(!timer->base_time)
-    time(&timer->base_time);
-#endif
   timer->isRunning = 1;
   timer->totalrealtime = 0;
   timer->totalusertime = 0;

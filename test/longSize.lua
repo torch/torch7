@@ -17,6 +17,7 @@ function tests.diskFileLongSize8()
   tensor2 = f:readObject()
   f:close()
   tester:assert(tensor:norm()==tensor2:norm())
+  os.remove('tensor8.bin')
 end
 
 function tests.diskFileLongSize4()
@@ -31,6 +32,7 @@ function tests.diskFileLongSize4()
   tensor2 = f:readObject()
   f:close()
   tester:assert(tensor:norm()==tensor2:norm())
+  os.remove('tensor4.bin')
 end
 
 function tests.memoryFileLongSize8()
