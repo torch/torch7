@@ -13,7 +13,7 @@ int gettimeofday(struct timeval* tp, void* tzp) {
   struct _timeb tb;
   _ftime_s(&tb);
   tp->tv_sec = tb.time;
-  tp->tv_usec = tb.millitm;
+  tp->tv_usec = tb.millitm * 1000;
   return 0;
 }
 
