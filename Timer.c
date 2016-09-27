@@ -1,21 +1,10 @@
 #include "general.h"
 
-#if (defined(_MSC_VER) || defined(__MINGW32__))
+#ifdef _WIN32
 
-#include <sys/timeb.h>
-
-struct timeval {
-  time_t tv_sec;
-  unsigned short tv_usec;
-};
-
-int gettimeofday(struct timeval* tp, void* tzp) {
-  struct _timeb tb;
-  _ftime_s(&tb);
-  tp->tv_sec = tb.time;
-  tp->tv_usec = tb.millitm * 1000;
-  return 0;
-}
+#include <windows.h>
+#define TimeType __int64
+static __declspec( thread ) TimeType ticksPerSecond = 0;
 
 /*
  * There is an example of getrusage for windows in following link:
@@ -23,33 +12,42 @@ int gettimeofday(struct timeval* tp, void* tzp) {
  */
 
 #else
+
 #include <sys/time.h>
 #include <sys/resource.h>
+#define TimeType double
+
 #endif
 
 typedef struct _Timer
 {
     int isRunning;
 
-    double totalrealtime;
-    double totalusertime;
-    double totalsystime;
+    TimeType totalrealtime;
+    TimeType totalusertime;
+    TimeType totalsystime;
 
-    double startrealtime;
-    double startusertime;
-    double startsystime;
+    TimeType startrealtime;
+    TimeType startusertime;
+    TimeType startsystime;
 } Timer;
 
-static double torch_Timer_realtime()
+static TimeType torch_Timer_realtime()
 {
+#ifdef _WIN32
+  TimeType current;
+  QueryPerformanceCounter(&current);
+  return current;
+#else
   struct timeval current;
   gettimeofday(&current, NULL);
   return (current.tv_sec + current.tv_usec/1000000.0);
+#endif
 }
 
-static double torch_Timer_usertime()
+static TimeType torch_Timer_usertime()
 {
-#ifdef WIN32
+#ifdef _WIN32
   return torch_Timer_realtime();
 #else
   struct rusage current;
@@ -58,9 +56,9 @@ static double torch_Timer_usertime()
 #endif
 }
 
-static double torch_Timer_systime()
+static TimeType torch_Timer_systime()
 {
-#ifdef WIN32
+#ifdef _WIN32
   return 0;
 #else
   struct rusage current;
@@ -71,6 +69,12 @@ static double torch_Timer_systime()
 
 static int torch_Timer_new(lua_State *L)
 {
+#ifdef _WIN32
+  if (ticksPerSecond == 0)
+  {
+    QueryPerformanceFrequency(&ticksPerSecond);
+  }
+#endif
   Timer *timer = luaT_alloc(L, sizeof(Timer));
   timer->isRunning = 1;
   timer->totalrealtime = 0;
@@ -108,9 +112,9 @@ static int torch_Timer_stop(lua_State *L)
   Timer *timer = luaT_checkudata(L, 1, "torch.Timer");
   if(timer->isRunning)  
   {
-    double realtime = torch_Timer_realtime() - timer->startrealtime;
-    double usertime = torch_Timer_usertime() - timer->startusertime;
-    double systime = torch_Timer_systime() - timer->startsystime;
+    TimeType realtime = torch_Timer_realtime() - timer->startrealtime;
+    TimeType usertime = torch_Timer_usertime() - timer->startusertime;
+    TimeType systime = torch_Timer_systime() - timer->startsystime;
     timer->totalrealtime += realtime;
     timer->totalusertime += usertime;
     timer->totalsystime += systime;
@@ -140,6 +144,11 @@ static int torch_Timer_time(lua_State *L)
   double realtime = (timer->isRunning ? (timer->totalrealtime + torch_Timer_realtime() - timer->startrealtime) : timer->totalrealtime);
   double usertime = (timer->isRunning ? (timer->totalusertime + torch_Timer_usertime() - timer->startusertime) : timer->totalusertime);
   double systime = (timer->isRunning ? (timer->totalsystime + torch_Timer_systime() - timer->startsystime) : timer->totalsystime);
+#ifdef _WIN32
+  realtime /= ticksPerSecond;
+  usertime /= ticksPerSecond;
+  systime  /= ticksPerSecond;
+#endif
   lua_createtable(L, 0, 3);
   lua_pushnumber(L, realtime);
   lua_setfield(L, -2, "real");
