@@ -35,9 +35,9 @@ function tests.timerTime()
   wait(1)
   passed_time = timer:time().real
   tester:assert(passed_time < 2.2,
-               ("Too long time passed: %.1f sec >= 2.1 sec"):format(passed_time))
+               ("Too long time passed: %.1f sec >= 2.2 sec"):format(passed_time))
   tester:assert(passed_time > 1.8,
-               ("Too short time passed:  %.1f sec <= 1.9 sec"):format(passed_time))
+               ("Too short time passed:  %.1f sec <= 1.8 sec"):format(passed_time))
 
   timer:reset()
   wait(1)
