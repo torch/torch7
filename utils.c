@@ -61,6 +61,12 @@ int torch_islongargs(lua_State *L, int index)
   return 0;
 }
 
+#ifdef _WIN32
+#include <windows.h>
+#include <io.h>
+static __declspec( thread ) LARGE_INTEGER ticksPerSecond = { 0 };
+#endif
+
 static int torch_isatty(lua_State *L)
 {
   FILE **fp = (FILE **) luaL_checkudata(L, -1, LUA_FILEHANDLE);
@@ -72,21 +78,16 @@ static int torch_isatty(lua_State *L)
   return 1;
 }
 
-#ifdef _WIN32
-#include <windows.h>
-static __declspec( thread ) __int64 ticksPerSecond = 0;
-#endif
-
 static double real_time()
 {
 #ifdef _WIN32
-  if (ticksPerSecond == 0)
+  if (ticksPerSecond.QuadPart == 0)
   {
     QueryPerformanceFrequency(&ticksPerSecond);
   }
-  __int64 current;
+  LARGE_INTEGER current;
   QueryPerformanceCounter(&current);
-  return (double)(current) / ticksPerSecond;
+  return (double)(current.QuadPart) / ticksPerSecond.QuadPart;
 #else
   struct timeval current;
   gettimeofday(&current, NULL);
