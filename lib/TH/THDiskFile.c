@@ -757,7 +757,7 @@ THFile *THPipeFile_new(const char *name, const char *mode, int isQuiet)
   THArgCheck(THPipeFile_mode(mode, &isReadable, &isWritable), 2, "file mode should be 'r','w'");
 
 #ifdef _WIN32
-  handle = popen(name, (isReadable ? "rb" : "wb"));
+  handle = _popen(name, (isReadable ? "rb" : "wb"));
 #else
   handle = popen(name, (isReadable ? "r" : "w"));
 #endif

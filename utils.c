@@ -63,21 +63,30 @@ int torch_islongargs(lua_State *L, int index)
 
 static int torch_isatty(lua_State *L)
 {
-#ifdef _WIN32
-  lua_pushboolean(L, 0);
-#else
   FILE **fp = (FILE **) luaL_checkudata(L, -1, LUA_FILEHANDLE);
+#ifdef _WIN32
+  lua_pushboolean(L, _isatty(_fileno(*fp)));
+#else
   lua_pushboolean(L, isatty(fileno(*fp)));
 #endif
   return 1;
 }
 
+#ifdef _WIN32
+#include <windows.h>
+static __declspec( thread ) __int64 ticksPerSecond = 0;
+#endif
+
 static double real_time()
 {
 #ifdef _WIN32
-  time_t ltime;
-  time(&ltime);
-  return (double)(ltime);
+  if (ticksPerSecond == 0)
+  {
+    QueryPerformanceFrequency(&ticksPerSecond);
+  }
+  __int64 current;
+  QueryPerformanceCounter(&current);
+  return (double)(current) / ticksPerSecond;
 #else
   struct timeval current;
   gettimeofday(&current, NULL);
