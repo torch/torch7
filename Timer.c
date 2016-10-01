@@ -3,6 +3,7 @@
 #ifdef _WIN32
 
 #include <windows.h>
+#include <assert.h>
 #define TimeType __int64
 static __declspec( thread ) TimeType ticksPerSecond = 0;
 
@@ -72,6 +73,7 @@ static int torch_Timer_new(lua_State *L)
 #ifdef _WIN32
   if (ticksPerSecond == 0)
   {
+    assert(sizeof(LARGE_INTEGER) == sizeof(__int64));
     QueryPerformanceFrequency(&ticksPerSecond);
   }
 #endif
