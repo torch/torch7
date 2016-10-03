@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
 
 #include "luaT.h"
 #include "TH.h"

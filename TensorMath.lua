@@ -4,6 +4,58 @@ require 'torchcwrap'
 
 local interface = wrap.CInterface.new()
 local method = wrap.CInterface.new()
+local argtypes = wrap.CInterface.argtypes
+
+argtypes['ptrdiff_t'] = {
+
+  helpname = function(arg)
+                return 'ptrdiff_t' 
+             end,
+
+  declare = function(arg)
+               -- if it is a number we initialize here
+               local default = tonumber(tostring(arg.default)) or 0
+               return string.format("%s arg%d = %g;", 'ptrdiff_t', arg.i, default)
+            end,
+
+  check = function(arg, idx)
+             return string.format("lua_isnumber(L, %d)", idx)
+          end,
+
+  read = function(arg, idx)
+            return string.format("arg%d = (%s)lua_tonumber(L, %d);", arg.i, 'ptrdiff_t', idx)
+         end,
+
+  init = function(arg)
+            -- otherwise do it here
+            if arg.default then
+               local default = tostring(arg.default)
+               if not tonumber(default) then
+                  return string.format("arg%d = %s;", arg.i, default)
+               end
+            end
+         end,
+  
+  carg = function(arg)
+            return string.format('arg%d', arg.i)
+         end,
+
+  creturn = function(arg)
+               return string.format('arg%d', arg.i)
+            end,
+  
+  precall = function(arg)
+               if arg.returned then
+                  return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
+               end
+            end,
+  
+  postcall = function(arg)
+                if arg.creturned then
+                   return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
+                end
+             end
+}
 
 interface:print([[
 #include "TH.h"
@@ -533,7 +585,7 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
    wrap("numel",
         cname("numel"),
         {{name=Tensor},
-         {name="long", creturned=true}})
+         {name="ptrdiff_t", creturned=true}})
 
    for _,name in ipairs({"cumsum", "cumprod"}) do
       wrap(name,
