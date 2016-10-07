@@ -39,7 +39,7 @@ IMPLEMENT_TORCH_FILE_FUNC(synchronize)
 static int torch_File_seek(lua_State *L)
 {
   THFile *self = luaT_checkudata(L, 1, "torch.File");
-  long position = luaL_checklong(L, 2)-1;
+  ptrdiff_t position = luaL_checkinteger(L, 2)-1;
   // >= 0 because it has 1 already subtracted
   THArgCheck(position >= 0, 2, "position has to be greater than 0!");
   THFile_seek(self, (size_t)position);
@@ -73,8 +73,8 @@ IMPLEMENT_TORCH_FILE_FUNC(close)
     {                                                                   \
       if(lua_isnumber(L, 2))                                            \
       {                                                                 \
-        long size = lua_tonumber(L, 2);                                 \
-        long nread;                                                     \
+        ptrdiff_t size = lua_tonumber(L, 2);                                 \
+        ptrdiff_t nread;                                                     \
                                                                         \
         TH##TYPEC##Storage *storage = TH##TYPEC##Storage_newWithSize(size); \
         luaT_pushudata(L, storage, "torch." #TYPEC "Storage");          \
@@ -134,7 +134,7 @@ static int torch_File_readString(lua_State *L)
   THFile *self = luaT_checkudata(L, 1, "torch.File");
   const char *format = luaL_checkstring(L, 2);
   char *str;
-  long size;
+  ptrdiff_t size;
 
   size = THFile_readStringRaw(self, format, &str);
   lua_pushlstring(L, str, size);
@@ -151,7 +151,7 @@ static int torch_File_writeString(lua_State *L)
 
   luaL_checktype(L, 2, LUA_TSTRING);
   str = lua_tolstring(L, 2, &size);
-  lua_pushnumber(L, THFile_writeStringRaw(self, str, (long)size));
+  lua_pushnumber(L, THFile_writeStringRaw(self, str, size));
   return 1;
 }
 

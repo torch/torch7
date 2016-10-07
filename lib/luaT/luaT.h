@@ -47,8 +47,8 @@ static int luaL_typerror(lua_State *L, int narg, const char *tname)
 
 /* C functions */
 
-LUAT_API void* luaT_alloc(lua_State *L, long size);
-LUAT_API void* luaT_realloc(lua_State *L, void *ptr, long size);
+LUAT_API void* luaT_alloc(lua_State *L, ptrdiff_t size);
+LUAT_API void* luaT_realloc(lua_State *L, void *ptr, ptrdiff_t size);
 LUAT_API void luaT_free(lua_State *L, void *ptr);
 
 LUAT_API void luaT_setfuncs(lua_State *L, const luaL_Reg *l, int nup);
@@ -72,6 +72,9 @@ LUAT_API void *luaT_checkudata(lua_State *L, int ud, const char *tname);
 LUAT_API void luaT_pushlong(lua_State *L, long n);
 LUAT_API long luaT_checklong(lua_State *L, int idx);
 LUAT_API long luaT_tolong(lua_State *L, int idx);
+
+LUAT_API void luaT_pushinteger(lua_State *L, ptrdiff_t n);
+LUAT_API ptrdiff_t luaT_checkinteger(lua_State *L, int idx);
 
 LUAT_API void *luaT_getfieldcheckudata(lua_State *L, int ud, const char *field, const char *tname);
 LUAT_API void *luaT_getfieldchecklightudata(lua_State *L, int ud, const char *field);
