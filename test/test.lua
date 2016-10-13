@@ -2946,11 +2946,13 @@ function torchtest.classInModule()
     mytester:assert(x ~= nil, 'Could not create class in module')
     -- Remove the global
     _G['_mymodule123'] = nil
+    debug.getregistry()['_mymodule123.myclass']=nil
 end
 
 function torchtest.classNoModule()
     local x = torch.class('_myclass123')
     mytester:assert(x ~= nil, 'Could not create class in module')
+    debug.getregistry()['_myclass123'] = nil
 end
 
 function torchtest.type()
@@ -2977,6 +2979,9 @@ function torchtest.isTypeOfInheritance()
    mytester:assert(torch.isTypeOf(b, A), 'isTypeOf error: inheritance')
    mytester:assert(not torch.isTypeOf(c, 'B'), 'isTypeOf error: common parent')
    mytester:assert(not torch.isTypeOf(c, B), 'isTypeOf error: common parent')
+   debug.getregistry()['A'] = nil
+   debug.getregistry()['B'] = nil
+   debug.getregistry()['C'] = nil
 end
 
 function torchtest.isTypeOfPartial()
@@ -3020,6 +3025,13 @@ function torchtest.isTypeOfPartial()
                    'isTypeOf error: inheritance')
    mytester:assert(not torch.isTypeOf(ttm, 'TorchMember'),
                    'isTypeOf error: inheritance')
+   debug.getregistry()['TorchDummy'] = nil
+   debug.getregistry()['OtherTorchDummy'] = nil
+   debug.getregistry()['TorchMember'] = nil
+   debug.getregistry()['OtherTorchMember'] = nil
+   debug.getregistry()['FirstTorchMember'] = nil
+   debug.getregistry()['SecondTorchMember'] = nil
+   debug.getregistry()['ThirdTorchMember'] = nil
 end
 
 function torchtest.isTypeOfPattern()
