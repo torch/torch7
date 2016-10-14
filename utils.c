@@ -237,6 +237,12 @@ static int torch_updateerrorhandlers(lua_State *L)
   return 0;
 }
 
+static int torch_getmemory(lua_State *L)
+{
+  lua_pushinteger(L, THGetHeapSize());
+  return 1;
+}
+
 static const struct luaL_Reg torch_utils__ [] = {
   {"getdefaulttensortype", torch_lua_getdefaulttensortype},
   {"isatty", torch_isatty},
@@ -260,6 +266,7 @@ static const struct luaL_Reg torch_utils__ [] = {
   {"pointer", luaT_lua_pointer},
   {"setheaptracking", torch_setheaptracking},
   {"updateerrorhandlers", torch_updateerrorhandlers},
+  {"getmemory", torch_getmemory},
   {NULL, NULL}
 };
 
