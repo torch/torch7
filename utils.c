@@ -7,10 +7,6 @@
 # include <sys/time.h>
 #endif
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
 THLongStorage* torch_checklongargs(lua_State *L, int index)
 {
   THLongStorage *storage;
@@ -171,30 +167,19 @@ const char* torch_getdefaulttensortype(lua_State *L)
 
 static int torch_getnumthreads(lua_State *L)
 {
-#ifdef _OPENMP
-  lua_pushinteger(L, omp_get_max_threads());
-#else
-  lua_pushinteger(L, 1);
-#endif
+  lua_pushinteger(L, THGetNumThreads());
   return 1;
 }
 
 static int torch_setnumthreads(lua_State *L)
 {
-#ifdef _OPENMP
-  int nth = luaL_checkint(L,1);
-  omp_set_num_threads(nth);
-#endif
+  THSetNumThreads(luaL_checkint(L, 1));
   return 0;
 }
 
 static int torch_getnumcores(lua_State *L)
 {
-#ifdef _OPENMP
-  lua_pushinteger(L, omp_get_num_procs());
-#else
-  lua_pushinteger(L, 1);
-#endif
+  lua_pushinteger(L, THGetNumCores());
   return 1;
 }
 
