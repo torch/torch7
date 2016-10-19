@@ -1,6 +1,7 @@
 #ifndef TH_FILE_INC
 #define TH_FILE_INC
 
+#include <stdint.h>
 #include "THStorage.h"
 
 typedef struct THFile__ THFile;
@@ -64,6 +65,7 @@ TH_API size_t THFile_readLongRaw(THFile *self, long *data, size_t n);
 TH_API size_t THFile_readFloatRaw(THFile *self, float *data, size_t n);
 TH_API size_t THFile_readDoubleRaw(THFile *self, double *data, size_t n);
 TH_API size_t THFile_readStringRaw(THFile *self, const char *format, char **str_); /* you must deallocate str_ */
+TH_API size_t THFile_readPointerRaw(THFile *self, intptr_t *data);
 
 TH_API size_t THFile_writeByteRaw(THFile *self, unsigned char *data, size_t n);
 TH_API size_t THFile_writeCharRaw(THFile *self, char *data, size_t n);
@@ -73,6 +75,7 @@ TH_API size_t THFile_writeLongRaw(THFile *self, long *data, size_t n);
 TH_API size_t THFile_writeFloatRaw(THFile *self, float *data, size_t n);
 TH_API size_t THFile_writeDoubleRaw(THFile *self, double *data, size_t n);
 TH_API size_t THFile_writeStringRaw(THFile *self, const char *str, size_t size);
+TH_API size_t THFile_writePointerRaw(THFile *self, intptr_t data);
 
 TH_API void THFile_synchronize(THFile *self);
 TH_API void THFile_seek(THFile *self, size_t position);
