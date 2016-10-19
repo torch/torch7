@@ -348,8 +348,8 @@ READ_WRITE_METHODS(double, Double,
                    1)
 
 READ_WRITE_METHODS(intptr_t, Pointer,
-                   int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%p%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
-                   nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%p", data[i]),
+                   int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%p%n", (void **)&data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
+                   nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%p", (void *)data[i]),
                    1)
 
 int THDiskFile_isLittleEndianCPU(void);

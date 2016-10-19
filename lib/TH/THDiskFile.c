@@ -363,8 +363,8 @@ READ_WRITE_METHODS(double, Double,
                    int ret = fprintf(dfself->handle, "%.17g", data[i]); if(ret <= 0) break; else nwrite++)
 
 READ_WRITE_METHODS(intptr_t, Pointer,
-                   int ret = fscanf(dfself->handle, "%p", &data[i]); if(ret <= 0) break; else nread++,
-                   int ret = fprintf(dfself->handle, "%p", data[i]); if(ret <= 0) break; else nwrite++)
+                   int ret = fscanf(dfself->handle, "%p", (void **)&data[i]); if(ret <= 0) break; else nread++,
+                   int ret = fprintf(dfself->handle, "%p", (void *)data[i]); if(ret <= 0) break; else nwrite++)
 
 
 /* For Long we need to rewrite everything, because of the special management of longSize */
