@@ -347,6 +347,11 @@ READ_WRITE_METHODS(double, Double,
                    nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%.17g", data[i]),
                    1)
 
+READ_WRITE_METHODS(intptr_t, Pointer,
+                   int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%p%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
+                   nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%p", data[i]),
+                   1)
+
 int THDiskFile_isLittleEndianCPU(void);
 
 static size_t THMemoryFile_readLong(THFile *self, long *data, size_t n)
@@ -622,6 +627,7 @@ THFile *THMemoryFile_newWithStorage(THCharStorage *storage, const char *mode)
     THMemoryFile_readFloat,
     THMemoryFile_readDouble,
     THMemoryFile_readString,
+    THMemoryFile_readPointer,
 
     THMemoryFile_writeByte,
     THMemoryFile_writeChar,
@@ -631,6 +637,7 @@ THFile *THMemoryFile_newWithStorage(THCharStorage *storage, const char *mode)
     THMemoryFile_writeFloat,
     THMemoryFile_writeDouble,
     THMemoryFile_writeString,
+    THMemoryFile_writePointer,
 
     THMemoryFile_synchronize,
     THMemoryFile_seek,
