@@ -1,4 +1,4 @@
-#include <stddef.h>
+#include <stdint.h>
 
 struct THFile__
 {
