@@ -362,6 +362,13 @@ For more than 4 dimensions, you can use a storage: `y = torch.zeros(torch.LongSt
 
 `x:atan()` replaces all elements in-place with the arctangent of the elements of `x`.
 
+<a name="torch.atan2"></a>
+### [res] torch.atan2([res,] x, y) ###
+<a name="torch.atan2"></a>
+
+`y = torch.atan2(x, y)` returns a new `Tensor` with the arctangent of the elements of `x` and `y`.
+
+`x:atan2()` replaces all elements in-place with the arctangent of the elements of `x` and `y`.
 
 <a name="torch.ceil"></a>
 ### [res] torch.ceil([res,] x) ###
@@ -427,19 +434,16 @@ For more than 4 dimensions, you can use a storage: `y = torch.zeros(torch.LongSt
 This function is more accurate than [`log`](#torch.log) for small values of `x`.
 
 
-<a name="x:neg"></a>
+<a name="torch.neg"></a>
 ### x:neg() ###
-<a name="x:neg"></a>
 
 `x:neg()` replaces all elements in-place with the sign-reversed values of the elements of `x`.
 
-
-<a name="x:cinv"></a>
+<a name="torch.cinv"></a>
 ### x:cinv() ###
-<a name="x:cinv"></a>
+<a name="torch.cinv"></a>
 
 `x:cinv()` replaces all elements in-place with `1.0 / x`.
-
 
 <a name="torch.pow"></a>
 ### [res] torch.pow([res,] x, n) ###
@@ -632,18 +636,17 @@ The number of elements must match, but sizes do not matter.
 `torch.add(z, x, value, y)` puts the result of `x + value * y` in `z`.
 
 
-<a name="x:csub"></a>
+<a name="torch.csub"></a>
 ### tensor:csub(value) ###
-<a name="x:csub"></a>
+<a name="torch.csub"></a>
 
 Subtracts the given value from all elements in the `Tensor`, in place.
 
+<a name="torch.csub"></a>
+### tensor:csub(tensor2) ###
+<a name="torch.csub"></a>
 
-<a name="x:csub"></a>
-### tensor1:csub(tensor2) ###
-<a name="x:csub"></a>
-
-Subtracts `tensor2` from `tensor1`, in place.
+Subtracts `tensor2` from `tensor`, in place.
 The number of elements must match, but sizes do not matter.
 
 ```lua
@@ -2704,36 +2707,38 @@ They return a `ByteTensor` in which each element is `0` or `1` indicating if the
 Implements `<` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.le"></a>
 ### torch.le(a, b) ###
 
 Implements `<=` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.gt"></a>
 ### torch.gt(a, b) ###
 
 Implements `>` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.ge"></a>
 ### torch.ge(a, b) ###
 
 Implements `>=` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.eq"></a>
 ### torch.eq(a, b) ###
 
 Implements `==` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.ne"></a>
 ### torch.ne(a, b) ###
 
 Implements `~=` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
+<a name="torch.all"></a>
+<a name="torch.any"></a>
 ### torch.all(a) ###
 ### torch.any(a) ###
 
