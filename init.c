@@ -41,6 +41,24 @@ extern void torch_HalfTensorOperator_init(lua_State *L);
 
 extern void torch_TensorMath_init(lua_State *L);
 
+static int torch_hashalfmath(lua_State *L) {
+  /* Whether of not 'half' has CPU math defined.
+     Todo: set to true for ARM and define math in this case
+     instead of TH_USE_HALF_MATH compile-time switch
+  */
+  lua_pushboolean(L, 0);
+  return 1;
+}
+
+static void torch_half_init(lua_State *L)
+{
+  const struct luaL_Reg half_funcs__ [] = {
+    {"hashalfmath", torch_hashalfmath},
+    {NULL, NULL}
+  };
+
+  luaT_setfuncs(L, half_funcs__, 0);
+}
 
 LUA_EXTERNC DLL_EXPORT int luaopen_libtorch(lua_State *L);
 

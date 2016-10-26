@@ -1,5 +1,4 @@
 #include "THHalf.h"
-#include "luaT.h"
 #include "TH.h"
 
 float TH_half2float(half a)
@@ -90,22 +89,4 @@ half TH_float2half(float a)
   half ret;
   memcpy(&ret, &ir, sizeof(half));
   return ret;
-}
-
-static int torch_hashalfmath(lua_State *L) {
-  /* Whether of not 'half' has math defined.
-     Todo: set to true for ARM and define math */
-  lua_pushboolean(L, 0);
-  return 1;
-}
-
-static const struct luaL_Reg half_funcs__ [] = {
-  {"hashalfmath", torch_hashalfmath},
-  {NULL, NULL}
-};
-
-
-void torch_half_init(lua_State *L)
-{
-  luaT_setfuncs(L, half_funcs__, 0);
 }
