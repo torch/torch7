@@ -15,6 +15,17 @@ local function checkArgumentType(expected, actual, fn, ud, level)
 end
 
 if ok then
+
+-- 16-bit floating-point type
+-- Definition lifted from CUDA.
+-- CPU support limited to copy/construction/storage.
+   ffi.cdef([[
+                 typedef struct {
+                   unsigned short x;
+                 } __half;
+                 typedef __half half;
+      ]])
+
    local Real2real = {
       Byte='unsigned char',
       Char='char',
@@ -22,7 +33,8 @@ if ok then
       Int='int',
       Long='long',
       Float='float',
-      Double='double'
+      Double='double',
+      Half='half'
    }
 
    -- Allocator
@@ -33,7 +45,6 @@ typedef struct THAllocator {
   void (*free)(void*, void*);
 } THAllocator;
 ]]
-
    -- Storage
    for Real, real in pairs(Real2real) do
 
@@ -76,7 +87,7 @@ typedef struct THRealTensor
     long *size;
     long *stride;
     int nDimension;
-    
+
     THRealStorage *storage;
     ptrdiff_t storageOffset;
     int refcount;

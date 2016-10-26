@@ -12,8 +12,16 @@ void THTensor_(fill)(THTensor *r_, real value)
 
 void THTensor_(zero)(THTensor *r_)
 {
+#ifdef TH_REAL_IS_HALF
+  half LOCAL_ZERO;
+  LOCAL_ZERO.x = TH_HALF_ZERO;
+#else
+# define LOCAL_ZERO 0
+#endif
+
   TH_TENSOR_APPLY(real, r_,
-                  THVector_(fill)(r__data, 0, r__size); break;);
+                  THVector_(fill)(r__data, LOCAL_ZERO, r__size); break;);
+# undef LOCAL_ZERO
 }
 
 void THTensor_(maskedFill)(THTensor *tensor, THByteTensor *mask, real value)
@@ -98,10 +106,15 @@ void THTensor_(nonzero)(THLongTensor *subscript, THTensor *tensor)
   long i = 0;
   long dim;
   long div = 1;
+#ifdef TH_REAL_IS_HALF
+#define IS_NONZERO(val) ((val).x!=0)
+#else
+#define IS_NONZERO(val) ((val)!=0)
+#endif
 
   /* First Pass to determine size of subscripts */
   TH_TENSOR_APPLY(real, tensor,
-                  if (*tensor_data != 0) {
+                  if IS_NONZERO(*tensor_data) {
                     ++numel;
                   });
 #ifdef DEBUG
@@ -112,7 +125,7 @@ void THTensor_(nonzero)(THLongTensor *subscript, THTensor *tensor)
   /* Second pass populates subscripts */
   subscript_data = THLongTensor_data(subscript);
   TH_TENSOR_APPLY(real, tensor,
-                  if (*tensor_data != 0) {
+                  if IS_NONZERO(*tensor_data) {
                     div = 1;
 
                     for (dim = tensor->nDimension - 1; dim >= 0; dim--) {
@@ -124,6 +137,9 @@ void THTensor_(nonzero)(THLongTensor *subscript, THTensor *tensor)
                   }
                   ++i;);
 }
+
+
+#ifndef TH_REAL_IS_HALF
 
 void THTensor_(indexSelect)(THTensor *tensor, THTensor *src, int dim, THLongTensor *index)
 {
@@ -395,6 +411,7 @@ accreal THTensor_(dot)(THTensor *tensor, THTensor *src)
                    break;);
   return sum;
 }
+
 
 #undef th_isnan
 #if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
@@ -2499,4 +2516,6 @@ void THTensor_(histc)(THTensor *hist, THTensor *tensor, long nbins, real minvalu
 }
 
 #endif /* floating point only part */
+#endif /* half */
+#undef IS_NONZERO
 #endif

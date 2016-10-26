@@ -202,7 +202,7 @@ types.IndexTensor = {
 }
 
 for _,typename in ipairs({"ByteTensor", "CharTensor", "ShortTensor", "IntTensor", "LongTensor",
-                          "FloatTensor", "DoubleTensor"}) do
+                          "FloatTensor", "HalfTensor", "DoubleTensor"}) do
 
    types[typename] = {
 
@@ -459,4 +459,56 @@ types.charoption = {
 
    postcall = function(arg)
               end
+}
+
+wrap.types.half = {
+
+    helpname = function(arg)
+        return "half"
+    end,
+
+    declare = function(arg)
+        -- if it is a number we initialize here
+        local default = tonumber(interpretdefaultvalue(arg)) or 0
+        return string.format("half arg%d = THC_float2half((float) %d);", arg.i, tonumber(default))
+    end,
+
+    check = function(arg, idx)
+        return string.format("lua_isnumber(L, %d)", idx)
+    end,
+
+    read = function(arg, idx)
+        return string.format("arg%d = THC_float2half((float) lua_tonumber(L, %d));", arg.i, idx)
+    end,
+
+    init = function(arg)
+        -- otherwise do it here
+        if arg.default then
+            local default = interpretdefaultvalue(arg)
+            if not tonumber(default) then
+                return string.format("arg%d = THC_float2half((float) %s);", arg.i, default)
+            end
+        end
+    end,
+
+    carg = function(arg)
+        return string.format('arg%d', arg.i)
+    end,
+
+    creturn = function(arg)
+        return string.format('arg%d', arg.i)
+    end,
+
+    precall = function(arg)
+        if arg.returned then
+            return string.format('lua_pushnumber(L, (lua_Number) THC_half2float(arg%d));', arg.i)
+        end
+    end,
+
+    postcall = function(arg)
+        if arg.creturned then
+            return string.format('lua_pushnumber(L, (lua_Number) THC_half2float(arg%d));', arg.i)
+        end
+    end
+
 }

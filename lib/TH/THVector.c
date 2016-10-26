@@ -1,4 +1,6 @@
+#define TH_GENERIC_NO_HALF
 #include "THVector.h"
+
 #include "generic/simd/simd.h"
 
 #ifdef __NEON__
@@ -15,3 +17,4 @@
 
 #include "generic/THVectorDispatch.c"
 #include "THGenerateAllTypes.h"
+#undef   TH_GENERIC_NO_HALF

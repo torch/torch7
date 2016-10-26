@@ -14,10 +14,11 @@
 #include "generic/THTensorCopy.c"
 #include "THGenerateAllTypes.h"
 
-#include "generic/THTensorRandom.c"
+#include "generic/THTensorMath.c"
 #include "THGenerateAllTypes.h"
 
-#include "generic/THTensorMath.c"
+#define  TH_GENERIC_NO_HALF
+#include "generic/THTensorRandom.c"
 #include "THGenerateAllTypes.h"
 
 #include "generic/THTensorConv.c"
@@ -25,3 +26,4 @@
 
 #include "generic/THTensorLapack.c"
 #include "THGenerateFloatTypes.h"
+#undef   TH_GENERIC_NO_HALF
