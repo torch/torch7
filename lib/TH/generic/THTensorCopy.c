@@ -33,7 +33,9 @@ IMPLEMENT_THTensor_COPY(Int, int)
 IMPLEMENT_THTensor_COPY(Long, long)
 IMPLEMENT_THTensor_COPY(Float, float)
 IMPLEMENT_THTensor_COPY(Double, double)
+#if TH_GENERIC_USE_HALF
 IMPLEMENT_THTensor_COPY_FROM_HALF(Half, half)
+#endif
 #else
 /* pass-through */
 IMPLEMENT_THTensor_COPY(Half, half)
@@ -45,6 +47,6 @@ IMPLEMENT_THTensor_COPY_TO_HALF(Int, int)
 IMPLEMENT_THTensor_COPY_TO_HALF(Long, long)
 IMPLEMENT_THTensor_COPY_TO_HALF(Float, float)
 IMPLEMENT_THTensor_COPY_TO_HALF(Double, double)
-#endif
+#endif /* REAL_IS_HALF */
 
 #endif

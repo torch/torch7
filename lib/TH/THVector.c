@@ -1,4 +1,3 @@
-#define TH_GENERIC_NO_HALF
 #include "THVector.h"
 
 #include "generic/simd/simd.h"
@@ -17,4 +16,3 @@
 
 #include "generic/THVectorDispatch.c"
 #include "THGenerateAllTypes.h"
-#undef   TH_GENERIC_NO_HALF

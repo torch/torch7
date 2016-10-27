@@ -17,7 +17,6 @@
 #include "generic/THTensorMath.c"
 #include "THGenerateAllTypes.h"
 
-#define  TH_GENERIC_NO_HALF
 #include "generic/THTensorRandom.c"
 #include "THGenerateAllTypes.h"
 
@@ -26,4 +25,3 @@
 
 #include "generic/THTensorLapack.c"
 #include "THGenerateFloatTypes.h"
-#undef   TH_GENERIC_NO_HALF

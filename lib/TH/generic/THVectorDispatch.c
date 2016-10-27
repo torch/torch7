@@ -1,7 +1,6 @@
 #ifndef TH_GENERIC_FILE
 #define TH_GENERIC_FILE "generic/THVectorDispatch.c"
 #else
-
 /* For now there are only SIMD implementations for FLOAT and DOUBLE.
  * Hopefully in the future this can be made totally generic (e.g, there are SIMD implementations
  * for a lot of functions */
@@ -32,7 +31,7 @@ void THVector_(fill)(real *x, const real c, const ptrdiff_t n) {
   THVector_(fill_DISPATCHPTR)(x, c, n);
 }
 
-
+#ifndef TH_GENERIC_NO_MATH
 static void (*THVector_(add_DISPATCHPTR))(real *, const real *, const real, const ptrdiff_t) = &THVector_(add_DEFAULT);
 static FunctionDescription THVector_(add_DISPATCHTABLE)[] = {
   #if defined(__NEON__)
@@ -119,6 +118,7 @@ static FunctionDescription THVector_(mul_DISPATCHTABLE)[] = {
 void THVector_(mul)(real *y, const real *x, const ptrdiff_t n) {
   THVector_(mul_DISPATCHPTR);
 }
+#endif /* math */
 
 /* This needs to be called in order to initialize the dispatch pointers at runtime.
  * This function simply checks what SIMD extensions are available, and then walks the dispatch table
@@ -131,10 +131,12 @@ void THVector_(vectorDispatchInit)()
 {
   uint32_t hostSimdExts = detectHostSIMDExtensions();
   INIT_DISPATCH_PTR(fill);
+# ifndef TH_GENERIC_NO_MATH
   INIT_DISPATCH_PTR(add);
   INIT_DISPATCH_PTR(diff);
   INIT_DISPATCH_PTR(scale);
   INIT_DISPATCH_PTR(mul);
+# endif
 }
 
 #endif

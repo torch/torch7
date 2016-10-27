@@ -2,6 +2,7 @@
 #define TH_GENERIC_FILE "generic/THTensorMath.c"
 #else
 
+#ifndef TH_GENERIC_NO_MATH
 #define TH_OMP_OVERHEAD_THRESHOLD 100000
 
 void THTensor_(fill)(THTensor *r_, real value)
@@ -137,9 +138,6 @@ void THTensor_(nonzero)(THLongTensor *subscript, THTensor *tensor)
                   }
                   ++i;);
 }
-
-
-#ifndef TH_REAL_IS_HALF
 
 void THTensor_(indexSelect)(THTensor *tensor, THTensor *src, int dim, THLongTensor *index)
 {
@@ -2516,6 +2514,6 @@ void THTensor_(histc)(THTensor *hist, THTensor *tensor, long nbins, real minvalu
 }
 
 #endif /* floating point only part */
-#endif /* half */
+#endif /* TH_GENERIC_NO_MATH */
 #undef IS_NONZERO
 #endif

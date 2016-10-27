@@ -330,6 +330,7 @@ INSTALL(FILES
   THTensorMacros.h
   THVector.h
   THAtomic.h
+  THHalf.h
   DESTINATION "${TH_INSTALL_INCLUDE_SUBDIR}/TH")
 
 INSTALL(FILES

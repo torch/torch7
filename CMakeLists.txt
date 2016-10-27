@@ -25,6 +25,13 @@ IF(MSVC)
   ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE=1)
 ENDIF(MSVC)
 
+#
+# Temporary: flag to enable new 'half' type in THGenerateAllTypes.h
+# Enable for Torch build (disabled by default).
+# Will make default and remove once all modules are updated accordingly
+#
+ADD_DEFINITIONS(-DTH_GENERIC_USE_HALF=1)
+
 # OpenMP support?
 SET(WITH_OPENMP ON CACHE BOOL "OpenMP support if available?")
 IF (APPLE AND CMAKE_COMPILER_IS_GNUCC)

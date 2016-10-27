@@ -46,7 +46,6 @@ TH_API size_t THFile_readInt(THFile *self, THIntStorage *storage);
 TH_API size_t THFile_readLong(THFile *self, THLongStorage *storage);
 TH_API size_t THFile_readFloat(THFile *self, THFloatStorage *storage);
 TH_API size_t THFile_readDouble(THFile *self, THDoubleStorage *storage);
-TH_API size_t THFile_readHalf(THFile *self, THHalfStorage *storage);
 
 TH_API size_t THFile_writeByte(THFile *self, THByteStorage *storage);
 TH_API size_t THFile_writeChar(THFile *self, THCharStorage *storage);
@@ -55,7 +54,6 @@ TH_API size_t THFile_writeInt(THFile *self, THIntStorage *storage);
 TH_API size_t THFile_writeLong(THFile *self, THLongStorage *storage);
 TH_API size_t THFile_writeFloat(THFile *self, THFloatStorage *storage);
 TH_API size_t THFile_writeDouble(THFile *self, THDoubleStorage *storage);
-TH_API size_t THFile_writeHalf(THFile *self, THHalfStorage *storage);
 
 /* raw */
 TH_API size_t THFile_readByteRaw(THFile *self, unsigned char *data, size_t n);
@@ -65,7 +63,6 @@ TH_API size_t THFile_readIntRaw(THFile *self, int *data, size_t n);
 TH_API size_t THFile_readLongRaw(THFile *self, long *data, size_t n);
 TH_API size_t THFile_readFloatRaw(THFile *self, float *data, size_t n);
 TH_API size_t THFile_readDoubleRaw(THFile *self, double *data, size_t n);
-TH_API size_t THFile_readHalfRaw(THFile *self, half* data, size_t size);
 TH_API size_t THFile_readStringRaw(THFile *self, const char *format, char **str_); /* you must deallocate str_ */
 
 TH_API size_t THFile_writeByteRaw(THFile *self, unsigned char *data, size_t n);
@@ -75,8 +72,16 @@ TH_API size_t THFile_writeIntRaw(THFile *self, int *data, size_t n);
 TH_API size_t THFile_writeLongRaw(THFile *self, long *data, size_t n);
 TH_API size_t THFile_writeFloatRaw(THFile *self, float *data, size_t n);
 TH_API size_t THFile_writeDoubleRaw(THFile *self, double *data, size_t n);
-TH_API size_t THFile_writeHalfRaw(THFile *self, half* data, size_t size);
 TH_API size_t THFile_writeStringRaw(THFile *self, const char *str, size_t size);
+
+#ifdef TH_GENERIC_USE_HALF
+TH_API half THFile_readHalfScalar(THFile *self);
+TH_API void THFile_writeHalfScalar(THFile *self, half scalar);
+TH_API size_t THFile_readHalf(THFile *self, THHalfStorage *storage);
+TH_API size_t THFile_writeHalf(THFile *self, THHalfStorage *storage);
+TH_API size_t THFile_readHalfRaw(THFile *self, half* data, size_t size);
+TH_API size_t THFile_writeHalfRaw(THFile *self, half* data, size_t size);
+#endif
 
 TH_API void THFile_synchronize(THFile *self);
 TH_API void THFile_seek(THFile *self, size_t position);

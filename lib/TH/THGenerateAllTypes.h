@@ -94,15 +94,16 @@
 #undef THInf
 #undef TH_REAL_IS_DOUBLE
 
-#ifndef TH_GENERIC_NO_HALF
+#ifdef TH_GENERIC_USE_HALF
 #include "THHalf.h"
 #define real half
 #define accreal float
 #define Real Half
 #define THInf FLT_MAX
 #define TH_REAL_IS_HALF
-/* no math defined yet */
-#define TH_GENERIC_NO_MATH 1
+#ifndef TH_GENERIC_USE_HALF_MATH
+# define TH_GENERIC_NO_MATH 1
+#endif
 #line 1 TH_GENERIC_FILE
 #include TH_GENERIC_FILE
 #undef real
