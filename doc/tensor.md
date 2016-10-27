@@ -1592,7 +1592,7 @@ The source `tensor` should have at least as many elements as the number of 1s in
 x = torch.Tensor({0, 0, 0, 0})
 mask = torch.ByteTensor({0, 1, 0, 1})
 y = torch.Tensor({10, 20})
-x:maskedCopy(y)
+x:maskedCopy(mask,y)
 print(x)
 
   0
