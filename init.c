@@ -56,8 +56,10 @@ static void torch_half_init(lua_State *L)
     {"hashalfmath", torch_hashalfmath},
     {NULL, NULL}
   };
-
   luaT_setfuncs(L, half_funcs__, 0);
+
+  lua_pushboolean(L, 1);
+  lua_setfield(L, -2, "hasHalf");
 }
 
 LUA_EXTERNC DLL_EXPORT int luaopen_libtorch(lua_State *L);
@@ -70,8 +72,8 @@ int luaopen_libtorch(lua_State *L)
   lua_setglobal(L, "torch");
 
   torch_utils_init(L);
-
   torch_File_init(L);
+  torch_half_init(L);
 
   torch_ByteStorage_init(L);
   torch_CharStorage_init(L);

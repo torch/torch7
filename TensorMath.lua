@@ -6,59 +6,6 @@ local interface = wrap.CInterface.new()
 local method = wrap.CInterface.new()
 local argtypes = wrap.CInterface.argtypes
 
--- 16-bit floating-point type
--- Definition lifted from CUDA.
--- CPU support limited to copy/construction/storage.
-argtypes['half'] = {
-  helpname = function(arg)
-                return 'half'
-             end,
-
-  declare = function(arg)
-     -- if it is a number we initialize here
-     local default = tonumber(tostring(arg.default)) or 0
-     return string.format("%s arg%d = TH_float2half(%g);", 'half', arg.i, default)
-  end,
-
-  check = function(arg, idx)
-     return string.format("lua_isnumber(L, %d)", idx)
-  end,
-
-  read = function(arg, idx)
-     return string.format("arg%d = TH_float2half(lua_tonumber(L, %d));", arg.i, idx)
-  end,
-
-  init = function(arg)
-            -- otherwise do it here
-            if arg.default then
-               local default = tostring(arg.default)
-               if not tonumber(default) then
-                  return string.format("arg%d = %s  ;", arg.i, default)
-               end
-            end
-         end,
-
-  carg = function(arg)
-            return string.format('arg%d', arg.i)
-         end,
-
-  creturn = function(arg)
-               return string.format('arg%d', arg.i)
-            end,
-
-  precall = function(arg)
-               if arg.returned then
-                  return string.format('lua_pushnumber(L, TH_half2float(arg%d));', arg.i)
-               end
-            end,
-
-  postcall = function(arg)
-                if arg.creturned then
-                   return string.format('lua_pushnumber(L, (lua_Number)TH_half2float(arg%d));', arg.i)
-                end
-             end
-}
-
 argtypes['ptrdiff_t'] = {
 
   helpname = function(arg)
@@ -269,7 +216,7 @@ local reals = {ByteTensor='unsigned char',
                IntTensor='int',
                LongTensor='long',
                FloatTensor='float',
-               HalfTensor='half',
+               HalfTensor='TH_half',
                DoubleTensor='double'}
 
 local accreals = {ByteTensor='long',
@@ -312,6 +259,7 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
              end
    end
 
+   if Tensor ~= 'HalfTensor' then
    wrap("zero",
         cname("zero"),
         {{name=Tensor, returned=true}})
@@ -378,7 +326,6 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor},
          {name="boolean", creturned=true}})
 
-   if Tensor ~= 'HalfTensor' then
    wrap("add",
         cname("add"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
@@ -1061,7 +1008,6 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
          {name='charoption', values={'V', 'F'}, default='V'},
          {name='charoption', default="X", invisible=true}}
      )
-  end
 
    for _,name in pairs({'lt','gt','le','ge','eq','ne'}) do
       wrap(name,
@@ -1087,6 +1033,7 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
         cname("nonzero"),
         {{name="IndexTensor", default=true, returned=true},
          {name=Tensor}})
+  end  -- ~= HalfTensor
 
    if Tensor == 'ByteTensor' then
      -- Logical accumulators only apply to ByteTensor
@@ -1540,7 +1487,9 @@ void torch_TensorMath_init(lua_State *L)
   torch_IntTensorMath_init(L);
   torch_LongTensorMath_init(L);
   torch_FloatTensorMath_init(L);
-  torch_HalfTensorMath_init(L);
+  #if TH_GENERIC_USE_HALF_MATH
+    torch_HalfTensorMath_init(L);
+  #endif
   torch_DoubleTensorMath_init(L);
   luaT_setfuncs(L, torch_TensorMath__, 0);
 }

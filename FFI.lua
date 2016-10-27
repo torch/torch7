@@ -16,16 +16,6 @@ end
 
 if ok then
 
--- 16-bit floating-point type
--- Definition lifted from CUDA.
--- CPU support limited to copy/construction/storage.
-   ffi.cdef([[
-                 typedef struct {
-                   unsigned short x;
-                 } __half;
-                 typedef __half half;
-      ]])
-
    local Real2real = {
       Byte='unsigned char',
       Char='char',
@@ -34,7 +24,7 @@ if ok then
       Long='long',
       Float='float',
       Double='double',
-      Half='half'
+      Half='TH_half'
    }
 
    -- Allocator
@@ -49,6 +39,10 @@ typedef struct THAllocator {
    for Real, real in pairs(Real2real) do
 
       local cdefs = [[
+typedef struct {
+  unsigned short x;
+} TH_half;
+
 typedef struct THRealStorage
 {
     real *data;

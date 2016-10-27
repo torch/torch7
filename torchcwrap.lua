@@ -470,7 +470,7 @@ wrap.types.half = {
     declare = function(arg)
         -- if it is a number we initialize here
         local default = tonumber(interpretdefaultvalue(arg)) or 0
-        return string.format("half arg%d = THC_float2half((float) %d);", arg.i, tonumber(default))
+        return string.format("TH_half arg%d = THC_float2half((float) %d);", arg.i, tonumber(default))
     end,
 
     check = function(arg, idx)

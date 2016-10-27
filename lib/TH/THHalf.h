@@ -5,18 +5,14 @@
 
 #include "THGeneral.h"
 
-#ifndef __align__
-#  define __align__(x)
-#endif
-
 /* Lifted from CUDA */
-typedef struct TH_half_ __align__(2) {
+typedef struct {
   unsigned short x;
-} half;
+} TH_half;
 
-typedef struct half2_ __align__(4) {
+typedef struct {
     unsigned int x;
-} half2;
+} TH_half2;
 
 /* numeric limits */
 
@@ -34,7 +30,7 @@ typedef struct half2_ __align__(4) {
 #define TH_HALF_MAX_EXPONENT   16
 #define TH_HALF_MAX_EXPONENT10 4
 
-TH_API half TH_float2half(float a);
-TH_API float TH_half2float(half a);
+TH_API TH_half TH_float2half(float a);
+TH_API float TH_half2float(TH_half a);
 
 #endif

@@ -2,7 +2,7 @@
 #define TH_GENERIC_FILE "generic/THTensorRandom.c"
 #else
 
-/* Tensor math may be disabled for certain types, e.g. 'half' */
+/* Tensor math may be disabled for certain types, e.g. 'TH_half' */
 #ifndef TH_GENERIC_NO_MATH
 
 void THTensor_(random)(THTensor *self, THGenerator *_generator)
