@@ -151,7 +151,7 @@ const char* luaT_newlocalmetatable(lua_State *L, const char *tname, const char *
 {
   lua_pushcfunction(L, luaT_lua_newmetatable);
   lua_pushstring(L, tname);
-  (parent_tname ? lua_pushstring(L, parent_tname) : lua_pushnil(L));
+  (parent_tname ? (void)lua_pushstring(L, parent_tname) : lua_pushnil(L));
   (constructor ? lua_pushcfunction(L, constructor) : lua_pushnil(L));
   (destructor ? lua_pushcfunction(L, destructor) : lua_pushnil(L));
   (factory ? lua_pushcfunction(L, factory) : lua_pushnil(L));
