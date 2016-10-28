@@ -18,10 +18,14 @@ void THStorage_(copy)(THStorage *storage, THStorage *src)
 #define IMPLEMENT_THStorage_COPY(TYPENAMESRC) \
 void THStorage_(copy##TYPENAMESRC)(THStorage *storage, TH##TYPENAMESRC##Storage *src) \
 { \
-  ptrdiff_t i; \
   THArgCheck(storage->size == src->size, 2, "size mismatch"); \
-  for(i = 0; i < storage->size; i++) \
-    storage->data[i] = (real)src->data[i]; \
+  if(THTypeIdx_(Real) == THTypeIdx_(TYPENAMESRC)) {                   \
+    memcpy(storage->data, src->data, sizeof(real)*storage->size);   /* cast just removes compiler warning */ \
+  } else {                                                              \
+    ptrdiff_t i;                                                        \
+    for(i = 0; i < storage->size; i++)                                  \
+      storage->data[i] = (real)src->data[i];                            \
+    }                                                                   \
 }
 
 #ifndef TH_REAL_IS_HALF
