@@ -5,14 +5,29 @@
 
 #include "THGeneral.h"
 
-/* Lifted from CUDA */
-typedef struct {
-  unsigned short x;
-} TH_half;
 
-typedef struct {
+# if !defined (CUDA_HALF_TENSOR)
+/* Not included from Cutorch, use our definition lifted from CUDA */
+
+#if defined(__GNUC__)
+#define __align__(n) __attribute__((aligned(n)))
+#elif defined(_WIN32)
+#define __align__(n) __declspec(align(n))
+#else
+#define __align__(n)
+#endif
+
+typedef struct __align__(2){
+  unsigned short x;
+} __half;
+
+typedef struct __align__(4) {
     unsigned int x;
-} TH_half2;
+} __half2;
+
+typedef __half half;
+typedef __half2 half2;
+# endif
 
 /* numeric limits */
 
@@ -30,7 +45,7 @@ typedef struct {
 #define TH_HALF_MAX_EXPONENT   16
 #define TH_HALF_MAX_EXPONENT10 4
 
-TH_API TH_half TH_float2half(float a);
-TH_API float TH_half2float(TH_half a);
+TH_API half TH_float2half(float a);
+TH_API float TH_half2float(half a);
 
 #endif

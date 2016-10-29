@@ -1,7 +1,7 @@
 #include "THHalf.h"
 #include "TH.h"
 
-float TH_half2float(TH_half a)
+float TH_half2float(half a)
 {
   unsigned int bits = a.x & 0x7fff;
   unsigned int sign = a.x & 0x8000;
@@ -52,7 +52,7 @@ float TH_half2float(TH_half a)
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-TH_half TH_float2half(float a)
+half TH_float2half(float a)
 {
   uint32_t ia;
   uint16_t ir;
@@ -86,7 +86,7 @@ TH_half TH_float2half(float a)
     }
   }
 
-  TH_half ret;
-  memcpy(&ret, &ir, sizeof(TH_half));
+  half ret;
+  memcpy(&ret, &ir, sizeof(half));
   return ret;
 }

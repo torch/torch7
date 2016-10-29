@@ -24,7 +24,7 @@ if ok then
       Long='long',
       Float='float',
       Double='double',
-      Half='TH_half'
+      Half='half'
    }
 
    -- Allocator
@@ -41,7 +41,7 @@ typedef struct THAllocator {
       local cdefs = [[
 typedef struct {
   unsigned short x;
-} TH_half;
+} half;
 
 typedef struct THRealStorage
 {

@@ -6,56 +6,8 @@ local interface = wrap.CInterface.new()
 local method = wrap.CInterface.new()
 local argtypes = wrap.CInterface.argtypes
 
-argtypes['ptrdiff_t'] = {
-
-  helpname = function(arg)
-                return 'ptrdiff_t'
-             end,
-
-  declare = function(arg)
-               -- if it is a number we initialize here
-               local default = tonumber(tostring(arg.default)) or 0
-               return string.format("%s arg%d = %g;", 'ptrdiff_t', arg.i, default)
-            end,
-
-  check = function(arg, idx)
-             return string.format("lua_isnumber(L, %d)", idx)
-          end,
-
-  read = function(arg, idx)
-            return string.format("arg%d = (%s)lua_tonumber(L, %d);", arg.i, 'ptrdiff_t', idx)
-         end,
-
-  init = function(arg)
-            -- otherwise do it here
-            if arg.default then
-               local default = tostring(arg.default)
-               if not tonumber(default) then
-                  return string.format("arg%d = %s;", arg.i, default)
-               end
-            end
-         end,
-
-  carg = function(arg)
-            return string.format('arg%d', arg.i)
-         end,
-
-  creturn = function(arg)
-               return string.format('arg%d', arg.i)
-            end,
-
-  precall = function(arg)
-               if arg.returned then
-                  return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
-               end
-            end,
-
-  postcall = function(arg)
-                if arg.creturned then
-                   return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
-                end
-             end
-}
+argtypes['ptrdiff_t'] = wrap.types.ptrdiff_t
+argtypes['half'] = wrap.types.half
 
 interface:print([[
 #include "TH.h"
@@ -216,7 +168,7 @@ local reals = {ByteTensor='unsigned char',
                IntTensor='int',
                LongTensor='long',
                FloatTensor='float',
-               HalfTensor='TH_half',
+               HalfTensor='half',
                DoubleTensor='double'}
 
 local accreals = {ByteTensor='long',

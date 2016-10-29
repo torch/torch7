@@ -2,7 +2,6 @@
 #define TH_INC
 
 #include "THGeneral.h"
-#include "THHalf.h"
 
 #include "THBlas.h"
 #ifdef USE_LAPACK

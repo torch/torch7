@@ -461,54 +461,55 @@ types.charoption = {
               end
 }
 
-wrap.types.half = {
+for _,typename in ipairs({"ptrdiff_t", "size_t"}) do
+  types[typename] =  {
 
-    helpname = function(arg)
-        return "half"
-    end,
+  helpname = function(arg)
+                return typename
+             end,
 
-    declare = function(arg)
-        -- if it is a number we initialize here
-        local default = tonumber(interpretdefaultvalue(arg)) or 0
-        return string.format("TH_half arg%d = THC_float2half((float) %d);", arg.i, tonumber(default))
-    end,
+  declare = function(arg)
+               -- if it is a number we initialize here
+               local default = tonumber(tostring(arg.default)) or 0
+               return string.format("%s arg%d = %g;", typename, arg.i, default)
+            end,
 
-    check = function(arg, idx)
-        return string.format("lua_isnumber(L, %d)", idx)
-    end,
+  check = function(arg, idx)
+             return string.format("lua_isnumber(L, %d)", idx)
+          end,
 
-    read = function(arg, idx)
-        return string.format("arg%d = THC_float2half((float) lua_tonumber(L, %d));", arg.i, idx)
-    end,
+  read = function(arg, idx)
+            return string.format("arg%d = (%s)lua_tonumber(L, %d);", arg.i, typename, idx)
+         end,
 
-    init = function(arg)
-        -- otherwise do it here
-        if arg.default then
-            local default = interpretdefaultvalue(arg)
-            if not tonumber(default) then
-                return string.format("arg%d = THC_float2half((float) %s);", arg.i, default)
+  init = function(arg)
+            -- otherwise do it here
+            if arg.default then
+               local default = tostring(arg.default)
+               if not tonumber(default) then
+                  return string.format("arg%d = %s;", arg.i, default)
+               end
             end
-        end
-    end,
+         end,
 
-    carg = function(arg)
-        return string.format('arg%d', arg.i)
-    end,
+  carg = function(arg)
+            return string.format('arg%d', arg.i)
+         end,
 
-    creturn = function(arg)
-        return string.format('arg%d', arg.i)
-    end,
+  creturn = function(arg)
+               return string.format('arg%d', arg.i)
+            end,
 
-    precall = function(arg)
-        if arg.returned then
-            return string.format('lua_pushnumber(L, (lua_Number) THC_half2float(arg%d));', arg.i)
-        end
-    end,
+  precall = function(arg)
+               if arg.returned then
+                  return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
+               end
+            end,
 
-    postcall = function(arg)
-        if arg.creturned then
-            return string.format('lua_pushnumber(L, (lua_Number) THC_half2float(arg%d));', arg.i)
-        end
-    end
-
-}
+  postcall = function(arg)
+                if arg.creturned then
+                   return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
+                end
+             end
+  }
+end
