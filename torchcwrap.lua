@@ -202,7 +202,7 @@ types.IndexTensor = {
 }
 
 for _,typename in ipairs({"ByteTensor", "CharTensor", "ShortTensor", "IntTensor", "LongTensor",
-                          "FloatTensor", "DoubleTensor"}) do
+                          "FloatTensor", "HalfTensor", "DoubleTensor"}) do
 
    types[typename] = {
 
@@ -460,3 +460,56 @@ types.charoption = {
    postcall = function(arg)
               end
 }
+
+for _,typename in ipairs({"ptrdiff_t", "size_t"}) do
+  types[typename] =  {
+
+  helpname = function(arg)
+                return typename
+             end,
+
+  declare = function(arg)
+               -- if it is a number we initialize here
+               local default = tonumber(tostring(arg.default)) or 0
+               return string.format("%s arg%d = %g;", typename, arg.i, default)
+            end,
+
+  check = function(arg, idx)
+             return string.format("lua_isnumber(L, %d)", idx)
+          end,
+
+  read = function(arg, idx)
+            return string.format("arg%d = (%s)lua_tonumber(L, %d);", arg.i, typename, idx)
+         end,
+
+  init = function(arg)
+            -- otherwise do it here
+            if arg.default then
+               local default = tostring(arg.default)
+               if not tonumber(default) then
+                  return string.format("arg%d = %s;", arg.i, default)
+               end
+            end
+         end,
+
+  carg = function(arg)
+            return string.format('arg%d', arg.i)
+         end,
+
+  creturn = function(arg)
+               return string.format('arg%d', arg.i)
+            end,
+
+  precall = function(arg)
+               if arg.returned then
+                  return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
+               end
+            end,
+
+  postcall = function(arg)
+                if arg.creturned then
+                   return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
+                end
+             end
+  }
+end

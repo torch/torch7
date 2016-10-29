@@ -2,6 +2,9 @@
 #define TH_GENERIC_FILE "generic/TensorOperator.c"
 #else
 
+/* Tensor math may be disabled for certain types, e.g. 'half' */
+#ifndef TH_GENERIC_NO_MATH
+
 static int torch_TensorOperator_(__add__)(lua_State *L)
 {
   THTensor *tensor1 = luaT_toudata(L, 1, torch_Tensor);
@@ -14,7 +17,7 @@ static int torch_TensorOperator_(__add__)(lua_State *L)
   {
     r = THTensor_(new)();
     luaT_pushudata(L, r, torch_Tensor);
-    
+
     if(!tensor1 && tensor2)
     {
       THTensor_(resizeAs)(r, tensor2);
@@ -49,7 +52,7 @@ static int torch_TensorOperator_(__sub__)(lua_State *L)
   {
     r = THTensor_(new)();
     luaT_pushudata(L, r, torch_Tensor);
-    
+
     if(!tensor1 && tensor2)
     {
       THTensor_(resizeAs)(r, tensor2);
@@ -98,7 +101,7 @@ static int torch_TensorOperator_(__mul__)(lua_State *L)
   {
     r = THTensor_(new)();
     luaT_pushudata(L, r, torch_Tensor);
-    
+
     if(!tensor1 && tensor2)
     {
       THTensor_(resizeAs)(r, tensor2);
@@ -115,7 +118,7 @@ static int torch_TensorOperator_(__mul__)(lua_State *L)
     {
       int dimt = tensor1->nDimension;
       int dims = tensor2->nDimension;
-      
+
       if(dimt == 1 && dims == 1)
         lua_pushnumber(L, THTensor_(dot)(tensor1, tensor2)); /* ok, we wasted r, but who cares */
       else if(dimt == 2 && dims == 1)
@@ -131,7 +134,7 @@ static int torch_TensorOperator_(__mul__)(lua_State *L)
         THTensor_(addmm)(r, 1, r, 1, tensor1, tensor2);
       }
       else
-        luaL_error(L, "multiplication between %dD and %dD tensors not yet supported", tensor1->nDimension, tensor2->nDimension); 
+        luaL_error(L, "multiplication between %dD and %dD tensors not yet supported", tensor1->nDimension, tensor2->nDimension);
     }
   }
   return 1;
@@ -187,5 +190,6 @@ void torch_TensorOperator_(init)(lua_State *L)
   luaT_setfuncs(L, torch_TensorOperator_(_), 0);
   lua_pop(L, 1);
 }
+#endif
 
 #endif
