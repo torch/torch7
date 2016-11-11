@@ -3435,6 +3435,17 @@ function torchtest.bernoulli()
   mytester:assert(isBinary(t), 'Sample from torch.bernoulli is not binary')
 end
 
+function torchtest.logNormal()
+    local t = torch.FloatTensor(10, 10)
+    local mean, std = torch.uniform(), 0.1 * torch.uniform()
+    local tolerance = 0.01
+
+    t:logNormal(mean, std)
+    local logt = t:log()
+    mytester:assertalmosteq(logt:mean(), mean, tolerance, 'mean is wrong')
+    mytester:assertalmosteq(logt:std(), std, tolerance, 'tolerance is wrong')
+end
+
 function torch.test(tests)
    torch.setheaptracking(true)
    math.randomseed(os.time())
