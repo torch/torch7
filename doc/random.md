@@ -158,6 +158,9 @@ Returns a random real number according to the Cauchy distribution
 
 Returns a random real number according to the log-normal distribution, with
 the given `mean` and standard deviation `stdv`.
+`mean` and `stdv` are the corresponding mean and standard deviation of the underlying normal distribution, 
+and not of the returned distribution.
+
 `stdv` must be positive.
 
 <a name="torch.geometric"></a>
