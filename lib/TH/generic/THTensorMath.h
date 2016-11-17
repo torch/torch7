@@ -128,6 +128,11 @@ TH_API void THTensor_(eqTensorT)(THTensor *r_, THTensor *ta, THTensor *tb);
 TH_API void THTensor_(abs)(THTensor *r_, THTensor *t);
 #endif
 
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
+TH_API void THTensor_(rand)(THTensor *r_, THGenerator *_generator, THLongStorage *size);
+TH_API void THTensor_(randn)(THTensor *r_, THGenerator *_generator, THLongStorage *size);
+#endif
+
 #if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
 
 TH_API void THTensor_(sigmoid)(THTensor *r_, THTensor *t);
@@ -171,9 +176,6 @@ TH_API accreal THTensor_(normall)(THTensor *t, real value);
 
 TH_API void THTensor_(linspace)(THTensor *r_, real a, real b, long n);
 TH_API void THTensor_(logspace)(THTensor *r_, real a, real b, long n);
-TH_API void THTensor_(rand)(THTensor *r_, THGenerator *_generator, THLongStorage *size);
-TH_API void THTensor_(randn)(THTensor *r_, THGenerator *_generator, THLongStorage *size);
-
 #endif
 
 #if defined(TH_REAL_IS_BYTE)
