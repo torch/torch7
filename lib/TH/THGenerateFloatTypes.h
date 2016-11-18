@@ -15,6 +15,7 @@
 #undef THInf
 #undef TH_REAL_IS_FLOAT
 
+#ifndef TH_GENERIC_NO_DOUBLE
 #define real double
 #define accreal double
 #define Real Double
@@ -27,5 +28,6 @@
 #undef Real
 #undef THInf
 #undef TH_REAL_IS_DOUBLE
+#endif
 
 #undef TH_GENERIC_FILE
