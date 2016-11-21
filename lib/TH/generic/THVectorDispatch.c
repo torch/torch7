@@ -10,7 +10,7 @@
  *    which SIMD extension a given implementation uses
  * 3. A dispatch stub, which is what is actually called by clients, that simply wraps the dispatch pointer.
  */
-
+#ifndef TH_GENERIC_NO_MATH
 static void (*THVector_(fill_DISPATCHPTR))(real *, const real, const ptrdiff_t) = &THVector_(fill_DEFAULT);
 static FunctionDescription THVector_(fill_DISPATCHTABLE)[] = {
   #if defined(__NEON__)
@@ -31,7 +31,6 @@ void THVector_(fill)(real *x, const real c, const ptrdiff_t n) {
   THVector_(fill_DISPATCHPTR)(x, c, n);
 }
 
-#ifndef TH_GENERIC_NO_MATH
 static void (*THVector_(add_DISPATCHPTR))(real *, const real *, const real, const ptrdiff_t) = &THVector_(add_DEFAULT);
 static FunctionDescription THVector_(add_DISPATCHTABLE)[] = {
   #if defined(__NEON__)

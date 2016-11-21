@@ -74,7 +74,7 @@ TH_API size_t THFile_writeFloatRaw(THFile *self, float *data, size_t n);
 TH_API size_t THFile_writeDoubleRaw(THFile *self, double *data, size_t n);
 TH_API size_t THFile_writeStringRaw(THFile *self, const char *str, size_t size);
 
-#ifdef TH_GENERIC_USE_HALF
+#if TH_GENERIC_USE_HALF
 TH_API half THFile_readHalfScalar(THFile *self);
 TH_API void THFile_writeHalfScalar(THFile *self, half scalar);
 TH_API size_t THFile_readHalf(THFile *self, THHalfStorage *storage);

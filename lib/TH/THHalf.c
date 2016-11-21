@@ -1,6 +1,8 @@
 #include "THHalf.h"
 #include "TH.h"
 
+static half half_max = TH_HALF_MAX;
+
 float TH_half2float(half a)
 {
   unsigned int bits = a.x & 0x7fff;

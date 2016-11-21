@@ -1439,7 +1439,7 @@ void torch_TensorMath_init(lua_State *L)
   torch_IntTensorMath_init(L);
   torch_LongTensorMath_init(L);
   torch_FloatTensorMath_init(L);
-  #if TH_GENERIC_USE_HALF_MATH
+  #if TH_NATIVE_HALF
     torch_HalfTensorMath_init(L);
   #endif
   torch_DoubleTensorMath_init(L);

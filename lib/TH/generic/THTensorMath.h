@@ -128,7 +128,7 @@ TH_API void THTensor_(eqTensorT)(THTensor *r_, THTensor *ta, THTensor *tb);
 TH_API void THTensor_(abs)(THTensor *r_, THTensor *t);
 #endif
 
-#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
 TH_API void THTensor_(rand)(THTensor *r_, THGenerator *_generator, THLongStorage *size);
 TH_API void THTensor_(randn)(THTensor *r_, THGenerator *_generator, THLongStorage *size);
 #endif
