@@ -68,13 +68,13 @@ function torchtest.isTensor()
    mytester:assert(torch.Tensor.isTensor(t), 'alias not working')
 end
 function torchtest.isStorage()
-  local t = torch.randn(3,4)
+  local t = torch.randn(3,4):half()
   mytester:assert(torch.isStorage(t:storage()), 'error in isStorage')
   mytester:assert(not torch.isStorage(t), 'false positive in isStorage')
 end
 
 function torchtest.expand()
-   local result = torch.Tensor()
+   local result = torch.Tensor():half()
    local tensor = torch.rand(8,1)
    local template = torch.rand(8,5)
    local target = template:size():totable()
@@ -91,7 +91,7 @@ function torchtest.expand()
 end
 
 function torchtest.repeatTensor()
-   local result = torch.Tensor()
+   local result = torch.Tensor():half()
    local tensor = torch.rand(8,4)
    local size = {3,1,1}
    local sizeStorage = torch.LongStorage(size)
@@ -106,10 +106,10 @@ function torchtest.repeatTensor()
 end
 
 function torchtest.isSameSizeAs()
-   local t1 = torch.Tensor(3, 4, 9, 10)
-   local t2 = torch.Tensor(3, 4)
-   local t3 = torch.Tensor(1, 9, 3, 3)
-   local t4 = torch.Tensor(3, 4, 9, 10)
+   local t1 = torch.Tensor(3, 4, 9, 10):half()
+   local t2 = torch.Tensor(3, 4):half()
+   local t3 = torch.Tensor(1, 9, 3, 3):half()
+   local t4 = torch.Tensor(3, 4, 9, 10):half()
 
    mytester:assert(t1:isSameSizeAs(t2) == false, "wrong answer ")
    mytester:assert(t1:isSameSizeAs(t3) == false, "wrong answer ")

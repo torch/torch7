@@ -134,6 +134,11 @@ TH_API void THTensor_(randn)(THTensor *r_, THGenerator *_generator, THLongStorag
 #endif
 
 #if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
+TH_API void THTensor_(rand)(THTensor *r_, THGenerator *_generator, THLongStorage *size);
+TH_API void THTensor_(randn)(THTensor *r_, THGenerator *_generator, THLongStorage *size);
+#endif
+
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE)
 
 TH_API void THTensor_(sigmoid)(THTensor *r_, THTensor *t);
 TH_API void THTensor_(log)(THTensor *r_, THTensor *t);
