@@ -19,17 +19,27 @@
       .supportedSimdExt=EXT      \
     }
 
-#define INIT_DISPATCH_PTR(OP)    \
+#define INIT_VECTOR_DISPATCH_PTR(OP)    \
   do {                           \
     int i;                       \
     for (i = 0; i < sizeof(THVector_(OP ## _DISPATCHTABLE)) / sizeof(FunctionDescription); ++i) { \
-      THVector_(OP ## _DISPATCHPTR) = THVector_(OP ## _DISPATCHTABLE)[i].function;                     \
-      if (THVector_(OP ## _DISPATCHTABLE)[i].supportedSimdExt & hostSimdExts) {                       \
-        break;                                                                                     \
-      }                                                                                            \
-    }                                                                                              \
+      THVector_(OP ## _DISPATCHPTR) = THVector_(OP ## _DISPATCHTABLE)[i].function;                \
+      if (THVector_(OP ## _DISPATCHTABLE)[i].supportedSimdExt & hostSimdExts) {                   \
+        break;                                                                                    \
+      }                                                                                           \
+    }                                                                                             \
   } while(0)
 
+#define INIT_TENSOR_DISPATCH_PTR(OP)    \
+  do {                           	\
+    int i;                       	\
+    for (i = 0; i < sizeof(THTensor_(OP ## _DISPATCHTABLE)) / sizeof(FunctionDescription); ++i) { \
+      THTensor_(OP ## _DISPATCHPTR) = THTensor_(OP ## _DISPATCHTABLE)[i].function;                \
+      if (THTensor_(OP ## _DISPATCHTABLE)[i].supportedSimdExt & hostSimdExts) {                   \
+        break;                                                                                    \
+      }                                                                                           \
+    }                                                                                             \
+  } while(0)
 
 typedef struct FunctionDescription
 {

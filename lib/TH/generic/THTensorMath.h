@@ -30,8 +30,7 @@ TH_API accreal THTensor_(prodall)(THTensor *t);
 TH_API void THTensor_(neg)(THTensor *self, THTensor *src);
 TH_API void THTensor_(cinv)(THTensor *self, THTensor *src);
 
-TH_API void THTensor_(add_Default)(THTensor *r_, THTensor *t, real value);
-TH_API void THTensor_(add_AVX)(THTensor *r_, THTensor *t, real value);
+TH_API void THTensor_(add)(THTensor *r_, THTensor *t, real value);
 TH_API void THTensor_(sub)(THTensor *self, THTensor *src, real value);
 TH_API void THTensor_(mul)(THTensor *r_, THTensor *t, real value);
 TH_API void THTensor_(div)(THTensor *r_, THTensor *t, real value);
@@ -181,5 +180,7 @@ TH_API int THTensor_(logicalall)(THTensor *self);
 TH_API int THTensor_(logicalany)(THTensor *self);
 
 #endif /* TH_REAL_IS_BYTE */
+
+TH_API int THTensor_(tensorMathDispatchInit)();
 
 #endif

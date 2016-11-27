@@ -1355,7 +1355,6 @@ void torch_Tensor_(init)(lua_State *L)
 #ifndef TH_REAL_IS_HALF
   THVector_(vectorDispatchInit)();
 #endif
-
 }
 
 #endif
