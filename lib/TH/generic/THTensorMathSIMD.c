@@ -35,4 +35,31 @@ void THTensor_(add_AVX)(THTensor *r_, THTensor *t, real value)
 
 #endif
 
+#if defined(TH_REAL_IS_FLOAT)
+
+void THTensor_(add_AVX)(THTensor *r_, THTensor *t, real value)
+{
+  THTensor_(resizeAs)(r_, t);
+  if (THTensor_(isContiguous)(r_) && THTensor_(isContiguous)(t) && THTensor_(nElement)(r_) == THTensor_(nElement)(t)) {
+    real *rp = THTensor_(data)(r_);
+    real *tp = THTensor_(data)(t);
+    ptrdiff_t sz = THTensor_(nElement)(t);
+    ptrdiff_t i = 0;
+    __m256 YMM3 = _mm256_set_ps(value, value, value, value, value, value, value, value);
+    __m256 YMM0, YMM2;
+    for (; i<=((sz)-8); i+=8) {
+      YMM0 = _mm256_loadu_ps(tp+i);
+      YMM2 = _mm256_add_ps(YMM0, YMM3);
+      _mm256_storeu_ps(rp+i, YMM2);
+    }
+    for (; i<sz; i++) {
+      rp[i] = tp[i] + value;
+    }
+  } else {
+    TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data + value;);
+  }
+}
+
+#endif
+
 #endif
