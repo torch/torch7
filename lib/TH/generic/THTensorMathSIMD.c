@@ -18,12 +18,21 @@ void THTensor_(add_AVX)(THTensor *r_, THTensor *t, real value)
     real *tp = THTensor_(data)(t);
     ptrdiff_t sz = THTensor_(nElement)(t);
     ptrdiff_t i = 0;
-    __m256d YMM3 = _mm256_set_pd(value, value, value, value);
-    __m256d YMM0, YMM2;
-    for (; i<=((sz)-4); i+=4) {
+    __m256d YMM15 = _mm256_set_pd(value, value, value, value);
+    __m256d YMM0, YMM1, YMM2, YMM3, YMM4, YMM5, YMM6, YMM7;
+    for (; i<=((sz)-16); i+=16) {
       YMM0 = _mm256_loadu_pd(tp+i);
-      YMM2 = _mm256_add_pd(YMM0, YMM3);
-      _mm256_storeu_pd(rp+i, YMM2);
+      YMM1 = _mm256_loadu_pd(tp+i+4);
+      YMM2 = _mm256_loadu_pd(tp+i+8);
+      YMM3 = _mm256_loadu_pd(tp+i+12);
+      YMM4 = _mm256_add_pd(YMM0, YMM15);
+      YMM5 = _mm256_add_pd(YMM1, YMM15);
+      YMM6 = _mm256_add_pd(YMM2, YMM15);
+      YMM7 = _mm256_add_pd(YMM3, YMM15);
+      _mm256_storeu_pd(rp+i, YMM4);
+      _mm256_storeu_pd(rp+i+4, YMM5);
+      _mm256_storeu_pd(rp+i+8, YMM6);
+      _mm256_storeu_pd(rp+i+12, YMM7);
     }
     for (; i<sz; i++) {
       rp[i] = tp[i] + value;
