@@ -40,7 +40,7 @@ void THTensor_(mul_AVX)(THTensor *r_, THTensor *t, real value)
     real *tp = THTensor_(data)(t);
     real *rp = THTensor_(data)(r_);
     ptrdiff_t sz = THTensor_(nElement)(t);
-    ptrdiff_t i;
+    ptrdiff_t i = 0;
     __m256d YMM3 = _mm256_set_pd(value, value, value, value);
     __m256d YMM0, YMM2;
     for (; i<=((sz)-4); i+=4) {
@@ -63,7 +63,7 @@ void THTensor_(div_AVX)(THTensor *r_, THTensor *t, real value)
     real *tp = THTensor_(data)(t);
     real *rp = THTensor_(data)(r_);
     ptrdiff_t sz = THTensor_(nElement)(t);
-    ptrdiff_t i;
+    ptrdiff_t i = 0;
     __m256d YMM3 = _mm256_set_pd(value, value, value, value);
     __m256d YMM0, YMM2;
     for (; i<=((sz)-4); i+=4) {
@@ -113,7 +113,7 @@ void THTensor_(mul_AVX)(THTensor *r_, THTensor *t, real value)
     real *tp = THTensor_(data)(t);
     real *rp = THTensor_(data)(r_);
     ptrdiff_t sz = THTensor_(nElement)(t);
-    ptrdiff_t i;
+    ptrdiff_t i = 0;
     __m256 YMM3 = _mm256_set_ps(value, value, value, value, value, value, value, value);
     __m256 YMM0, YMM2;
     for (; i<=((sz)-8); i+=8) {
@@ -136,7 +136,7 @@ void THTensor_(div_AVX)(THTensor *r_, THTensor *t, real value)
     real *tp = THTensor_(data)(t);
     real *rp = THTensor_(data)(r_);
     ptrdiff_t sz = THTensor_(nElement)(t);
-    ptrdiff_t i;
+    ptrdiff_t i = 0;
     __m256 YMM3 = _mm256_set_ps(value, value, value, value, value, value, value, value);
     __m256 YMM0, YMM2;
     for (; i<=((sz)-8); i+=8) {
