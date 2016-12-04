@@ -8,7 +8,9 @@
 #include <intrin.h>
 #endif
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #if defined(TH_REAL_IS_DOUBLE)
 
@@ -21,8 +23,13 @@ void THTensor_(add_AVX)(THTensor *r_, THTensor *t, real value)
     ptrdiff_t sz = THTensor_(nElement)(t);
     #pragma omp parallel if(sz > TH_OMP_OVERHEAD_THRESHOLD)
     {
+      #ifdef _OPENMP
       size_t num_threads = omp_get_num_threads();
       size_t tid = omp_get_thread_num();
+      #else
+      size_t num_threads = 1;
+      size_t tid = 0;
+      #endif
       ptrdiff_t i = tid * (sz / num_threads);
       ptrdiff_t i_end = tid == num_threads - 1 ? sz : i + sz / num_threads;
       __m256d YMM15 = _mm256_set_pd(value, value, value, value);
@@ -53,8 +60,13 @@ void THTensor_(mul_AVX)(THTensor *r_, THTensor *t, real value)
     ptrdiff_t sz = THTensor_(nElement)(t);
     #pragma omp parallel if(sz > TH_OMP_OVERHEAD_THRESHOLD)
     {
+      #ifdef _OPENMP
       size_t num_threads = omp_get_num_threads();
       size_t tid = omp_get_thread_num();
+      #else
+      size_t num_threads = 1;
+      size_t tid = 0;
+      #endif
       ptrdiff_t i = tid * (sz / num_threads);
       ptrdiff_t i_end = tid == num_threads - 1 ? sz : i + sz / num_threads;
       __m256d YMM15 = _mm256_set_pd(value, value, value, value);
@@ -85,8 +97,13 @@ void THTensor_(div_AVX)(THTensor *r_, THTensor *t, real value)
     ptrdiff_t sz = THTensor_(nElement)(t);
     #pragma omp parallel if(sz > TH_OMP_OVERHEAD_THRESHOLD)
     {
+      #ifdef _OPENMP
       size_t num_threads = omp_get_num_threads();
       size_t tid = omp_get_thread_num();
+      #else
+      size_t num_threads = 1;
+      size_t tid = 0;
+      #endif
       ptrdiff_t i = tid * (sz / num_threads);
       ptrdiff_t i_end = tid == num_threads - 1 ? sz : i + sz / num_threads;
       __m256d YMM15 = _mm256_set_pd(value, value, value, value);
@@ -121,8 +138,13 @@ void THTensor_(add_AVX)(THTensor *r_, THTensor *t, real value)
     ptrdiff_t sz = THTensor_(nElement)(t);
     #pragma omp parallel if(sz > TH_OMP_OVERHEAD_THRESHOLD)
     {
+      #ifdef _OPENMP
       size_t num_threads = omp_get_num_threads();
       size_t tid = omp_get_thread_num();
+      #else
+      size_t num_threads = 1;
+      size_t tid = 0;
+      #endif
       ptrdiff_t i = tid * (sz / num_threads);
       ptrdiff_t i_end = tid == num_threads - 1 ? sz : i + sz / num_threads;
       __m256 YMM15 = _mm256_set_ps(value, value, value, value, value, value, value, value);
@@ -153,8 +175,13 @@ void THTensor_(mul_AVX)(THTensor *r_, THTensor *t, real value)
     ptrdiff_t sz = THTensor_(nElement)(t);
     #pragma omp parallel if(sz > TH_OMP_OVERHEAD_THRESHOLD)
     {
+      #ifdef _OPENMP
       size_t num_threads = omp_get_num_threads();
       size_t tid = omp_get_thread_num();
+      #else
+      size_t num_threads = 1;
+      size_t tid = 0;
+      #endif
       ptrdiff_t i = tid * (sz / num_threads);
       ptrdiff_t i_end = tid == num_threads - 1 ? sz : i + sz / num_threads;
       __m256 YMM15 = _mm256_set_ps(value, value, value, value, value, value, value, value);
@@ -185,8 +212,13 @@ void THTensor_(div_AVX)(THTensor *r_, THTensor *t, real value)
     ptrdiff_t sz = THTensor_(nElement)(t);
     #pragma omp parallel if(sz > TH_OMP_OVERHEAD_THRESHOLD)
     {
+      #ifdef _OPENMP
       size_t num_threads = omp_get_num_threads();
       size_t tid = omp_get_thread_num();
+      #else
+      size_t num_threads = 1;
+      size_t tid = 0;
+      #endif
       ptrdiff_t i = tid * (sz / num_threads);
       ptrdiff_t i_end = tid == num_threads - 1 ? sz : i + sz / num_threads;
       __m256 YMM15 = _mm256_set_ps(value, value, value, value, value, value, value, value);
