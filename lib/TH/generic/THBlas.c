@@ -8,6 +8,15 @@
 # define ffloat float
 #endif
 
+#define MKL_IL64
+
+#ifdef MKL_ILP64 
+#define BLAS_INT long  
+#else
+#define BLAS_INT int
+#endif  
+
+
 TH_EXTERNC void dswap_(int *n, double *x, int *incx, double *y, int *incy);
 TH_EXTERNC void sswap_(int *n, float *x, int *incx, float *y, int *incy);
 TH_EXTERNC void dscal_(int *n, double *a, double *x, int *incx);
@@ -38,9 +47,9 @@ void THBlas_(swap)(long n, real *x, long incx, real *y, long incy)
 #if defined(USE_BLAS) && (defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT))
   if( (n <= INT_MAX) && (incx <= INT_MAX) && (incy <= INT_MAX) )
   {
-    int i_n = (int)n;
-    int i_incx = (int)incx;
-    int i_incy = (int)incy;
+    BLAS_INT i_n = (BLAS_INT)n;
+    BLAS_INT i_incx = (BLAS_INT)incx;
+    BLAS_INT i_incy = (BLAS_INT)incy;
 
 #if defined(TH_REAL_IS_DOUBLE)
     dswap_(&i_n, x, &i_incx, y, &i_incy);
@@ -69,8 +78,8 @@ void THBlas_(scal)(long n, real a, real *x, long incx)
 #if defined(USE_BLAS) && (defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT))
   if( (n <= INT_MAX) && (incx <= INT_MAX) )
   {
-    int i_n = (int)n;
-    int i_incx = (int)incx;
+    BLAS_INT i_n = (BLAS_INT)n;
+    BLAS_INT i_incx = (BLAS_INT)incx;
 
 #if defined(TH_REAL_IS_DOUBLE)
     dscal_(&i_n, &a, x, &i_incx);
@@ -98,9 +107,9 @@ void THBlas_(copy)(long n, real *x, long incx, real *y, long incy)
 #if defined(USE_BLAS) && (defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT))
   if( (n <= INT_MAX) && (incx <= INT_MAX) && (incy <= INT_MAX) )
   {
-    int i_n = (int)n;
-    int i_incx = (int)incx;
-    int i_incy = (int)incy;
+    BLAS_INT i_n = (BLAS_INT)n;
+    BLAS_INT i_incx = (BLAS_INT)incx;
+    BLAS_INT i_incy = (BLAS_INT)incy;
 
 #if defined(TH_REAL_IS_DOUBLE)
     dcopy_(&i_n, x, &i_incx, y, &i_incy);
@@ -128,9 +137,9 @@ void THBlas_(axpy)(long n, real a, real *x, long incx, real *y, long incy)
 #if defined(USE_BLAS) && (defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT))
   if( (n <= INT_MAX) && (incx <= INT_MAX) && (incy <= INT_MAX) )
   {
-    int i_n = (int)n;
-    int i_incx = (int)incx;
-    int i_incy = (int)incy;
+    BLAS_INT i_n = (BLAS_INT)n;
+    BLAS_INT i_incx = (BLAS_INT)incx;
+    BLAS_INT i_incy = (BLAS_INT)incy;
 
 #if defined(TH_REAL_IS_DOUBLE)
     daxpy_(&i_n, &a, x, &i_incx, y, &i_incy);
@@ -158,9 +167,9 @@ real THBlas_(dot)(long n, real *x, long incx, real *y, long incy)
 #if defined(USE_BLAS) && (defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT))
   if( (n <= INT_MAX) && (incx <= INT_MAX) && (incy <= INT_MAX) )
   {
-    int i_n = (int)n;
-    int i_incx = (int)incx;
-    int i_incy = (int)incy;
+    BLAS_INT i_n = (BLAS_INT)n;
+    BLAS_INT i_incx = (BLAS_INT)incx;
+    BLAS_INT i_incy = (BLAS_INT)incy;
 
 #if defined(TH_REAL_IS_DOUBLE)
     return (real) ddot_(&i_n, x, &i_incx, y, &i_incy);
@@ -189,11 +198,11 @@ void THBlas_(gemv)(char trans, long m, long n, real alpha, real *a, long lda, re
       (incx > 0) && (incx <= INT_MAX) &&
       (incy > 0) && (incy <= INT_MAX) )
   {
-    int i_m = (int)m;
-    int i_n = (int)n;
-    int i_lda = (int)lda;
-    int i_incx = (int)incx;
-    int i_incy = (int)incy;
+    BLAS_INT i_m = (BLAS_INT)m;
+    BLAS_INT i_n = (BLAS_INT)n;
+    BLAS_INT i_lda = (BLAS_INT)lda;
+    BLAS_INT i_incx = (BLAS_INT)incx;
+    BLAS_INT i_incy = (BLAS_INT)incy;
 
 #if defined(TH_REAL_IS_DOUBLE)
     dgemv_(&trans, &i_m, &i_n, &alpha, a, &i_lda, x, &i_incx, &beta, y, &i_incy);
@@ -241,11 +250,11 @@ void THBlas_(ger)(long m, long n, real alpha, real *x, long incx, real *y, long 
 #if defined(USE_BLAS) && (defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT))
   if( (m <= INT_MAX) && (n <= INT_MAX) && (lda <= INT_MAX)  && (incx <= INT_MAX) && (incy <= INT_MAX) )
   {
-    int i_m = (int)m;
-    int i_n = (int)n;
-    int i_lda = (int)lda;
-    int i_incx = (int)incx;
-    int i_incy = (int)incy;
+    BLAS_INT i_m = (BLAS_INT)m;
+    BLAS_INT i_n = (BLAS_INT)n;
+    BLAS_INT i_lda = (BLAS_INT)lda;
+    BLAS_INT i_incx = (BLAS_INT)incx;
+    BLAS_INT i_incy = (BLAS_INT)incy;
 
 #if defined(TH_REAL_IS_DOUBLE)
     dger_(&i_m, &i_n, &alpha, x, &i_incx, y, &i_incy, a, &i_lda);
@@ -300,12 +309,12 @@ void THBlas_(gemm)(char transa, char transb, long m, long n, long k, real alpha,
 #if defined(USE_BLAS) && (defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT))
   if( (m <= INT_MAX) && (n <= INT_MAX) && (k <= INT_MAX) && (lda <= INT_MAX)  && (ldb <= INT_MAX) && (ldc <= INT_MAX) )
   {
-    int i_m = (int)m;
-    int i_n = (int)n;
-    int i_k = (int)k;
-    int i_lda = (int)lda;
-    int i_ldb = (int)ldb;
-    int i_ldc = (int)ldc;
+    BLAS_INT i_m = (BLAS_INT)m;
+    BLAS_INT i_n = (BLAS_INT)n;
+    BLAS_INT i_k = (BLAS_INT)k;
+    BLAS_INT i_lda = (BLAS_INT)lda;
+    BLAS_INT i_ldb = (BLAS_INT)ldb;
+    BLAS_INT i_ldc = (BLAS_INT)ldc;
 
 #if defined(TH_REAL_IS_DOUBLE)
     dgemm_(&transa, &transb, &i_m, &i_n, &i_k, &alpha, a, &i_lda, b, &i_ldb, &beta, c, &i_ldc);
