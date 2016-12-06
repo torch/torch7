@@ -138,7 +138,7 @@ static void (*THVector_(mul_DISPATCHPTR))(real *, const real *, const real, cons
 static FunctionDescription THVector_(mul_DISPATCHTABLE)[] = {
   #if defined(USE_AVX)
     #if defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_FLOAT)
-      FUNCTION_IMPL(THVector_(mul_SSE), SIMDExtension_SSE),
+      FUNCTION_IMPL(THVector_(mul_AVX), SIMDExtension_AVX),
     #endif
   #endif
 
