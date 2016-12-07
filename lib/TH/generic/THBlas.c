@@ -16,24 +16,22 @@
 #define BLAS_INT int
 #endif  
 
-
-TH_EXTERNC void dswap_(int *n, double *x, int *incx, double *y, int *incy);
-TH_EXTERNC void sswap_(int *n, float *x, int *incx, float *y, int *incy);
-TH_EXTERNC void dscal_(int *n, double *a, double *x, int *incx);
-TH_EXTERNC void sscal_(int *n, float *a, float *x, int *incx);
-TH_EXTERNC void dcopy_(int *n, double *x, int *incx, double *y, int *incy);
-TH_EXTERNC void scopy_(int *n, float *x, int *incx, float *y, int *incy);
-TH_EXTERNC void daxpy_(int *n, double *a, double *x, int *incx, double *y, int *incy);
-TH_EXTERNC void saxpy_(int *n, float *a, float *x, int *incx, float *y, int *incy);
-TH_EXTERNC double ddot_(int *n, double *x, int *incx, double *y, int *incy);
-TH_EXTERNC ffloat sdot_(int *n, float *x, int *incx, float *y, int *incy);
-TH_EXTERNC void dgemv_(char *trans, int *m, int *n, double *alpha, double *a, int *lda, double *x, int *incx, double *beta, double *y, int *incy);
-TH_EXTERNC void sgemv_(char *trans, int *m, int *n, float *alpha, float *a, int *lda, float *x, int *incx, float *beta, float *y, int *incy);
-TH_EXTERNC void dger_(int *m, int *n, double *alpha, double *x, int *incx, double *y, int *incy, double *a, int *lda);
-TH_EXTERNC void sger_(int *m, int *n, float *alpha, float *x, int *incx, float *y, int *incy, float *a, int *lda);
-TH_EXTERNC void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *lda, double *b, int *ldb, double *beta, double *c, int *ldc);
-TH_EXTERNC void sgemm_(char *transa, char *transb, int *m, int *n, int *k, float *alpha, float *a, int *lda, float *b, int *ldb, float *beta, float *c, int *ldc);
-    
+TH_EXTERNC void dswap_(BLAS_INT *n, double *x, BLAS_INT *incx, double *y, BLAS_INT *incy);
+TH_EXTERNC void sswap_(BLAS_INT *n, float *x, BLAS_INT *incx, float *y, BLAS_INT *incy);
+TH_EXTERNC void dscal_(BLAS_INT *n, double *a, double *x, BLAS_INT *incx);
+TH_EXTERNC void sscal_(BLAS_INT *n, float *a, float *x, BLAS_INT *incx);
+TH_EXTERNC void dcopy_(BLAS_INT *n, double *x, BLAS_INT *incx, double *y, BLAS_INT *incy);
+TH_EXTERNC void scopy_(BLAS_INT *n, float *x, BLAS_INT *incx, float *y, BLAS_INT *incy);
+TH_EXTERNC void daxpy_(BLAS_INT *n, double *a, double *x, BLAS_INT *incx, double *y, BLAS_INT *incy);
+TH_EXTERNC void saxpy_(BLAS_INT *n, float *a, float *x, BLAS_INT *incx, float *y, BLAS_INT *incy);
+TH_EXTERNC double ddot_(BLAS_INT *n, double *x, BLAS_INT *incx, double *y, BLAS_INT *incy);
+TH_EXTERNC ffloat sdot_(BLAS_INT *n, float *x, BLAS_INT *incx, float *y, BLAS_INT *incy);
+TH_EXTERNC void dgemv_(char *trans, BLAS_INT *m, BLAS_INT *n, double *alpha, double *a, BLAS_INT *lda, double *x, BLAS_INT *incx, double *beta, double *y, BLAS_INT *incy);
+TH_EXTERNC void sgemv_(char *trans, BLAS_INT *m, BLAS_INT *n, float *alpha, float *a, BLAS_INT *lda, float *x, BLAS_INT *incx, float *beta, float *y, BLAS_INT *incy);
+TH_EXTERNC void dger_(BLAS_INT *m, BLAS_INT *n, double *alpha, double *x, BLAS_INT *incx, double *y, BLAS_INT *incy, double *a, BLAS_INT *lda);
+TH_EXTERNC void sger_(BLAS_INT *m, BLAS_INT *n, float *alpha, float *x, BLAS_INT *incx, float *y, BLAS_INT *incy, float *a, BLAS_INT *lda);
+TH_EXTERNC void dgemm_(char *transa, char *transb, BLAS_INT *m, BLAS_INT *n, BLAS_INT *k, double *alpha, double *a, BLAS_INT *lda, double *b, BLAS_INT *ldb, double *beta, double *c, BLAS_INT *ldc);
+TH_EXTERNC void sgemm_(char *transa, char *transb, BLAS_INT *m, BLAS_INT *n, BLAS_INT *k, float *alpha, float *a, BLAS_INT *lda, float *b, BLAS_INT *ldb, float *beta, float *c, BLAS_INT *ldc);
  
 
 void THBlas_(swap)(long n, real *x, long incx, real *y, long incy)
