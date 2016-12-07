@@ -129,8 +129,8 @@ void THVector_(mul)(real *y, const real *x, const ptrdiff_t n) {
 void THVector_(vectorDispatchInit)(void)
 {
   uint32_t hostSimdExts = detectHostSIMDExtensions();
-  INIT_DISPATCH_PTR(fill);
 # ifndef TH_GENERIC_NO_MATH
+  INIT_DISPATCH_PTR(fill);
   INIT_DISPATCH_PTR(add);
   INIT_DISPATCH_PTR(diff);
   INIT_DISPATCH_PTR(scale);

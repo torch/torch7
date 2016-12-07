@@ -3,7 +3,7 @@
 
 #include "THGeneral.h"
 
-#ifdef TH_GENERIC_USE_HALF
+#if TH_GENERIC_USE_HALF
 # include "THHalf.h"
 #endif
 
