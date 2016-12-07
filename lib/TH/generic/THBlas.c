@@ -8,7 +8,7 @@
 # define ffloat float
 #endif
 
-#define MKL_IL64
+#define MKL_ILP64
 
 #ifdef MKL_ILP64 
  #ifdef WIN32
