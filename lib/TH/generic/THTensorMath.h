@@ -182,6 +182,4 @@ TH_API int THTensor_(logicalany)(THTensor *self);
 
 #endif /* TH_REAL_IS_BYTE */
 
-TH_API int THTensor_(tensorMathDispatchInit)();
-
 #endif
