@@ -39,6 +39,14 @@ IMPLEMENT_THTensor_COPY_FROM_HALF(Half, half)
 #else
 /* only allow pass-through for Half */
 IMPLEMENT_THTensor_COPY(Half, half)
+IMPLEMENT_THTensor_COPY_TO_HALF(Byte, unsigned char)
+IMPLEMENT_THTensor_COPY_TO_HALF(Char, char)
+IMPLEMENT_THTensor_COPY_TO_HALF(Short, short)
+IMPLEMENT_THTensor_COPY_TO_HALF(Int, int)
+IMPLEMENT_THTensor_COPY_TO_HALF(Long, long)
+IMPLEMENT_THTensor_COPY_TO_HALF(Float, float)
+IMPLEMENT_THTensor_COPY_TO_HALF(Double, double)
+
 #endif /* REAL_IS_HALF */
 
 #endif
