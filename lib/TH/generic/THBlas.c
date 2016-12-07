@@ -11,10 +11,15 @@
 #define MKL_IL64
 
 #ifdef MKL_ILP64 
-#define BLAS_INT long  
+ #ifdef WIN32
+  #define BLAS_INT __int64 
+ #else
+  #define BLAS_INT long 
+ #endif
 #else
-#define BLAS_INT int
-#endif  
+ #define BLAS_INT int
+#endif
+
 
 TH_EXTERNC void dswap_(BLAS_INT *n, double *x, BLAS_INT *incx, double *y, BLAS_INT *incy);
 TH_EXTERNC void sswap_(BLAS_INT *n, float *x, BLAS_INT *incx, float *y, BLAS_INT *incy);
