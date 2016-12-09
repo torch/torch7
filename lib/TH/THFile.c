@@ -19,7 +19,9 @@ IMPLEMENT_THFILE_RW(Int, int)
 IMPLEMENT_THFILE_RW(Long, long)
 IMPLEMENT_THFILE_RW(Float, float)
 IMPLEMENT_THFILE_RW(Double, double)
+#if TH_GENERIC_USE_HALF
 IMPLEMENT_THFILE_RW(Half, half)
+#endif
 
 size_t THFile_readStringRaw(THFile *self, const char *format, char **str_)
 {
