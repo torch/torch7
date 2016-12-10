@@ -211,8 +211,8 @@ static void THFloatVector_mul_AVX(float *y, const float *x, const float c, const
 
 static void THFloatVector_cadd_AVX(float *z, const float *x, const float *y, const float c, const ptrdiff_t n) {
   ptrdiff_t i;
-  __m256d YMM15 = _mm256_set_ps(c, c, c, c, c, c, c, c);
-  __m256d YMM0, YMM1, YMM2, YMM3;
+  __m256 YMM15 = _mm256_set_ps(c, c, c, c, c, c, c, c);
+  __m256 YMM0, YMM1, YMM2, YMM3;
   for (i=0; i<=((n)-8); i+=8) {
     YMM0 = _mm256_loadu_ps(y+i);
     YMM1 = _mm256_loadu_ps(x+i);
