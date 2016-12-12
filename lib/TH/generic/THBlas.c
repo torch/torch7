@@ -8,15 +8,16 @@
 # define ffloat float
 #endif
 
-#define MKL_ILP64
-
-#ifdef MKL_ILP64 
+// define MKL_LP64 to get 32bit ints on 64bit platforms
+#ifndef MKL_LP64 
+ // 64bit ints
  #ifdef WIN32
   #define BLAS_INT __int64 
  #else
   #define BLAS_INT long 
  #endif
 #else
+ // 32bit ints
  #define BLAS_INT int
 #endif
 
