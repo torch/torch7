@@ -4,6 +4,58 @@ require 'torchcwrap'
 
 local interface = wrap.CInterface.new()
 local method = wrap.CInterface.new()
+local argtypes = wrap.CInterface.argtypes
+
+argtypes['ptrdiff_t'] = {
+
+  helpname = function(arg)
+                return 'ptrdiff_t' 
+             end,
+
+  declare = function(arg)
+               -- if it is a number we initialize here
+               local default = tonumber(tostring(arg.default)) or 0
+               return string.format("%s arg%d = %g;", 'ptrdiff_t', arg.i, default)
+            end,
+
+  check = function(arg, idx)
+             return string.format("lua_isnumber(L, %d)", idx)
+          end,
+
+  read = function(arg, idx)
+            return string.format("arg%d = (%s)lua_tonumber(L, %d);", arg.i, 'ptrdiff_t', idx)
+         end,
+
+  init = function(arg)
+            -- otherwise do it here
+            if arg.default then
+               local default = tostring(arg.default)
+               if not tonumber(default) then
+                  return string.format("arg%d = %s;", arg.i, default)
+               end
+            end
+         end,
+  
+  carg = function(arg)
+            return string.format('arg%d', arg.i)
+         end,
+
+  creturn = function(arg)
+               return string.format('arg%d', arg.i)
+            end,
+  
+  precall = function(arg)
+               if arg.returned then
+                  return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
+               end
+            end,
+  
+  postcall = function(arg)
+                if arg.creturned then
+                   return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
+                end
+             end
+}
 
 interface:print([[
 #include "TH.h"
@@ -61,7 +113,7 @@ static const void* torch_istensorarray(lua_State *L, int idx)
 
   lua_checkstack(L, 3);
   lua_rawgeti(L, idx, 1);
-  tensor_idx = lua_gettop(L);  
+  tensor_idx = lua_gettop(L);
   tname = (torch_istensortype(L, luaT_typename(L, -1)));
   lua_remove(L, tensor_idx);
   return tname;
@@ -316,7 +368,7 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
          {name=Tensor, method={default=1}},
          {name=real}})
- 
+
    -- mod alias
    wrap("mod",
         cname("fmod"),
@@ -533,7 +585,7 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
    wrap("numel",
         cname("numel"),
         {{name=Tensor},
-         {name="long", creturned=true}})
+         {name="ptrdiff_t", creturned=true}})
 
    for _,name in ipairs({"cumsum", "cumprod"}) do
       wrap(name,
@@ -652,7 +704,7 @@ wrap("topk",
         {{name=Tensor, default=true, returned=true},
          {name="IndexTensor", default=true, returned=true, noreadadd=true},
          {name=Tensor},
-         {name="index"},
+         {name="long"},
          {name="index", default=lastdim(3)}})
 
    wrap("mode",

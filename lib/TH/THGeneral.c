@@ -1,8 +1,14 @@
 #include "THGeneral.h"
 #include "THAtomic.h"
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #ifndef TH_HAVE_THREAD
 #define __thread
+#elif _MSC_VER
+#define __thread __declspec( thread )
 #endif
 
 #if (defined(__unix) || defined(_WIN32))
@@ -16,14 +22,16 @@
 #endif
 
 /* Torch Error Handling */
-static void defaultTorchErrorHandlerFunction(const char *msg, void *data)
+static void defaultErrorHandlerFunction(const char *msg, void *data)
 {
   printf("$ Error: %s\n", msg);
   exit(-1);
 }
 
-static __thread void (*torchErrorHandlerFunction)(const char *msg, void *data) = defaultTorchErrorHandlerFunction;
-static __thread void *torchErrorHandlerData;
+static THErrorHandlerFunction defaultErrorHandler = defaultErrorHandlerFunction;
+static void *defaultErrorHandlerData;
+static __thread THErrorHandlerFunction threadErrorHandler = NULL;
+static __thread void *threadErrorHandlerData;
 
 void _THError(const char *file, const int line, const char *fmt, ...)
 {
@@ -40,7 +48,10 @@ void _THError(const char *file, const int line, const char *fmt, ...)
     snprintf(msg + n, 2048 - n, " at %s:%d", file, line);
   }
 
-  (*torchErrorHandlerFunction)(msg, torchErrorHandlerData);
+  if (threadErrorHandler)
+    (*threadErrorHandler)(msg, threadErrorHandlerData);
+  else
+    (*defaultErrorHandler)(msg, defaultErrorHandlerData);
 }
 
 void _THAssertionFailed(const char *file, const int line, const char *exp, const char *fmt, ...) {
@@ -52,17 +63,23 @@ void _THAssertionFailed(const char *file, const int line, const char *exp, const
   _THError(file, line, "Assertion `%s' failed. %s", exp, msg);
 }
 
-void THSetErrorHandler( void (*torchErrorHandlerFunction_)(const char *msg, void *data), void *data )
+void THSetErrorHandler(THErrorHandlerFunction new_handler, void *data)
 {
-  if(torchErrorHandlerFunction_)
-    torchErrorHandlerFunction = torchErrorHandlerFunction_;
+  threadErrorHandler = new_handler;
+  threadErrorHandlerData = data;
+}
+
+void THSetDefaultErrorHandler(THErrorHandlerFunction new_handler, void *data)
+{
+  if (new_handler)
+    defaultErrorHandler = new_handler;
   else
-    torchErrorHandlerFunction = defaultTorchErrorHandlerFunction;
-  torchErrorHandlerData = data;
+    defaultErrorHandler = defaultErrorHandlerFunction;
+  defaultErrorHandlerData = data;
 }
 
 /* Torch Arg Checking Handling */
-static void defaultTorchArgErrorHandlerFunction(int argNumber, const char *msg, void *data)
+static void defaultArgErrorHandlerFunction(int argNumber, const char *msg, void *data)
 {
   if(msg)
     printf("$ Invalid argument %d: %s\n", argNumber, msg);
@@ -71,8 +88,10 @@ static void defaultTorchArgErrorHandlerFunction(int argNumber, const char *msg, 
   exit(-1);
 }
 
-static __thread void (*torchArgErrorHandlerFunction)(int argNumber, const char *msg, void *data) = defaultTorchArgErrorHandlerFunction;
-static __thread void *torchArgErrorHandlerData;
+static THArgErrorHandlerFunction defaultArgErrorHandler = defaultArgErrorHandlerFunction;
+static void *defaultArgErrorHandlerData;
+static __thread THArgErrorHandlerFunction threadArgErrorHandler = NULL;
+static __thread void *threadArgErrorHandlerData;
 
 void _THArgCheck(const char *file, int line, int condition, int argNumber, const char *fmt, ...)
 {
@@ -90,25 +109,35 @@ void _THArgCheck(const char *file, int line, int condition, int argNumber, const
       snprintf(msg + n, 2048 - n, " at %s:%d", file, line);
     }
 
-    (*torchArgErrorHandlerFunction)(argNumber, msg, torchArgErrorHandlerData);
+    if (threadArgErrorHandlerData)
+      (*threadArgErrorHandler)(argNumber, msg, threadArgErrorHandlerData);
+    else
+      (*defaultArgErrorHandler)(argNumber, msg, defaultArgErrorHandlerData);
   }
 }
 
-void THSetArgErrorHandler( void (*torchArgErrorHandlerFunction_)(int argNumber, const char *msg, void *data), void *data )
+void THSetArgErrorHandler(THArgErrorHandlerFunction new_handler, void *data)
 {
-  if(torchArgErrorHandlerFunction_)
-    torchArgErrorHandlerFunction = torchArgErrorHandlerFunction_;
+  threadArgErrorHandler = new_handler;
+  threadArgErrorHandlerData = data;
+}
+
+void THSetDefaultArgErrorHandler(THArgErrorHandlerFunction new_handler, void *data)
+{
+  if (new_handler)
+    defaultArgErrorHandler = new_handler;
   else
-    torchArgErrorHandlerFunction = defaultTorchArgErrorHandlerFunction;
-  torchArgErrorHandlerData = data;
+    defaultArgErrorHandler = defaultArgErrorHandlerFunction;
+  defaultArgErrorHandlerData = data;
 }
 
 static __thread void (*torchGCFunction)(void *data) = NULL;
 static __thread void *torchGCData;
-static long heapSize = 0;
-static __thread long heapDelta = 0;
-static const long heapMaxDelta = 1e6; // limit to +/- 1MB before updating heapSize
-static __thread long heapSoftmax = 3e8; // 300MB, adjusted upward dynamically
+static ptrdiff_t heapSize = 0;
+static __thread ptrdiff_t heapDelta = 0;
+static const ptrdiff_t heapMaxDelta = (ptrdiff_t)1e6; // limit to +/- 1MB before updating heapSize
+static const ptrdiff_t heapMinDelta = (ptrdiff_t)-1e6;
+static __thread ptrdiff_t heapSoftmax = (ptrdiff_t)3e8; // 300MB, adjusted upward dynamically
 static const double heapSoftmaxGrowthThresh = 0.8; // grow softmax if >80% max after GC
 static const double heapSoftmaxGrowthFactor = 1.4; // grow softmax by 40%
 
@@ -128,7 +157,8 @@ void THSetGCHandler( void (*torchGCFunction_)(void *data), void *data )
   torchGCData = data;
 }
 
-static long getAllocSize(void *ptr) {
+/* it is guaranteed the allocated size is not bigger than PTRDIFF_MAX */
+static ptrdiff_t getAllocSize(void *ptr) {
 #if defined(__unix) && defined(HAVE_MALLOC_USABLE_SIZE)
   return malloc_usable_size(ptr);
 #elif defined(__APPLE__)
@@ -140,8 +170,15 @@ static long getAllocSize(void *ptr) {
 #endif
 }
 
-static long applyHeapDelta() {
-  long newHeapSize = THAtomicAddLong(&heapSize, heapDelta) + heapDelta;
+static ptrdiff_t applyHeapDelta() {
+  ptrdiff_t oldHeapSize = THAtomicAddPtrdiff(&heapSize, heapDelta);
+#ifdef DEBUG
+  if (heapDelta > 0 && oldHeapSize > PTRDIFF_MAX - heapDelta)
+    THError("applyHeapDelta: heapSize(%td) + increased(%td) > PTRDIFF_MAX, heapSize overflow!", oldHeapSize, heapDelta);
+  if (heapDelta < 0 && oldHeapSize < PTRDIFF_MIN - heapDelta)
+    THError("applyHeapDelta: heapSize(%td) + decreased(%td) < PTRDIFF_MIN, heapSize underflow!", oldHeapSize, heapDelta);
+#endif
+  ptrdiff_t newHeapSize = oldHeapSize + heapDelta;
   heapDelta = 0;
   return newHeapSize;
 }
@@ -150,36 +187,43 @@ static long applyHeapDelta() {
  * (2) if post-GC heap size exceeds 80% of the soft max, increase the
  *     soft max by 40%
  */
-static void maybeTriggerGC(long curHeapSize) {
+static void maybeTriggerGC(ptrdiff_t curHeapSize) {
   if (torchGCFunction && curHeapSize > heapSoftmax) {
     torchGCFunction(torchGCData);
 
     // ensure heapSize is accurate before updating heapSoftmax
-    long newHeapSize = applyHeapDelta();
+    ptrdiff_t newHeapSize = applyHeapDelta();
 
     if (newHeapSize > heapSoftmax * heapSoftmaxGrowthThresh) {
-      heapSoftmax = heapSoftmax * heapSoftmaxGrowthFactor;
+      heapSoftmax = (ptrdiff_t)(heapSoftmax * heapSoftmaxGrowthFactor);
     }
   }
 }
 
 // hooks into the TH heap tracking
-void THHeapUpdate(long size) {
+void THHeapUpdate(ptrdiff_t size) {
+#ifdef DEBUG
+  if (size > 0 && heapDelta > PTRDIFF_MAX - size)
+    THError("THHeapUpdate: heapDelta(%td) + increased(%td) > PTRDIFF_MAX, heapDelta overflow!", heapDelta, size);
+  if (size < 0 && heapDelta < PTRDIFF_MIN - size)
+    THError("THHeapUpdate: heapDelta(%td) + decreased(%td) < PTRDIFF_MIN, heapDelta underflow!", heapDelta, size);
+#endif
+
   heapDelta += size;
 
   // batch updates to global heapSize to minimize thread contention
-  if (labs(heapDelta) < heapMaxDelta) {
+  if (heapDelta < heapMaxDelta && heapDelta > heapMinDelta) {
     return;
   }
 
-  long newHeapSize = applyHeapDelta();
+  ptrdiff_t newHeapSize = applyHeapDelta();
 
   if (size > 0) {
     maybeTriggerGC(newHeapSize);
   }
 }
 
-static void* THAllocInternal(long size)
+static void* THAllocInternal(ptrdiff_t size)
 {
   void *ptr;
 
@@ -205,7 +249,7 @@ static void* THAllocInternal(long size)
   return ptr;
 }
 
-void* THAlloc(long size)
+void* THAlloc(ptrdiff_t size)
 {
   void *ptr;
 
@@ -228,11 +272,11 @@ void* THAlloc(long size)
   return ptr;
 }
 
-void* THRealloc(void *ptr, long size)
+void* THRealloc(void *ptr, ptrdiff_t size)
 {
   if(!ptr)
     return(THAlloc(size));
-  
+
   if(size == 0)
   {
     THFree(ptr);
@@ -242,17 +286,19 @@ void* THRealloc(void *ptr, long size)
   if(size < 0)
     THError("$ Torch: invalid memory size -- maybe an overflow?");
 
-  THHeapUpdate(-getAllocSize(ptr));
+  ptrdiff_t oldSize = -getAllocSize(ptr);
   void *newptr = realloc(ptr, size);
 
   if(!newptr && torchGCFunction) {
     torchGCFunction(torchGCData);
     newptr = realloc(ptr, size);
   }
-  THHeapUpdate(getAllocSize(newptr ? newptr : ptr));
 
   if(!newptr)
     THError("$ Torch: not enough memory: you tried to reallocate %dGB. Buy new RAM!", size/1073741824);
+
+  // update heapSize only after successfully reallocated
+  THHeapUpdate(oldSize + getAllocSize(newptr));
 
   return newptr;
 }
@@ -270,5 +316,30 @@ double THLog1p(const double x)
   return log(y) - ((y-1)-x)/y ;  /* cancels errors with IEEE arithmetic */
 #else
   return log1p(x);
+#endif
+}
+
+void THSetNumThreads(int num_threads)
+{
+#ifdef _OPENMP
+  omp_set_num_threads(num_threads);
+#endif
+}
+
+int THGetNumThreads(void)
+{
+#ifdef _OPENMP
+  return omp_get_max_threads();
+#else
+  return 1;
+#endif
+}
+
+int THGetNumCores(void)
+{
+#ifdef _OPENMP
+  return omp_get_num_procs();
+#else
+  return 1;
 #endif
 }

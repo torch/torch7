@@ -186,4 +186,7 @@ end
 -- alias for convenience
 torch.Tensor.isTensor = torch.isTensor
 
+-- remove this line to disable automatic heap-tracking for garbage collection
+torch.setheaptracking(true)
+
 return torch

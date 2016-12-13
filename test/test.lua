@@ -183,7 +183,7 @@ function torchtest.rsqrt()
 end
 
 function torchtest.sigmoid()
-   -- cant use genericSingleOpTest, since `math.sigmoid` doesnt exist, have to use
+   -- can't use genericSingleOpTest, since `math.sigmoid` doesn't exist, have to use
    -- `torch.sigmoid` instead
    local inputValues = {-1000,-1,0,0.5,1,2,1000}
    local expectedOutput = {0.0000, 0.2689, 0.5, 0.6225, 0.7311, 0.8808, 1.000}
@@ -234,7 +234,7 @@ function torchtest.frac()
    end
 
    local f
-   local t = genericSingleOpTest:gsub('functionname', 'frac'):gsub('math.frac', 'TH_frac')   
+   local t = genericSingleOpTest:gsub('functionname', 'frac'):gsub('math.frac', 'TH_frac')
    local env = { TH_frac=TH_frac, torch=torch, math=math }
    if not setfenv then -- Lua 5.2
       f = load(t, 'test', 't', env)
@@ -1789,6 +1789,14 @@ function torchtest.mode()
    mytester:assertTensorEq(res:view(1, msize), mx, 0, 'torch.mode value')
    mytester:assertTensorEq(resix:view(1, msize), ix, 0, 'torch.mode index')
 
+   local input = torch.Tensor({
+       {1, 2, 2, 2, 3, 2},
+       {1.5, 2, 2, 1.5, 1.5, 5},
+   })
+   local value, index = torch.mode(input)
+   local expected_value = torch.Tensor({{2}, {1.5}})
+   mytester:assertTensorEq(value, expected_value)
+
    -- input unchanged
    mytester:assertTensorEq(x, x0, 0, 'torch.mode modified input')
 end
@@ -2921,7 +2929,12 @@ function torchtest.abs()
    end
 
    -- Checking that the right abs function is called for LongTensor
-   local bignumber = 2^31 + 1
+   local bignumber
+   if torch.LongTensor():elementSize() > 4 then
+      bignumber = 2^31 + 1
+   else
+      bignumber = 2^15 + 1
+   end
    local input = torch.LongTensor{-bignumber}
    mytester:assertgt(input:abs()[1], 0, 'torch.abs(3)')
 end
@@ -2933,11 +2946,13 @@ function torchtest.classInModule()
     mytester:assert(x ~= nil, 'Could not create class in module')
     -- Remove the global
     _G['_mymodule123'] = nil
+    debug.getregistry()['_mymodule123.myclass']=nil
 end
 
 function torchtest.classNoModule()
     local x = torch.class('_myclass123')
     mytester:assert(x ~= nil, 'Could not create class in module')
+    debug.getregistry()['_myclass123'] = nil
 end
 
 function torchtest.type()
@@ -2964,6 +2979,9 @@ function torchtest.isTypeOfInheritance()
    mytester:assert(torch.isTypeOf(b, A), 'isTypeOf error: inheritance')
    mytester:assert(not torch.isTypeOf(c, 'B'), 'isTypeOf error: common parent')
    mytester:assert(not torch.isTypeOf(c, B), 'isTypeOf error: common parent')
+   debug.getregistry()['A'] = nil
+   debug.getregistry()['B'] = nil
+   debug.getregistry()['C'] = nil
 end
 
 function torchtest.isTypeOfPartial()
@@ -3007,6 +3025,13 @@ function torchtest.isTypeOfPartial()
                    'isTypeOf error: inheritance')
    mytester:assert(not torch.isTypeOf(ttm, 'TorchMember'),
                    'isTypeOf error: inheritance')
+   debug.getregistry()['TorchDummy'] = nil
+   debug.getregistry()['OtherTorchDummy'] = nil
+   debug.getregistry()['TorchMember'] = nil
+   debug.getregistry()['OtherTorchMember'] = nil
+   debug.getregistry()['FirstTorchMember'] = nil
+   debug.getregistry()['SecondTorchMember'] = nil
+   debug.getregistry()['ThirdTorchMember'] = nil
 end
 
 function torchtest.isTypeOfPattern()
@@ -3408,6 +3433,17 @@ function torchtest.bernoulli()
   local p = torch.rand(size)
   t:bernoulli(p)
   mytester:assert(isBinary(t), 'Sample from torch.bernoulli is not binary')
+end
+
+function torchtest.logNormal()
+    local t = torch.FloatTensor(10, 10)
+    local mean, std = torch.uniform(), 0.1 * torch.uniform()
+    local tolerance = 0.02
+
+    t:logNormal(mean, std)
+    local logt = t:log()
+    mytester:assertalmosteq(logt:mean(), mean, tolerance, 'mean is wrong')
+    mytester:assertalmosteq(logt:std(), std, tolerance, 'tolerance is wrong')
 end
 
 function torch.test(tests)

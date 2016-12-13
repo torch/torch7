@@ -2,6 +2,8 @@
 #include "THDiskFile.h"
 #include "THFilePrivate.h"
 
+#include <stdint.h>
+
 typedef struct THDiskFile__
 {
     THFile file;
@@ -170,7 +172,10 @@ static void THDiskFile_seek(THFile *self, size_t position)
 
   THArgCheck(dfself->handle != NULL, 1, "attempt to use a closed file");
 
-#ifdef _WIN32
+#if defined(_WIN64)
+  THArgCheck(position <= (size_t)INT64_MAX, 2, "position must be smaller than INT64_MAX");
+  if(_fseeki64(dfself->handle, (__int64)position, SEEK_SET) < 0)
+#elif defined(_WIN32)
   THArgCheck(position <= (size_t)LONG_MAX, 2, "position must be smaller than LONG_MAX");
   if(fseek(dfself->handle, (long)position, SEEK_SET) < 0)
 #else
@@ -190,7 +195,13 @@ static void THDiskFile_seekEnd(THFile *self)
 
   THArgCheck(dfself->handle != NULL, 1, "attempt to use a closed file");
 
-  if(fseek(dfself->handle, 0L, SEEK_END) < 0)
+#if defined(_WIN64)
+  if(_fseeki64(dfself->handle, 0, SEEK_END) < 0)
+#elif defined(_WIN32)
+  if(fseek(dfself->handle, 0, SEEK_END) < 0)
+#else
+  if(fseeko(dfself->handle, 0, SEEK_END) < 0)
+#endif
   {
     dfself->file.hasError = 1;
     if(!dfself->file.isQuiet)
@@ -203,11 +214,17 @@ static size_t THDiskFile_position(THFile *self)
   THDiskFile *dfself = (THDiskFile*)(self);
   THArgCheck(dfself->handle != NULL, 1, "attempt to use a closed file");
 
+#if defined(_WIN64)
+  __int64 offset = _ftelli64(dfself->handle);
+#elif defined(_WIN32)
   long offset = ftell(dfself->handle);
+#else
+  off_t offset = ftello(dfself->handle);
+#endif
   if (offset > -1)
       return (size_t)offset;
   else if(!dfself->file.isQuiet)
-      THError("unable to obtain disk file offset (maybe a long overflow occured)");
+      THError("unable to obtain disk file offset (maybe a long overflow occurred)");
 
   return 0;
 }
@@ -362,20 +379,21 @@ static size_t THDiskFile_readLong(THFile *self, long *data, size_t n)
         THDiskFile_reverseMemory(data, data, sizeof(long), nread);
     } else if(dfself->longSize == 4)
     {
-      int i;
       nread = fread__(data, 4, n, dfself->handle);
       if(!dfself->isNativeEncoding && (nread > 0))
         THDiskFile_reverseMemory(data, data, 4, nread);
-      for(i = nread-1; i >= 0; i--)
-        data[i] = ((int *)data)[i];
+      size_t i;
+      for(i = nread; i > 0; i--)
+        data[i-1] = ((int *)data)[i-1];
     }
     else /* if(dfself->longSize == 8) */
     {
-      int i, big_endian = !THDiskFile_isLittleEndianCPU();
-      long *buffer = THAlloc(8*n);
+      int big_endian = !THDiskFile_isLittleEndianCPU();
+      int32_t *buffer = THAlloc(8*n);
       nread = fread__(buffer, 8, n, dfself->handle);
-      for(i = nread-1; i >= 0; i--)
-        data[i] = buffer[2*i + big_endian];
+      size_t i;
+      for(i = nread; i > 0; i--)
+        data[i-1] = buffer[2*(i-1) + big_endian];
       THFree(buffer);
       if(!dfself->isNativeEncoding && (nread > 0))
         THDiskFile_reverseMemory(data, data, 4, nread);
@@ -431,8 +449,8 @@ static size_t THDiskFile_writeLong(THFile *self, long *data, size_t n)
       }
     } else if(dfself->longSize == 4)
     {
-      int i;
-      int *buffer = THAlloc(4*n);
+      int32_t *buffer = THAlloc(4*n);
+      size_t i;
       for(i = 0; i < n; i++)
         buffer[i] = data[i];
       if(!dfself->isNativeEncoding)
@@ -442,8 +460,9 @@ static size_t THDiskFile_writeLong(THFile *self, long *data, size_t n)
     }
     else /* if(dfself->longSize == 8) */
     {
-      int i, big_endian = !THDiskFile_isLittleEndianCPU();
-      long *buffer = THAlloc(8*n);
+      int big_endian = !THDiskFile_isLittleEndianCPU();
+      int32_t *buffer = THAlloc(8*n);
+      size_t i;
       for(i = 0; i < n; i++)
       {
         buffer[2*i + !big_endian] = 0;
@@ -738,7 +757,7 @@ THFile *THPipeFile_new(const char *name, const char *mode, int isQuiet)
   THArgCheck(THPipeFile_mode(mode, &isReadable, &isWritable), 2, "file mode should be 'r','w'");
 
 #ifdef _WIN32
-  handle = popen(name, (isReadable ? "rb" : "wb"));
+  handle = _popen(name, (isReadable ? "rb" : "wb"));
 #else
   handle = popen(name, (isReadable ? "r" : "w"));
 #endif

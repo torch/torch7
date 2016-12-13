@@ -26,6 +26,11 @@ IF(MSVC)
   ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE=1)
 ENDIF(MSVC)
 
+IF(UNIX)
+  # prevent Unknown CMake command "check_function_exists".
+  INCLUDE(CheckFunctionExists)
+ENDIF(UNIX)
+
 # OpenMP support?
 SET(WITH_OPENMP ON CACHE BOOL "OpenMP support if available?")
 IF (APPLE AND CMAKE_COMPILER_IS_GNUCC)
@@ -57,10 +62,13 @@ ENDIF (WITH_OPENMP)
 
 # ARM specific flags
 FIND_PACKAGE(ARM)
-IF (NEON_FOUND)
+IF (ASIMD_FOUND)
+  MESSAGE(STATUS "asimd/Neon found with compiler flag : -D__NEON__")
+  SET(CMAKE_C_FLAGS "-D__NEON__ ${CMAKE_C_FLAGS}")
+ELSEIF (NEON_FOUND)
   MESSAGE(STATUS "Neon found with compiler flag : -mfpu=neon -D__NEON__")
   SET(CMAKE_C_FLAGS "-mfpu=neon -D__NEON__ ${CMAKE_C_FLAGS}")
-ENDIF (NEON_FOUND)
+ENDIF (ASIMD_FOUND)
 IF (CORTEXA8_FOUND)
   MESSAGE(STATUS "Cortex-A8 Found with compiler flag : -mcpu=cortex-a8")
   SET(CMAKE_C_FLAGS "-mcpu=cortex-a8 -fprefetch-loop-arrays ${CMAKE_C_FLAGS}")
@@ -69,28 +77,6 @@ IF (CORTEXA9_FOUND)
   MESSAGE(STATUS "Cortex-A9 Found with compiler flag : -mcpu=cortex-a9")
   SET(CMAKE_C_FLAGS "-mcpu=cortex-a9 ${CMAKE_C_FLAGS}")
 ENDIF (CORTEXA9_FOUND)
-
-IF(UNIX)
-  INCLUDE(CheckFunctionExists)
-  SET(CMAKE_EXTRA_INCLUDE_FILES "sys/mman.h")
-  CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
-  IF(HAVE_MMAP)
-    ADD_DEFINITIONS(-DHAVE_MMAP=1)
-  ENDIF(HAVE_MMAP)
-  ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
-  CHECK_FUNCTION_EXISTS(shm_open HAVE_SHM_OPEN)
-  IF(HAVE_SHM_OPEN)
-    ADD_DEFINITIONS(-DHAVE_SHM_OPEN=1)
-  ENDIF(HAVE_SHM_OPEN)
-  CHECK_FUNCTION_EXISTS(shm_unlink HAVE_SHM_UNLINK)
-  IF(HAVE_SHM_UNLINK)
-    ADD_DEFINITIONS(-DHAVE_SHM_UNLINK=1)
-  ENDIF(HAVE_SHM_UNLINK)
-  CHECK_FUNCTION_EXISTS(malloc_usable_size HAVE_MALLOC_USABLE_SIZE)
-  IF(HAVE_MALLOC_USABLE_SIZE)
-    ADD_DEFINITIONS(-DHAVE_MALLOC_USABLE_SIZE=1)
-  ENDIF(HAVE_MALLOC_USABLE_SIZE)
-ENDIF(UNIX)
 
 FIND_PACKAGE(SSE)
 IF(C_SSE2_FOUND)
@@ -102,7 +88,11 @@ ENDIF(C_SSE3_FOUND)
 
 IF(C_AVX_FOUND OR C_SSE4_2_FOUND OR C_SSE4_1_FOUND)
   SET(simd generic/simd/convolve.c)
-  SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve.c PROPERTIES COMPILE_FLAGS "-std=c99")
+  IF(MSVC)
+    SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve.c PROPERTIES COMPILE_FLAGS "/std:c99")
+  ELSE(MSVC)
+    SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve.c PROPERTIES COMPILE_FLAGS "-std=c99")
+  ENDIF(MSVC)
 ENDIF(C_AVX_FOUND OR C_SSE4_2_FOUND OR C_SSE4_1_FOUND)
 
 IF(C_SSE4_1_FOUND)
@@ -113,13 +103,21 @@ IF(C_SSE4_2_FOUND)
 ENDIF(C_SSE4_2_FOUND)
 
 IF(C_SSE4_1_FOUND OR C_SSE4_2_FOUND)
-  SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_sse.c PROPERTIES COMPILE_FLAGS "-O3 -ffast-math -std=c99")
+  IF(MSVC)
+    SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_sse.c PROPERTIES COMPILE_FLAGS "/Ox /fp:fast /std:c99")
+  ELSE(MSVC)
+    SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_sse.c PROPERTIES COMPILE_FLAGS "-O3 -ffast-math -std=c99")
+  ENDIF(MSVC)
   SET(simd ${simd} generic/simd/convolve5x5_sse.c)
 ENDIF(C_SSE4_1_FOUND OR C_SSE4_2_FOUND)
 
 IF(C_AVX_FOUND)
   SET(CMAKE_C_FLAGS "-DUSE_AVX ${CMAKE_C_FLAGS}")
-  SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_avx.c PROPERTIES COMPILE_FLAGS "-O3 -ffast-math -mavx -std=c99")
+  IF(MSVC)
+    SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_avx.c PROPERTIES COMPILE_FLAGS "/Ox /fp:fast /arch:AVX /std:c99")
+  ELSE(MSVC)
+    SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_avx.c PROPERTIES COMPILE_FLAGS "-O3 -ffast-math -mavx -std=c99")
+  ENDIF(MSVC)
   SET(simd ${simd} generic/simd/convolve5x5_avx.c)
 ENDIF(C_AVX_FOUND)
 
@@ -129,13 +127,17 @@ SET(hdr
 
 SET(src
   THGeneral.c THAllocator.c THStorage.c THTensor.c THBlas.c THLapack.c
-  THLogAdd.c THRandom.c THFile.c THDiskFile.c THMemoryFile.c THAtomic.c)
+  THLogAdd.c THRandom.c THFile.c THDiskFile.c THMemoryFile.c THAtomic.c THVector.c)
 
 SET(src ${src} ${hdr} ${simd})
 ADD_LIBRARY(TH SHARED ${src})
 if(BUILD_STATIC)
   ADD_LIBRARY(TH_static STATIC ${src})
 endif()
+
+SET_TARGET_PROPERTIES(TH PROPERTIES
+  VERSION   0
+  SOVERSION 0)
 
 CHECK_C_SOURCE_RUNS("
 #include <stdatomic.h>
@@ -220,8 +222,32 @@ IF (UNIX AND NOT APPLE)
    CHECK_LIBRARY_EXISTS(rt clock_gettime "time.h" NEED_LIBRT)
    IF(NEED_LIBRT)
      TARGET_LINK_LIBRARIES(TH rt)
+     SET(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} rt)
    ENDIF(NEED_LIBRT)
 ENDIF(UNIX AND NOT APPLE)
+
+IF(UNIX)
+  SET(CMAKE_EXTRA_INCLUDE_FILES "sys/mman.h")
+  CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
+  IF(HAVE_MMAP)
+    ADD_DEFINITIONS(-DHAVE_MMAP=1)
+  ENDIF(HAVE_MMAP)
+  ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
+  CHECK_FUNCTION_EXISTS(shm_open HAVE_SHM_OPEN)
+  IF(HAVE_SHM_OPEN)
+    ADD_DEFINITIONS(-DHAVE_SHM_OPEN=1)
+  ENDIF(HAVE_SHM_OPEN)
+  CHECK_FUNCTION_EXISTS(shm_unlink HAVE_SHM_UNLINK)
+  IF(HAVE_SHM_UNLINK)
+    ADD_DEFINITIONS(-DHAVE_SHM_UNLINK=1)
+  ENDIF(HAVE_SHM_UNLINK)
+  CHECK_FUNCTION_EXISTS(malloc_usable_size HAVE_MALLOC_USABLE_SIZE)
+  IF(HAVE_MALLOC_USABLE_SIZE)
+    ADD_DEFINITIONS(-DHAVE_MALLOC_USABLE_SIZE=1)
+  ENDIF(HAVE_MALLOC_USABLE_SIZE)
+ENDIF(UNIX)
+
+
 
 IF(NOT MSVC)
   TARGET_LINK_LIBRARIES(TH m)
@@ -264,13 +290,16 @@ ENDIF(NOT DEFINED C_INLINE)
 
 # Is __thread supported?
 INCLUDE (CheckCSourceCompiles)
-CHECK_C_SOURCE_COMPILES("static __thread int x = 1; int main() { return x; }" C_HAS_THREAD)
-IF(NOT DEFINED C_HAS_THREAD)
+IF(NOT MSVC)
+  CHECK_C_SOURCE_COMPILES("static __thread int x = 1; int main() { return x; }" C_HAS_THREAD)
+ELSE(NOT MSVC)
+  CHECK_C_SOURCE_COMPILES("static __declspec( thread ) int x = 1; int main() { return x; }" C_HAS_THREAD)
+ENDIF(NOT MSVC)
+IF(NOT C_HAS_THREAD)
   MESSAGE(STATUS "Warning: __thread is not supported, generating thread-unsafe code")
-ENDIF(NOT DEFINED C_HAS_THREAD)
-IF(C_HAS_THREAD)
+ELSE(NOT C_HAS_THREAD)
   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DTH_HAVE_THREAD")
-ENDIF(C_HAS_THREAD)
+ENDIF(NOT C_HAS_THREAD)
 
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}")
 CONFIGURE_FILE(THGeneral.h.in "${CMAKE_CURRENT_BINARY_DIR}/THGeneral.h")
@@ -327,7 +356,8 @@ INSTALL(FILES
   generic/THTensorMath.h
   generic/THTensorRandom.c
   generic/THTensorRandom.h
-  generic/THVector.c
+  generic/THVectorDispatch.c
+  generic/THVector.h
   DESTINATION "${TH_INSTALL_INCLUDE_SUBDIR}/TH/generic")
 
 

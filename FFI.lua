@@ -28,8 +28,8 @@ if ok then
    -- Allocator
    ffi.cdef[[
 typedef struct THAllocator {
-  void* (*malloc)(void*, long);
-  void* (*realloc)(void*, void*, long);
+  void* (*malloc)(void*, ptrdiff_t);
+  void* (*realloc)(void*, void*, ptrdiff_t);
   void (*free)(void*, void*);
 } THAllocator;
 ]]
@@ -41,7 +41,7 @@ typedef struct THAllocator {
 typedef struct THRealStorage
 {
     real *data;
-    long size;
+    ptrdiff_t size;
     int refcount;
     char flag;
     THAllocator *allocator;
@@ -78,7 +78,7 @@ typedef struct THRealTensor
     int nDimension;
     
     THRealStorage *storage;
-    long storageOffset;
+    ptrdiff_t storageOffset;
     int refcount;
 
     char flag;

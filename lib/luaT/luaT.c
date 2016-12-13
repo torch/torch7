@@ -4,7 +4,7 @@
 
 #include "luaT.h"
 
-void* luaT_alloc(lua_State *L, long size)
+void* luaT_alloc(lua_State *L, ptrdiff_t size)
 {
   void *ptr;
 
@@ -21,7 +21,7 @@ void* luaT_alloc(lua_State *L, long size)
   return ptr;
 }
 
-void* luaT_realloc(lua_State *L, void *ptr, long size)
+void* luaT_realloc(lua_State *L, void *ptr, ptrdiff_t size)
 {
   if(!ptr)
     return(luaT_alloc(L, size));
@@ -151,7 +151,7 @@ const char* luaT_newlocalmetatable(lua_State *L, const char *tname, const char *
 {
   lua_pushcfunction(L, luaT_lua_newmetatable);
   lua_pushstring(L, tname);
-  (parent_tname ? lua_pushstring(L, parent_tname) : lua_pushnil(L));
+  (parent_tname ? (void)lua_pushstring(L, parent_tname) : lua_pushnil(L));
   (constructor ? lua_pushcfunction(L, constructor) : lua_pushnil(L));
   (destructor ? lua_pushcfunction(L, destructor) : lua_pushnil(L));
   (factory ? lua_pushcfunction(L, factory) : lua_pushnil(L));
@@ -354,7 +354,7 @@ void luaT_pushlong(lua_State *L, long n)
 #if LUA_VERSION_NUM >= 503
   /* Only push the value as an integer if it fits in lua_Integer,
    or if the lua_Number representation will be even worse */
-  if (sizeof(lua_Integer) >= sizeof(long) || sizeof(lua_Number) == sizeof(lua_Integer)) {
+  if (sizeof(lua_Integer) >= sizeof(long) || sizeof(lua_Number) <= sizeof(lua_Integer)) {
     lua_pushinteger(L, n);
   } else {
     lua_pushnumber(L, (lua_Number)n);
@@ -367,7 +367,7 @@ void luaT_pushlong(lua_State *L, long n)
 long luaT_checklong(lua_State *L, int idx)
 {
 #if LUA_VERSION_NUM >= 503
-  if (sizeof(lua_Integer) >= sizeof(long) || sizeof(lua_Number) == sizeof(lua_Integer)) {
+  if (sizeof(lua_Integer) >= sizeof(long) || sizeof(lua_Number) <= sizeof(lua_Integer)) {
     return (long)luaL_checkinteger(L, idx);
   } else {
     return (long)luaL_checknumber(L, idx);
@@ -380,13 +380,41 @@ long luaT_checklong(lua_State *L, int idx)
 long luaT_tolong(lua_State *L, int idx)
 {
 #if LUA_VERSION_NUM == 503
-  if (sizeof(lua_Integer) >= sizeof(long) || sizeof(lua_Number) == sizeof(lua_Integer)) {
+  if (sizeof(lua_Integer) >= sizeof(long) || sizeof(lua_Number) <= sizeof(lua_Integer)) {
     return (long)lua_tointeger(L, idx);
   } else {
     return (long)lua_tonumber(L, idx);
   }
 #else
   return (long)lua_tonumber(L, idx);
+#endif
+}
+
+void luaT_pushinteger(lua_State *L, ptrdiff_t n)
+{
+#if LUA_VERSION_NUM >= 503
+  /* Only push the value as an integer if it fits in lua_Integer,
+   or if the lua_Number representation will be even worse */
+  if (sizeof(lua_Integer) >= sizeof(ptrdiff_t) || sizeof(lua_Number) <= sizeof(lua_Integer)) {
+    lua_pushinteger(L, n);
+  } else {
+    lua_pushnumber(L, (lua_Number)n);
+  }
+#else
+  lua_pushnumber(L, (lua_Number)n);
+#endif
+}
+
+ptrdiff_t luaT_checkinteger(lua_State *L, int idx)
+{
+#if LUA_VERSION_NUM >= 503
+  if (sizeof(lua_Integer) >= sizeof(ptrdiff_t) || sizeof(lua_Number) <= sizeof(lua_Integer)) {
+    return (ptrdiff_t)luaL_checkinteger(L, idx);
+  } else {
+    return (ptrdiff_t)luaL_checknumber(L, idx);
+  }
+#else
+  return (ptrdiff_t)luaL_checknumber(L, idx);
 #endif
 }
 
@@ -980,10 +1008,17 @@ int luaT_lua_isequal(lua_State *L)
 
 static void luaT_pushpointer(lua_State *L, const void *ptr)
 {
+#if LUA_VERSION_NUM >= 503
+  // this assumes that lua_Integer is a ptrdiff_t
+  if (sizeof(void *) > sizeof(lua_Integer))
+    luaL_error(L, "Pointer value can't be represented as a Lua integer (an overflow would occur)");
+  lua_pushinteger(L, (uintptr_t)(ptr));
+#else
   // 2^53 - this assumes that lua_Number is a double
   if ((uintptr_t)ptr > 9007199254740992LLU)
     luaL_error(L, "Pointer value can't be represented as a Lua number (an overflow would occur)");
   lua_pushnumber(L, (uintptr_t)(ptr));
+#endif
 }
 
 int luaT_lua_pointer(lua_State *L)

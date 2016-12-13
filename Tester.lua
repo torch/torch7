@@ -236,7 +236,7 @@ function Tester:_assertTensorEqOrNeq(ta, tb, negate, ...)
    if self._assertTensorEqIgnoresDims and (not negate) and success
          and not ta:isSameSizeAs(tb) then
      self:_warning("Tensors have the same content but different dimensions. "
-                   .. "For backwards compatability, they are considered equal, "
+                   .. "For backwards compatibility, they are considered equal, "
                    .. "but this may change in the future. Consider using :eq "
                    .. "to check for equality instead.")
    end

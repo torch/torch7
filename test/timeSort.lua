@@ -2,6 +2,7 @@
 -- Test torch sort, show it suffers from the problems of quicksort
 -- i.e. complexity O(N^2) in worst-case of sorted list
 require 'gnuplot'
+local ffi = require 'ffi'
 
 local cmd = torch.CmdLine()
 cmd:option('-N', 10^7, 'Maximum array size')
@@ -104,7 +105,11 @@ function main()
 
     local N = pow10:clone():apply(function(x) return 10^x end)
 
-    gnuplot.setterm('x11')
+    if ffi.os == 'Windows' then
+      gnuplot.setterm('windows')
+    else
+      gnuplot.setterm('x11')
+    end
     gnuplot.figure(1)
     gnuplot.raw('set log x; set mxtics 10')
     gnuplot.raw('set grid mxtics mytics xtics ytics')

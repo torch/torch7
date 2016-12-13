@@ -362,6 +362,13 @@ For more than 4 dimensions, you can use a storage: `y = torch.zeros(torch.LongSt
 
 `x:atan()` replaces all elements in-place with the arctangent of the elements of `x`.
 
+<a name="torch.atan2"></a>
+### [res] torch.atan2([res,] x, y) ###
+<a name="torch.atan2"></a>
+
+`y = torch.atan2(x, y)` returns a new `Tensor` with the arctangent of the elements of `x` and `y`.
+
+`x:atan2()` replaces all elements in-place with the arctangent of the elements of `x` and `y`.
 
 <a name="torch.ceil"></a>
 ### [res] torch.ceil([res,] x) ###
@@ -427,19 +434,16 @@ For more than 4 dimensions, you can use a storage: `y = torch.zeros(torch.LongSt
 This function is more accurate than [`log`](#torch.log) for small values of `x`.
 
 
-<a name="x:neg"></a>
+<a name="torch.neg"></a>
 ### x:neg() ###
-<a name="x:neg"></a>
 
 `x:neg()` replaces all elements in-place with the sign-reversed values of the elements of `x`.
 
-
-<a name="x:cinv"></a>
+<a name="torch.cinv"></a>
 ### x:cinv() ###
-<a name="x:cinv"></a>
+<a name="torch.cinv"></a>
 
 `x:cinv()` replaces all elements in-place with `1.0 / x`.
-
 
 <a name="torch.pow"></a>
 ### [res] torch.pow([res,] x, n) ###
@@ -632,18 +636,17 @@ The number of elements must match, but sizes do not matter.
 `torch.add(z, x, value, y)` puts the result of `x + value * y` in `z`.
 
 
-<a name="x:csub"></a>
+<a name="torch.csub"></a>
 ### tensor:csub(value) ###
-<a name="x:csub"></a>
+<a name="torch.csub"></a>
 
 Subtracts the given value from all elements in the `Tensor`, in place.
 
+<a name="torch.csub"></a>
+### tensor:csub(tensor2) ###
+<a name="torch.csub"></a>
 
-<a name="x:csub"></a>
-### tensor1:csub(tensor2) ###
-<a name="x:csub"></a>
-
-Subtracts `tensor2` from `tensor1`, in place.
+Subtracts `tensor2` from `tensor`, in place.
 The number of elements must match, but sizes do not matter.
 
 ```lua
@@ -978,20 +981,17 @@ The number of elements must match: both `Tensor`s are seen as a 1D vector.
 
 
 <a name="torch.addmv"></a>
-### [res] torch.addmv([res,] [beta,] [v1,] vec1, [v2,] mat, vec2) ###
+### [res] torch.addmv([res,] [v1,] vec1, [v2,] mat, vec2) ###
 <a name="torch.addmv"></a>
 
 Performs a matrix-vector multiplication between `mat` (2D `Tensor`) and `vec2` (1D `Tensor`) and add it to `vec1`.
 
 Optional values `v1` and `v2` are scalars that multiply `vec1` and `vec2` respectively.
 
-Optional value `beta` is  a scalar that scales the result `Tensor`, before accumulating the result into the `Tensor`.
-Defaults to `1.0`.
-
 In other words,
 
 ```
-res = (beta * res) + (v1 * vec1) + (v2 * (mat * vec2))
+res = (v1 * vec1) + (v2 * (mat * vec2))
 ```
 
 Sizes must respect the matrix-multiplication operation: if `mat` is a `n × m` matrix, `vec2` must be vector of size `m` and `vec1` must be a vector of size `n`.
@@ -1012,10 +1012,21 @@ Sizes must respect the matrix-multiplication operation: if `mat` is a `n × m` m
 
 `torch.addmv(r, x, y, z)` puts the result in `r`.
 
-`x:addmv(y, z)` accumulates `y * z` into `x`.
+**Differences when used as a method**
 
-`r:addmv(x, y, z)` puts the result of `x + y * z` into `r`.
+`x:addmv(y, z)` does `x = x + y * z`
 
+`r:addmv(x, y, z)`  does `r = x + y * z` if x is a vector
+
+`r:addmv(s, y, z)`   does `r = r + s * y * z` if `s` is a scalar.
+
+`r:addmv(x, s, y, z)`   does `r = x + s * y * z` if `s` is a scalar and `x` is a vector.
+
+`r:addmv(s1, s2, y, z)`   does `r = s1 * r + s2 * y * z` if `s1` and `s2` are scalars.
+
+The last example does not accurately fit into the function signature, and needs a special mention. It changes the function signature to:
+
+`[vec1] = vec1:addmv([v1,] [v2,] mat, vec2)`
 
 <a name="torch.addr"></a>
 ### [res] torch.addr([res,] [v1,] mat, [v2,] vec1, vec2) ###
@@ -1073,20 +1084,17 @@ If `vec1` is a vector of size `n` and `vec2` is a vector of size `m`, then `mat`
 
 
 <a name="torch.addmm"></a>
-### [res] torch.addmm([res,] [beta,] [v1,] M [v2,] mat1, mat2) ###
+### [res] torch.addmm([res,] [v1,] M, [v2,] mat1, mat2) ###
 <a name="torch.addmm"></a>
 
 Performs a matrix-matrix multiplication between `mat1` (2D `Tensor`) and `mat2` (2D `Tensor`).
 
 Optional values `v1` and `v2` are scalars that multiply `M` and `mat1 * mat2` respectively.
 
-Optional value `beta` is  a scalar that scales the result `Tensor`, before accumulating the result into the `Tensor`.
-Defaults to `1.0`.
-
 In other words,
 
 ```
-res = (res * beta) + (v1 * M) + (v2 * mat1 * mat2)
+res = (v1 * M) + (v2 * mat1 * mat2)
 ```
 
 If `mat1` is a `n × m` matrix, `mat2` a `m × p` matrix, `M` must be a `n × p` matrix.
@@ -1095,13 +1103,23 @@ If `mat1` is a `n × m` matrix, `mat2` a `m × p` matrix, `M` must be a `n × p`
 
 `torch.addmm(r, M, mat1, mat2)` puts the result in `r`.
 
-`M:addmm(mat1, mat2)` puts the result in `M`.
+**Differences when used as a method**
 
-`r:addmm(M, mat1, mat2)` puts the result in `r`.
+`M:addmm(mat1, mat2)` does `M = M + mat1 * mat2`.
+
+`r:addmm(M, mat1, mat2)`  does `r = M + mat1 * mat2`.
+
+`r:addmm(v1, M, v2, mat1, mat2)` does `r = (v1 * M) + (v2 * mat1 * mat2)`.
+
+`M:addmm(v1, v2, mat1, mat2)` does `M = (v1 * M) + (v2 * mat1 * mat2)`.
+
+The last example does not accurately fit into the function signature, and needs a special mention. It changes the function signature to:
+
+`[M] = M:addmm([v1,] [v2,] mat1, mat2)`
 
 
 <a name="torch.addbmm"></a>
-### [res] torch.addbmm([res,] [v1,] M [v2,] batch1, batch2) ###
+### [res] torch.addbmm([res,] [v1,] M, [v2,] batch1, batch2) ###
 <a name="torch.addbmm"></a>
 
 Batch matrix matrix product of matrices stored in `batch1` and `batch2`, with a reduced add step (all matrix multiplications get accumulated in a single place).
@@ -1123,7 +1141,7 @@ res = (v1 * M) + (v2 * sum(batch1_i * batch2_i, i = 1, b))
 
 
 <a name="torch.baddbmm"></a>
-### [res] torch.baddbmm([res,] [v1,] M [v2,] batch1, batch2) ###
+### [res] torch.baddbmm([res,] [v1,] M, [v2,] batch1, batch2) ###
 <a name="torch.baddbmm"></a>
 
 Batch matrix matrix product of matrices stored in `batch1` and `batch2`, with batch add.
@@ -2689,36 +2707,38 @@ They return a `ByteTensor` in which each element is `0` or `1` indicating if the
 Implements `<` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.le"></a>
 ### torch.le(a, b) ###
 
 Implements `<=` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.gt"></a>
 ### torch.gt(a, b) ###
 
 Implements `>` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.ge"></a>
 ### torch.ge(a, b) ###
 
 Implements `>=` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.eq"></a>
 ### torch.eq(a, b) ###
 
 Implements `==` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.ne"></a>
 ### torch.ne(a, b) ###
 
 Implements `~=` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
+<a name="torch.all"></a>
+<a name="torch.any"></a>
 ### torch.all(a) ###
 ### torch.any(a) ###
 
