@@ -220,7 +220,7 @@ void THVector_(vectorDispatchInit)(void)
   INIT_DISPATCH_PTR(fill);
   INIT_DISPATCH_PTR(cadd);
   INIT_DISPATCH_PTR(add);
-  //INIT_DISPATCH_PTR(cmul);
+  INIT_DISPATCH_PTR(cmul);
   INIT_DISPATCH_PTR(mul);
   INIT_DISPATCH_PTR(cdiv);
   INIT_DISPATCH_PTR(div);
