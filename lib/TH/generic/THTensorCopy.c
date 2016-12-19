@@ -34,11 +34,11 @@ IMPLEMENT_THTensor_COPY(Long, long)
 IMPLEMENT_THTensor_COPY(Float, float)
 IMPLEMENT_THTensor_COPY(Double, double)
 #if TH_GENERIC_USE_HALF
-IMPLEMENT_THTensor_COPY_FROM_HALF(Half, half)
+IMPLEMENT_THTensor_COPY_FROM_HALF(Half, TH_HALF)
 #endif
 #else
 /* only allow pass-through for Half */
-IMPLEMENT_THTensor_COPY(Half, half)
+IMPLEMENT_THTensor_COPY(Half, TH_HALF)
 IMPLEMENT_THTensor_COPY_TO_HALF(Byte, unsigned char)
 IMPLEMENT_THTensor_COPY_TO_HALF(Char, char)
 IMPLEMENT_THTensor_COPY_TO_HALF(Short, short)

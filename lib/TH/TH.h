@@ -3,10 +3,6 @@
 
 #include "THGeneral.h"
 
-#if TH_GENERIC_USE_HALF
-# include "THHalf.h"
-#endif
-
 #include "THBlas.h"
 #ifdef USE_LAPACK
 #include "THLapack.h"

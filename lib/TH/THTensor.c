@@ -14,10 +14,10 @@
 #include "generic/THTensorCopy.c"
 #include "THGenerateAllTypes.h"
 
-#include "generic/THTensorMath.c"
+#include "generic/THTensorRandom.c"
 #include "THGenerateAllTypes.h"
 
-#include "generic/THTensorRandom.c"
+#include "generic/THTensorMath.c"
 #include "THGenerateAllTypes.h"
 
 #include "generic/THTensorConv.c"

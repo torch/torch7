@@ -24,7 +24,7 @@ if ok then
       Long='long',
       Float='float',
       Double='double',
-      Half='half'
+      Half='TH_HALF'
    }
 
    -- Allocator
@@ -35,14 +35,19 @@ typedef struct THAllocator {
   void (*free)(void*, void*);
 } THAllocator;
 ]]
+
+   -- Half
+   ffi.cdef[[
+typedef struct {
+  unsigned short x;
+} __TH_HALF;
+typedef __TH_HALF TH_HALF;
+]]
+
    -- Storage
    for Real, real in pairs(Real2real) do
 
       local cdefs = [[
-typedef struct {
-  unsigned short x;
-} half;
-
 typedef struct THRealStorage
 {
     real *data;
@@ -93,7 +98,8 @@ typedef struct THRealTensor
       cdefs = cdefs:gsub('Real', Real):gsub('real', real)
       ffi.cdef(cdefs)
 
-      local Tensor = torch.getmetatable(string.format('torch.%sTensor', Real))
+      local Tensor_type = string.format('torch.%sTensor', Real)
+      local Tensor = torch.getmetatable(Tensor_type)
       local Tensor_tt = ffi.typeof('TH' .. Real .. 'Tensor**')
 
       rawset(Tensor,
@@ -112,75 +118,77 @@ typedef struct THRealTensor
              end)
 
       -- faster apply (contiguous case)
-      local apply = Tensor.apply
-      rawset(Tensor,
-             "apply",
-             function(self, func)
-                if self:isContiguous() and self.data then
-                   local self_d = self:data()
-                   for i=0,self:nElement()-1 do
-                      local res = func(tonumber(self_d[i])) -- tonumber() required for long...
-                      if res then
-                         self_d[i] = res
+      if Tensor_type ~= 'torch.HalfTensor' or torch.hashalfmath() then
+         local apply = Tensor.apply
+         rawset(Tensor,
+                "apply",
+                function(self, func)
+                   if self:isContiguous() and self.data then
+                      local self_d = self:data()
+                      for i=0,self:nElement()-1 do
+                         local res = func(tonumber(self_d[i])) -- tonumber() required for long...
+                         if res then
+                            self_d[i] = res
+                         end
                       end
+                      return self
+                   else
+                      return apply(self, func)
                    end
-                   return self
-                else
-                   return apply(self, func)
-                end
-             end)
+                end)
 
-      -- faster map (contiguous case)
-      local map = Tensor.map
-      rawset(Tensor,
-             "map",
-             function(self, src, func)
-                checkArgument(torch.isTensor(src), "map", 1, "tensor expected")
-                checkArgumentType(self:type(), src:type(), "map", 1)
+         -- faster map (contiguous case)
+         local map = Tensor.map
+         rawset(Tensor,
+                "map",
+                function(self, src, func)
+                   checkArgument(torch.isTensor(src), "map", 1, "tensor expected")
+                   checkArgumentType(self:type(), src:type(), "map", 1)
 
-                if self:isContiguous() and src:isContiguous() and self.data and src.data then
-                   local self_d = self:data()
-                   local src_d = src:data()
-                   assert(src:nElement() == self:nElement(), 'size mismatch')
-                   for i=0,self:nElement()-1 do
-                      local res = func(tonumber(self_d[i]), tonumber(src_d[i])) -- tonumber() required for long...
-                      if res then
-                         self_d[i] = res
+                   if self:isContiguous() and src:isContiguous() and self.data and src.data then
+                      local self_d = self:data()
+                      local src_d = src:data()
+                      assert(src:nElement() == self:nElement(), 'size mismatch')
+                      for i=0,self:nElement()-1 do
+                         local res = func(tonumber(self_d[i]), tonumber(src_d[i])) -- tonumber() required for long...
+                         if res then
+                            self_d[i] = res
+                         end
                       end
+                      return self
+                   else
+                      return map(self, src, func)
                    end
-                   return self
-                else
-                   return map(self, src, func)
-                end
-             end)
+                end)
 
-      -- faster map2 (contiguous case)
-      local map2 = Tensor.map2
-      rawset(Tensor,
-             "map2",
-             function(self, src1, src2, func)
-                checkArgument(torch.isTensor(src1), "map", 1, "tensor expected")
-                checkArgument(torch.isTensor(src2), "map", 2, "tensor expected")
-                checkArgumentType(self:type(), src1:type(), "map", 1)
-                checkArgumentType(self:type(), src2:type(), "map", 2)
+         -- faster map2 (contiguous case)
+         local map2 = Tensor.map2
+         rawset(Tensor,
+                "map2",
+                function(self, src1, src2, func)
+                   checkArgument(torch.isTensor(src1), "map", 1, "tensor expected")
+                   checkArgument(torch.isTensor(src2), "map", 2, "tensor expected")
+                   checkArgumentType(self:type(), src1:type(), "map", 1)
+                   checkArgumentType(self:type(), src2:type(), "map", 2)
 
-                if self:isContiguous() and src1:isContiguous() and src2:isContiguous() and self.data and src1.data and src2.data then
-                   local self_d = self:data()
-                   local src1_d = src1:data()
-                   local src2_d = src2:data()
-                   assert(src1:nElement() == self:nElement(), 'size mismatch')
-                   assert(src2:nElement() == self:nElement(), 'size mismatch')
-                   for i=0,self:nElement()-1 do
-                      local res = func(tonumber(self_d[i]), tonumber(src1_d[i]), tonumber(src2_d[i])) -- tonumber() required for long...
-                      if res then
-                         self_d[i] = res
+                   if self:isContiguous() and src1:isContiguous() and src2:isContiguous() and self.data and src1.data and src2.data then
+                      local self_d = self:data()
+                     local src1_d = src1:data()
+                      local src2_d = src2:data()
+                      assert(src1:nElement() == self:nElement(), 'size mismatch')
+                      assert(src2:nElement() == self:nElement(), 'size mismatch')
+                      for i=0,self:nElement()-1 do
+                         local res = func(tonumber(self_d[i]), tonumber(src1_d[i]), tonumber(src2_d[i])) -- tonumber() required for long...
+                         if res then
+                            self_d[i] = res
+                         end
                       end
+                      return self
+                   else
+                      return map2(self, src1, src2, func)
                    end
-                   return self
-                else
-                   return map2(self, src1, src2, func)
-                end
-             end)
+                end)
+             end
    end
 
    -- torch.data

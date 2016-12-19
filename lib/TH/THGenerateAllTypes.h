@@ -2,16 +2,6 @@
 #error "You must define TH_GENERIC_FILE before including THGenerateAllTypes.h"
 #endif
 
-#define THTypeIdxByte   1
-#define THTypeIdxChar   2
-#define THTypeIdxShort  3
-#define THTypeIdxInt    4
-#define THTypeIdxLong   5
-#define THTypeIdxFloat  6
-#define THTypeIdxDouble 7
-#define THTypeIdxHalf   8
-#define THTypeIdx_(T) TH_CONCAT_2(THTypeIdx,T)
-
 #define real unsigned char
 #define accreal long
 #define Real Byte
@@ -106,7 +96,7 @@
 
 #if TH_GENERIC_USE_HALF
 #include "THHalf.h"
-#define real half
+#define real TH_HALF
 #define accreal float
 #define Real Half
 #define THInf TH_HALF_MAX

@@ -7,7 +7,6 @@ local method = wrap.CInterface.new()
 local argtypes = wrap.CInterface.argtypes
 
 argtypes['ptrdiff_t'] = wrap.types.ptrdiff_t
-argtypes['half'] = wrap.types.half
 
 interface:print([[
 #include "TH.h"

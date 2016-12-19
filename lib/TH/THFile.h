@@ -75,12 +75,12 @@ TH_API size_t THFile_writeDoubleRaw(THFile *self, double *data, size_t n);
 TH_API size_t THFile_writeStringRaw(THFile *self, const char *str, size_t size);
 
 #if TH_GENERIC_USE_HALF
-TH_API half THFile_readHalfScalar(THFile *self);
-TH_API void THFile_writeHalfScalar(THFile *self, half scalar);
+TH_API TH_HALF THFile_readHalfScalar(THFile *self);
+TH_API void THFile_writeHalfScalar(THFile *self, TH_HALF scalar);
 TH_API size_t THFile_readHalf(THFile *self, THHalfStorage *storage);
 TH_API size_t THFile_writeHalf(THFile *self, THHalfStorage *storage);
-TH_API size_t THFile_readHalfRaw(THFile *self, half* data, size_t size);
-TH_API size_t THFile_writeHalfRaw(THFile *self, half* data, size_t size);
+TH_API size_t THFile_readHalfRaw(THFile *self, TH_HALF* data, size_t size);
+TH_API size_t THFile_writeHalfRaw(THFile *self, TH_HALF* data, size_t size);
 #endif
 
 TH_API void THFile_synchronize(THFile *self);

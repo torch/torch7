@@ -131,8 +131,10 @@ static int torch_Storage_(copy)(lua_State *L)
     THStorage_(copyFloat)(storage, src);
   else if( (src = luaT_toudata(L, 2, "torch.DoubleStorage")) )
     THStorage_(copyDouble)(storage, src);
+#if TH_GENERIC_USE_HALF
   else if( (src = luaT_toudata(L, 2, "torch.HalfStorage")) )
     THStorage_(copyHalf)(storage, src);
+#endif
   else
     luaL_typerror(L, 2, "torch.*Storage");
   lua_settop(L, 1);

@@ -100,7 +100,7 @@ void THTensor_(nonzero)(THLongTensor *subscript, THTensor *tensor)
   long dim;
   long div = 1;
 #ifdef TH_REAL_IS_HALF
-#define IS_NONZERO(val) ((val).x!=0)
+#define IS_NONZERO(val) (TH_half2float(val)!=0)
 #else
 #define IS_NONZERO(val) ((val)!=0)
 #endif
@@ -2506,6 +2506,6 @@ void THTensor_(histc)(THTensor *hist, THTensor *tensor, long nbins, real minvalu
 }
 
 #endif /* floating point only part */
-#endif /* TH_GENERIC_NO_MATH */
 #undef IS_NONZERO
+#endif /* TH_GENERIC_NO_MATH */
 #endif
