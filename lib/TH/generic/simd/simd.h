@@ -38,13 +38,10 @@ typedef struct FunctionDescription
 
 enum SIMDExtensions
 {
-#if defined(__NEON__)
   SIMDExtension_NEON    = 0x1,
-#else
-  SIMDExtension_AVX2    = 0x1,
-  SIMDExtension_AVX     = 0x2,
-  SIMDExtension_SSE     = 0x4,
-#endif
+  SIMDExtension_AVX2    = 0x2,
+  SIMDExtension_AVX     = 0x4,
+  SIMDExtension_SSE     = 0x8,
   SIMDExtension_DEFAULT = 0x0
 };
 
@@ -55,7 +52,8 @@ static inline uint32_t detectHostSIMDExtensions()
   return SIMDExtension_NEON;
 }
 
-#else // x86
+#elif defined(USE_SSE2) || defined(USE_SSE3) || defined(USE_SSSE3) \
+   || defined(USE_SSE4_1) || defined(USE_SSE4_2)
 
 #if defined(__arm__) //ARM without NEON
 
@@ -106,6 +104,11 @@ static inline uint32_t detectHostSIMDExtensions()
   return hostSimdExts;
 }
 
+#else
+static inline uint32_t detectHostSIMDExtensions()
+{
+  return SIMDExtension_DEFAULT;
+}
 #endif // end x86 SIMD extension detection code
 #endif // end __arm__
 
