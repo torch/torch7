@@ -5,14 +5,14 @@ local Storage = {}
 local Tensor = {}
 
 -- types
-local types = {'Byte', 'Char', 'Short', 'Int', 'Long', 'Float', 'Double'}
+local types = {'Byte', 'Char', 'Short', 'Int', 'Long', 'Float', 'Half', 'Double'}
 
 -- Lua 5.2 compatibility
 local log10 = math.log10 or function(x) return math.log(x, 10) end
 
 -- tostring() functions for Tensor and Storage
 local function Storage__printformat(self)
-   if self:size() == 0 then 
+   if self:size() == 0 then
      return "", nil, 0
    end
    local intMode = true
@@ -275,6 +275,10 @@ end
 
 function Tensor.double(self)
    return self:type('torch.DoubleTensor')
+end
+
+function Tensor.half(self)
+   return self:type('torch.HalfTensor')
 end
 
 function Tensor.real(self)

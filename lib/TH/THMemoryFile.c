@@ -341,7 +341,14 @@ READ_WRITE_METHODS(float, Float,
                    int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%g%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
                    nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%.9g", data[i]),
                    1)
-
+#if TH_GENERIC_USE_HALF
+READ_WRITE_METHODS(half, Half,
+                   int nByteRead_; float buf; \
+                   int ret = sscanf(mfself->storage->data+mfself->position, "%g%n", &buf, &nByteRead_); \
+                   data[i] = TH_float2half(buf); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
+                   nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%.9g", TH_half2float(data[i])),
+                   1)
+#endif
 READ_WRITE_METHODS(double, Double,
                    int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%lg%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
                    nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%.17g", data[i]),
@@ -621,6 +628,7 @@ THFile *THMemoryFile_newWithStorage(THCharStorage *storage, const char *mode)
     THMemoryFile_readLong,
     THMemoryFile_readFloat,
     THMemoryFile_readDouble,
+    THMemoryFile_readHalf,
     THMemoryFile_readString,
 
     THMemoryFile_writeByte,
@@ -630,6 +638,7 @@ THFile *THMemoryFile_newWithStorage(THCharStorage *storage, const char *mode)
     THMemoryFile_writeLong,
     THMemoryFile_writeFloat,
     THMemoryFile_writeDouble,
+    THMemoryFile_writeHalf,
     THMemoryFile_writeString,
 
     THMemoryFile_synchronize,
