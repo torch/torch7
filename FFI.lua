@@ -15,6 +15,7 @@ local function checkArgumentType(expected, actual, fn, ud, level)
 end
 
 if ok then
+
    local Real2real = {
       Byte='unsigned char',
       Char='char',
@@ -22,7 +23,8 @@ if ok then
       Int='int',
       Long='long',
       Float='float',
-      Double='double'
+      Double='double',
+      Half='half'
    }
 
    -- Allocator
@@ -33,11 +35,14 @@ typedef struct THAllocator {
   void (*free)(void*, void*);
 } THAllocator;
 ]]
-
    -- Storage
    for Real, real in pairs(Real2real) do
 
       local cdefs = [[
+typedef struct {
+  unsigned short x;
+} half;
+
 typedef struct THRealStorage
 {
     real *data;
@@ -76,7 +81,7 @@ typedef struct THRealTensor
     long *size;
     long *stride;
     int nDimension;
-    
+
     THRealStorage *storage;
     ptrdiff_t storageOffset;
     int refcount;

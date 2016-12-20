@@ -41,7 +41,7 @@ static int torch_Storage_(new)(lua_State *L)
         THStorage_(free)(storage);
         luaL_error(L, "element at index %d is not a number", i);
       }
-      THStorage_(set)(storage, i-1, (real)lua_tonumber(L, -1));
+      THStorage_(set)(storage, i-1, LUA_NUMBER_TO_REAL(lua_tonumber(L, -1)));
       lua_pop(L, 1);
     }
   }
@@ -131,6 +131,8 @@ static int torch_Storage_(copy)(lua_State *L)
     THStorage_(copyFloat)(storage, src);
   else if( (src = luaT_toudata(L, 2, "torch.DoubleStorage")) )
     THStorage_(copyDouble)(storage, src);
+  else if( (src = luaT_toudata(L, 2, "torch.HalfStorage")) )
+    THStorage_(copyHalf)(storage, src);
   else
     luaL_typerror(L, 2, "torch.*Storage");
   lua_settop(L, 1);

@@ -16,6 +16,7 @@ extern void torch_IntStorage_init(lua_State *L);
 extern void torch_LongStorage_init(lua_State *L);
 extern void torch_FloatStorage_init(lua_State *L);
 extern void torch_DoubleStorage_init(lua_State *L);
+extern void torch_HalfStorage_init(lua_State *L);
 
 extern void torch_ByteTensor_init(lua_State *L);
 extern void torch_CharTensor_init(lua_State *L);
@@ -24,6 +25,7 @@ extern void torch_IntTensor_init(lua_State *L);
 extern void torch_LongTensor_init(lua_State *L);
 extern void torch_FloatTensor_init(lua_State *L);
 extern void torch_DoubleTensor_init(lua_State *L);
+extern void torch_HalfTensor_init(lua_State *L);
 
 extern void torch_ByteTensorOperator_init(lua_State *L);
 extern void torch_CharTensorOperator_init(lua_State *L);
@@ -33,7 +35,28 @@ extern void torch_LongTensorOperator_init(lua_State *L);
 extern void torch_FloatTensorOperator_init(lua_State *L);
 extern void torch_DoubleTensorOperator_init(lua_State *L);
 
+#if TH_NATIVE_HALF
+extern void torch_HalfTensorOperator_init(lua_State *L);
+#endif
+
 extern void torch_TensorMath_init(lua_State *L);
+
+static int torch_hashalfmath(lua_State *L) {
+  lua_pushboolean(L, TH_NATIVE_HALF);
+  return 1;
+}
+
+static void torch_half_init(lua_State *L)
+{
+  const struct luaL_Reg half_funcs__ [] = {
+    {"hashalfmath", torch_hashalfmath},
+    {NULL, NULL}
+  };
+  luaT_setfuncs(L, half_funcs__, 0);
+
+  lua_pushboolean(L, 1);
+  lua_setfield(L, -2, "hasHalf");
+}
 
 LUA_EXTERNC DLL_EXPORT int luaopen_libtorch(lua_State *L);
 
@@ -45,8 +68,8 @@ int luaopen_libtorch(lua_State *L)
   lua_setglobal(L, "torch");
 
   torch_utils_init(L);
-
   torch_File_init(L);
+  torch_half_init(L);
 
   torch_ByteStorage_init(L);
   torch_CharStorage_init(L);
@@ -55,6 +78,7 @@ int luaopen_libtorch(lua_State *L)
   torch_LongStorage_init(L);
   torch_FloatStorage_init(L);
   torch_DoubleStorage_init(L);
+  torch_HalfStorage_init(L);
 
   torch_ByteTensor_init(L);
   torch_CharTensor_init(L);
@@ -63,6 +87,7 @@ int luaopen_libtorch(lua_State *L)
   torch_LongTensor_init(L);
   torch_FloatTensor_init(L);
   torch_DoubleTensor_init(L);
+  torch_HalfTensor_init(L);
 
   torch_ByteTensorOperator_init(L);
   torch_CharTensorOperator_init(L);
@@ -71,6 +96,10 @@ int luaopen_libtorch(lua_State *L)
   torch_LongTensorOperator_init(L);
   torch_FloatTensorOperator_init(L);
   torch_DoubleTensorOperator_init(L);
+
+#if TH_NATIVE_HALF
+  torch_HalfTensorOperator_init(L);
+#endif
 
   torch_Timer_init(L);
   torch_DiskFile_init(L);
