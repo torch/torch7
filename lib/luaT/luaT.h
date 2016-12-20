@@ -27,8 +27,6 @@ extern "C" {
 #  define LUAT_API LUA_EXTERNC DLL_IMPORT
 # endif
 #else
-# define DLL_EXPORT
-# define DLL_IMPORT
 # define LUAT_API LUA_EXTERNC
 #endif
 
