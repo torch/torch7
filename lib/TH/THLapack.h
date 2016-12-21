@@ -22,6 +22,6 @@ if (info < 0) {                                                     \
 }
 
 #include "generic/THLapack.h"
-#include "THGenerateAllTypes.h"
+#include "THGenerateFloatTypes.h"
 
 #endif

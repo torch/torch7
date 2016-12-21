@@ -25,12 +25,24 @@ void THStorage_(copy##TYPENAMESRC)(THStorage *storage, TH##TYPENAMESRC##Storage 
     storage->data[i] = (real)src->data[i]; \
 }
 
+#ifndef TH_GENERIC_NO_BYTE
 IMPLEMENT_THStorage_COPY(Byte)
+#endif
+#ifndef TH_GENERIC_NO_CHAR
 IMPLEMENT_THStorage_COPY(Char)
+#endif
+#ifndef TH_GENERIC_NO_SHORT
 IMPLEMENT_THStorage_COPY(Short)
+#endif
+#ifndef TH_GENERIC_NO_INT
 IMPLEMENT_THStorage_COPY(Int)
+#endif
+#ifndef TH_GENERIC_NO_LONG
 IMPLEMENT_THStorage_COPY(Long)
+#endif
+/* float is always implemented */
 IMPLEMENT_THStorage_COPY(Float)
+#ifndef TH_GENERIC_NO_DOUBLE
 IMPLEMENT_THStorage_COPY(Double)
-
+#endif
 #endif

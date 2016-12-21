@@ -294,6 +294,7 @@ static void THMemoryFile_free(THFile *self)
 /*                    int value = (data[i] ? 1 : 0); nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%d", value), */
 /*                    1) */
 
+#ifndef TH_GENERIC_NO_BYTE
 READ_WRITE_METHODS(unsigned char, Byte,
                    size_t ret = (mfself->position + n <= mfself->size ? n : mfself->size-mfself->position);  \
                    if(spacePtr) *spacePtr = spaceChar; \
@@ -306,7 +307,8 @@ READ_WRITE_METHODS(unsigned char, Byte,
                    if(nByteWritten > -1)
                      memmove(mfself->storage->data+mfself->position, data, nByteWritten),
                    0)
-
+#endif
+#ifndef TH_GENERIC_NO_CHAR
 /* DEBUG: we should check if %n is count or not as a element (so ret might need to be ret-- on some systems) */
 /* Note that we do a trick for char */
 READ_WRITE_METHODS(char, Char,
@@ -321,31 +323,31 @@ READ_WRITE_METHODS(char, Char,
                    if(nByteWritten > -1)
                      memmove(mfself->storage->data+mfself->position, data, nByteWritten),
                    0)
-
+#endif
+#ifndef TH_GENERIC_NO_SHORT
 READ_WRITE_METHODS(short, Short,
                    int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%hd%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
                    nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%hd", data[i]),
                    1)
-
+#endif
+#ifndef TH_GENERIC_NO_INT
 READ_WRITE_METHODS(int, Int,
                    int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%d%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
                    nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%d", data[i]),
                    1)
-
-/*READ_WRITE_METHODS(long, Long,
-                   int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%ld%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
-                   nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%ld", data[i]),
-                   1)*/
+#endif
 
 READ_WRITE_METHODS(float, Float,
                    int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%g%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
                    nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%.9g", data[i]),
                    1)
 
+#ifndef TH_GENERIC_NO_DOUBLE
 READ_WRITE_METHODS(double, Double,
                    int nByteRead_; int ret = sscanf(mfself->storage->data+mfself->position, "%lg%n", &data[i], &nByteRead_); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,
                    nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%.17g", data[i]),
                    1)
+#endif
 
 int THDiskFile_isLittleEndianCPU(void);
 

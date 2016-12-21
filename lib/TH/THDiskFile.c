@@ -332,35 +332,38 @@ static void THDiskFile_free(THFile *self)
 /*                    true) */
 
 /* Note that we do a trick */
+
+#ifndef TH_GENERIC_NO_BYTE
 READ_WRITE_METHODS(unsigned char, Byte,
                    nread = fread(data, 1, n, dfself->handle); break,
                    nwrite = fwrite(data, 1, n, dfself->handle); break)
-
+#endif
+#ifndef TH_GENERIC_NO_CHAR
 READ_WRITE_METHODS(char, Char,
                    nread = fread(data, 1, n, dfself->handle); break,
                    nwrite = fwrite(data, 1, n, dfself->handle); break)
-
+#endif
+#ifndef TH_GENERIC_NO_SHORT
 READ_WRITE_METHODS(short, Short,
                    int ret = fscanf(dfself->handle, "%hd", &data[i]); if(ret <= 0) break; else nread++,
                    int ret = fprintf(dfself->handle, "%hd", data[i]); if(ret <= 0) break; else nwrite++)
-
+#endif
+#ifndef TH_GENERIC_NO_INT
 READ_WRITE_METHODS(int, Int,
                    int ret = fscanf(dfself->handle, "%d", &data[i]); if(ret <= 0) break; else nread++,
                    int ret = fprintf(dfself->handle, "%d", data[i]); if(ret <= 0) break; else nwrite++)
-
-/*READ_WRITE_METHODS(long, Long,
-                   int ret = fscanf(dfself->handle, "%ld", &data[i]); if(ret <= 0) break; else nread++,
-                   int ret = fprintf(dfself->handle, "%ld", data[i]); if(ret <= 0) break; else nwrite++)*/
+#endif
 
 READ_WRITE_METHODS(float, Float,
                    int ret = fscanf(dfself->handle, "%g", &data[i]); if(ret <= 0) break; else nread++,
                    int ret = fprintf(dfself->handle, "%.9g", data[i]); if(ret <= 0) break; else nwrite++)
-
+#ifndef TH_GENERIC_NO_DOUBLE
 READ_WRITE_METHODS(double, Double,
                    int ret = fscanf(dfself->handle, "%lg", &data[i]); if(ret <= 0) break; else nread++,
                    int ret = fprintf(dfself->handle, "%.17g", data[i]); if(ret <= 0) break; else nwrite++)
+#endif
 
-
+#ifndef TH_GENERIC_NO_LONG
 /* For Long we need to rewrite everything, because of the special management of longSize */
 static size_t THDiskFile_readLong(THFile *self, long *data, size_t n)
 {
@@ -496,6 +499,7 @@ static size_t THDiskFile_writeLong(THFile *self, long *data, size_t n)
 
   return nwrite;
 }
+#endif
 
 static size_t THDiskFile_readString(THFile *self, const char *format, char **str_)
 {

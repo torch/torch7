@@ -12,13 +12,25 @@
     return (*self->vtable->write##TYPEC)(self, data, n);          \
   }
 
+#ifndef TH_GENERIC_NO_BYTE
 IMPLEMENT_THFILE_RW(Byte, unsigned char)
+#endif
+#ifndef TH_GENERIC_NO_CHAR
 IMPLEMENT_THFILE_RW(Char, char)
+#endif
+#ifndef TH_GENERIC_NO_SHORT
 IMPLEMENT_THFILE_RW(Short, short)
+#endif
+#ifndef TH_GENERIC_NO_INT
 IMPLEMENT_THFILE_RW(Int, int)
+#endif
+#ifndef TH_GENERIC_NO_LONG
 IMPLEMENT_THFILE_RW(Long, long)
+#endif
 IMPLEMENT_THFILE_RW(Float, float)
+#ifndef TH_GENERIC_NO_DOUBLE
 IMPLEMENT_THFILE_RW(Double, double)
+#endif
 
 size_t THFile_readStringRaw(THFile *self, const char *format, char **str_)
 {

@@ -2,6 +2,7 @@
 #error "You must define TH_GENERIC_FILE before including THGenerateIntTypes.h"
 #endif
 
+#ifndef TH_GENERIC_NO_BYTE
 #define real unsigned char
 #define accreal long
 #define Real Byte
@@ -14,7 +15,9 @@
 #undef Real
 #undef THInf
 #undef TH_REAL_IS_BYTE
+#endif
 
+#ifndef TH_GENERIC_NO_CHAR
 #define real char
 #define accreal long
 #define Real Char
@@ -27,7 +30,9 @@
 #undef Real
 #undef THInf
 #undef TH_REAL_IS_CHAR
+#endif
 
+#ifndef TH_GENERIC_NO_SHORT
 #define real short
 #define accreal long
 #define Real Short
@@ -40,7 +45,9 @@
 #undef Real
 #undef THInf
 #undef TH_REAL_IS_SHORT
+#endif
 
+#ifndef TH_GENERIC_NO_INT
 #define real int
 #define accreal long
 #define Real Int
@@ -53,7 +60,9 @@
 #undef Real
 #undef THInf
 #undef TH_REAL_IS_INT
+#endif
 
+#ifndef TH_GENERIC_NO_LONG
 #define real long
 #define accreal long
 #define Real Long
@@ -66,5 +75,4 @@
 #undef Real
 #undef THInf
 #undef TH_REAL_IS_LONG
-
-#undef TH_GENERIC_FILE
+#endif
