@@ -68,6 +68,9 @@ If a `Storage` is given, the method will attempt to read a number of elements
 equals to the size of the given storage, and fill up the storage with these elements.
 The number of elements actually read is returned.
 
+A convenient method exists to read one pointer as a integer: `[integer] readPointer()`. It reads
+in `"%p"` format if `File` is of ascii encoding. This method does not support `n` or `Storage`.
+
 In case of read error, these methods will call the `Lua` error function using the default
 [pedantic](#torch.File.pedantic) option, or stay quiet with the [quiet](#torch.File.quiet)
 option. In the latter case, one can check if an error occurred with
@@ -108,6 +111,9 @@ If a `Storage` is given, the method will attempt to write all the elements conta
 in the storage.
 
 These methods return the number of elements actually written.
+
+A convenient method exists to write one pointer: `writePointer(integer)`. It writes
+in `"%p"` format if `File` is of ascii encoding. This method does not support `Storage`.
 
 In case of write error, these methods will call the `Lua` error function using the default
 [pedantic](#torch.File.pedantic) option, or stay quiet with the [quiet](#torch.File.quiet)
@@ -196,14 +202,14 @@ in the file, as only a reference to the original will be written. See
 <a name="torch.File.readString"></a>
 ### [string] readString(format) ###
 
-If `format` starts with ''"*l"` then returns the next line in the `File''. The end-of-line character is skipped.
+If `format` starts with `"*l"` then returns the next line in the `File`. The end-of-line character is skipped.
 
-If `format` starts with ''"*a"` then returns all the remaining contents of the `File''.
+If `format` starts with `"*a"` then returns all the remaining contents of the `File`.
 
 If no data is available, then an error is raised, except if `File` is in [quiet()](#torch.File.quiet) mode where
 it then returns an empty string `''` and after that you'll be able to see that last reading failed due to end of file with your_file:[hasError()](#torch.File.hasError).
 
-Because Torch is more precise on number typing, the `Lua` format ''"*n"'' is not supported:
+Because Torch is more precise on number typing, the `Lua` format `"*n"` is not supported:
 instead use one of the [number read methods](#torch.File.read).
 
 <a name="torch.File.writeString"></a>

@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "general.h"
 #include "THFile.h"
 #include "luaT.h"
@@ -155,6 +156,47 @@ static int torch_File_writeString(lua_State *L)
   return 1;
 }
 
+static int torch_File_readPointer(lua_State *L)
+{
+  THFile *self = luaT_checkudata(L, 1, "torch.File");
+  int narg = lua_gettop(L);
+
+  if(narg == 1)
+  {
+    intptr_t value;
+    size_t size = THFile_readPointerRaw(self, &value);
+    if(size < 1)
+    {
+      luaL_error(L, "can not read pointer");
+      return 0;
+    }
+    lua_pushinteger(L, value);
+    return 1;
+  }
+
+  luaL_error(L, "nothing expected");
+  return 0;
+}
+
+static int torch_File_writePointer(lua_State *L)
+{
+  THFile *self = luaT_checkudata(L, 1, "torch.File");
+  int narg = lua_gettop(L);
+
+  if(narg == 2)
+  {
+    if(lua_isnumber(L, 2))
+    {
+      intptr_t value = lua_tointeger(L, 2);
+      THFile_writePointerRaw(self, value);
+      return 1;
+    }
+  }
+
+  luaL_error(L, "number expected");
+  return 0;
+}
+
 static const struct luaL_Reg torch_File__ [] = {
   {"isQuiet", torch_File_isQuiet},
   {"isReadable", torch_File_isReadable},
@@ -180,6 +222,7 @@ static const struct luaL_Reg torch_File__ [] = {
   {"readFloat", torch_File_readFloat},
   {"readDouble", torch_File_readDouble},
   {"readString", torch_File_readString},
+  {"readPointer", torch_File_readPointer},
 
   {"writeByte", torch_File_writeByte},
   {"writeChar", torch_File_writeChar},
@@ -189,6 +232,7 @@ static const struct luaL_Reg torch_File__ [] = {
   {"writeFloat", torch_File_writeFloat},
   {"writeDouble", torch_File_writeDouble},
   {"writeString", torch_File_writeString},
+  {"writePointer", torch_File_writePointer},
 
   {"synchronize", torch_File_synchronize},
   {"seek", torch_File_seek},

@@ -360,6 +360,10 @@ READ_WRITE_METHODS(double, Double,
                    int ret = fscanf(dfself->handle, "%lg", &data[i]); if(ret <= 0) break; else nread++,
                    int ret = fprintf(dfself->handle, "%.17g", data[i]); if(ret <= 0) break; else nwrite++)
 
+READ_WRITE_METHODS(intptr_t, Pointer,
+                   int ret = fscanf(dfself->handle, "%p", (void **)&data[i]); if(ret <= 0) break; else nread++,
+                   int ret = fprintf(dfself->handle, "%p", (void *)data[i]); if(ret <= 0) break; else nwrite++)
+
 
 /* For Long we need to rewrite everything, because of the special management of longSize */
 static size_t THDiskFile_readLong(THFile *self, long *data, size_t n)
@@ -619,6 +623,7 @@ THFile *THDiskFile_new(const char *name, const char *mode, int isQuiet)
     THDiskFile_readFloat,
     THDiskFile_readDouble,
     THDiskFile_readString,
+    THDiskFile_readPointer,
 
     THDiskFile_writeByte,
     THDiskFile_writeChar,
@@ -628,6 +633,7 @@ THFile *THDiskFile_new(const char *name, const char *mode, int isQuiet)
     THDiskFile_writeFloat,
     THDiskFile_writeDouble,
     THDiskFile_writeString,
+    THDiskFile_writePointer,
 
     THDiskFile_synchronize,
     THDiskFile_seek,
@@ -731,6 +737,7 @@ THFile *THPipeFile_new(const char *name, const char *mode, int isQuiet)
     THDiskFile_readFloat,
     THDiskFile_readDouble,
     THDiskFile_readString,
+    THDiskFile_readPointer,
 
     THDiskFile_writeByte,
     THDiskFile_writeChar,
@@ -740,6 +747,7 @@ THFile *THPipeFile_new(const char *name, const char *mode, int isQuiet)
     THDiskFile_writeFloat,
     THDiskFile_writeDouble,
     THDiskFile_writeString,
+    THDiskFile_writePointer,
 
     THDiskFile_synchronize,
     THDiskFile_seek,
