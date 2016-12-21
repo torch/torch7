@@ -9,7 +9,7 @@ local argtypes = wrap.CInterface.argtypes
 argtypes['ptrdiff_t'] = {
 
   helpname = function(arg)
-                return 'ptrdiff_t' 
+                return 'ptrdiff_t'
              end,
 
   declare = function(arg)
@@ -35,7 +35,7 @@ argtypes['ptrdiff_t'] = {
                end
             end
          end,
-  
+
   carg = function(arg)
             return string.format('arg%d', arg.i)
          end,
@@ -43,13 +43,13 @@ argtypes['ptrdiff_t'] = {
   creturn = function(arg)
                return string.format('arg%d', arg.i)
             end,
-  
+
   precall = function(arg)
                if arg.returned then
                   return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
                end
             end,
-  
+
   postcall = function(arg)
                 if arg.creturned then
                    return string.format('lua_pushnumber(L, (lua_Number)arg%d);', arg.i)
@@ -738,11 +738,11 @@ wrap("topk",
         {{name=Tensor, default=true, returned=true},
          {name=Tensor},
          {name=Tensor},
-         {name="index", default=lastdim(2)}},
+         {name="index", default=-1}},
         cname("catArray"),
         {{name=Tensor, default=true, returned=true},
          {name=Tensor .. "Array"},
-         {name="index", default=lastdimarray(2)}})
+         {name="index", default=-1}})
 
    if Tensor == 'ByteTensor' then -- we declare this only once
       interface:print(
