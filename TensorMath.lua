@@ -1088,6 +1088,14 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
             {name="long",default=100},
             {name="double",default=0},
             {name="double",default=0}})
+      
+      wrap("histc2",
+           cname("histc2"),
+           {{name=Tensor, default=true, returned=true},
+            {name=Tensor},
+            {name="long",default=100},
+            {name="double",default=0},
+            {name="double",default=0}})
 
       wrap("norm",
            cname("normall"),

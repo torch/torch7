@@ -1355,6 +1355,18 @@ function torchtest.histc()
    local z = torch.Tensor{ 0, 3, 0, 2, 1 }
    mytester:assertTensorEq(y,z,precision,'error in torch.histc')
 end
+function torchtest.histc2()
+   local x = torch.Tensor(3, 6)
+   x[1] = torch.Tensor{ 2, 4, 2, 2, 5, 4 }
+   x[2] = torch.Tensor{ 3, 5, 1, 5, 3, 5 }
+   x[3] = torch.Tensor{ 3, 4, 2, 5, 5, 1 }
+   local y = torch.histc2(x, 5, 1, 5) -- nbins, min, max
+   local z = torch.Tensor(3, 5)
+   z[1] = torch.Tensor{ 0, 3, 0, 2, 1 }
+   z[2] = torch.Tensor{ 1, 0, 2, 0, 3 }
+   z[3] = torch.Tensor{ 1, 1, 1, 1, 2 }
+   mytester:assertTensorEq(y,z,precision,'error in torch.histc2 in last dimension')
+end
 function torchtest.ones()
    local mx = torch.ones(msize,msize)
    local mxx = torch.Tensor()
