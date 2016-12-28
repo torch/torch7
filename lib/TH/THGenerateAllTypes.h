@@ -96,7 +96,7 @@
 
 #if TH_GENERIC_USE_HALF
 #include "THHalf.h"
-#define real TH_HALF
+#define real THHalf
 #define accreal float
 #define Real Half
 #define THInf TH_HALF_MAX

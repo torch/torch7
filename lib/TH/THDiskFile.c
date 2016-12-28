@@ -356,7 +356,7 @@ READ_WRITE_METHODS(float, Float,
                    int ret = fscanf(dfself->handle, "%g", &data[i]); if(ret <= 0) break; else nread++,
                    int ret = fprintf(dfself->handle, "%.9g", data[i]); if(ret <= 0) break; else nwrite++)
 #if TH_GENERIC_USE_HALF
-READ_WRITE_METHODS(TH_HALF, Half,
+READ_WRITE_METHODS(THHalf, Half,
                    float buf; int ret = fscanf(dfself->handle, "%g", &buf); if(ret <= 0) break; else { data[i]= TH_float2half(buf); nread++; },
                    int ret = fprintf(dfself->handle, "%.9g", TH_half2float(data[i])); if(ret <= 0) break; else nwrite++)
 #endif

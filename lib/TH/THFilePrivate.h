@@ -31,7 +31,7 @@ struct THFileVTable
     size_t (*readFloat)(THFile *self, float *data, size_t n);
     size_t (*readDouble)(THFile *self, double *data, size_t n);
 #if TH_GENERIC_USE_HALF
-    size_t (*readHalf)(THFile *self, TH_HALF *data, size_t n);
+    size_t (*readHalf)(THFile *self, THHalf *data, size_t n);
 #endif
     size_t (*readString)(THFile *self, const char *format, char **str_);
 
@@ -43,7 +43,7 @@ struct THFileVTable
     size_t (*writeFloat)(THFile *self, float *data, size_t n);
     size_t (*writeDouble)(THFile *self, double *data, size_t n);
 #if TH_GENERIC_USE_HALF
-    size_t (*writeHalf)(THFile *self, TH_HALF *data, size_t n);
+    size_t (*writeHalf)(THFile *self, THHalf *data, size_t n);
 #endif
     size_t (*writeString)(THFile *self, const char *str, size_t size);
 

@@ -342,7 +342,7 @@ READ_WRITE_METHODS(float, Float,
                    nByteWritten = snprintf(mfself->storage->data+mfself->position, mfself->storage->size-mfself->position, "%.9g", data[i]),
                    1)
 #if TH_GENERIC_USE_HALF
-READ_WRITE_METHODS(TH_HALF, Half,
+READ_WRITE_METHODS(THHalf, Half,
                    int nByteRead_; float buf; \
                    int ret = sscanf(mfself->storage->data+mfself->position, "%g%n", &buf, &nByteRead_); \
                    data[i] = TH_float2half(buf); nByteRead = nByteRead_; if(ret <= 0) break; else nread++,

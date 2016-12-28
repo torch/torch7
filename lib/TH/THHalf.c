@@ -52,7 +52,7 @@
 // Host functions for converting between FP32 and FP16 formats
 // Paulius Micikevicius (pauliusm@nvidia.com)
 
-float TH_half2float(TH_HALF h)
+float TH_half2float(THHalf h)
 {
     unsigned sign = ((h.x >> 15) & 1);
     unsigned exponent = ((h.x >> 10) & 0x1f);
@@ -81,9 +81,9 @@ float TH_half2float(TH_HALF h)
     return *((float*)((void*)&temp));
 }
 
-TH_HALF TH_float2half(float f)
+THHalf TH_float2half(float f)
 {
-    TH_HALF ret;
+    THHalf ret;
 
     unsigned x = *((int*)(void*)(&f));
     unsigned u = (x & 0x7fffffff), remainder, shift, lsb, lsb_s1, lsb_m1;
