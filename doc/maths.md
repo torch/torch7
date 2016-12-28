@@ -157,9 +157,9 @@ By default the elements are sorted into 100 equally spaced bins between the mini
 `y = torch.bhistc(x)` returns the histogram of the elements in 2d tensor `x` along the last dimension.
 By default the elements are sorted into 100 equally spaced bins between the minimum and maximum values of `x`.
 
-`y = torch.histc(x, n)` same as above with `n` bins.
+`y = torch.bhistc(x, n)` same as above with `n` bins.
 
-`y = torch.histc(x, n, min, max)` same as above with `n` bins and `[min, max]` as elements range.
+`y = torch.bhistc(x, n, min, max)` same as above with `n` bins and `[min, max]` as elements range.
 
 ```lua
 x =torch.Tensor(3, 6)
