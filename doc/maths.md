@@ -150,11 +150,11 @@ By default the elements are sorted into 100 equally spaced bins between the mini
 `y = torch.histc(x, n, min, max)` same as above with `n` bins and `[min, max]` as elements range.
 
 
-<a name="torch.histc2"></a>
-### [res] torch.histc2([res,] x [,nbins, min_value, max_value]) ###
-<a name="torch.histc2"></a>
+<a name="torch.bhistc"></a>
+### [res] torch.bhistc([res,] x [,nbins, min_value, max_value]) ###
+<a name="torch.bhistc"></a>
 
-`y = torch.histc2(x)` returns the histogram of the elements in 2d tensor `x` along the last dimension.
+`y = torch.bhistc(x)` returns the histogram of the elements in 2d tensor `x` along the last dimension.
 By default the elements are sorted into 100 equally spaced bins between the minimum and maximum values of `x`.
 
 `y = torch.histc(x, n)` same as above with `n` bins.
@@ -174,7 +174,7 @@ x =torch.Tensor(3, 6)
  3  4  2  5  5  1
 [torch.DoubleTensor of size 3x6]
 
-> torch.histc2(x, 5, 1, 5)
+> torch.bhistc(x, 5, 1, 5)
  0  3  0  2  1
  1  0  2  0  3
  1  1  1  1  2
@@ -182,7 +182,7 @@ x =torch.Tensor(3, 6)
 
 > y = torch.Tensor(1, 6):copy(x[1])
 
-> torch.histc2(y, 5)
+> torch.bhistc(y, 5)
  3  0  2  0  1
 [torch.DoubleTensor of size 1x5]
 ```
