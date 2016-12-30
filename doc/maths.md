@@ -150,6 +150,43 @@ By default the elements are sorted into 100 equally spaced bins between the mini
 `y = torch.histc(x, n, min, max)` same as above with `n` bins and `[min, max]` as elements range.
 
 
+<a name="torch.bhistc"></a>
+### [res] torch.bhistc([res,] x [,nbins, min_value, max_value]) ###
+<a name="torch.bhistc"></a>
+
+`y = torch.bhistc(x)` returns the histogram of the elements in 2d tensor `x` along the last dimension.
+By default the elements are sorted into 100 equally spaced bins between the minimum and maximum values of `x`.
+
+`y = torch.bhistc(x, n)` same as above with `n` bins.
+
+`y = torch.bhistc(x, n, min, max)` same as above with `n` bins and `[min, max]` as elements range.
+
+```lua
+x =torch.Tensor(3, 6)
+
+> x[1] = torch.Tensor{ 2, 4, 2, 2, 5, 4 }
+> x[2] = torch.Tensor{ 3, 5, 1, 5, 3, 5 }
+> x[3] = torch.Tensor{ 3, 4, 2, 5, 5, 1 }
+
+> x
+ 2  4  2  2  5  4
+ 3  5  1  5  3  5
+ 3  4  2  5  5  1
+[torch.DoubleTensor of size 3x6]
+
+> torch.bhistc(x, 5, 1, 5)
+ 0  3  0  2  1
+ 1  0  2  0  3
+ 1  1  1  1  2
+[torch.DoubleTensor of size 3x5]
+
+> y = torch.Tensor(1, 6):copy(x[1])
+
+> torch.bhistc(y, 5)
+ 3  0  2  0  1
+[torch.DoubleTensor of size 1x5]
+```
+
 <a name="torch.linspace"></a>
 ### [res] torch.linspace([res,] x1, x2, [,n]) ###
 <a name="torch.linspace"></a>
