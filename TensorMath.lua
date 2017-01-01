@@ -1043,7 +1043,7 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
             {name="long",default=100},
             {name="double",default=0},
             {name="double",default=0}})
-      
+
       wrap("bhistc",
            cname("bhistc"),
            {{name=Tensor, default=true, returned=true},
@@ -1446,9 +1446,6 @@ void torch_TensorMath_init(lua_State *L)
   torch_IntTensorMath_init(L);
   torch_LongTensorMath_init(L);
   torch_FloatTensorMath_init(L);
-  #if TH_NATIVE_HALF
-    torch_HalfTensorMath_init(L);
-  #endif
   torch_DoubleTensorMath_init(L);
   luaT_setfuncs(L, torch_TensorMath__, 0);
 }
