@@ -692,11 +692,11 @@ wrap("topk",
         {{name=Tensor, default=true, returned=true},
          {name=Tensor},
          {name=Tensor},
-         {name="index", default=lastdim(2)}},
+         {name="index", default=-1}},
         cname("catArray"),
         {{name=Tensor, default=true, returned=true},
          {name=Tensor .. "Array"},
-         {name="index", default=lastdimarray(2)}})
+         {name="index", default=-1}})
 
    if Tensor == 'ByteTensor' then -- we declare this only once
       interface:print(

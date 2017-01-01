@@ -60,11 +60,13 @@ The advantage of second case is, same `res2` `Tensor` can be used successively i
 <a name="torch.cat"></a>
 `x = torch.cat(x_1, x_2, [dimension])` returns a `Tensor` `x` which is the concatenation of `Tensor`s `x_1` and `x_2` along dimension `dimension`.
 
-If `dimension` is not specified it is the last dimension.
+If `dimension` is not specified or if it is `-1`, it is the maximum last dimension over all input tensors, except if all tensors are empty, then it is `1`.
 
 The other dimensions of `x_1` and `x_2` have to be equal.
 
 Also supports arrays with arbitrary numbers of `Tensor`s as inputs.
+
+Empty tensors are ignored during catting, and thus do not throw an error. Performing cat on empty tensors only will always result in an empty tensor.
 
 Examples:
 ```lua
@@ -115,6 +117,12 @@ Examples:
  0.9161  0.1086
  0.2206  0.7449
 [torch.DoubleTensor of size 7x2]
+
+> torch.cat({torch.Tensor(), torch.rand(3, 2)}, 1)
+ 0.3227  0.0493
+ 0.9161  0.1086
+ 0.2206  0.7449
+[torch.DoubleTensor of size 3x2]
 
 ```
 
