@@ -2,9 +2,6 @@
 #define TH_GENERIC_FILE "generic/TensorOperator.c"
 #else
 
-/* Tensor math may be disabled for certain types, e.g. 'half' */
-#ifndef TH_GENERIC_NO_MATH
-
 static int torch_TensorOperator_(__add__)(lua_State *L)
 {
   THTensor *tensor1 = luaT_toudata(L, 1, torch_Tensor);
@@ -190,6 +187,5 @@ void torch_TensorOperator_(init)(lua_State *L)
   luaT_setfuncs(L, torch_TensorOperator_(_), 0);
   lua_pop(L, 1);
 }
-#endif
 
 #endif

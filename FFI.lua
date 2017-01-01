@@ -118,7 +118,7 @@ typedef struct THRealTensor
              end)
 
       -- faster apply (contiguous case)
-      if Tensor_type ~= 'torch.HalfTensor' or torch.hashalfmath() then
+      if Tensor_type ~= 'torch.HalfTensor' then
          local apply = Tensor.apply
          rawset(Tensor,
                 "apply",
