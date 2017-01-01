@@ -7,3 +7,6 @@
 
 #include "generic/Storage.c"
 #include "THGenerateAllTypes.h"
+
+#include "generic/Storage.c"
+#include "THGenerateHalfType.h"

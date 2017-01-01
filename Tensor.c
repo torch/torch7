@@ -7,3 +7,6 @@
 
 #include "generic/Tensor.c"
 #include "THGenerateAllTypes.h"
+
+#include "generic/Tensor.c"
+#include "THGenerateHalfType.h"
