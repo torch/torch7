@@ -458,7 +458,7 @@ function Tensor.view(result, src, ...)
    local origNElement = tensor:nElement()
    size = specifyFully(size, origNElement)
 
-   assert(tensor:isContiguous(), "expecting a contiguous tensor")
+   if not tensor:isContiguous() then tensor = tensor:clone() end
    view:set(tensor:storage(), tensor:storageOffset(), size)
    if view:nElement() ~= origNElement then
       local inputSize = table.concat(tensor:size():totable(), "x")
