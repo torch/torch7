@@ -24,17 +24,26 @@ typedef struct __thalign__(4) {
 typedef __THHalf THHalf;
 typedef __THHalf2 THHalf2;
 
-/* numeric limits */
+typedef unsigned short THHalfBits;
 
+TH_API void TH_float2halfbits(float*, THHalfBits*);
+TH_API void TH_halfbits2float(THHalfBits*, float*);
 
-TH_API THHalf TH_float2half(float a);
-TH_API float TH_half2float(THHalf a);
+TH_API THHalf TH_float2half(float);
+TH_API float  TH_half2float(THHalf);
 
 #ifndef TH_HALF_BITS_TO_LITERAL
 # define TH_HALF_BITS_TO_LITERAL(n) { n }
 #endif
 
-#define TH_HALF_MAX TH_HALF_BITS_TO_LITERAL(0x7BFF)
+#define TH_HALF_ZERO 0x0U
+#define TH_HALF_MIN  0x0400U
+#define TH_HALF_MAX  0x7BFFU
+#define TH_HALF_EPSILON 0x1400U
+#define TH_HALF_INF  0x7C00U
+#define TH_HALF_QNAN 0x7FFFU
+#define TH_HALF_SNAN 0x7DFFU
+#define TH_HALF_DENORM_MIN 0x0001U
 
 #undef __thalign__
 #endif
