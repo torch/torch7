@@ -109,7 +109,7 @@ void _THArgCheck(const char *file, int line, int condition, int argNumber, const
       snprintf(msg + n, 2048 - n, " at %s:%d", file, line);
     }
 
-    if (threadArgErrorHandlerData)
+    if (threadArgErrorHandler)
       (*threadArgErrorHandler)(argNumber, msg, threadArgErrorHandlerData);
     else
       (*defaultArgErrorHandler)(argNumber, msg, defaultArgErrorHandlerData);
@@ -326,7 +326,7 @@ void THSetNumThreads(int num_threads)
 #endif
 }
 
-int THGetNumThreads()
+int THGetNumThreads(void)
 {
 #ifdef _OPENMP
   return omp_get_max_threads();
@@ -335,7 +335,7 @@ int THGetNumThreads()
 #endif
 }
 
-int THGetNumCores()
+int THGetNumCores(void)
 {
 #ifdef _OPENMP
   return omp_get_num_procs();

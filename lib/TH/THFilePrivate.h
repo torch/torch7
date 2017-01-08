@@ -1,3 +1,7 @@
+#include "THGeneral.h"
+
+#include "THHalf.h"
+
 #include <stdint.h>
 
 struct THFile__
@@ -25,6 +29,7 @@ struct THFileVTable
     size_t (*readLong)(THFile *self, long *data, size_t n);
     size_t (*readFloat)(THFile *self, float *data, size_t n);
     size_t (*readDouble)(THFile *self, double *data, size_t n);
+    size_t (*readHalf)(THFile *self, THHalf *data, size_t n);
     size_t (*readString)(THFile *self, const char *format, char **str_);
     size_t (*readPointer)(THFile *self, intptr_t *data, size_t n);
 
@@ -35,6 +40,7 @@ struct THFileVTable
     size_t (*writeLong)(THFile *self, long *data, size_t n);
     size_t (*writeFloat)(THFile *self, float *data, size_t n);
     size_t (*writeDouble)(THFile *self, double *data, size_t n);
+    size_t (*writeHalf)(THFile *self, THHalf *data, size_t n);
     size_t (*writeString)(THFile *self, const char *str, size_t size);
     size_t (*writePointer)(THFile *self, intptr_t *data, size_t n);
 

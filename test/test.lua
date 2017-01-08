@@ -19,6 +19,35 @@ local function maxdiff(x,y)
    end
 end
 
+-- workarounds for non-existant functions
+function torch.HalfTensor:__sub(other)
+   return (self:real() - other:real()):half()
+end
+
+function torch.HalfTensor:mean(dim)
+   return self:real():mean(dim):half()
+end
+
+function torch.HalfTensor:abs()
+   return self:real():abs():half()
+end
+
+function torch.HalfTensor:max()
+   return self:real():max()
+end
+
+function torch.HalfTensor:add(a, b)
+   return (self:real():add(a, b:real())):half()
+end
+
+function torch.HalfTensor:reshape(a, b)
+   return (self:real():reshape(a, b)):half()
+end
+
+function torch.HalfTensor:fill(a)
+   return self:real():fill(a):half()
+end
+
 function torchtest.dot()
    local types = {
       ['torch.DoubleTensor'] = 1e-8, -- for ddot
@@ -1355,6 +1384,18 @@ function torchtest.histc()
    local z = torch.Tensor{ 0, 3, 0, 2, 1 }
    mytester:assertTensorEq(y,z,precision,'error in torch.histc')
 end
+function torchtest.bhistc()
+   local x = torch.Tensor(3, 6)
+   x[1] = torch.Tensor{ 2, 4, 2, 2, 5, 4 }
+   x[2] = torch.Tensor{ 3, 5, 1, 5, 3, 5 }
+   x[3] = torch.Tensor{ 3, 4, 2, 5, 5, 1 }
+   local y = torch.bhistc(x, 5, 1, 5) -- nbins, min, max
+   local z = torch.Tensor(3, 5)
+   z[1] = torch.Tensor{ 0, 3, 0, 2, 1 }
+   z[2] = torch.Tensor{ 1, 0, 2, 0, 3 }
+   z[3] = torch.Tensor{ 1, 1, 1, 1, 2 }
+   mytester:assertTensorEq(y,z,precision,'error in torch.bhistc in last dimension')
+end
 function torchtest.ones()
    local mx = torch.ones(msize,msize)
    local mxx = torch.Tensor()
@@ -1827,7 +1868,32 @@ function torchtest.cat()
       local mxx = torch.Tensor()
       torch.cat(mxx, x, y, dim)
       mytester:assertTensorEq(mx, mxx, 0, 'torch.cat value')
+
+      local x = torch.rand(1,2,3)
+      local y = torch.Tensor()
+      local mx = torch.cat(x,y,dim)
+      mytester:asserteq(mx:size(1),1,'torch.cat size')
+      mytester:asserteq(mx:size(2),2,'torch.cat size')
+      mytester:asserteq(mx:size(3),3,'torch.cat size')
+      mytester:assertTensorEq(mx, x, 0, 'torch.cat value')
+
+      local x = torch.Tensor()
+      local y = torch.Tensor()
+      local mx = torch.cat(x,y,dim)
+      mytester:asserteq(mx:dim(),0,'torch.cat dim')
    end
+   local x = torch.Tensor()
+   local y = torch.rand(1,2,3)
+   local mx = torch.cat(x,y)
+   mytester:asserteq(mx:size(1),1,'torch.cat size')
+   mytester:asserteq(mx:size(2),2,'torch.cat size')
+   mytester:asserteq(mx:size(3),3,'torch.cat size')
+   mytester:assertTensorEq(mx, y, 0, 'torch.cat value')
+
+   local x = torch.Tensor()
+   local y = torch.Tensor()
+   local mx = torch.cat(x,y)
+   mytester:asserteq(mx:dim(),0,'torch.cat dim')
 end
 function torchtest.catArray()
    for dim = 1, 3 do
@@ -1849,7 +1915,32 @@ function torchtest.catArray()
       mytester:assertTensorEq(mx, mxx, 0, 'torch.cat value')
       torch.cat(mxx:double(), {x:double(), y:double(), z:double()}, dim)
       mytester:assertTensorEq(mx, mxx, 0, 'torch.cat value')
+
+      local x = torch.rand(1,2,3)
+      local y = torch.Tensor()
+      local mx = torch.cat({x,y},dim)
+      mytester:asserteq(mx:size(1),1,'torch.cat size')
+      mytester:asserteq(mx:size(2),2,'torch.cat size')
+      mytester:asserteq(mx:size(3),3,'torch.cat size')
+      mytester:assertTensorEq(mx, x, 0, 'torch.cat value')
+
+      local x = torch.Tensor()
+      local y = torch.Tensor()
+      local mx = torch.cat({x,y},dim)
+      mytester:asserteq(mx:dim(),0,'torch.cat dim')
    end
+   local x = torch.Tensor()
+   local y = torch.rand(1,2,3)
+   local mx = torch.cat({x,y})
+   mytester:asserteq(mx:size(1),1,'torch.cat size')
+   mytester:asserteq(mx:size(2),2,'torch.cat size')
+   mytester:asserteq(mx:size(3),3,'torch.cat size')
+   mytester:assertTensorEq(mx, y, 0, 'torch.cat value')
+
+   local x = torch.Tensor()
+   local y = torch.Tensor()
+   local mx = torch.cat({x,y})
+   mytester:asserteq(mx:dim(),0,'torch.cat dim')
 end
 function torchtest.sin_2()
    local x = torch.rand(msize,msize,msize)
@@ -3053,7 +3144,13 @@ function torchtest.isTypeOfPattern()
 end
 
 function torchtest.isTensor()
-   local t = torch.randn(3,4)
+   for k,v in ipairs({"real", "half"}) do
+      torchtest_isTensor(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function torchtest_isTensor(func)
+   local t = func(torch.randn(3,4))
    mytester:assert(torch.isTensor(t), 'error in isTensor')
    mytester:assert(torch.isTensor(t[1]), 'error in isTensor for subTensor')
    mytester:assert(not torch.isTensor(t[1][2]), 'false positive in isTensor')
@@ -3061,14 +3158,26 @@ function torchtest.isTensor()
 end
 
 function torchtest.isStorage()
+   for k,v in ipairs({"real", "half"}) do
+      torchtest_isStorage(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function torchtest_isStorage(func)
   local t = torch.randn(3,4)
   mytester:assert(torch.isStorage(t:storage()), 'error in isStorage')
   mytester:assert(not torch.isStorage(t), 'false positive in isStorage')
 end
 
 function torchtest.view()
-   local tensor = torch.rand(15)
-   local template = torch.rand(3,5)
+   for k,v in ipairs({"real", "half"}) do
+      torchtest_view(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function torchtest_view(func)
+   local tensor = func(torch.rand(15))
+   local template = func(torch.rand(3,5))
    local target = template:size():totable()
    mytester:assertTableEq(tensor:viewAs(template):size():totable(), target, 'Error in viewAs')
    mytester:assertTableEq(tensor:view(3,5):size():totable(), target, 'Error in view')
@@ -3079,7 +3188,7 @@ function torchtest.view()
    tensor_view:fill(torch.rand(1)[1])
    mytester:asserteq((tensor_view-tensor):abs():max(), 0, 'Error in view')
 
-   local target_tensor = torch.Tensor()
+   local target_tensor = func(torch.Tensor())
    mytester:assertTableEq(target_tensor:viewAs(tensor, template):size():totable(), target, 'Error in viewAs')
    mytester:assertTableEq(target_tensor:view(tensor, 3,5):size():totable(), target, 'Error in view')
    mytester:assertTableEq(target_tensor:view(tensor, torch.LongStorage{3,5}):size():totable(), target, 'Error in view using LongStorage')
@@ -3090,9 +3199,15 @@ function torchtest.view()
 end
 
 function torchtest.expand()
-   local result = torch.Tensor()
-   local tensor = torch.rand(8,1)
-   local template = torch.rand(8,5)
+   for k,v in ipairs({"real", "half"}) do
+      torchtest_expand(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function torchtest_expand(func)
+   local result = func(torch.Tensor())
+   local tensor = func(torch.rand(8,1))
+   local template = func(torch.rand(8,5))
    local target = template:size():totable()
    mytester:assertTableEq(tensor:expandAs(template):size():totable(), target, 'Error in expandAs')
    mytester:assertTableEq(tensor:expand(8,5):size():totable(), target, 'Error in expand')
@@ -3107,8 +3222,14 @@ function torchtest.expand()
 end
 
 function torchtest.repeatTensor()
-   local result = torch.Tensor()
-   local tensor = torch.rand(8,4)
+   for k,v in ipairs({"real", "half"}) do
+      torchtest_repeatTensor(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function torchtest_repeatTensor(func, mean)
+   local result = func(torch.Tensor())
+   local tensor = func(torch.rand(8,4))
    local size = {3,1,1}
    local sizeStorage = torch.LongStorage(size)
    local target = {3,8,4}
@@ -3122,10 +3243,16 @@ function torchtest.repeatTensor()
 end
 
 function torchtest.isSameSizeAs()
-   local t1 = torch.Tensor(3, 4, 9, 10)
-   local t2 = torch.Tensor(3, 4)
-   local t3 = torch.Tensor(1, 9, 3, 3)
-   local t4 = torch.Tensor(3, 4, 9, 10)
+   for k,v in ipairs({"real", "half"}) do
+      torchtest_isSameSizeAs(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function torchtest_isSameSizeAs(func)
+   local t1 = func(torch.Tensor(3, 4, 9, 10))
+   local t2 = func(torch.Tensor(3, 4))
+   local t3 = func(torch.Tensor(1, 9, 3, 3))
+   local t4 = func(torch.Tensor(3, 4, 9, 10))
 
    mytester:assert(t1:isSameSizeAs(t2) == false, "wrong answer ")
    mytester:assert(t1:isSameSizeAs(t3) == false, "wrong answer ")
@@ -3133,15 +3260,21 @@ function torchtest.isSameSizeAs()
 end
 
 function torchtest.isSetTo()
-   local t1 = torch.Tensor(3, 4, 9, 10)
-   local t2 = torch.Tensor(3, 4, 9, 10)
-   local t3 = torch.Tensor():set(t1)
+   for k,v in ipairs({"real", "half"}) do
+      torchtest_isSetTo(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function torchtest_isSetTo(func)
+   local t1 = func(torch.Tensor(3, 4, 9, 10))
+   local t2 = func(torch.Tensor(3, 4, 9, 10))
+   local t3 = func(torch.Tensor()):set(t1)
    local t4 = t3:reshape(12, 90)
    mytester:assert(t1:isSetTo(t2) == false, "tensors do not share storage")
    mytester:assert(t1:isSetTo(t3) == true, "tensor is set to other")
    mytester:assert(t3:isSetTo(t1) == true, "isSetTo should be symmetric")
    mytester:assert(t1:isSetTo(t4) == false, "tensors have different view")
-   mytester:assert(not torch.Tensor():isSetTo(torch.Tensor()),
+   mytester:assert(not func(torch.Tensor()):isSetTo(func(torch.Tensor())),
                    "Tensors with no storages should not appear to be set " ..
                    "to each other")
 end
@@ -3179,7 +3312,13 @@ function torchtest.equal()
 end
 
 function torchtest.isSize()
-  local t1 = torch.Tensor(3, 4, 5)
+   for k,v in ipairs({"real", "half"}) do
+      torchtest_isSize(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function torchtest_isSize(func)
+  local t1 = func(torch.Tensor(3, 4, 5))
   local s1 = torch.LongStorage({3, 4, 5})
   local s2 = torch.LongStorage({5, 4, 3})
 
@@ -3196,6 +3335,7 @@ function torchtest.elementSize()
   local long   =   torch.LongStorage():elementSize()
   local float  =  torch.FloatStorage():elementSize()
   local double = torch.DoubleStorage():elementSize()
+  local half = torch.HalfStorage():elementSize()
 
   mytester:asserteq(byte,   torch.ByteTensor():elementSize())
   mytester:asserteq(char,   torch.CharTensor():elementSize())
@@ -3204,6 +3344,7 @@ function torchtest.elementSize()
   mytester:asserteq(long,   torch.LongTensor():elementSize())
   mytester:asserteq(float,  torch.FloatTensor():elementSize())
   mytester:asserteq(double, torch.DoubleTensor():elementSize())
+  mytester:asserteq(half, torch.HalfTensor():elementSize())
 
   mytester:assertne(byte, 0)
   mytester:assertne(char, 0)
@@ -3212,6 +3353,7 @@ function torchtest.elementSize()
   mytester:assertne(long, 0)
   mytester:assertne(float, 0)
   mytester:assertne(double, 0)
+  mytester:assertne(half, 0)
 
   -- These tests are portable, not necessarily strict for your system.
   mytester:asserteq(byte, 1)
@@ -3222,11 +3364,18 @@ function torchtest.elementSize()
   mytester:assert(long >= 4)
   mytester:assert(long >= int)
   mytester:assert(double >= float)
+  mytester:assert(half <= float)
 end
 
 function torchtest.split()
+   for k,v in ipairs({"real", "half"}) do
+      torchtest_split(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function torchtest_split(func)
    local result = {}
-   local tensor = torch.rand(7,4)
+   local tensor = func(torch.rand(7,4))
    local splitSize = 3
    local targetSize = {{3,4},{3,4},{1,4}}
    local dim = 1
@@ -3251,8 +3400,14 @@ function torchtest.split()
 end
 
 function torchtest.chunk()
+   for k,v in ipairs({"real", "half"}) do
+      torchtest_chunk(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function torchtest_chunk(func)
    local result = {}
-   local tensor = torch.rand(4,7)
+   local tensor = func(torch.rand(4,7))
    local nChunk = 3
    local targetSize = {{4,3},{4,3},{4,1}}
    local dim = 2
@@ -3272,24 +3427,34 @@ function torchtest.chunk()
    end
 end
 
-function torchtest.totable()
+function torchtest.table()
+   local convStorage = {
+     ['real'] = 'FloatStorage',
+     ['half'] = 'HalfStorage'
+   }
+   for k,v in ipairs(convStorage) do
+      torchtest_totable(torch.getmetatable(torch.Tensor():type())[k], v)
+   end
+end
+
+function torchtest_totable(func, storageType)
   local table0D = {}
-  local tensor0D = torch.Tensor(table0D)
+  local tensor0D = func(torch.Tensor(table0D))
   mytester:assertTableEq(torch.totable(tensor0D), table0D, 'tensor0D:totable incorrect')
 
   local table1D = {1, 2, 3}
-  local tensor1D = torch.Tensor(table1D)
-  local storage = torch.Storage(table1D)
+  local tensor1D = func(torch.Tensor(table1D))
+  local storage = torch[storageType](table1D)
   mytester:assertTableEq(tensor1D:totable(), table1D, 'tensor1D:totable incorrect')
   mytester:assertTableEq(storage:totable(), table1D, 'storage:totable incorrect')
   mytester:assertTableEq(torch.totable(tensor1D), table1D, 'torch.totable incorrect for Tensors')
   mytester:assertTableEq(torch.totable(storage), table1D, 'torch.totable incorrect for Storages')
 
   local table2D = {{1, 2}, {3, 4}}
-  local tensor2D = torch.Tensor(table2D)
+  local tensor2D = func(torch.Tensor(table2D))
   mytester:assertTableEq(tensor2D:totable(), table2D, 'tensor2D:totable incorrect')
 
-  local tensor3D = torch.Tensor({{{1, 2}, {3, 4}}, {{5, 6}, {7, 8}}})
+  local tensor3D = func(torch.Tensor({{{1, 2}, {3, 4}}, {{5, 6}, {7, 8}}}))
   local tensorNonContig = tensor3D:select(2, 2)
   mytester:assert(not tensorNonContig:isContiguous(), 'invalid test')
   mytester:assertTableEq(tensorNonContig:totable(), {{3, 4}, {7, 8}},
@@ -3297,6 +3462,12 @@ function torchtest.totable()
 end
 
 function torchtest.permute()
+   for k,v in ipairs({"real", "half"}) do
+      torchtest_permute(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function torchtest_permute(func)
   local orig = {1,2,3,4,5,6,7}
   local perm = torch.randperm(7):totable()
   local x = torch.Tensor(unpack(orig)):fill(0)
@@ -3433,6 +3604,17 @@ function torchtest.bernoulli()
   local p = torch.rand(size)
   t:bernoulli(p)
   mytester:assert(isBinary(t), 'Sample from torch.bernoulli is not binary')
+end
+
+function torchtest.logNormal()
+    local t = torch.FloatTensor(10, 10)
+    local mean, std = torch.uniform(), 0.1 * torch.uniform()
+    local tolerance = 0.02
+
+    t:logNormal(mean, std)
+    local logt = t:log()
+    mytester:assertalmosteq(logt:mean(), mean, tolerance, 'mean is wrong')
+    mytester:assertalmosteq(logt:std(), std, tolerance, 'tolerance is wrong')
 end
 
 function torch.test(tests)

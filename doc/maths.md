@@ -60,11 +60,13 @@ The advantage of second case is, same `res2` `Tensor` can be used successively i
 <a name="torch.cat"></a>
 `x = torch.cat(x_1, x_2, [dimension])` returns a `Tensor` `x` which is the concatenation of `Tensor`s `x_1` and `x_2` along dimension `dimension`.
 
-If `dimension` is not specified it is the last dimension.
+If `dimension` is not specified or if it is `-1`, it is the maximum last dimension over all input tensors, except if all tensors are empty, then it is `1`.
 
 The other dimensions of `x_1` and `x_2` have to be equal.
 
 Also supports arrays with arbitrary numbers of `Tensor`s as inputs.
+
+Empty tensors are ignored during catting, and thus do not throw an error. Performing cat on empty tensors only will always result in an empty tensor.
 
 Examples:
 ```lua
@@ -116,6 +118,12 @@ Examples:
  0.2206  0.7449
 [torch.DoubleTensor of size 7x2]
 
+> torch.cat({torch.Tensor(), torch.rand(3, 2)}, 1)
+ 0.3227  0.0493
+ 0.9161  0.1086
+ 0.2206  0.7449
+[torch.DoubleTensor of size 3x2]
+
 ```
 
 
@@ -149,6 +157,43 @@ By default the elements are sorted into 100 equally spaced bins between the mini
 
 `y = torch.histc(x, n, min, max)` same as above with `n` bins and `[min, max]` as elements range.
 
+
+<a name="torch.bhistc"></a>
+### [res] torch.bhistc([res,] x [,nbins, min_value, max_value]) ###
+<a name="torch.bhistc"></a>
+
+`y = torch.bhistc(x)` returns the histogram of the elements in 2d tensor `x` along the last dimension.
+By default the elements are sorted into 100 equally spaced bins between the minimum and maximum values of `x`.
+
+`y = torch.bhistc(x, n)` same as above with `n` bins.
+
+`y = torch.bhistc(x, n, min, max)` same as above with `n` bins and `[min, max]` as elements range.
+
+```lua
+x =torch.Tensor(3, 6)
+
+> x[1] = torch.Tensor{ 2, 4, 2, 2, 5, 4 }
+> x[2] = torch.Tensor{ 3, 5, 1, 5, 3, 5 }
+> x[3] = torch.Tensor{ 3, 4, 2, 5, 5, 1 }
+
+> x
+ 2  4  2  2  5  4
+ 3  5  1  5  3  5
+ 3  4  2  5  5  1
+[torch.DoubleTensor of size 3x6]
+
+> torch.bhistc(x, 5, 1, 5)
+ 0  3  0  2  1
+ 1  0  2  0  3
+ 1  1  1  1  2
+[torch.DoubleTensor of size 3x5]
+
+> y = torch.Tensor(1, 6):copy(x[1])
+
+> torch.bhistc(y, 5)
+ 3  0  2  0  1
+[torch.DoubleTensor of size 1x5]
+```
 
 <a name="torch.linspace"></a>
 ### [res] torch.linspace([res,] x1, x2, [,n]) ###
@@ -362,6 +407,13 @@ For more than 4 dimensions, you can use a storage: `y = torch.zeros(torch.LongSt
 
 `x:atan()` replaces all elements in-place with the arctangent of the elements of `x`.
 
+<a name="torch.atan2"></a>
+### [res] torch.atan2([res,] x, y) ###
+<a name="torch.atan2"></a>
+
+`y = torch.atan2(x, y)` returns a new `Tensor` with the arctangent of the elements of `x` and `y`.
+
+`x:atan2()` replaces all elements in-place with the arctangent of the elements of `x` and `y`.
 
 <a name="torch.ceil"></a>
 ### [res] torch.ceil([res,] x) ###
@@ -427,19 +479,16 @@ For more than 4 dimensions, you can use a storage: `y = torch.zeros(torch.LongSt
 This function is more accurate than [`log`](#torch.log) for small values of `x`.
 
 
-<a name="x:neg"></a>
+<a name="torch.neg"></a>
 ### x:neg() ###
-<a name="x:neg"></a>
 
 `x:neg()` replaces all elements in-place with the sign-reversed values of the elements of `x`.
 
-
-<a name="x:cinv"></a>
+<a name="torch.cinv"></a>
 ### x:cinv() ###
-<a name="x:cinv"></a>
+<a name="torch.cinv"></a>
 
 `x:cinv()` replaces all elements in-place with `1.0 / x`.
-
 
 <a name="torch.pow"></a>
 ### [res] torch.pow([res,] x, n) ###
@@ -632,18 +681,17 @@ The number of elements must match, but sizes do not matter.
 `torch.add(z, x, value, y)` puts the result of `x + value * y` in `z`.
 
 
-<a name="x:csub"></a>
+<a name="torch.csub"></a>
 ### tensor:csub(value) ###
-<a name="x:csub"></a>
+<a name="torch.csub"></a>
 
 Subtracts the given value from all elements in the `Tensor`, in place.
 
+<a name="torch.csub"></a>
+### tensor:csub(tensor2) ###
+<a name="torch.csub"></a>
 
-<a name="x:csub"></a>
-### tensor1:csub(tensor2) ###
-<a name="x:csub"></a>
-
-Subtracts `tensor2` from `tensor1`, in place.
+Subtracts `tensor2` from `tensor`, in place.
 The number of elements must match, but sizes do not matter.
 
 ```lua
@@ -2704,36 +2752,38 @@ They return a `ByteTensor` in which each element is `0` or `1` indicating if the
 Implements `<` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.le"></a>
 ### torch.le(a, b) ###
 
 Implements `<=` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.gt"></a>
 ### torch.gt(a, b) ###
 
 Implements `>` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.ge"></a>
 ### torch.ge(a, b) ###
 
 Implements `>=` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.eq"></a>
 ### torch.eq(a, b) ###
 
 Implements `==` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
-<a name="torch.lt"></a>
+<a name="torch.ne"></a>
 ### torch.ne(a, b) ###
 
 Implements `~=` operator comparing each element in `a` with `b` (if `b` is a number) or each element in `a` with corresponding element in `b`.
 
 
+<a name="torch.all"></a>
+<a name="torch.any"></a>
 ### torch.all(a) ###
 ### torch.any(a) ###
 

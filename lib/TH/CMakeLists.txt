@@ -62,10 +62,13 @@ ENDIF (WITH_OPENMP)
 
 # ARM specific flags
 FIND_PACKAGE(ARM)
-IF (NEON_FOUND)
+IF (ASIMD_FOUND)
+  MESSAGE(STATUS "asimd/Neon found with compiler flag : -D__NEON__")
+  SET(CMAKE_C_FLAGS "-D__NEON__ ${CMAKE_C_FLAGS}")
+ELSEIF (NEON_FOUND)
   MESSAGE(STATUS "Neon found with compiler flag : -mfpu=neon -D__NEON__")
   SET(CMAKE_C_FLAGS "-mfpu=neon -D__NEON__ ${CMAKE_C_FLAGS}")
-ENDIF (NEON_FOUND)
+ENDIF (ASIMD_FOUND)
 IF (CORTEXA8_FOUND)
   MESSAGE(STATUS "Cortex-A8 Found with compiler flag : -mcpu=cortex-a8")
   SET(CMAKE_C_FLAGS "-mcpu=cortex-a8 -fprefetch-loop-arrays ${CMAKE_C_FLAGS}")
@@ -74,6 +77,22 @@ IF (CORTEXA9_FOUND)
   MESSAGE(STATUS "Cortex-A9 Found with compiler flag : -mcpu=cortex-a9")
   SET(CMAKE_C_FLAGS "-mcpu=cortex-a9 ${CMAKE_C_FLAGS}")
 ENDIF (CORTEXA9_FOUND)
+
+INCLUDE (CheckIncludeFile)
+INCLUDE (CheckCSourceCompiles)
+CHECK_INCLUDE_FILE(cpuid.h HAVE_CPUID_H)
+# Check for a cpuid intrinsic
+IF(HAVE_CPUID_H)
+    CHECK_C_SOURCE_COMPILES("#include <cpuid.h>
+        int main()
+        {
+            unsigned int eax, ebx, ecx, edx;
+            return __get_cpuid(0, &eax, &ebx, &ecx, &edx);
+        }" HAVE_GCC_GET_CPUID)
+ENDIF()
+IF(HAVE_GCC_GET_CPUID)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DHAVE_GCC_GET_CPUID")
+ENDIF(HAVE_GCC_GET_CPUID)
 
 FIND_PACKAGE(SSE)
 IF(C_SSE2_FOUND)
@@ -119,11 +138,11 @@ IF(C_AVX_FOUND)
 ENDIF(C_AVX_FOUND)
 
 SET(hdr
-  THGeneral.h THAllocator.h THStorage.h THTensor.h THTensorApply.h THBlas.h THMath.h
-  THLapack.h THLogAdd.h THRandom.h THVector.h THAtomic.h)
+  THGeneral.h THHalf.h THAllocator.h THStorage.h THTensor.h THTensorApply.h THBlas.h THMath.h
+  THLapack.h THLogAdd.h THRandom.h THVector.h THAtomic.h )
 
 SET(src
-  THGeneral.c THAllocator.c THStorage.c THTensor.c THBlas.c THLapack.c
+  THGeneral.c THHalf.c THAllocator.c THStorage.c THTensor.c THBlas.c THLapack.c
   THLogAdd.c THRandom.c THFile.c THDiskFile.c THMemoryFile.c THAtomic.c THVector.c)
 
 SET(src ${src} ${hdr} ${simd})
@@ -132,9 +151,13 @@ if(BUILD_STATIC)
   ADD_LIBRARY(TH_static STATIC ${src})
 endif()
 
+IF(NOT TH_SO_VERSION)
+  SET(TH_SO_VERSION 0)
+ENDIF(NOT TH_SO_VERSION)
+MESSAGE(STATUS "TH_SO_VERSION: ${TH_SO_VERSION}")
 SET_TARGET_PROPERTIES(TH PROPERTIES
-  VERSION   0
-  SOVERSION 0)
+  VERSION   ${TH_SO_VERSION}
+  SOVERSION ${TH_SO_VERSION})
 
 CHECK_C_SOURCE_RUNS("
 #include <stdatomic.h>
@@ -286,7 +309,6 @@ SET(TH_INLINE "")
 ENDIF(NOT DEFINED C_INLINE)
 
 # Is __thread supported?
-INCLUDE (CheckCSourceCompiles)
 IF(NOT MSVC)
   CHECK_C_SOURCE_COMPILES("static __thread int x = 1; int main() { return x; }" C_HAS_THREAD)
 ELSE(NOT MSVC)
@@ -317,6 +339,7 @@ INSTALL(FILES
   THFilePrivate.h
   ${CMAKE_CURRENT_BINARY_DIR}/THGeneral.h
   THGenerateAllTypes.h
+  THGenerateHalfType.h
   THGenerateFloatTypes.h
   THGenerateIntTypes.h
   THLapack.h
@@ -330,6 +353,7 @@ INSTALL(FILES
   THTensorMacros.h
   THVector.h
   THAtomic.h
+  THHalf.h
   DESTINATION "${TH_INSTALL_INCLUDE_SUBDIR}/TH")
 
 INSTALL(FILES
