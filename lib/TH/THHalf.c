@@ -56,7 +56,7 @@ THHalf TH_float2half(float f)
   return h;
 }
 
-TH_API float  TH_half2float(THHalf h)
+TH_API float TH_half2float(THHalf h)
 {
   float f;
   TH_halfbits2float(&h.x, &f);
@@ -66,7 +66,7 @@ TH_API float  TH_half2float(THHalf h)
 // Host functions for converting between FP32 and FP16 formats
 // Paulius Micikevicius (pauliusm@nvidia.com)
 
-void TH_halfbits2float(THHalfBits* src, float* res)
+void TH_halfbits2float(unsigned short* src, float* res)
 {
     unsigned h = *src;
     unsigned sign = ((h >> 15) & 1);
@@ -94,7 +94,7 @@ void TH_halfbits2float(THHalfBits* src, float* res)
     *(unsigned*)res = ((sign << 31) | (exponent << 23) | mantissa);
 }
 
-void TH_float2halfbits(float* src, THHalfBits* dest)
+void TH_float2halfbits(float* src, unsigned short* dest)
 {
     unsigned u = *(unsigned*)src;
     unsigned remainder, shift, lsb, lsb_s1, lsb_m1;
