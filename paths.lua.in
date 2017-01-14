@@ -1,0 +1,11 @@
+local paths = {}
+
+paths.install_prefix = [[@Torch_INSTALL_PREFIX@]]
+paths.install_bin = [[@Torch_INSTALL_BIN@]]
+paths.install_man = [[@Torch_INSTALL_MAN@]]
+paths.install_lib = [[@Torch_INSTALL_LIB@]]
+paths.install_share = [[@Torch_INSTALL_SHARE@]]
+paths.install_include = [[@Torch_INSTALL_INCLUDE@]]
+paths.install_cmake = [[@Torch_INSTALL_CMAKE@]]
+
+return paths
