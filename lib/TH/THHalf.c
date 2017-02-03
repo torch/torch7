@@ -96,8 +96,8 @@ void TH_halfbits2float(unsigned short* src, float* res)
 
 void TH_float2halfbits(float* src, unsigned short* dest)
 {
-    unsigned u = *(unsigned*)src;
-    unsigned remainder, shift, lsb, lsb_s1, lsb_m1;
+    unsigned x = *(unsigned*)src;
+    unsigned u = (x & 0x7fffffff), remainder, shift, lsb, lsb_s1, lsb_m1;
     unsigned sign, exponent, mantissa;
 
     // Get rid of +NaN/-NaN case first.
@@ -106,7 +106,7 @@ void TH_float2halfbits(float* src, unsigned short* dest)
       return ;
     }
   
-    sign = ((u >> 16) & 0x8000);
+    sign = ((x >> 16) & 0x8000);
   
     // Get rid of +Inf/-Inf, +0/-0.
     if (u > 0x477fefff) {
