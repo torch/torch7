@@ -730,72 +730,74 @@ function torchtest.div()
    mytester:assertlt(err, precision, 'error in torch.div - scalar, non contiguous')
 end
 
-function torchtest.lsh()
+function torchtest.lshift()
    local m1 = torch.LongTensor(10,10):random(0,100)
    local res1 = m1:clone()
 
    local q = 2
-   res1[{ {},3 }]:lsh(q)
+   local f = math.pow(2, q)
+   res1[{ {},3 }]:lshift(q)
 
    local res2 = m1:clone()
    for i = 1,m1:size(1) do
-      res2[{ i,3 }] = res2[{ i,3 }] * 4
+      res2[{ i,3 }] = res2[{ i,3 }] * f
    end
 
    local err = (res1-res2):abs():max()
 
-   mytester:assertlt(err, precision, 'error in torch.lsh - scalar, non contiguous')
+   mytester:assertlt(err, precision, 'error in torch.lshift - scalar, non contiguous')
 
    local m1 = torch.LongTensor(10,10):random(0,100)
    local res1 = m1:clone()
 
    local q = 2
-   res1:lsh(q)
+   res1:lshift(q)
 
    local res2 = m1:clone()
    for i = 1,m1:size(1) do
       for j = 1,m1:size(1) do
-         res2[{ i,j }] = res2[{ i,j }] * 4
+         res2[{ i,j }] = res2[{ i,j }] * f
       end
    end
 
    local err = (res1-res2):abs():max()
 
-   mytester:assertlt(err, precision, 'error in torch.lsh - scalar, contiguous')
+   mytester:assertlt(err, precision, 'error in torch.lshift - scalar, contiguous')
 end
 
-function torchtest.rsh()
+function torchtest.rshift()
    local m1 = torch.LongTensor(10,10):random(0,100)
    local res1 = m1:clone()
 
    local q = 2
-   res1[{ {},3 }]:rsh(q)
+   local f = math.pow(2, q)
+   res1[{ {},3 }]:rshift(q)
 
    local res2 = m1:clone()
    for i = 1,m1:size(1) do
-      res2[{ i,3 }] = math.floor(res2[{ i,3 }] / 4)
+      res2[{ i,3 }] = math.floor(res2[{ i,3 }] / f)
    end
 
    local err = (res1-res2):abs():max()
 
-   mytester:assertlt(err, precision, 'error in torch.lsh - scalar, non contiguous')
+   mytester:assertlt(err, precision, 'error in torch.rshift - scalar, non contiguous')
 
    local m1 = torch.LongTensor(10,10):random(0,100)
    local res1 = m1:clone()
 
    local q = 2
-   res1:rsh(q)
+   res1:rshift(q)
 
    local res2 = m1:clone()
    for i = 1,m1:size(1) do
       for j = 1,m1:size(1) do
-         res2[{ i,j }] = math.floor(res2[{ i,j }] / 4)
+         res2[{ i,j }] = math.floor(res2[{ i,j }] / f)
       end
    end
 
    local err = (res1-res2):abs():max()
 
-   mytester:assertlt(err, precision, 'error in torch.rsh - scalar, contiguous')
+   mytester:assertlt(err, precision, 'error in torch.rshift - scalar, contiguous')
 end
 
 function torchtest.fmod()
