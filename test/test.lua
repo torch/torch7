@@ -900,6 +900,20 @@ function torchtest.bitor()
    mytester:assertlt(err, precision, 'error in torch.bitor - scalar, contiguous')
 end
 
+function torchtest.cbitxor()
+   local t1 = torch.LongTensor(10,10):random(0,10000)
+   local t2 = torch.LongTensor(10,10):random(10001,20000)
+
+   -- Perform xor swap and check results
+   local t3 = torch.cbitxor(t1, t2)
+   local r1 = torch.cbitxor(t3, t2)
+   local r2 = torch.cbitxor(t3, t1)
+
+   local err1 = (r1 - t1):abs():max()
+   local err2 = (r2 - t2):abs():max()
+   mytester:assertlt(err1 + err2, precision, 'error in torch.cbitxor contiguous')
+end
+
 function torchtest.mm()
    -- helper function
    local function matrixmultiply(mat1,mat2)
