@@ -834,6 +834,72 @@ function torchtest.remainder()
    mytester:assertlt(err, precision, 'error in torch.remainder - scalar, non contiguous')
 end
 
+function torchtest.bitand()
+   local m1 = torch.LongTensor(10,10):random(0,100)
+   local res1 = m1:clone()
+
+   local val = 32 -- This should be a power of 2
+   res1[{ {},3 }]:bitand(val - 1)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      res2[{ i,3 }] = res2[{ i,3 }] % val
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.bitand - scalar, non contiguous')
+
+   local m1 = torch.LongTensor(10,10):random(0,100)
+   local res1 = m1:clone()
+
+   res1:bitand(val - 1)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      for j = 1,m1:size(1) do
+         res2[{ i,j }] = res2[{ i,j }] % val
+      end
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.bitand - scalar, contiguous')
+end
+
+function torchtest.bitor()
+   local m1 = torch.LongTensor(10,10):random(0,10000)
+   local res1 = m1:clone()
+
+   local val = 32 -- This should be a power of 2
+   res1[{ {},3 }]:bitor(val-1)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      res2[{ i,3 }] = math.floor(res2[{ i,3 }] / val) * val + (val - 1)
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.bitor - scalar, non contiguous')
+
+   local m1 = torch.LongTensor(10,10):random(0,10000)
+   local res1 = m1:clone()
+
+   res1:bitor(val - 1)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      for j = 1,m1:size(1) do
+         res2[{ i,j }] = math.floor(res2[{ i,j }] / val) * val + (val - 1)
+      end
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.bitor - scalar, contiguous')
+end
+
 function torchtest.mm()
    -- helper function
    local function matrixmultiply(mat1,mat2)

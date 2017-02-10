@@ -335,6 +335,24 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
          {name=Tensor, method={default=1}},
          {name=real}})
 
+   wrap("bitand",
+        cname("bitand"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=Tensor, method={default=1}},
+         {name=real}})
+
+   wrap("bitor",
+        cname("bitor"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=Tensor, method={default=1}},
+         {name=real}})
+
+   wrap("bitxor",
+        cname("bitxor"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=Tensor, method={default=1}},
+         {name=real}})
+
    -- mod alias
    wrap("mod",
         cname("fmod"),
@@ -396,6 +414,24 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
 
    wrap("cremainder",
         cname("cremainder"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=Tensor, method={default=1}},
+         {name=Tensor}})
+
+   wrap("cbitand",
+        cname("cbitand"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=Tensor, method={default=1}},
+         {name=Tensor}})
+
+   wrap("cbitor",
+        cname("cbitor"),
+        {{name=Tensor, default=true, returned=true, method={default='nil'}},
+         {name=Tensor, method={default=1}},
+         {name=Tensor}})
+
+   wrap("cbitxor",
+        cname("cbitxor"),
         {{name=Tensor, default=true, returned=true, method={default='nil'}},
          {name=Tensor, method={default=1}},
          {name=Tensor}})
