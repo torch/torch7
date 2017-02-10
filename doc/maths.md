@@ -860,6 +860,87 @@ The number of elements must match, but sizes do not matter.
 
 `z:cdiv(x, y)` puts the result in `z`.
 
+<a name="torch.lshift"></a>
+### [res] torch.lshift([res,] tensor, value) ###
+<a name="torch.lshift"></a>
+
+Left shift all elements in the `Tensor` by the given `value`.
+
+`z = torch.lshift(x, 2)` will return a new `Tensor` with the result of `x << 2`.
+
+`torch.lshift(z, x, 2)` will put the result of `x << 2` in `z`.
+
+`x:lshift(2)` will perform left shift operation all elements of `x` by `2` bits.
+
+`z:lshift(x, 2)` puts the result of `x << 2` in `z`.
+
+Note: For float type tensors, `x:lshift(value)` evaluates `x:mul(math.pow(2, value))` internally.
+
+<a name="torch.clshift"></a>
+### [res] torch.clshift([res,] tensor1, tensor2) ###
+<a name="torch.clshift"></a>
+
+Performs the left shift operation of each element in `tensor1` by each element in `tensor2`.
+The number of elements must match, but sizes do not matter.
+
+```lua
+> x = torch.LongTensor(2, 2):fill(1)
+> y = torch.LongTensor(2, 2):range(1, 4)
+> x:clshift(y)
+> x
+ 2  4
+ 8 16
+[torch.LongTensor of size 2x2]
+```
+
+`z = torch.clshift(x, y)` returns a new `Tensor`.
+
+`torch.clshift(z, x, y)` puts the result in `z`.
+
+`y:clshift(x)` left shifts all elements of `y` with corresponding elements of `x`.
+
+`z:clshift(x, y)` puts the result in `z`.
+
+<a name="torch.rshift"></a>
+### [res] torch.rshift([res,] tensor, value) ###
+<a name="torch.rshift"></a>
+
+Right shift all elements in the `Tensor` by the given `value`.
+
+`z = torch.rshift(x, 2)` will return a new `Tensor` with the result of `x >> 2`.
+
+`torch.rshift(z, x, 2)` will put the result of `x >> 2` in `z`.
+
+`x:rshift(2)` will perform right shift operation all elements of `x` by `2` bits.
+
+`z:rshift(x, 2)` puts the result of `x >> 2` in `z`.
+
+Note: For float type tensors, `x:lshift(value)` evaluates `x:div(math.pow(2, value))` internally.
+
+<a name="torch.crshift"></a>
+### [res] torch.crshift([res,] tensor1, tensor2) ###
+<a name="torch.crshift"></a>
+
+Performs the right shift operation of each element in `tensor1` by each element in `tensor2`.
+The number of elements must match, but sizes do not matter.
+
+```lua
+> x = torch.LongTensor(2, 2):fill(32)
+> y = torch.LongTensor(2, 2):range(1, 4)
+> x:crshift(y)
+> x
+ 16 8
+  4 2
+[torch.LongTensor of size 2x2]
+```
+
+`z = torch.crshift(x, y)` returns a new `Tensor`.
+
+`torch.crshift(z, x, y)` puts the result in `z`.
+
+`y:crshift(x)` right shifts all elements of `y` with corresponding elements of `x`.
+
+`z:crshift(x, y)` puts the result in `z`.
 
 <a name="torch.addcdiv"></a>
 ### [res] torch.addcdiv([res,] x [,value], tensor1, tensor2) ###
@@ -1006,6 +1087,138 @@ corresponding elements of `x`.
 
 This function is deprecated and exists only for compatibility with previous versions. Please use `torch.cfmod()` or `torch.cremainder()` instead.
 
+<a name="torch.bitand"></a>
+### [res] torch.bitand([res,] tensor, value) ###
+<a name="torch.bitand"></a>
+
+Performs bitwise `and` operation on all elements in the `Tensor` by the given `value`.
+
+`z = torch.bitand(x, value)` will return a new `Tensor` with the result of `x & value`.
+
+`torch.bitand(z, x, value)` will put the result of `x & value` in `z`.
+
+`x:bitand(value)` will perform right shift operation all elements of `x` by `value` bits.
+
+`z:bitand(x, value)` puts the result of `x & value` in `z`.
+
+Note: This function is only supported for [Int|Long|Byte]Tensors
+
+<a name="torch.cbitand"></a>
+### [res] torch.cbitand([res,] tensor1, tensor2) ###
+<a name="torch.cbitand"></a>
+
+Performs bitwise `and` operation of each element in `tensor1` by each element in `tensor2`.
+The number of elements must match, but sizes do not matter.
+
+```lua
+> x = torch.LongTensor(4):fill(6)
+> y = torch.LongTensor{1, 2, 4, 8}
+> x:cbitand(y)
+> x
+  0
+  2
+  4
+  0
+[torch.LongTensor of size 4]
+```
+`z = torch.cbitand(x, y)` returns a new `Tensor`.
+
+`torch.cbitand(z, x, y)` puts the result in `z`.
+
+`y:cbitand(x)` performs bitwise `and` all elements of `y` with corresponding elements of `x`.
+
+`z:cbitand(x, y)` puts the result in `z`.
+
+
+Note: This function is only supported for [Int|Long|Byte]Tensors
+
+<a name="torch.bitor"></a>
+### [res] torch.bitor([res,] tensor, value) ###
+<a name="torch.bitor"></a>
+
+Performs bitwise `or` operation on all elements in the `Tensor` by the given `value`.
+
+`z = torch.bitor(x, value)` will return a new `Tensor` with the result of `x & value`.
+
+`torch.bitor(z, x, value)` will put the result of `x | value` in `z`.
+
+`x:bitor(value)` will perform right shift operation all elements of `x` by `value` bits.
+
+`z:bitor(x, value)` puts the result of `x | value` in `z`.
+
+Note: This function is only supported for [Int|Long|Byte]Tensors
+
+<a name="torch.cbitor"></a>
+### [res] torch.cbitor([res,] tensor1, tensor2) ###
+<a name="torch.cbitor"></a>
+
+Performs bitwise `or` operation of each element in `tensor1` by each element in `tensor2`.
+The number of elements must match, but sizes do not matter.
+
+```lua
+> x = torch.LongTensor(4):fill(3)
+> y = torch.LongTensor{1, 2, 4, 8}
+> x:cbitor(y)
+> x
+  3
+  3
+  7
+ 11
+[torch.LongTensor of size 4]
+```
+`z = torch.cbitor(x, y)` returns a new `Tensor`.
+
+`torch.cbitor(z, x, y)` puts the result in `z`.
+
+`y:cbitor(x)` performs bitwise `or` all elements of `y` with corresponding elements of `x`.
+
+`z:cbitor(x, y)` puts the result in `z`.
+
+Note: This function is only supported for [Int|Long|Byte]Tensors
+
+<a name="torch.bitxor"></a>
+### [res] torch.bitxor([res,] tensor, value) ###
+<a name="torch.bitxor"></a>
+
+Performs bitwise `xor` operation on all elements in the `Tensor` by the given `value`.
+
+`z = torch.bitxor(x, value)` will return a new `Tensor` with the result of `x & value`.
+
+`torch.bitxor(z, x, value)` will put the result of `x ^ value` in `z`.
+
+`x:bitxor(value)` will perform right shift operation all elements of `x` by `value` bits.
+
+`z:bitxor(x, value)` puts the result of `x ^ value` in `z`.
+
+Note: This function is only supported for [Int|Long|Byte]Tensors
+
+<a name="torch.cbitxor"></a>
+### [res] torch.cbitxor([res,] tensor1, tensor2) ###
+<a name="torch.cbitxor"></a>
+
+Performs bitwise `xor` operation of each element in `tensor1` by each element in `tensor2`.
+The number of elements must match, but sizes do not matter.
+
+```lua
+> x = torch.LongTensor(4):fill(15)
+> y = torch.LongTensor{1, 2, 4, 8}
+> x:cbitxor(y)
+> x
+  14
+  13
+  11
+   7
+[torch.LongTensor of size 4]
+```
+`z = torch.cbitxor(x, y)` returns a new `Tensor`.
+
+`torch.cbitxor(z, x, y)` puts the result in `z`.
+
+`y:cbitxor(x)` performs bitwise `xor` all elements of `y` with corresponding elements of `x`.
+
+`z:cbitxor(x, y)` puts the result in `z`.
+
+Note: This function is only supported for [Int|Long|Byte]Tensors
 
 <a name="torch.dot"></a>
 ### [number] torch.dot(tensor1, tensor2) ###
