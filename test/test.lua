@@ -344,6 +344,11 @@ end
 
 function torchtest.max()  -- torch.max([resval, resind,] x [,dim])
 
+   -- TH_TENSOR_BASE
+   local m1 = torch.Tensor(8,2):fill(3):select(2, 1)
+   local resval, resind = torch.max(m1, 1)
+   mytester:assert(resind[1] == 1)
+
    -- torch.max( x )
    -- contiguous
    local m1 = torch.randn(100,100)
@@ -480,6 +485,11 @@ function torchtest.min()  -- torch.min([resval, resind,] x [,dim])
       local res1val = torch.min(m1)
       mytester:assert(res1val ~= res1val, 'error in torch.min - NaNs')
    end
+
+   -- TH_TENSOR_BASE
+   local m1 = torch.Tensor(4):fill(3)
+   local resval, resind = torch.min(m1, 1)
+   mytester:assert(resind[1] == 1)
 end
 
 function torchtest.cmax()
