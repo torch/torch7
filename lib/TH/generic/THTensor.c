@@ -410,7 +410,7 @@ void THTensor_(transpose)(THTensor *self, THTensor *src, int dimension1, int dim
   THTensor_(set)(self, src);
 
   if(dimension1 == dimension2)
-	  return;
+    return;
 
   z = self->stride[dimension1];
   self->stride[dimension1] = self->stride[dimension2];
@@ -495,6 +495,30 @@ void THTensor_(squeeze)(THTensor *self, THTensor *src)
     ndim = 1;
   }
   self->nDimension = ndim;
+}
+
+int THTensor_(isTransposed)(const THTensor *self)
+{
+  if (THTensor_(isContiguous)(self)) {
+    return 0;
+  }
+  long max_stride = 1;
+  long size_max_stride = 1;
+  long z = 1;
+  int d;
+  for (d = 0; d < self->nDimension; ++d) {
+    if (self->stride[d] == 0 && self->size[d] != 1)
+      return 0;
+    if (self->stride[d] > max_stride) {
+      max_stride = self->stride[d];
+      size_max_stride = self->size[d];
+    }
+    z *= self->size[d];
+  }
+  if (z == max_stride * size_max_stride) {
+    return 1;
+  }
+  return 0;
 }
 
 void THTensor_(squeeze1d)(THTensor *self, THTensor *src, int dimension)

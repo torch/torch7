@@ -2,18 +2,105 @@
 #define TH_GENERIC_FILE "generic/THTensorMath.c"
 #else
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #define TH_OMP_OVERHEAD_THRESHOLD 100000
+
+#ifdef _OPENMP
+#define TH_TENSOR_APPLY_CONTIG(TYPE, TENSOR, CODE) \
+{ \
+  ptrdiff_t TH_TENSOR_size = THTensor_(nElement)(TENSOR); \
+  _Pragma("omp parallel if (TH_TENSOR_size > TH_OMP_OVERHEAD_THRESHOLD)") \
+  { \
+    size_t num_threads = omp_get_num_threads(); \
+    size_t tid = omp_get_thread_num(); \
+    ptrdiff_t TH_TENSOR_offset = tid * (TH_TENSOR_size / num_threads); \
+    ptrdiff_t TH_TENSOR_end = tid == num_threads - 1 ? TH_TENSOR_size : \
+      TH_TENSOR_offset + TH_TENSOR_size / num_threads; \
+    ptrdiff_t TENSOR##_len = TH_TENSOR_end - TH_TENSOR_offset; \
+    TYPE *TENSOR##_data = THTensor_(data)(TENSOR) + TH_TENSOR_offset; \
+    CODE \
+  } \
+}
+#else
+#define TH_TENSOR_APPLY_CONTIG(TYPE, TENSOR, CODE) \
+{ \
+  TYPE *TENSOR##_data = THTensor_(data)(TENSOR); \
+  ptrdiff_t TENSOR##_len = THTensor_(nElement)(TENSOR); \
+  CODE \
+}
+#endif
+
+#ifdef _OPENMP
+#define TH_TENSOR_APPLY2_CONTIG(TYPE1, TENSOR1, TYPE2, TENSOR2, CODE) \
+{ \
+  ptrdiff_t TH_TENSOR_size = THTensor_(nElement)(TENSOR1); \
+  _Pragma("omp parallel if (TH_TENSOR_size > TH_OMP_OVERHEAD_THRESHOLD)") \
+  { \
+    size_t num_threads = omp_get_num_threads(); \
+    size_t tid = omp_get_thread_num(); \
+    ptrdiff_t TH_TENSOR_offset = tid * (TH_TENSOR_size / num_threads); \
+    ptrdiff_t TH_TENSOR_end = tid == num_threads - 1 ? TH_TENSOR_size : \
+      TH_TENSOR_offset + TH_TENSOR_size / num_threads; \
+    ptrdiff_t TENSOR1##_len = TH_TENSOR_end - TH_TENSOR_offset; \
+    TYPE1 *TENSOR1##_data = THTensor_(data)(TENSOR1) + TH_TENSOR_offset; \
+    TYPE2 *TENSOR2##_data = THTensor_(data)(TENSOR2) + TH_TENSOR_offset; \
+    CODE \
+  } \
+}
+#else
+#define TH_TENSOR_APPLY2_CONTIG(TYPE1, TENSOR1, TYPE2, TENSOR2, CODE) \
+{ \
+  TYPE1 *TENSOR1##_data = THTensor_(data)(TENSOR1); \
+  TYPE2 *TENSOR2##_data = THTensor_(data)(TENSOR2); \
+  ptrdiff_t TENSOR1##_len = THTensor_(nElement)(TENSOR1); \
+  CODE \
+}
+#endif
+
+#ifdef _OPENMP
+#define TH_TENSOR_APPLY3_CONTIG(TYPE1, TENSOR1, TYPE2, TENSOR2, TYPE3, TENSOR3, CODE) \
+{ \
+  ptrdiff_t TH_TENSOR_size = THTensor_(nElement)(TENSOR1); \
+  _Pragma("omp parallel if (TH_TENSOR_size > TH_OMP_OVERHEAD_THRESHOLD)") \
+  { \
+    size_t num_threads = omp_get_num_threads(); \
+    size_t tid = omp_get_thread_num(); \
+    ptrdiff_t TH_TENSOR_offset = tid * (TH_TENSOR_size / num_threads); \
+    ptrdiff_t TH_TENSOR_end = tid == num_threads - 1 ? TH_TENSOR_size : \
+      TH_TENSOR_offset + TH_TENSOR_size / num_threads; \
+    ptrdiff_t TENSOR1##_len = TH_TENSOR_end - TH_TENSOR_offset; \
+    TYPE1 *TENSOR1##_data = THTensor_(data)(TENSOR1) + TH_TENSOR_offset; \
+    TYPE2 *TENSOR2##_data = THTensor_(data)(TENSOR2) + TH_TENSOR_offset; \
+    TYPE3 *TENSOR3##_data = THTensor_(data)(TENSOR3) + TH_TENSOR_offset; \
+    CODE \
+  } \
+}
+#else
+#define TH_TENSOR_APPLY3_CONTIG(TYPE1, TENSOR1, TYPE2, TENSOR2, TYPE3, TENSOR3, CODE) \
+{ \
+  TYPE1 *TENSOR1##_data = THTensor_(data)(TENSOR1); \
+  TYPE2 *TENSOR2##_data = THTensor_(data)(TENSOR2); \
+  TYPE3 *TENSOR3##_data = THTensor_(data)(TENSOR3); \
+  ptrdiff_t TENSOR1##_len = THTensor_(nElement)(TENSOR1); \
+  CODE \
+}
+#endif
 
 void THTensor_(fill)(THTensor *r_, real value)
 {
-  TH_TENSOR_APPLY(real, r_,
-                  THVector_(fill)(r__data, value, r__size); break;);
+  if (THTensor_(isContiguous)(r_) || THTensor_(isTransposed)(r_)) {
+    TH_TENSOR_APPLY_CONTIG(real, r_, THVector_(fill)(r__data, value, r__len););
+  } else {
+    TH_TENSOR_APPLY(real, r_, *r__data = value;);
+  }
 }
 
 void THTensor_(zero)(THTensor *r_)
 {
-  TH_TENSOR_APPLY(real, r_,
-                  THVector_(fill)(r__data, 0, r__size); break;);
+  THTensor_(fill)(r_, 0);
 }
 
 void THTensor_(maskedFill)(THTensor *tensor, THByteTensor *mask, real value)
@@ -464,15 +551,9 @@ void THTensor_(add)(THTensor *r_, THTensor *t, real value)
 {
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) && THTensor_(isContiguous)(t) && THTensor_(nElement)(r_) == THTensor_(nElement)(t)) {
-      real *tp = THTensor_(data)(t);
-      real *rp = THTensor_(data)(r_);
-      ptrdiff_t sz = THTensor_(nElement)(t);
-      ptrdiff_t i;
-      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
-      for (i=0; i<sz; i++)
-          rp[i] = tp[i] + value;
+    TH_TENSOR_APPLY2_CONTIG(real, r_, real, t, THVector_(add)(r__data, t_data, value, r__len););
   } else {
-      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data + value;);
+    TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data + value;);
   }
 }
 
@@ -485,15 +566,9 @@ void THTensor_(mul)(THTensor *r_, THTensor *t, real value)
 {
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) && THTensor_(isContiguous)(t) && THTensor_(nElement)(r_) == THTensor_(nElement)(t)) {
-      real *tp = THTensor_(data)(t);
-      real *rp = THTensor_(data)(r_);
-      ptrdiff_t sz = THTensor_(nElement)(t);
-      ptrdiff_t i;
-      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
-      for (i=0; i<sz; i++)
-          rp[i] = tp[i] * value;
+    TH_TENSOR_APPLY2_CONTIG(real, r_, real, t, THVector_(mul)(r__data, t_data, value, r__len););
   } else {
-      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data * value;);
+    TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data * value;);
   }
 }
 
@@ -501,15 +576,9 @@ void THTensor_(div)(THTensor *r_, THTensor *t, real value)
 {
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) && THTensor_(isContiguous)(t) && THTensor_(nElement)(r_) == THTensor_(nElement)(t)) {
-      real *tp = THTensor_(data)(t);
-      real *rp = THTensor_(data)(r_);
-      ptrdiff_t sz = THTensor_(nElement)(t);
-      ptrdiff_t i;
-      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
-      for (i=0; i<sz; i++)
-          rp[i] = tp[i] / value;
+    TH_TENSOR_APPLY2_CONTIG(real, r_, real, t, THVector_(div)(r__data, t_data, value, r__len););
   } else {
-      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data / value;);
+    TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data / value;);
   }
 }
 
@@ -707,16 +776,16 @@ void THTensor_(clamp)(THTensor *r_, THTensor *t, real min_value, real max_value)
 {
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) && THTensor_(isContiguous)(t) && THTensor_(nElement)(r_) == THTensor_(nElement)(t)) {
-      real *tp = THTensor_(data)(t);
-      real *rp = THTensor_(data)(r_);
-      /* real t_val; */
-      ptrdiff_t sz = THTensor_(nElement)(t);
-      ptrdiff_t i;
-      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
-      for (i=0; i<sz; i++)
-          rp[i] = (tp[i] < min_value) ? min_value : (tp[i] > max_value ? max_value : tp[i]);
+    real *tp = THTensor_(data)(t);
+    real *rp = THTensor_(data)(r_);
+    /* real t_val; */
+    ptrdiff_t sz = THTensor_(nElement)(t);
+    ptrdiff_t i;
+    #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i=0; i<sz; i++)
+      rp[i] = (tp[i] < min_value) ? min_value : (tp[i] > max_value ? max_value : tp[i]);
   } else {
-      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = (*t_data < min_value) ? min_value : (*t_data > max_value ? max_value : *t_data););
+    TH_TENSOR_APPLY2(real, r_, real, t, *r__data = (*t_data < min_value) ? min_value : (*t_data > max_value ? max_value : *t_data););
   }
 }
 
@@ -727,17 +796,10 @@ void THTensor_(cadd)(THTensor *r_, THTensor *t, real value, THTensor *src)
     if(r_ == t) {
       THBlas_(axpy)(THTensor_(nElement)(t), value, THTensor_(data)(src), 1, THTensor_(data)(r_), 1);
     } else {
-      real *tp = THTensor_(data)(t);
-      real *sp = THTensor_(data)(src);
-      real *rp = THTensor_(data)(r_);
-      ptrdiff_t sz = THTensor_(nElement)(t);
-      ptrdiff_t i;
-      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
-      for (i=0; i< sz; i++)
-          rp[i] = tp[i] + value * sp[i];
+      TH_TENSOR_APPLY3_CONTIG(real, r_, real, t, real, src, THVector_(cadd)(r__data, t_data, src_data, value, r__len););
     }
   } else {
-      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data + value * *src_data;);
+    TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data + value * *src_data;);
   }
 }
 
@@ -750,16 +812,9 @@ void THTensor_(cmul)(THTensor *r_, THTensor *t, THTensor *src)
 {
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) && THTensor_(isContiguous)(t) && THTensor_(isContiguous)(src) && THTensor_(nElement)(r_) == THTensor_(nElement)(src)) {
-      real *tp = THTensor_(data)(t);
-      real *sp = THTensor_(data)(src);
-      real *rp = THTensor_(data)(r_);
-      ptrdiff_t sz = THTensor_(nElement)(t);
-      ptrdiff_t i;
-      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
-      for (i=0; i<sz; i++)
-        rp[i] = tp[i] * sp[i];
+    TH_TENSOR_APPLY3_CONTIG(real, r_, real, t, real, src, THVector_(cmul)(r__data, t_data, src_data, r__len););
   } else {
-      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data * *src_data;);
+    TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data * *src_data;);
   }
 }
 
@@ -767,16 +822,16 @@ void THTensor_(cpow)(THTensor *r_, THTensor *t, THTensor *src)
 {
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) && THTensor_(isContiguous)(t) && THTensor_(isContiguous)(src) && THTensor_(nElement)(r_) == THTensor_(nElement)(src)) {
-      real *tp = THTensor_(data)(t);
-      real *sp = THTensor_(data)(src);
-      real *rp = THTensor_(data)(r_);
-      ptrdiff_t sz = THTensor_(nElement)(t);
-      ptrdiff_t i;
-      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
-      for (i=0; i<sz; i++)
-        rp[i] = pow(tp[i], sp[i]);
+    real *tp = THTensor_(data)(t);
+    real *sp = THTensor_(data)(src);
+    real *rp = THTensor_(data)(r_);
+    ptrdiff_t sz = THTensor_(nElement)(t);
+    ptrdiff_t i;
+    #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i=0; i<sz; i++)
+      rp[i] = pow(tp[i], sp[i]);
   } else {
-      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = pow(*t_data, *src_data););
+    TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = pow(*t_data, *src_data););
   }
 }
 
@@ -784,16 +839,9 @@ void THTensor_(cdiv)(THTensor *r_, THTensor *t, THTensor *src)
 {
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) && THTensor_(isContiguous)(t) && THTensor_(isContiguous)(src) && THTensor_(nElement)(r_) == THTensor_(nElement)(src)) {
-      real *tp = THTensor_(data)(t);
-      real *sp = THTensor_(data)(src);
-      real *rp = THTensor_(data)(r_);
-      ptrdiff_t sz = THTensor_(nElement)(t);
-      ptrdiff_t i;
-      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
-      for (i=0; i<sz; i++)
-        rp[i] = tp[i] / sp[i];
+    TH_TENSOR_APPLY3_CONTIG(real, r_, real, t, real, src, THVector_(cdiv)(r__data, t_data, src_data, r__len););
   } else {
-      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data / *src_data;);
+    TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data / *src_data;);
   }
 }
 
@@ -1011,15 +1059,15 @@ void THTensor_(tpow)(THTensor *r_, real value, THTensor *t)
 {
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) && THTensor_(isContiguous)(t) && THTensor_(nElement)(r_) == THTensor_(nElement)(t)) {
-      real *tp = THTensor_(data)(t);
-      real *rp = THTensor_(data)(r_);
-      ptrdiff_t sz = THTensor_(nElement)(t);
-      ptrdiff_t i;
-      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
-      for (i=0; i<sz; i++)
-        rp[i] = pow(value, tp[i]);
+    real *tp = THTensor_(data)(t);
+    real *rp = THTensor_(data)(r_);
+    ptrdiff_t sz = THTensor_(nElement)(t);
+    ptrdiff_t i;
+    #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i=0; i<sz; i++)
+      rp[i] = pow(value, tp[i]);
   } else {
-      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = pow(value, *t_data););
+    TH_TENSOR_APPLY2(real, r_, real, t, *r__data = pow(value, *t_data););
   }
 }
 
@@ -1556,13 +1604,13 @@ void THTensor_(sign)(THTensor *r_, THTensor *t)
 
 #if defined (TH_REAL_IS_BYTE)
   TH_TENSOR_APPLY2(real, r_, real, t,
-		   if (*t_data > 0) *r__data = 1;
-		   else *r__data = 0;);
+    if (*t_data > 0) *r__data = 1;
+    else *r__data = 0;);
 #else
   TH_TENSOR_APPLY2(real, r_, real, t,
-		   if (*t_data > 0) *r__data = 1;
-		   else if (*t_data < 0) *r__data = -1;
-		   else *r__data = 0;);
+    if (*t_data > 0) *r__data = 1;
+    else if (*t_data < 0) *r__data = -1;
+    else *r__data = 0;);
 #endif
 }
 
@@ -1828,75 +1876,75 @@ static void THTensor_(quicksortascend)(real *arr, long *idx, long elements, long
 
   while(!done) {
       /* Use median of three for pivot choice */
-      P=(L+R)>>1;
-      BOTH_SWAP(P, L+1);
-      if (ARR(L+1) > ARR(R)) { BOTH_SWAP(L+1, R); }
-      if (ARR(L) > ARR(R)) { BOTH_SWAP(L, R); }
-      if (ARR(L+1) > ARR(L)) { BOTH_SWAP(L+1, L); }
+    P=(L+R)>>1;
+    BOTH_SWAP(P, L+1);
+    if (ARR(L+1) > ARR(R)) { BOTH_SWAP(L+1, R); }
+    if (ARR(L) > ARR(R)) { BOTH_SWAP(L, R); }
+    if (ARR(L+1) > ARR(L)) { BOTH_SWAP(L+1, L); }
 
-      i = L+1; j = R; piv = ARR(L); pid = IDX(L);
+    i = L+1; j = R; piv = ARR(L); pid = IDX(L);
 
-      do {
-          do { i = i+1; } while(ARR(i) < piv);
-          do { j = j-1; } while(ARR(j) > piv);
-          if (j < i)
-              break;
-          BOTH_SWAP(i, j);
-      } while(1);
-      BOTH_SWAP(L, j);
-      /* Left subfile is (L, j-1) */
-      /* Right subfile is (i, R) */
-      sz_left = j-L;
-      sz_right = R-i+1;
-      if (sz_left <= M_SMALL && sz_right <= M_SMALL) {
-          /* both subfiles are small */
-          /* if stack empty */
-          if (stack == 0) {
-              done = 1;
-          } else {
-              stack--;
-              L = beg[stack];
-              R = end[stack];
-          }
-      } else if (sz_left <= M_SMALL || sz_right <= M_SMALL) {
-              /* exactly one of the subfiles is small */
-              /* (L,R) = large subfile */
-              if (sz_left > sz_right) {
-                  /* Implicit: L = L; */
-                  R = j-1;
-              } else {
-                  L = i;
-                  /* Implicit: R = R; */
-              }
+    do {
+      do { i = i+1; } while(ARR(i) < piv);
+      do { j = j-1; } while(ARR(j) > piv);
+      if (j < i)
+          break;
+      BOTH_SWAP(i, j);
+    } while(1);
+    BOTH_SWAP(L, j);
+    /* Left subfile is (L, j-1) */
+    /* Right subfile is (i, R) */
+    sz_left = j-L;
+    sz_right = R-i+1;
+    if (sz_left <= M_SMALL && sz_right <= M_SMALL) {
+      /* both subfiles are small */
+      /* if stack empty */
+      if (stack == 0) {
+        done = 1;
       } else {
-          /* none of the subfiles is small */
-          /* push large subfile */
-          /* (L,R) = small subfile */
-          if (sz_left > sz_right) {
-              beg[stack] = L;
-              end[stack] = j-1;
-              stack++;
-              L = i;
-              /* Implicit: R = R */
-          } else {
-              beg[stack] = i;
-              end[stack] = R;
-              stack++;
-              /* Implicit: L = L; */
-              R = j-1;
-          }
+        stack--;
+        L = beg[stack];
+        R = end[stack];
       }
+    } else if (sz_left <= M_SMALL || sz_right <= M_SMALL) {
+      /* exactly one of the subfiles is small */
+      /* (L,R) = large subfile */
+      if (sz_left > sz_right) {
+        /* Implicit: L = L; */
+        R = j-1;
+      } else {
+        L = i;
+        /* Implicit: R = R; */
+      }
+    } else {
+      /* none of the subfiles is small */
+      /* push large subfile */
+      /* (L,R) = small subfile */
+      if (sz_left > sz_right) {
+        beg[stack] = L;
+        end[stack] = j-1;
+        stack++;
+        L = i;
+        /* Implicit: R = R */
+      } else {
+        beg[stack] = i;
+        end[stack] = R;
+        stack++;
+        /* Implicit: L = L; */
+        R = j-1;
+      }
+    }
   } /* while not done */
   /* Now insertion sort on the concatenation of subfiles */
   for(i=elements-2; i>=0; i--) {
     if (ARR(i) > ARR(i+1)) {
-          piv = ARR(i);
+      piv = ARR(i);
       pid = IDX(i);
       j = i+1;
       do {
-          ARR(j-1) = ARR(j);
-          IDX(j-1) = IDX(j);
-          j = j+1;
+        ARR(j-1) = ARR(j);
+        IDX(j-1) = IDX(j);
+        j = j+1;
       } while(j < elements && ARR(j) < piv);
       ARR(j-1) = piv;
       IDX(j-1) = pid;
@@ -1917,75 +1965,75 @@ static void THTensor_(quicksortdescend)(real *arr, long *idx, long elements, lon
 
   while(!done) {
       /* Use median of three for pivot choice */
-      P=(L+R)>>1;
-      BOTH_SWAP(P, L+1);
-      if (ARR(L+1) < ARR(R)) { BOTH_SWAP(L+1, R); }
-      if (ARR(L) < ARR(R)) { BOTH_SWAP(L, R); }
-      if (ARR(L+1) < ARR(L)) { BOTH_SWAP(L+1, L); }
+    P=(L+R)>>1;
+    BOTH_SWAP(P, L+1);
+    if (ARR(L+1) < ARR(R)) { BOTH_SWAP(L+1, R); }
+    if (ARR(L) < ARR(R)) { BOTH_SWAP(L, R); }
+    if (ARR(L+1) < ARR(L)) { BOTH_SWAP(L+1, L); }
 
-      i = L+1; j = R; piv = ARR(L); pid = IDX(L);
+    i = L+1; j = R; piv = ARR(L); pid = IDX(L);
 
-      do {
-          do { i = i+1; } while(ARR(i) > piv);
-          do { j = j-1; } while(ARR(j) < piv);
-          if (j < i)
-              break;
-          BOTH_SWAP(i, j);
-      } while(1);
-      BOTH_SWAP(L, j);
-      /* Left subfile is (L, j-1) */
-      /* Right subfile is (i, R) */
-      sz_left = j-L;
-      sz_right = R-i+1;
-      if (sz_left <= M_SMALL && sz_right <= M_SMALL) {
-          /* both subfiles are small */
-          /* if stack empty */
-          if (stack == 0) {
-              done = 1;
-          } else {
-              stack--;
-              L = beg[stack];
-              R = end[stack];
-          }
-      } else if (sz_left <= M_SMALL || sz_right <= M_SMALL) {
-              /* exactly one of the subfiles is small */
-              /* (L,R) = large subfile */
-              if (sz_left > sz_right) {
-                  /* Implicit: L = L; */
-                  R = j-1;
-              } else {
-                  L = i;
-                  /* Implicit: R = R; */
-              }
+    do {
+      do { i = i+1; } while(ARR(i) > piv);
+      do { j = j-1; } while(ARR(j) < piv);
+      if (j < i)
+          break;
+      BOTH_SWAP(i, j);
+    } while(1);
+    BOTH_SWAP(L, j);
+    /* Left subfile is (L, j-1) */
+    /* Right subfile is (i, R) */
+    sz_left = j-L;
+    sz_right = R-i+1;
+    if (sz_left <= M_SMALL && sz_right <= M_SMALL) {
+      /* both subfiles are small */
+      /* if stack empty */
+      if (stack == 0) {
+        done = 1;
       } else {
-          /* none of the subfiles is small */
-          /* push large subfile */
-          /* (L,R) = small subfile */
-          if (sz_left > sz_right) {
-              beg[stack] = L;
-              end[stack] = j-1;
-              stack++;
-              L = i;
-              /* Implicit: R = R */
-          } else {
-              beg[stack] = i;
-              end[stack] = R;
-              stack++;
-              /* Implicit: L = L; */
-              R = j-1;
-          }
+        stack--;
+        L = beg[stack];
+        R = end[stack];
       }
+    } else if (sz_left <= M_SMALL || sz_right <= M_SMALL) {
+      /* exactly one of the subfiles is small */
+      /* (L,R) = large subfile */
+      if (sz_left > sz_right) {
+        /* Implicit: L = L; */
+        R = j-1;
+      } else {
+        L = i;
+        /* Implicit: R = R; */
+      }
+    } else {
+      /* none of the subfiles is small */
+      /* push large subfile */
+      /* (L,R) = small subfile */
+      if (sz_left > sz_right) {
+        beg[stack] = L;
+        end[stack] = j-1;
+        stack++;
+        L = i;
+        /* Implicit: R = R */
+      } else {
+        beg[stack] = i;
+        end[stack] = R;
+        stack++;
+        /* Implicit: L = L; */
+        R = j-1;
+      }
+    }
   } /* while not done */
   /* Now insertion sort on the concatenation of subfiles */
   for(i=elements-2; i>=0; i--) {
     if (ARR(i) < ARR(i+1)) {
-          piv = ARR(i);
+      piv = ARR(i);
       pid = IDX(i);
       j = i+1;
       do {
-          ARR(j-1) = ARR(j);
-          IDX(j-1) = IDX(j);
-          j = j+1;
+        ARR(j-1) = ARR(j);
+        IDX(j-1) = IDX(j);
+        j = j+1;
       } while(j < elements && ARR(j) > piv);
       ARR(j-1) = piv;
       IDX(j-1) = pid;
@@ -2785,7 +2833,7 @@ accreal THTensor_(dist)(THTensor *tensor, THTensor *src, real value)
 {
   real sum = 0;
   TH_TENSOR_APPLY2(real, tensor, real, src,
-	sum += pow(fabs(*tensor_data - *src_data), value);)
+  sum += pow(fabs(*tensor_data - *src_data), value);)
   return pow(sum, 1.0/value);
 }
 
