@@ -513,6 +513,76 @@ void THTensor_(div)(THTensor *r_, THTensor *t, real value)
   }
 }
 
+void THTensor_(lshift)(THTensor *r_, THTensor *t, real value)
+{
+#if defined(TH_REAL_IS_FLOAT)
+  return THTensor_(mul)(r_, t, powf(2, value));
+#elif defined(TH_REAL_IS_DOUBLE)
+  return THTensor_(mul)(r_, t, pow(2, value));
+#elif defined(TH_REAL_IS_HALF)
+  return THError("lshift is not supported for torch.HalfTensor");
+#else
+  THTensor_(resizeAs)(r_, t);
+  if (THTensor_(isContiguous)(r_) &&
+      THTensor_(isContiguous)(t) &&
+      THTensor_(nElement)(r_) == THTensor_(nElement)(t)) {
+      real *tp = THTensor_(data)(t);
+      real *rp = THTensor_(data)(r_);
+      long sz = THTensor_(nElement)(t);
+      long i;
+      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD * 100) private(i)
+      for (i=0; i<sz; i++) {
+#if defined(TH_REAL_IS_BYTE)
+          rp[i] = ((real) tp[i]) << value;
+#else
+          rp[i] = ((unsigned real) tp[i]) << value;
+#endif
+      }
+  } else {
+#if defined(TH_REAL_IS_BYTE)
+      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = (((real) *t_data) << value););
+#else
+      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = (((unsigned real) *t_data) << value););
+#endif
+  }
+#endif
+}
+
+void THTensor_(rshift)(THTensor *r_, THTensor *t, real value)
+{
+#if defined(TH_REAL_IS_FLOAT)
+  return THTensor_(div)(r_, t, powf(2, value));
+#elif defined(TH_REAL_IS_DOUBLE)
+  return THTensor_(div)(r_, t, pow(2, value));
+#elif defined(TH_REAL_IS_HALF)
+  return THError("rshift is not supported for torch.HalfTensor");
+#else
+  THTensor_(resizeAs)(r_, t);
+  if (THTensor_(isContiguous)(r_) &&
+      THTensor_(isContiguous)(t) &&
+      THTensor_(nElement)(r_) == THTensor_(nElement)(t)) {
+      real *tp = THTensor_(data)(t);
+      real *rp = THTensor_(data)(r_);
+      long sz = THTensor_(nElement)(t);
+      long i;
+      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD * 100) private(i)
+      for (i=0; i<sz; i++) {
+#if defined(TH_REAL_IS_BYTE)
+          rp[i] = ((real) tp[i]) >> value;
+#else
+          rp[i] = ((unsigned real) tp[i]) >> value;
+#endif
+      }
+  } else {
+#if defined(TH_REAL_IS_BYTE)
+      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = (((real) *t_data) >> value););
+#else
+      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = (((unsigned real) *t_data) >> value););
+#endif
+  }
+#endif
+}
+
 void THTensor_(fmod)(THTensor *r_, THTensor *t, real value)
 {
   THTensor_(resizeAs)(r_, t);
@@ -562,6 +632,75 @@ void THTensor_(remainder)(THTensor *r_, THTensor *t, real value)
       TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data - value * (*t_data / value););
 #endif
   }
+}
+
+void THTensor_(bitand)(THTensor *r_, THTensor *t, real value)
+{
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
+  return THError("bitand is only supported for integer type tensors");
+#else
+  THTensor_(resizeAs)(r_, t);
+  if (THTensor_(isContiguous)(r_) &&
+      THTensor_(isContiguous)(t) &&
+      THTensor_(nElement)(r_) == THTensor_(nElement)(t)) {
+      real *tp = THTensor_(data)(t);
+      real *rp = THTensor_(data)(r_);
+      long sz = THTensor_(nElement)(t);
+      long i;
+      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD * 100) private(i)
+      for (i=0; i<sz; i++) {
+          rp[i] = tp[i] & value;
+      }
+  } else {
+      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data & value;);
+  }
+#endif
+}
+
+void THTensor_(bitor)(THTensor *r_, THTensor *t, real value)
+{
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
+  return THError("bitor is only supported for integer type tensors");
+#else
+  THTensor_(resizeAs)(r_, t);
+  if (THTensor_(isContiguous)(r_) &&
+      THTensor_(isContiguous)(t) &&
+      THTensor_(nElement)(r_) == THTensor_(nElement)(t)) {
+      real *tp = THTensor_(data)(t);
+      real *rp = THTensor_(data)(r_);
+      long sz = THTensor_(nElement)(t);
+      long i;
+      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD * 100) private(i)
+      for (i=0; i<sz; i++) {
+          rp[i] = tp[i] | value;
+      }
+  } else {
+      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data | value;);
+  }
+#endif
+}
+
+void THTensor_(bitxor)(THTensor *r_, THTensor *t, real value)
+{
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
+  return THError("bitxor is only supported for integer type tensors");
+#else
+  THTensor_(resizeAs)(r_, t);
+  if (THTensor_(isContiguous)(r_) &&
+      THTensor_(isContiguous)(t) &&
+      THTensor_(nElement)(r_) == THTensor_(nElement)(t)) {
+      real *tp = THTensor_(data)(t);
+      real *rp = THTensor_(data)(r_);
+      long sz = THTensor_(nElement)(t);
+      long i;
+      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD * 100) private(i)
+      for (i=0; i<sz; i++) {
+          rp[i] = tp[i] ^ value;
+      }
+  } else {
+      TH_TENSOR_APPLY2(real, r_, real, t, *r__data = *t_data ^ value;);
+  }
+#endif
 }
 
 void THTensor_(clamp)(THTensor *r_, THTensor *t, real min_value, real max_value)
@@ -658,6 +797,86 @@ void THTensor_(cdiv)(THTensor *r_, THTensor *t, THTensor *src)
   }
 }
 
+void THTensor_(clshift)(THTensor *r_, THTensor *t, THTensor *src)
+{
+#if defined(TH_REAL_IS_HALF)
+  return THError("clshift is not supported for torch.HalfTensor");
+#endif
+  THTensor_(resizeAs)(r_, t);
+  if (THTensor_(isContiguous)(r_) &&
+      THTensor_(isContiguous)(t) &&
+      THTensor_(isContiguous)(src) &&
+      THTensor_(nElement)(r_) == THTensor_(nElement)(src)) {
+      real *tp = THTensor_(data)(t);
+      real *sp = THTensor_(data)(src);
+      real *rp = THTensor_(data)(r_);
+      ptrdiff_t sz = THTensor_(nElement)(t);
+      ptrdiff_t i;
+      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i=0; i<sz; i++) {
+#if defined(TH_REAL_IS_FLOAT)
+      rp[i] = tp[i] * powf(2, sp[i]);
+#elif defined(TH_REAL_IS_DOUBLE)
+      rp[i] = tp[i] * pow(2, sp[i]);
+#elif defined(TH_REAL_IS_BYTE)
+      rp[i] = ((real) tp[i]) << sp[i];
+#else
+      rp[i] = ((unsigned real) tp[i]) << sp[i];
+#endif
+    }
+  } else {
+#if defined(TH_REAL_IS_FLOAT)
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data * powf(2, *src_data););
+#elif defined(TH_REAL_IS_DOUBLE)
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data * pow(2, *src_data););
+#elif defined(TH_REAL_IS_BYTE)
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = ((real)*t_data) << *src_data;);
+#else
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = ((unsigned real)*t_data) << *src_data;);
+#endif
+  }
+}
+
+void THTensor_(crshift)(THTensor *r_, THTensor *t, THTensor *src)
+{
+#if defined(TH_REAL_IS_HALF)
+  return THError("crshift is not supported for torch.HalfTensor");
+#endif
+  THTensor_(resizeAs)(r_, t);
+  if (THTensor_(isContiguous)(r_) &&
+      THTensor_(isContiguous)(t) &&
+      THTensor_(isContiguous)(src) &&
+      THTensor_(nElement)(r_) == THTensor_(nElement)(src)) {
+      real *tp = THTensor_(data)(t);
+      real *sp = THTensor_(data)(src);
+      real *rp = THTensor_(data)(r_);
+      ptrdiff_t sz = THTensor_(nElement)(t);
+      ptrdiff_t i;
+      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i=0; i<sz; i++) {
+#if defined(TH_REAL_IS_FLOAT)
+      rp[i] = tp[i] / powf(2, sp[i]);
+#elif defined(TH_REAL_IS_DOUBLE)
+      rp[i] = tp[i] / pow(2, sp[i]);
+#elif defined(TH_REAL_IS_BYTE)
+      rp[i] = ((real) tp[i]) >> sp[i];
+#else
+      rp[i] = ((unsigned real) tp[i]) >> sp[i];
+#endif
+    }
+  } else {
+#if defined(TH_REAL_IS_FLOAT)
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data / powf(2, *src_data););
+#elif defined(TH_REAL_IS_DOUBLE)
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data / pow(2, *src_data););
+#elif defined(TH_REAL_IS_BYTE)
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = ((real)*t_data) >> *src_data;);
+#else
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = ((unsigned real)*t_data) >> *src_data;);
+#endif
+  }
+}
+
 void THTensor_(cfmod)(THTensor *r_, THTensor *t, THTensor *src)
 {
   THTensor_(resizeAs)(r_, t);
@@ -711,6 +930,81 @@ void THTensor_(cremainder)(THTensor *r_, THTensor *t, THTensor *src)
 #endif
 
   }
+}
+
+void THTensor_(cbitand)(THTensor *r_, THTensor *t, THTensor *src)
+{
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
+  return THError("cbitand is only supported for integer type tensors");
+#else
+  THTensor_(resizeAs)(r_, t);
+  if (THTensor_(isContiguous)(r_) &&
+      THTensor_(isContiguous)(t) &&
+      THTensor_(isContiguous)(src) &&
+      THTensor_(nElement)(r_) == THTensor_(nElement)(src)) {
+      real *tp = THTensor_(data)(t);
+      real *sp = THTensor_(data)(src);
+      real *rp = THTensor_(data)(r_);
+      ptrdiff_t sz = THTensor_(nElement)(t);
+      ptrdiff_t i;
+      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i=0; i<sz; i++) {
+      rp[i] = tp[i] & sp[i];
+    }
+  } else {
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data & *src_data;);
+  }
+#endif
+}
+
+void THTensor_(cbitor)(THTensor *r_, THTensor *t, THTensor *src)
+{
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
+  return THError("cbitor is only supported for integer type tensors");
+#else
+  THTensor_(resizeAs)(r_, t);
+  if (THTensor_(isContiguous)(r_) &&
+      THTensor_(isContiguous)(t) &&
+      THTensor_(isContiguous)(src) &&
+      THTensor_(nElement)(r_) == THTensor_(nElement)(src)) {
+      real *tp = THTensor_(data)(t);
+      real *sp = THTensor_(data)(src);
+      real *rp = THTensor_(data)(r_);
+      ptrdiff_t sz = THTensor_(nElement)(t);
+      ptrdiff_t i;
+      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i=0; i<sz; i++) {
+      rp[i] = tp[i] | sp[i];
+    }
+  } else {
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data | *src_data;);
+  }
+#endif
+}
+
+void THTensor_(cbitxor)(THTensor *r_, THTensor *t, THTensor *src)
+{
+#if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
+  return THError("cbitxor is only supported for integer type tensors");
+#else
+  THTensor_(resizeAs)(r_, t);
+  if (THTensor_(isContiguous)(r_) &&
+      THTensor_(isContiguous)(t) &&
+      THTensor_(isContiguous)(src) &&
+      THTensor_(nElement)(r_) == THTensor_(nElement)(src)) {
+      real *tp = THTensor_(data)(t);
+      real *sp = THTensor_(data)(src);
+      real *rp = THTensor_(data)(r_);
+      ptrdiff_t sz = THTensor_(nElement)(t);
+      ptrdiff_t i;
+      #pragma omp parallel for if(sz > TH_OMP_OVERHEAD_THRESHOLD) private(i)
+    for (i=0; i<sz; i++) {
+      rp[i] = tp[i] ^ sp[i];
+    }
+  } else {
+      TH_TENSOR_APPLY3(real, r_, real, t, real, src, *r__data = *t_data ^ *src_data;);
+  }
+#endif
 }
 
 void THTensor_(tpow)(THTensor *r_, real value, THTensor *t)

@@ -730,6 +730,76 @@ function torchtest.div()
    mytester:assertlt(err, precision, 'error in torch.div - scalar, non contiguous')
 end
 
+function torchtest.lshift()
+   local m1 = torch.LongTensor(10,10):random(0,100)
+   local res1 = m1:clone()
+
+   local q = 2
+   local f = math.pow(2, q)
+   res1[{ {},3 }]:lshift(q)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      res2[{ i,3 }] = res2[{ i,3 }] * f
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.lshift - scalar, non contiguous')
+
+   local m1 = torch.LongTensor(10,10):random(0,100)
+   local res1 = m1:clone()
+
+   local q = 2
+   res1:lshift(q)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      for j = 1,m1:size(1) do
+         res2[{ i,j }] = res2[{ i,j }] * f
+      end
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.lshift - scalar, contiguous')
+end
+
+function torchtest.rshift()
+   local m1 = torch.LongTensor(10,10):random(0,100)
+   local res1 = m1:clone()
+
+   local q = 2
+   local f = math.pow(2, q)
+   res1[{ {},3 }]:rshift(q)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      res2[{ i,3 }] = math.floor(res2[{ i,3 }] / f)
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.rshift - scalar, non contiguous')
+
+   local m1 = torch.LongTensor(10,10):random(0,100)
+   local res1 = m1:clone()
+
+   local q = 2
+   res1:rshift(q)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      for j = 1,m1:size(1) do
+         res2[{ i,j }] = math.floor(res2[{ i,j }] / f)
+      end
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.rshift - scalar, contiguous')
+end
+
 function torchtest.fmod()
    local m1 = torch.Tensor(10,10):uniform(-10, 10)
    local res1 = m1:clone()
@@ -762,6 +832,86 @@ function torchtest.remainder()
    local err = (res1-res2):abs():max()
 
    mytester:assertlt(err, precision, 'error in torch.remainder - scalar, non contiguous')
+end
+
+function torchtest.bitand()
+   local m1 = torch.LongTensor(10,10):random(0,100)
+   local res1 = m1:clone()
+
+   local val = 32 -- This should be a power of 2
+   res1[{ {},3 }]:bitand(val - 1)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      res2[{ i,3 }] = res2[{ i,3 }] % val
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.bitand - scalar, non contiguous')
+
+   local m1 = torch.LongTensor(10,10):random(0,100)
+   local res1 = m1:clone()
+
+   res1:bitand(val - 1)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      for j = 1,m1:size(1) do
+         res2[{ i,j }] = res2[{ i,j }] % val
+      end
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.bitand - scalar, contiguous')
+end
+
+function torchtest.bitor()
+   local m1 = torch.LongTensor(10,10):random(0,10000)
+   local res1 = m1:clone()
+
+   local val = 32 -- This should be a power of 2
+   res1[{ {},3 }]:bitor(val-1)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      res2[{ i,3 }] = math.floor(res2[{ i,3 }] / val) * val + (val - 1)
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.bitor - scalar, non contiguous')
+
+   local m1 = torch.LongTensor(10,10):random(0,10000)
+   local res1 = m1:clone()
+
+   res1:bitor(val - 1)
+
+   local res2 = m1:clone()
+   for i = 1,m1:size(1) do
+      for j = 1,m1:size(1) do
+         res2[{ i,j }] = math.floor(res2[{ i,j }] / val) * val + (val - 1)
+      end
+   end
+
+   local err = (res1-res2):abs():max()
+
+   mytester:assertlt(err, precision, 'error in torch.bitor - scalar, contiguous')
+end
+
+function torchtest.cbitxor()
+   local t1 = torch.LongTensor(10,10):random(0,10000)
+   local t2 = torch.LongTensor(10,10):random(10001,20000)
+
+   -- Perform xor swap and check results
+   local t3 = torch.cbitxor(t1, t2)
+   local r1 = torch.cbitxor(t3, t2)
+   local r2 = torch.cbitxor(t3, t1)
+
+   local err1 = (r1 - t1):abs():max()
+   local err2 = (r2 - t2):abs():max()
+   mytester:assertlt(err1 + err2, precision, 'error in torch.cbitxor contiguous')
 end
 
 function torchtest.mm()
