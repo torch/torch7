@@ -112,7 +112,7 @@ local genericSingleOpTest = [[
       end
    end
    return maxerrc, maxerrnc
-]]
+--]]
 
 function torchtest.sin()
    local f = loadstring(string.gsub(genericSingleOpTest, 'functionname', 'sin'))
@@ -572,6 +572,47 @@ function torchtest.mv()
    local err = (res1-res2):abs():max()
 
    mytester:assertlt(err, precision, 'error in torch.mv')
+end
+
+function torchtest.fill()
+   local types = {
+      'torch.ByteTensor',
+      'torch.CharTensor',
+      'torch.ShortTensor',
+      'torch.IntTensor',
+      'torch.FloatTensor',
+      'torch.DoubleTensor',
+      'torch.LongTensor',
+   }   
+
+   for k,t in ipairs(types) do
+      -- [res] torch.fill([res,] tensor, value)
+      local m1 = torch.ones(100,100):type(t)
+      local res1 = m1:clone()
+      res1[{ 3,{} }]:fill(2)
+      
+      local res2 = m1:clone()
+      for i = 1,m1:size(1) do
+	 res2[{ 3,i }] = 2
+      end
+      
+      local err = (res1-res2):double():abs():max()
+      
+      mytester:assertlt(err, precision, 'error in torch.fill - contiguous')
+      
+      local m1 = torch.ones(100,100):type(t)
+      local res1 = m1:clone()
+      res1[{ {},3 }]:fill(2)
+      
+      local res2 = m1:clone()
+      for i = 1,m1:size(1) do
+	 res2[{ i,3 }] = 2
+      end
+      
+      local err = (res1-res2):double():abs():max()
+      
+      mytester:assertlt(err, precision, 'error in torch.fill - non contiguous')
+   end
 end
 
 function torchtest.add()
