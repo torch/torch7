@@ -2564,14 +2564,14 @@ TENSOR_IMPLEMENT_LOGICAL(ne,!=)
   void THTensor_(NAME)(THTensor *r_, THTensor *t)                \
   {                                                           \
     THTensor_(resizeAs)(r_, t);                               \
-    TH_TENSOR_APPLY2(real, t, real, r_, *r__data = CFUNC(*t_data);); \
+    TH_TENSOR_APPLY2_PARALLEL(real, t, real, r_, *r__data = CFUNC(*t_data);); \
   }                                                           \
 
 #define LAB_IMPLEMENT_BASIC_FUNCTION_VALUE(NAME, CFUNC)                 \
   void THTensor_(NAME)(THTensor *r_, THTensor *t, real value)              \
   {                                                                     \
     THTensor_(resizeAs)(r_, t);                                         \
-    TH_TENSOR_APPLY2(real, t, real, r_, *r__data = CFUNC(*t_data, value);); \
+    TH_TENSOR_APPLY2_PARALLEL(real, t, real, r_, *r__data = CFUNC(*t_data, value);); \
   }                                                                     \
 
 #if defined(TH_REAL_IS_LONG)
