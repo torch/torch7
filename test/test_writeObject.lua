@@ -4,6 +4,9 @@ local myTester = torch.Tester()
 
 local tests = torch.TestSuite()
 
+function torch.HalfTensor:norm()
+   return self:real():norm()
+end
 
 -- checks that an object can be written and unwritten
 -- returns false if an error occurs
@@ -66,7 +69,13 @@ function tests.test_a_recursive_closure()
 end
 
 function tests.test_a_tensor()
-   local x = torch.rand(5, 10)
+   for k,v in ipairs({"real", "half"}) do
+      tests_test_a_tensor(torch.getmetatable(torch.Tensor():type())[v])
+   end
+end
+
+function tests_test_a_tensor(func)
+   local x = func(torch.rand(5, 10))
    local xcopy = serializeAndDeserialize(x)
    myTester:assert(x:norm() == xcopy:norm(), 'tensors should be the same')
 end

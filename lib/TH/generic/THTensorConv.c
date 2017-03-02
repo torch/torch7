@@ -2,7 +2,6 @@
 #define TH_GENERIC_FILE "generic/THTensorConv.c"
 #else
 
-
 /*
   2D Input, 2D kernel  : convolve given image with the given kernel.
 */
@@ -45,7 +44,7 @@ void THTensor_(validXCorr2Dptr)(real *r_,
       for (ky = 0; ky < kr; ky++) {
         real *pis_ = pi_;
         for (kx = 0; kx < kc; kx++) {
-          THVector_(add)(r_, pis_, alpha*pw_[kx], oc);
+          THVector_(cadd)(r_, r_, pis_, alpha*pw_[kx], oc);
           pis_++;
         }
         pi_ += ic; /* next input line */
@@ -98,7 +97,7 @@ void THTensor_(validConv2Dptr)(real *r_,
       for (ky = 0; ky < kr; ky++) {
         real *pis_ = pi_;
         for (kx = 0; kx < kc; kx++) {
-          THVector_(add)(r_, pis_, alpha*pw_[-kx], oc);
+          THVector_(cadd)(r_, r_, pis_, alpha*pw_[-kx], oc);
           pis_++;
         }
         pi_ += ic; /* next input line */
@@ -150,7 +149,7 @@ void THTensor_(fullConv2Dptr)(real *r_,
       for (ky = 0; ky < kr; ky++) {
         real *pos_ = po_;
         for (kx = 0; kx < kc; kx++) {
-          THVector_(add)(pos_, t_, alpha*pw_[kx], ic);
+          THVector_(cadd)(pos_, pos_, t_, alpha*pw_[kx], ic);
           pos_++;
         }
         po_ += oc; /* next input line */
@@ -203,7 +202,7 @@ void THTensor_(fullXCorr2Dptr)(real *r_,
       for (ky = 0; ky < kr; ky++) {
         real *pos_ = po_;
         for (kx = 0; kx < kc; kx++) {
-          THVector_(add)(pos_, t_, pw_[-kx]*alpha, ic);
+          THVector_(cadd)(pos_, pos_, t_, pw_[-kx]*alpha, ic);
           pos_++;
         }
         po_ += oc; /* next input line */
@@ -256,7 +255,7 @@ void THTensor_(validXCorr2DRevptr)(real *r_,
         real z = *k_++ * alpha;
 
         for(ky = 0; ky < or; ky++) {
-          THVector_(add)(po_, pi_, z, oc);
+          THVector_(cadd)(po_, po_, pi_, z, oc);
           pi_ += ic;
           po_ += oc;
         }
@@ -775,7 +774,7 @@ void THTensor_(conv2DRevgerm)(THTensor *r_, real beta, real alpha, THTensor *t_,
         real *ptr_output = output_data + k*nInputPlane*nOutputCols*nOutputRows + i*nOutputCols*nOutputRows;
         /* get input */
         real *ptr_input = input_data + p*istride0 + i*istride1;
-  
+
         /* do image, kernel convolution */
         THTensor_(validXCorr2DRevptr)(ptr_output,
                                       alpha,
@@ -1174,7 +1173,7 @@ void THTensor_(conv2Dmm)(THTensor *r_, real beta, real alpha, THTensor *t_, THTe
         real *ptr_weight = weight_data + k*kstride0 + i*kstride1;
         /* get input */
         real *ptr_input = input_data + p*nInputPlane*nInputRows*nInputCols + i*nInputRows*nInputCols;
-  
+
         /* do image, kernel convolution */
         if (*vf == 'F')
           if (*xc == 'X')
@@ -1955,5 +1954,4 @@ void THTensor_(conv3Dmap)(THTensor *r_, real beta, real alpha, THTensor *t_, THT
   THTensor_(free)(input);
   THTensor_(free)(kernel);
 }
-
 #endif

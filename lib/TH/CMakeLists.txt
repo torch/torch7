@@ -6,6 +6,7 @@ IF(POLICY CMP0026)
 ENDIF()
 
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+SET(CMAKE_LIBRARY_PATH /usr/lib/x86_64-linux-gnu/ ${CMAKE_LIBRARY_PATH})
 
 # Can be compiled standalone
 IF(NOT TH_INSTALL_BIN_SUBDIR
@@ -78,6 +79,41 @@ IF (CORTEXA9_FOUND)
   SET(CMAKE_C_FLAGS "-mcpu=cortex-a9 ${CMAKE_C_FLAGS}")
 ENDIF (CORTEXA9_FOUND)
 
+INCLUDE (CheckIncludeFile)
+INCLUDE (CheckCSourceCompiles)
+CHECK_INCLUDE_FILE(cpuid.h HAVE_CPUID_H)
+# Check for a cpuid intrinsic
+IF(HAVE_CPUID_H)
+    CHECK_C_SOURCE_COMPILES("#include <cpuid.h>
+        int main()
+        {
+            unsigned int eax, ebx, ecx, edx;
+            return __get_cpuid(0, &eax, &ebx, &ecx, &edx);
+        }" HAVE_GCC_GET_CPUID)
+ENDIF()
+IF(HAVE_GCC_GET_CPUID)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DHAVE_GCC_GET_CPUID")
+ENDIF(HAVE_GCC_GET_CPUID)
+
+CHECK_C_SOURCE_COMPILES("#include <stdint.h>
+    static inline void cpuid(uint32_t *eax, uint32_t *ebx,
+    			 uint32_t *ecx, uint32_t *edx)
+    {
+      uint32_t a = *eax, b, c = *ecx, d;
+      asm volatile ( \"cpuid\" : \"+a\"(a), \"=b\"(b), \"+c\"(c), \"=d\"(d) );
+      *eax = a; *ebx = b; *ecx = c; *edx = d;
+    }
+    int main() {
+      uint32_t a,b,c,d;
+      cpuid(&a, &b, &c, &d);
+      return 0;
+    }" NO_GCC_EBX_FPIC_BUG)
+
+IF(NOT NO_GCC_EBX_FPIC_BUG)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DUSE_GCC_GET_CPUID")
+ENDIF(NOT NO_GCC_EBX_FPIC_BUG)
+
+
 FIND_PACKAGE(SSE)
 IF(C_SSE2_FOUND)
   SET(CMAKE_C_FLAGS "${C_SSE2_FLAGS} -DUSE_SSE2 ${CMAKE_C_FLAGS}")
@@ -85,15 +121,21 @@ ENDIF(C_SSE2_FOUND)
 IF(C_SSE3_FOUND)
   SET(CMAKE_C_FLAGS "${C_SSE3_FLAGS} -DUSE_SSE3 ${CMAKE_C_FLAGS}")
 ENDIF(C_SSE3_FOUND)
+IF(C_AVX_FOUND)
+  SET(CMAKE_C_FLAGS "${C_AVX_FLAGS} -DUSE_AVX ${CMAKE_C_FLAGS}")
+ENDIF(C_AVX_FOUND)
+IF(C_AVX2_FOUND)
+  SET(CMAKE_C_FLAGS "${C_AVX2_FLAGS} -DUSE_AVX2 ${CMAKE_C_FLAGS}")
+ENDIF(C_AVX2_FOUND)
 
-IF(C_AVX_FOUND OR C_SSE4_2_FOUND OR C_SSE4_1_FOUND)
+IF(C_AVX2_FOUND OR C_AVX_FOUND OR C_SSE4_2_FOUND OR C_SSE4_1_FOUND)
   SET(simd generic/simd/convolve.c)
   IF(MSVC)
     SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve.c PROPERTIES COMPILE_FLAGS "/std:c99")
   ELSE(MSVC)
     SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve.c PROPERTIES COMPILE_FLAGS "-std=c99")
   ENDIF(MSVC)
-ENDIF(C_AVX_FOUND OR C_SSE4_2_FOUND OR C_SSE4_1_FOUND)
+ENDIF(C_AVX2_FOUND OR C_AVX_FOUND OR C_SSE4_2_FOUND OR C_SSE4_1_FOUND)
 
 IF(C_SSE4_1_FOUND)
   SET(CMAKE_C_FLAGS "${C_SSE4_1_FLAGS} -DUSE_SSE4_1 ${CMAKE_C_FLAGS}")
@@ -111,7 +153,13 @@ IF(C_SSE4_1_FOUND OR C_SSE4_2_FOUND)
   SET(simd ${simd} generic/simd/convolve5x5_sse.c)
 ENDIF(C_SSE4_1_FOUND OR C_SSE4_2_FOUND)
 
-IF(C_AVX_FOUND)
+IF(MSVC)
+  SET_SOURCE_FILES_PROPERTIES(generic/THTensorMath.c PROPERTIES COMPILE_FLAGS "/std:c99")
+ELSE(MSVC)
+  SET_SOURCE_FILES_PROPERTIES(generic/THTensorMath.c PROPERTIES COMPILE_FLAGS "-std=c99")
+ENDIF(MSVC)
+
+IF(C_AVX_FOUND OR C_AVX2_FOUND)
   SET(CMAKE_C_FLAGS "-DUSE_AVX ${CMAKE_C_FLAGS}")
   IF(MSVC)
     SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_avx.c PROPERTIES COMPILE_FLAGS "/Ox /fp:fast /arch:AVX /std:c99")
@@ -119,14 +167,14 @@ IF(C_AVX_FOUND)
     SET_SOURCE_FILES_PROPERTIES(generic/simd/convolve5x5_avx.c PROPERTIES COMPILE_FLAGS "-O3 -ffast-math -mavx -std=c99")
   ENDIF(MSVC)
   SET(simd ${simd} generic/simd/convolve5x5_avx.c)
-ENDIF(C_AVX_FOUND)
+ENDIF(C_AVX_FOUND OR C_AVX2_FOUND)
 
 SET(hdr
-  THGeneral.h THAllocator.h THStorage.h THTensor.h THTensorApply.h THBlas.h THMath.h
-  THLapack.h THLogAdd.h THRandom.h THVector.h THAtomic.h)
+  THGeneral.h THHalf.h THAllocator.h THStorage.h THTensor.h THTensorApply.h THBlas.h THMath.h
+  THLapack.h THLogAdd.h THRandom.h THVector.h THAtomic.h )
 
 SET(src
-  THGeneral.c THAllocator.c THStorage.c THTensor.c THBlas.c THLapack.c
+  THGeneral.c THHalf.c THAllocator.c THStorage.c THTensor.c THBlas.c THLapack.c
   THLogAdd.c THRandom.c THFile.c THDiskFile.c THMemoryFile.c THAtomic.c THVector.c)
 
 SET(src ${src} ${hdr} ${simd})
@@ -135,9 +183,13 @@ if(BUILD_STATIC)
   ADD_LIBRARY(TH_static STATIC ${src})
 endif()
 
+IF(NOT TH_SO_VERSION)
+  SET(TH_SO_VERSION 0)
+ENDIF(NOT TH_SO_VERSION)
+MESSAGE(STATUS "TH_SO_VERSION: ${TH_SO_VERSION}")
 SET_TARGET_PROPERTIES(TH PROPERTIES
-  VERSION   0
-  SOVERSION 0)
+  VERSION   ${TH_SO_VERSION}
+  SOVERSION ${TH_SO_VERSION})
 
 CHECK_C_SOURCE_RUNS("
 #include <stdatomic.h>
@@ -289,7 +341,6 @@ SET(TH_INLINE "")
 ENDIF(NOT DEFINED C_INLINE)
 
 # Is __thread supported?
-INCLUDE (CheckCSourceCompiles)
 IF(NOT MSVC)
   CHECK_C_SOURCE_COMPILES("static __thread int x = 1; int main() { return x; }" C_HAS_THREAD)
 ELSE(NOT MSVC)
@@ -320,6 +371,7 @@ INSTALL(FILES
   THFilePrivate.h
   ${CMAKE_CURRENT_BINARY_DIR}/THGeneral.h
   THGenerateAllTypes.h
+  THGenerateHalfType.h
   THGenerateFloatTypes.h
   THGenerateIntTypes.h
   THLapack.h
@@ -333,6 +385,7 @@ INSTALL(FILES
   THTensorMacros.h
   THVector.h
   THAtomic.h
+  THHalf.h
   DESTINATION "${TH_INSTALL_INCLUDE_SUBDIR}/TH")
 
 INSTALL(FILES
