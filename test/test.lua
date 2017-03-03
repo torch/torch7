@@ -597,34 +597,34 @@ function torchtest.fill()
       'torch.FloatTensor',
       'torch.DoubleTensor',
       'torch.LongTensor',
-   }   
+   }
 
    for k,t in ipairs(types) do
       -- [res] torch.fill([res,] tensor, value)
       local m1 = torch.ones(100,100):type(t)
       local res1 = m1:clone()
       res1[{ 3,{} }]:fill(2)
-      
+
       local res2 = m1:clone()
       for i = 1,m1:size(1) do
 	 res2[{ 3,i }] = 2
       end
-      
+
       local err = (res1-res2):double():abs():max()
-      
+
       mytester:assertlt(err, precision, 'error in torch.fill - contiguous')
-      
+
       local m1 = torch.ones(100,100):type(t)
       local res1 = m1:clone()
       res1[{ {},3 }]:fill(2)
-      
+
       local res2 = m1:clone()
       for i = 1,m1:size(1) do
 	 res2[{ i,3 }] = 2
       end
-      
+
       local err = (res1-res2):double():abs():max()
-      
+
       mytester:assertlt(err, precision, 'error in torch.fill - non contiguous')
    end
 end
@@ -2166,6 +2166,29 @@ function torchtest.catArray()
    local y = torch.Tensor()
    local mx = torch.cat({x,y})
    mytester:asserteq(mx:dim(),0,'torch.cat dim')
+end
+function torchtest.catNoDim()
+   local a
+   local b
+   local c
+
+   a = torch.Tensor(msize):uniform()
+   b = torch.Tensor(msize):uniform()
+   c = torch.cat(a, b)
+   mytester:assertTensorEq(c:narrow(1, 1, msize), a, 0, 'torch.cat value')
+   mytester:assertTensorEq(c:narrow(1, msize + 1, msize), b, 0, 'torch.cat value')
+
+   a = torch.Tensor(1, msize):uniform()
+   b = torch.Tensor(1, msize):uniform()
+   c = torch.cat(a, b)
+   mytester:assertTensorEq(c:narrow(2, 1, msize), a, 0, 'torch.cat value')
+   mytester:assertTensorEq(c:narrow(2, msize + 1, msize), b, 0, 'torch.cat value')
+
+   a = torch.Tensor(10, msize):uniform()
+   b = torch.Tensor(10, msize):uniform()
+   c = torch.cat(a, b)
+   mytester:assertTensorEq(c:narrow(2, 1, msize), a, 0, 'torch.cat value')
+   mytester:assertTensorEq(c:narrow(2, msize + 1, msize), b, 0, 'torch.cat value')
 end
 function torchtest.sin_2()
    local x = torch.rand(msize,msize,msize)
