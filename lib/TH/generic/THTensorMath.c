@@ -2510,7 +2510,7 @@ void THTensor_(catArray)(THTensor *result, THTensor **inputs, int numInputs, int
 
   // When the user input dimension is -1 (i.e. -2 in C)
   // Then we pick the maximum last dimension across all tensors.
-  if ( dimension == -2 )
+  if ( dimension + TH_INDEX_BASE == -1 )
   {
     ldimension = maxDim?(maxDim-1):0;
   }
