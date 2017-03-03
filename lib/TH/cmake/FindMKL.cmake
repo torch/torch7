@@ -88,6 +88,10 @@ IF (INTEL_MKL_DIR)
       "${INTEL_MKL_DIR}/lib/${iccvers}")
   ENDIF (MSVC)
 ENDIF (INTEL_MKL_DIR)
+if(DEFINED ENV{INTEL_MKL_LIB_DIR})
+  SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "$ENV{INTEL_MKL_LIB_DIR}")
+ENDIF (DEFINED ENV{INTEL_MKL_LIB_DIR})
+
 
 # Try linking multiple libs
 MACRO(CHECK_ALL_LIBRARIES LIBRARIES _name _list _flags)
@@ -161,8 +165,8 @@ FOREACH(mklrtl ${mklrtls} "")
       FOREACH(mklthread ${mklthreads})
         IF (NOT MKL_LIBRARIES AND NOT INTEL_MKL_SEQUENTIAL)
           CHECK_ALL_LIBRARIES(MKL_LIBRARIES cblas_sgemm
-            "mkl_${mkliface}${mkl64};${mklthread};mkl_core;${mklrtl};pthread;${mkl_m}" "")
-        ENDIF (NOT MKL_LIBRARIES AND NOT INTEL_MKL_SEQUENTIAL)          
+            "mkl_${mkliface}${mkl64};${mklthread};mkl_core;${mklrtl};pthread;${mkl_m};dl" "-Wl,--start-group")
+        ENDIF (NOT MKL_LIBRARIES AND NOT INTEL_MKL_SEQUENTIAL)
       ENDFOREACH(mklthread)
     ENDFOREACH(mkl64)
   ENDFOREACH(mkliface)

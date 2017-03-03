@@ -8,7 +8,7 @@ void convolve_5x5_1_avx(float* output, float* image, float* weight, long count, 
   long alignedCount = count & 0xFFFFFFF8;
   DECLARE_OUTPUT_1()
   for (; i < alignedCount; i+=8) {
-    CONVOLVE_8COLS_XROWS(1, i)
+    CONVOLVE_8COLS_XROWS_5X5(1, 5, i)
   }
 }
 
@@ -17,7 +17,7 @@ void convolve_5x5_2_avx(float* output, float* image, float* weight, long count, 
   long alignedCount = count & 0xFFFFFFF8;
   DECLARE_OUTPUT_2()
   for (; i < alignedCount; i+=8) {
-    CONVOLVE_8COLS_XROWS(2, i)
+    CONVOLVE_8COLS_XROWS_5X5(2, 6, i)
   }
 }
 
@@ -26,16 +26,7 @@ void convolve_5x5_4_avx(float* output, float* image, float* weight, long count, 
   long alignedCount = count & 0xFFFFFFF8;
   DECLARE_OUTPUT_4()
   for (; i < alignedCount; i+=8) {
-    CONVOLVE_8COLS_XROWS(4, i)
-  }
-}
-
-void convolve_5x5_5_avx(float* output, float* image, float* weight, long count, long outputStride, long inputStride) {
-  long i = 0;
-  long alignedCount = count & 0xFFFFFFF8;
-  DECLARE_OUTPUT_5()
-  for (; i < alignedCount; i+=8) {
-    CONVOLVE_8COLS_XROWS(5, i)
+    CONVOLVE_8COLS_XROWS_5X5(4, 8, i)
   }
 }
 
@@ -44,16 +35,7 @@ void convolve_5x5_6_avx(float* output, float* image, float* weight, long count, 
   long alignedCount = count & 0xFFFFFFF8;
   DECLARE_OUTPUT_6()
   for (; i < alignedCount; i+=8) {
-    CONVOLVE_8COLS_XROWS(6, i)
-  }
-}
-
-void convolve_5x5_7_avx(float* output, float* image, float* weight, long count, long outputStride, long inputStride) {
-  long i = 0;
-  long alignedCount = count & 0xFFFFFFF8;
-  DECLARE_OUTPUT_7()
-  for (; i < alignedCount; i+=8) {
-    CONVOLVE_8COLS_XROWS(7, i)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, i)
   }
 }
 
@@ -62,7 +44,7 @@ void convolve_5x5_8_avx(float* output, float* image, float* weight, long count, 
   long alignedCount = count & 0xFFFFFFF8;
   DECLARE_OUTPUT_8()
   for (; i < alignedCount; i+=8) {
-    CONVOLVE_8COLS_XROWS(8, i)
+    CONVOLVE_8COLS_XROWS_5X5(8, 12, i)
   }
 }
 
@@ -70,63 +52,63 @@ void convolve_5x5_64x64_avx(float* output, float* image, float* weight, long cou
   for(int i = 0; i < 60; i+=6)
   {
     DECLARE_OUTPUT_6()
-    CONVOLVE_8COLS_XROWS(6, 0)
-    CONVOLVE_8COLS_XROWS(6, 8)
-    CONVOLVE_8COLS_XROWS(6, 16)
-    CONVOLVE_8COLS_XROWS(6, 24)
-    CONVOLVE_8COLS_XROWS(6, 32)
-    CONVOLVE_8COLS_XROWS(6, 40)
-    CONVOLVE_8COLS_XROWS(6, 48)
-    CONVOLVE_8COLS_XROWS(6, 56)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 0)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 8)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 16)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 24)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 32)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 40)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 48)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 56)
     output += outputStride * 6;
     image += inputStride * 6;
   }
   DECLARE_OUTPUT_4()
-  CONVOLVE_8COLS_XROWS(4, 0)
-  CONVOLVE_8COLS_XROWS(4, 8)
-  CONVOLVE_8COLS_XROWS(4, 16)
-  CONVOLVE_8COLS_XROWS(4, 24)
-  CONVOLVE_8COLS_XROWS(4, 32)
-  CONVOLVE_8COLS_XROWS(4, 40)
-  CONVOLVE_8COLS_XROWS(4, 48)
-  CONVOLVE_8COLS_XROWS(4, 56)
+  CONVOLVE_8COLS_XROWS_5X5(4, 8, 0)
+  CONVOLVE_8COLS_XROWS_5X5(4, 8, 8)
+  CONVOLVE_8COLS_XROWS_5X5(4, 8, 16)
+  CONVOLVE_8COLS_XROWS_5X5(4, 8, 24)
+  CONVOLVE_8COLS_XROWS_5X5(4, 8, 32)
+  CONVOLVE_8COLS_XROWS_5X5(4, 8, 40)
+  CONVOLVE_8COLS_XROWS_5X5(4, 8, 48)
+  CONVOLVE_8COLS_XROWS_5X5(4, 8, 56)
 }
 
 void convolve_5x5_32x32_avx(float* output, float* image, float* weight, long count, long outputStride, long inputStride) {
   for(int i = 0; i < 30; i+=6)
   {
     DECLARE_OUTPUT_6()
-    CONVOLVE_8COLS_XROWS(6, 0)
-    CONVOLVE_8COLS_XROWS(6, 8)
-    CONVOLVE_8COLS_XROWS(6, 16)
-    CONVOLVE_8COLS_XROWS(6, 24)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 0)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 8)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 16)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 24)
     output += outputStride * 6;
     image += inputStride * 6;
   }
   DECLARE_OUTPUT_2()
-  CONVOLVE_8COLS_XROWS(2, 0)
-  CONVOLVE_8COLS_XROWS(2, 8)
-  CONVOLVE_8COLS_XROWS(2, 16)
-  CONVOLVE_8COLS_XROWS(2, 24)
+  CONVOLVE_8COLS_XROWS_5X5(2, 6, 0)
+  CONVOLVE_8COLS_XROWS_5X5(2, 6, 8)
+  CONVOLVE_8COLS_XROWS_5X5(2, 6, 16)
+  CONVOLVE_8COLS_XROWS_5X5(2, 6, 24)
 }
 
 void convolve_5x5_16x16_avx(float* output, float* image, float* weight, long count, long outputStride, long inputStride) {
   for(int i = 0; i < 12; i+=6)
   {
     DECLARE_OUTPUT_6()
-    CONVOLVE_8COLS_XROWS(6, 0)
-    CONVOLVE_8COLS_XROWS(6, 8)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 0)
+    CONVOLVE_8COLS_XROWS_5X5(6, 10, 8)
     output += outputStride * 6;
     image += inputStride * 6;
   }
   DECLARE_OUTPUT_4()
-  CONVOLVE_8COLS_XROWS(4, 0)
-  CONVOLVE_8COLS_XROWS(4, 8)
+  CONVOLVE_8COLS_XROWS_5X5(4, 8, 0)
+  CONVOLVE_8COLS_XROWS_5X5(4, 8, 8)
 }
 
 void convolve_5x5_8x8_avx(float* output, float* image, float* weight, long count, long outputStride, long inputStride) {
   DECLARE_OUTPUT_8()
-  CONVOLVE_8COLS_XROWS(8, 0)
+  CONVOLVE_8COLS_XROWS_5X5(8, 12, 0)
 }
 
 void convolve_5x5_sse(float* output, float* input, float* kernel, long outRows, long outCols, long outStride, long inCols);
