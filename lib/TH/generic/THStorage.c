@@ -120,18 +120,18 @@ void THStorage_(free)(THStorage *storage)
     {
       printf("THStorage: 2-refcnt=%d flag=%d\n", storage->refcount, storage->flag);
       if(storage->flag & TH_STORAGE_FREEMEM) {
-        printf("THStorage: calling free!");
+        printf("THStorage: calling free!\n");
         storage->allocator->free(storage->allocatorContext, storage->data);
-        printf("THStorage: after calling free!");
+        printf("THStorage: after calling free!\n");
       }
       if(storage->flag & TH_STORAGE_VIEW) {
         THStorage_(free)(storage->view);
       }
       THFree(storage);
-      printf("THStorage: after storage free!");
+      printf("THStorage: after storage free!\n");
     }
   }
-  printf("THStorage: at end");	
+  printf("THStorage: at end\n");	
 }
 
 THStorage* THStorage_(newWithData)(real *data, ptrdiff_t size)
