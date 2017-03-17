@@ -109,22 +109,29 @@ void THStorage_(retain)(THStorage *storage)
 
 void THStorage_(free)(THStorage *storage)
 {
-  if(!storage)
-    return;
+  printf("THStorage: begin\n");
+  if(!storage) return;
+  printf("THStorage: flag=%d atomicrefcnt=%d\n", storage->flag, THAtomicGet(&storage->refcount));
 
   if((storage->flag & TH_STORAGE_REFCOUNTED) && (THAtomicGet(&storage->refcount) > 0))
   {
+    printf("THStorage: 1-refcnt=%d\n", storage->refcount);
     if(THAtomicDecrementRef(&storage->refcount))
     {
+      printf("THStorage: 2-refcnt=%d flag=%d\n", storage->refcount, storage->flag);
       if(storage->flag & TH_STORAGE_FREEMEM) {
+        printf("THStorage: calling free!");
         storage->allocator->free(storage->allocatorContext, storage->data);
+        printf("THStorage: after calling free!");
       }
       if(storage->flag & TH_STORAGE_VIEW) {
         THStorage_(free)(storage->view);
       }
       THFree(storage);
+      printf("THStorage: after storage free!");
     }
   }
+  printf("THStorage: at end");	
 }
 
 THStorage* THStorage_(newWithData)(real *data, ptrdiff_t size)
