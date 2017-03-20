@@ -1,4 +1,3 @@
-#if defined(__AVX2__)
 #ifndef _MSC_VER
 #include <x86intrin.h>
 #else
@@ -43,5 +42,3 @@ void THFloatVector_cadd_AVX2(float *z, const float *x, const float *y, const flo
     z[i] = x[i] + y[i] * c;
   }
 }
-
-#endif // defined(__AVX2__)
