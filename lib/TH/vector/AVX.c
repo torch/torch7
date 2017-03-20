@@ -1,6 +1,7 @@
 #if defined(__AVX__)
 #ifndef _MSC_VER
 #include <x86intrin.h>
+#pragma message("----> Compiling with AVX")
 #else
 #include <intrin.h>
 #endif
