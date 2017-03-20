@@ -2,6 +2,7 @@
 #define TH_AVX_H
 
 #include <stddef.h>
+#include "THGeneral.h"
 
 TH_API void THDoubleVector_copy_AVX(double *y, const double *x, const ptrdiff_t n);
 TH_API void THDoubleVector_fill_AVX(double *x, const double c, const ptrdiff_t n);
