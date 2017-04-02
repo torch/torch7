@@ -554,7 +554,7 @@ false
 <a name="torch.Tensor.double"></a>
 <a name="torch.Tensor.float"></a>
 
-Convenience methods for the [type](#torch.type) method. For e.g.,
+Convenience methods for the [type](#torch.type) method. For example:
 ```lua
 x = torch.Tensor(3):fill(3.14)
 > x
