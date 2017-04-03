@@ -1,3 +1,4 @@
+#if defined(__AVX__)
 #ifndef _MSC_VER
 #include <x86intrin.h>
 #else
@@ -270,3 +271,4 @@ void THFloatVector_adds_AVX(float *y, const float *x, const float c, const ptrdi
   }
 }
 
+#endif // defined(__AVX__)
