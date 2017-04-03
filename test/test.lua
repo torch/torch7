@@ -416,6 +416,19 @@ function torchtest.max()  -- torch.max([resval, resind,] x [,dim])
       local res1val = torch.max(m1)
       mytester:assert(res1val ~= res1val, 'error in torch.max - NaNs')
    end
+
+   -- dim == nDim -1
+   local a = torch.Tensor({{1,2},{3,4}}):select(2, 1)
+   local aval, aind = torch.max(a, 1)
+   mytester:assert(aval[1] == 3)
+   mytester:assert(aind[1] == 2)
+
+   local b = torch.Tensor({{{1,2},{3,4}},{{5,6},{7,8}}}):select(3, 1)
+   local bval, bind = torch.max(b, 2)
+   mytester:assert(bval[1][1] == 3)
+   mytester:assert(bind[1][1] == 2)
+   mytester:assert(bval[2][1] == 7)
+   mytester:assert(bind[2][1] == 2)
 end
 
 function torchtest.min()  -- torch.min([resval, resind,] x [,dim])
