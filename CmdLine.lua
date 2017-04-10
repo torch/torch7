@@ -227,9 +227,9 @@ end
 function CmdLine:help(arg)
    io.write('Usage: ')
    if arg then io.write(arg[0] .. ' ') end
-   io.write('[options] ')
+   io.write('[options]')
    for i=1,#self.arguments do
-      io.write('<' .. strip(self.arguments[i].key) .. '>')
+      io.write(' <' .. strip(self.arguments[i].key) .. '>')
    end
    io.write('\n')
 
