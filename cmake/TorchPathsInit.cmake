@@ -28,7 +28,7 @@ IF(UNIX)
       SET(CMAKE_MACOSX_RPATH TRUE) # @rpath in libs
       SET(CMAKE_INSTALL_RPATH "@executable_path/${Torch_INSTALL_BIN2LIB}") # exec
     ELSE()
-      SET(CMAKE_INSTALL_RPATH "\$ORIGIN/${Torch_INSTALL_BIN2LIB}")
+      SET(CMAKE_INSTALL_RPATH "\$ORIGIN/${Torch_INSTALL_BIN2LIB};\$ORIGIN/../../")
     ENDIF()
   ELSE()
     SET(CMAKE_MACOSX_RPATH FALSE) # no @rpath in libs
