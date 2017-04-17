@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Table of Content
+
+- [Serialization](#serialization)
+    - [torch.save(filename, object [, format])](#torchsavefilename-object--format)
+    - [[object] torch.load(filename [, format])](#object-torchloadfilename--format)
+    - [[str] torch.serialize(object [, format])](#str-torchserializeobject--format)
+    - [[object] torch.deserialize(str [, format])](#object-torchdeserializestr--format)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 <a name="torch.serialization.dok"></a>
 # Serialization #

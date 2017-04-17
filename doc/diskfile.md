@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Table of Content
+
+- [DiskFile](#diskfile)
+    - [torch.DiskFile(fileName, [mode], [quiet])](#torchdiskfilefilename-mode-quiet)
+    - [bigEndianEncoding()](#bigendianencoding)
+    - [[boolean] isBigEndianCPU()](#boolean-isbigendiancpu)
+    - [[boolean] isLittleEndianCPU()](#boolean-islittleendiancpu)
+    - [littleEndianEncoding()](#littleendianencoding)
+    - [nativeEndianEncoding()](#nativeendianencoding)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <a name="torch.DiskFile.dok"></a>
 # DiskFile #
 

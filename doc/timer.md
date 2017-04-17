@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Table of Content
+
+- [Timer](#timer)
+  - [Timer Class Constructor and Methods](#timer-class-constructor-and-methods)
+    - [torch.Timer()](#torchtimer)
+    - [[self] reset()](#self-reset)
+    - [[self] resume()](#self-resume)
+    - [[self] stop()](#self-stop)
+    - [[table] time()](#table-time)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <a name="torch.Timer.dok"></a>
 # Timer #
 

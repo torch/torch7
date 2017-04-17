@@ -1,3 +1,27 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Table of Content
+
+- [Storage](#storage)
+  - [Constructors and Access Methods](#constructors-and-access-methods)
+    - [torch.TYPEStorage([size])](#torchtypestoragesize)
+    - [torch.TYPEStorage(table)](#torchtypestoragetable)
+    - [torch.TYPEStorage(storage [, offset [, size]])](#torchtypestoragestorage--offset--size)
+    - [torch.TYPEStorage(filename [, shared [, size [, sharedMem]]])](#torchtypestoragefilename--shared--size--sharedmem)
+    - [[number] #self](#number-self)
+    - [[number] self[index]](#number-selfindex)
+    - [[self] copy(storage)](#self-copystorage)
+    - [[self] fill(value)](#self-fillvalue)
+    - [[self] resize(size)](#self-resizesize)
+    - [[number] size()](#number-size)
+    - [[self] string(str)](#self-stringstr)
+    - [[string] string()](#string-string)
+  - [Reference counting methods](#reference-counting-methods)
+    - [retain()](#retain)
+    - [free()](#free)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <a name="torch.Storage.dok"></a>
 # Storage #
 <a name="torch.CharStorage.dok"></a>
