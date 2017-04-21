@@ -285,6 +285,58 @@ void THTensor_(resize5d)(THTensor *self, long size0, long size1, long size2, lon
   THTensor_(resizeNd)(self, 5, size, NULL);
 }
 
+void THTensor_(expandNd)(THTensor *tensor, long *sizes, ptrdiff_t ndim) {
+  THArgCheck(tensor->nDimension > 0, 0, "can't expand an empty tensor");
+  long numUnsqueezed = ndim - tensor->nDimension;
+
+  long *expandedSizes = THAlloc(sizeof(long)*ndim);
+  long *expandedStrides = THAlloc(sizeof(long)*ndim);
+
+  for (long i = 0; i < numUnsqueezed; ++i) {
+    expandedSizes[i] = 1;
+    expandedStrides[i] = 0;
+  }
+
+  for (long i = numUnsqueezed; i < ndim; ++i) {
+    expandedSizes[i] = THTensor_(size)(tensor, i);
+    expandedStrides[i] = THTensor_(stride)(tensor, i);
+  }
+
+  for (long i = numUnsqueezed - 1; i > -1; --i) {
+    expandedStrides[i] = expandedSizes[i+1] * expandedStrides[i+1];
+  }
+
+  // create a new geometry for the tensor
+  for (long i = 0; i < ndim; ++i) {
+    long size = expandedSizes[i];
+    long targetSize = sizes[i];
+    if (size == 1) {
+      if (targetSize != 1) {
+        expandedSizes[i] = targetSize;
+        expandedStrides[i] = 0;
+      }
+    } else if (size != targetSize) {
+      THError("incorrect size: only supporting singleton expansion (size=1)");
+    }
+  }
+
+  THTensor_(setStorageNd)(tensor, tensor->storage, tensor->storageOffset, ndim, expandedSizes, expandedStrides);
+  THFree(expandedSizes);
+  THFree(expandedStrides);
+}
+
+void THTensor_(expand)(THTensor *tensor, THLongStorage *sizes) {
+  THArgCheck(sizes->size >= tensor->nDimension, 1, "the number of sizes provided \
+      must be greater or equal to the number of dimensions in the tensor");
+  THTensor_(expandNd)(tensor, sizes->data, sizes->size);
+}
+
+void THTensor_(expandAs)(THTensor *tensor, THTensor *src) {
+  THArgCheck(src->nDimension >= tensor->nDimension, 1, "the number of dimension of the provided \
+      tensor must be greater or equal to the number of dimensions in the tensor");
+  THTensor_(expandNd)(tensor, src->size, src->nDimension);
+}
+
 void THTensor_(set)(THTensor *self, THTensor *src)
 {
   if(self != src)
