@@ -318,8 +318,8 @@ void THTensor_(expandNd)(THTensor *tensor, long *sizes, ptrdiff_t ndim) {
     } else if (size != targetSize) {
       THFree(expandedSizes);
       THFree(expandedStrides);
-      THError("The specified size (%d) at non-singleton dimension %ld does not match \
-          the existing size of the to-be-expanded Tensor (%d)", targetSize, i, size);
+      THError("The expanded size of the tensor (%d) must match the existing size (%d) at \
+              non-singleton dimension %ld.", targetSize, size, i);
     }
   }
 
