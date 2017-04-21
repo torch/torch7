@@ -318,7 +318,8 @@ void THTensor_(expandNd)(THTensor *tensor, long *sizes, ptrdiff_t ndim) {
     } else if (size != targetSize) {
       THFree(expandedSizes);
       THFree(expandedStrides);
-      THError("incorrect size: only supporting singleton expansion (size=1)");
+      THError("The specified size (%d) at non-singleton dimension %ld does not match \
+          the existing size of the to-be-expanded Tensor (%d)", targetSize, i, size);
     }
   }
 
@@ -334,8 +335,8 @@ void THTensor_(expand)(THTensor *tensor, THLongStorage *sizes) {
 }
 
 void THTensor_(expandAs)(THTensor *tensor, THTensor *src) {
-  THArgCheck(src->nDimension >= tensor->nDimension, 1, "the number of dimension of the provided \
-      tensor must be greater or equal to the number of dimensions in the tensor");
+  THArgCheck(src->nDimension >= tensor->nDimension, 1, "the number of dimensions of the provided \
+      tensor must be greater or equal to the number of dimensions in the tensor to be expanded");
   THTensor_(expandNd)(tensor, src->size, src->nDimension);
 }
 
