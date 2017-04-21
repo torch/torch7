@@ -316,6 +316,8 @@ void THTensor_(expandNd)(THTensor *tensor, long *sizes, ptrdiff_t ndim) {
         expandedStrides[i] = 0;
       }
     } else if (size != targetSize) {
+      THFree(expandedSizes);
+      THFree(expandedStrides);
       THError("incorrect size: only supporting singleton expansion (size=1)");
     }
   }
