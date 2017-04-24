@@ -292,17 +292,13 @@ void THTensor_(expandNd)(THTensor *tensor, long *sizes, ptrdiff_t ndim) {
   long *expandedSizes = THAlloc(sizeof(long)*ndim);
   long *expandedStrides = THAlloc(sizeof(long)*ndim);
 
-  for (long i = 0; i < numUnsqueezed; ++i) {
-    expandedSizes[i] = 1;
-    expandedStrides[i] = 0;
-  }
-
   for (long i = numUnsqueezed; i < ndim; ++i) {
     expandedSizes[i] = THTensor_(size)(tensor, i);
     expandedStrides[i] = THTensor_(stride)(tensor, i);
   }
 
   for (long i = numUnsqueezed - 1; i > -1; --i) {
+    expandedSizes[i] = 1;
     expandedStrides[i] = expandedSizes[i+1] * expandedStrides[i+1];
   }
 
