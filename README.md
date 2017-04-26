@@ -7,7 +7,7 @@
 * Reporting bugs: [torch7](https://github.com/torch/torch7/issues) [nn](https://github.com/torch/nn/issues) [cutorch](https://github.com/torch/cutorch/issues) [cunn](https://github.com/torch/cutorch/issues) [optim](https://github.com/torch/optim/issues) [threads](https://github.com/torch/threads/issues)
 * Hanging out with other developers and users (strictly no install issues, no large blobs of text): [Gitter Chat](https://gitter.im/torch/torch7)
 
-<a name="torch.reference.dok"/>
+<a name="torch.reference.dok"></a>
 # Torch Package Reference Manual #
 
 __Torch__ is the main package in [Torch7](http://torch.ch) where data
@@ -16,7 +16,7 @@ over these are defined. Additionally, it provides many utilities for
 accessing files, serializing objects of arbitrary types and other
 useful utilities.
 
-<a name="torch.overview.dok"/>
+<a name="torch.overview.dok"></a>
 ## Torch Packages ##
 
   * Tensor Library
@@ -36,7 +36,7 @@ useful utilities.
     * [Random](doc/random.md) defines a random number generator package with various distributions.
     * Finally useful [utility](doc/utility.md) functions are provided for easy handling of torch tensor types and class inheritance.
 
-<a name="torch.links.dok"/>
+<a name="torch.links.dok"></a>
 ## Useful Links ##
 
   * [Community packages](https://github.com/torch/torch7/wiki/Cheatsheet)
