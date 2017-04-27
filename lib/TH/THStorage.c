@@ -43,7 +43,8 @@ TH_API THLongStorage *THLongStorage_newInferSize(THLongStorage *size, ptrdiff_t 
   ptrdiff_t i;
   for (i = 0; i < size->size; i++) {
     if (size->data[i] == -1) {
-      THArgCheck(dim_infer == -1, 1, "only one dimension can be inferred");
+      THArgCheck(dim_infer == -1, 1, "asking to infer dimension %ld, but already inferring dimension %ld. \
+          You can only infer one dimension.", i, dim_infer);
       dim_infer = i;
     } else {
       total_size *= size->data[i];
