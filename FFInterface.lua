@@ -1,3 +1,7 @@
+-- if this causes issues, you may need to:
+-- luarocks remove --force ffi
+-- and follow instructions to install
+-- https://github.com/facebook/luaffifb
 local ok, ffi = pcall(require, 'ffi')
 
 local function checkArgument(condition, fn, ud, msg, level)
