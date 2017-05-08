@@ -819,14 +819,17 @@ function torchtest.div()
 
     for k,t in ipairs(types) do
 
-        local m1 = torch.randn(10,10):type(t)
+        local m1 = torch.Tensor(10,10):uniform(0,10):type(t)
         local res1 = m1:clone()
 
         res1[{ {},3 }]:div(2)
 
         local res2 = m1:clone()
         for i = 1,m1:size(1) do
-            res2[{ i,3 }] = res2[{ i,3 }] / 2
+            local ok = pcall(function() res2[{ i,3 }] = res2[{ i,3 }] / 2 end)
+            if not ok then
+               res2[{ i,3 }] = torch.floor(res2[{ i,3 }] / 2)
+            end
         end
 
         local err = (res1-res2):double():abs():max()
@@ -1286,8 +1289,8 @@ function torchtest.cdiv()
 
         -- [res] torch.cdiv([res,] tensor1, tensor2)
         -- contiguous
-        local m1 = torch.randn(10, 10, 10):type(t)
-        local m2 = torch.randn(10, 10 * 10):type(t)
+        local m1 = torch.Tensor(10, 10, 10):uniform(0,10):type(t)
+        local m2 = torch.Tensor(10, 10 * 10):uniform(0,10):type(t)
         m2[m2:eq(0)] = 2
         local sm1 = m1[{4, {}, {}}]
         local sm2 = m2[{4, {}}]
@@ -1296,7 +1299,10 @@ function torchtest.cdiv()
         for i = 1,sm1:size(1) do
             for j = 1, sm1:size(2) do
                 local idx1d = (((i-1)*sm1:size(1)))+j
-                res2[i][j] = sm1[i][j] / sm2[idx1d]
+                local ok = pcall(function() res2[i][j] = sm1[i][j] / sm2[idx1d] end)
+                if not ok then
+                   res2[i][j] = torch.floor(sm1[i][j] / sm2[idx1d])
+                end
             end
         end
         local err = res1:clone():zero()
@@ -1318,8 +1324,8 @@ function torchtest.cdiv()
         mytester:assertlt(maxerr, precision, 'error in torch.cdiv - contiguous' .. ' ' .. t)
 
         -- non-contiguous
-        local m1 = torch.randn(10, 10, 10):type(t)
-        local m2 = torch.randn(10 * 10, 10 * 10):type(t)
+        local m1 = torch.Tensor(10, 10, 10):uniform(0,10):type(t)
+        local m2 = torch.Tensor(10 * 10, 10 * 10):uniform(0,10):type(t)
         m2[m2:eq(0)] = 2
         local sm1 = m1[{{}, 4, {}}]
         local sm2 = m2[{{}, 4}]
@@ -1328,7 +1334,10 @@ function torchtest.cdiv()
         for i = 1,sm1:size(1) do
             for j = 1, sm1:size(2) do
                 local idx1d = (((i-1)*sm1:size(1)))+j
-                res2[i][j] = sm1[i][j] / sm2[idx1d]
+                local ok = pcall(function() res2[i][j] = sm1[i][j] / sm2[idx1d] end)
+                if not ok then
+                   res2[i][j] = torch.floor(sm1[i][j] / sm2[idx1d])
+                end
             end
         end
         local err = res1:clone():zero()
