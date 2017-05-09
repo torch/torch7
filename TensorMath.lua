@@ -616,7 +616,8 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
         cname("sum"),
         {{name=Tensor, default=true, returned=true},
          {name=Tensor},
-         {name="index"}})
+         {name="index"},
+         {name="boolean", default=true, invisible=true}})
 
    wrap("prod",
         cname("prodall"),
@@ -625,7 +626,8 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
         cname("prod"),
         {{name=Tensor, default=true, returned=true},
          {name=Tensor},
-         {name="index"}})
+         {name="index"},
+         {name="boolean", default=true, invisible=true}})
 
    for _,name in ipairs({"min", "max"}) do
       wrap(name,
@@ -636,7 +638,8 @@ for _,Tensor in ipairs({"ByteTensor", "CharTensor",
            {{name=Tensor, default=true, returned=true},
             {name="IndexTensor", default=true, returned=true, noreadadd=true},
             {name=Tensor},
-            {name="index"}})
+            {name="index"},
+            {name="boolean", default=true, invisible=true}})
    end
 
    for _,name in ipairs({"cmin", "cmax"}) do
@@ -719,21 +722,24 @@ wrap("topk",
          {name="IndexTensor", default=true, returned=true, noreadadd=true},
          {name=Tensor},
          {name="long"},
-         {name="index", default=lastdim(3)}})
+         {name="index", default=lastdim(3)},
+         {name="boolean", default=true, invisible=true}})
 
    wrap("mode",
        cname("mode"),
        {{name=Tensor, default=true, returned=true},
            {name="IndexTensor", default=true, returned=true, noreadadd=true},
            {name=Tensor},
-           {name="index", default=lastdim(3)}})
+           {name="index", default=lastdim(3)},
+           {name="boolean", default=true, invisible=true}})
 
    wrap("median",
         cname("median"),
         {{name=Tensor, default=true, returned=true},
          {name="IndexTensor", default=true, returned=true, noreadadd=true},
          {name=Tensor},
-         {name="index", default=lastdim(3)}})
+         {name="index", default=lastdim(3)},
+         {name="boolean", default=true, invisible=true}})
 
    wrap("tril",
         cname("tril"),
@@ -1083,7 +1089,8 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
            cname("mean"),
            {{name=Tensor, default=true, returned=true},
             {name=Tensor},
-            {name="index"}})
+            {name="index"},
+            {name="boolean", default=true, invisible=true}})
 
       for _,name in ipairs({"var", "std"}) do
          wrap(name,
@@ -1094,7 +1101,8 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
               {{name=Tensor, default=true, returned=true},
                {name=Tensor},
                {name="index"},
-               {name="boolean", default=false}})
+               {name="boolean", default=false},
+               {name="boolean", default=true, invisible=true}})
       end
       wrap("histc",
            cname("histc"),
@@ -1121,7 +1129,8 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
            {{name=Tensor, default=true, returned=true},
             {name=Tensor},
             {name=real},
-            {name="index"}})
+            {name="index"},
+            {name="boolean", default=true, invisible=true}})
 
       wrap("renorm",
            cname("renorm"),
