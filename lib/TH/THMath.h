@@ -2,7 +2,11 @@
 #define _THMATH_H
 
 static inline double TH_sigmoid(double value) {
-  return 1.0 / (1.0 + exp(-value));
+  // faster version of 1.0 / (1.0 + exp(-value));
+  double x = fabs(value);
+  double x2 = x*x;
+  double e = 1.0f + x + x2*0.555f + x2*x2*0.143f;
+  return 1.0f / (1.0f + (value > 0 ? 1.0f / e : e));
 }
 
 static inline double TH_frac(double x) {
