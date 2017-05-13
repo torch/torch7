@@ -3746,7 +3746,7 @@ function torchtest_chunk(func)
    local result = {}
    local tensor = func(torch.rand(4,7))
    local nChunk = 3
-   local targetSize = {{4,3},{4,3},{4,1}}
+   local targetSize = {{4,3},{4,2},{4,2}}
    local dim = 2
    local splits = tensor:chunk(nChunk, dim)
    local start = 1
@@ -3755,12 +3755,10 @@ function torchtest_chunk(func)
       mytester:assertTensorEq(tensor:narrow(dim, start, targetSize[i][dim]), split, 0.00001, 'Content error in chunk '..i)
       start = start + targetSize[i][dim]
    end
-   torch.split(result, tensor, nChunk, dim)
    local start = 1
-   for i, split in ipairs(result) do
-      mytester:assertTableEq(split:size():totable(), targetSize[i], 'Result size error in chunk '..i)
-      mytester:assertTensorEq(tensor:narrow(dim, start, targetSize[i][dim]), split, 0.000001, 'Result content error in chunk '..i)
-      start = start + targetSize[i][dim]
+   for i, split in ipairs(splits) do
+      mytester:assertTensorEq(tensor:narrow(dim, start, split:size(dim)), split, 0.000001, 'Result content error in chunk '..i)
+      start = start + split:size(dim)
    end
 end
 

@@ -518,8 +518,20 @@ function Tensor.chunk(result, tensor, nChunk, dim)
       result = {}
    end
    dim = dim or 1
-   local splitSize = math.ceil(tensor:size(dim)/nChunk)
-   return torch.split(result, tensor, splitSize, dim)
+   local n = tensor:size(dim)
+   local lo = 0
+   local z              -- empty tensor variable used when nChunk > tensor:size(dim)
+   for i=1,nChunk do    -- (loop is skipped if nChunk < 1, returning empty table)
+      local hi = math.min(math.ceil(i*n/nChunk), n)
+      if lo < hi then
+        table.insert(result, tensor:narrow(dim, lo+1, hi-lo))
+        lo = hi
+      else
+        z = z or torch.Tensor():typeAs(tensor)
+        table.insert(result, z)
+      end
+   end
+   return result
 end
 torch.chunk = Tensor.chunk
 
