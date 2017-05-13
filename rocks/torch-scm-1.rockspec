@@ -27,7 +27,7 @@ cmake -E make_directory build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release
 	 platforms = {
       windows = {
            build_command = [[
-cmake -E make_directory build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DLUA=$(LUA) -DLUALIB=$(LUALIB) -DLUA_BINDIR="$(LUA_BINDIR)" -DLUA_INCDIR="$(LUA_INCDIR)" -DLUA_LIBDIR="$(LUA_LIBDIR)" -DLUADIR="$(LUADIR)" -DLIBDIR="$(LIBDIR)" -DCMAKE_INSTALL_PREFIX="$(PREFIX)" && $(MAKE)
+cmake -E make_directory build && cd build && cmake .. -DINTEL_MKL_DIR=$(INTEL_MKL_DIR) -DINTEL_COMPILER_DIR=$(INTEL_COMPILER_DIR) -DBLAS_LIBRARIES=$(BLAS_LIBRARIES) -DLAPACK_LIBRARIES=$(LAPACK_LIBRARIES) -DLAPACK_FOUND=$(LAPACK_FOUND) -DCMAKE_BUILD_TYPE=Release -DLUA=$(LUA) -DLUALIB=$(LUALIB) -DLUA_BINDIR="$(LUA_BINDIR)" -DLUA_INCDIR="$(LUA_INCDIR)" -DLUA_LIBDIR="$(LUA_LIBDIR)" -DLUADIR="$(LUADIR)" -DLIBDIR="$(LIBDIR)" -DCMAKE_INSTALL_PREFIX="$(PREFIX)" && $(MAKE)
 ]]
       }
    },
