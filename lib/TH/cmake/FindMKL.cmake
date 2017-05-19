@@ -28,6 +28,8 @@ SET(MKL_CDFT_LIBRARIES)
 INCLUDE(CheckTypeSize)
 INCLUDE(CheckFunctionExists)
 
+MESSAGE(STATUS "INTEL_MKL_DIR: ${INTEL_MKL_DIR}")
+
 # Intel Compiler Suite
 SET(INTEL_COMPILER_DIR CACHE STRING
   "Root directory of the Intel Compiler Suite (contains ipp, mkl, etc.)")
@@ -35,6 +37,8 @@ SET(INTEL_MKL_DIR CACHE STRING
   "Root directory of the Intel MKL (standalone)")
 SET(INTEL_MKL_SEQUENTIAL OFF CACHE BOOL
   "Force using the sequential (non threaded) libraries")
+
+MESSAGE(STATUS "INTEL_MKL_DIR: ${INTEL_MKL_DIR}")
 
 # Checks
 CHECK_TYPE_SIZE("void*" SIZE_OF_VOIDP)
