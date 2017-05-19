@@ -89,6 +89,8 @@ IF (INTEL_MKL_DIR)
   ENDIF (MSVC)
 ENDIF (INTEL_MKL_DIR)
 
+MESSAGE(STATUS "Searching for MKL in ${CMAKE_LIBRARY_PATH} ...")
+
 # Try linking multiple libs
 MACRO(CHECK_ALL_LIBRARIES LIBRARIES _name _list _flags)
   # This macro checks for the existence of the combination of libraries given by _list.
