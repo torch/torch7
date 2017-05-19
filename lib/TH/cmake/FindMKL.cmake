@@ -28,8 +28,6 @@ SET(MKL_CDFT_LIBRARIES)
 INCLUDE(CheckTypeSize)
 INCLUDE(CheckFunctionExists)
 
-MESSAGE(STATUS "INTEL_MKL_DIR: ${INTEL_MKL_DIR}")
-
 # Intel Compiler Suite
 SET(INTEL_COMPILER_DIR $ENV{INTEL_COMPILER_DIR} CACHE STRING
   "Root directory of the Intel Compiler Suite (contains ipp, mkl, etc.)")
@@ -92,6 +90,15 @@ IF (INTEL_MKL_DIR)
       "${INTEL_MKL_DIR}/lib/${iccvers}")
   ENDIF (MSVC)
 ENDIF (INTEL_MKL_DIR)
+
+# lib prefix
+IF (MSVC)
+  SET(CMAKE_FIND_LIBRARY_PREFIXES "")
+  SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".dll")
+ELSE(MSVC)
+  SET(CMAKE_FIND_LIBRARY_PREFIXES "lib")
+  SET(CMAKE_FIND_LIBRARY_SUFFIXES ".so" ".a")
+ENDIF (MSVC)
 
 MESSAGE(STATUS "Searching for MKL in ${CMAKE_LIBRARY_PATH} ...")
 
