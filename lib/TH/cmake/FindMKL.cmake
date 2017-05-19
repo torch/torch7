@@ -82,12 +82,12 @@ ENDIF (INTEL_COMPILER_DIR)
 IF (INTEL_MKL_DIR)
   # TODO: diagnostic if dir does not exist
   SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH}
-    "${INTEL_MKL_DIR}/include")
+    "${INTEL_MKL_DIR}/include/")
   SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}
-    "${INTEL_MKL_DIR}/lib/${mklvers}")
+    "${INTEL_MKL_DIR}/lib/${mklvers}/")
   IF (MSVC)
     SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}
-      "${INTEL_MKL_DIR}/lib/${iccvers}")
+      "${INTEL_MKL_DIR}/lib/${iccvers}/")
   ENDIF (MSVC)
 ENDIF (INTEL_MKL_DIR)
 
