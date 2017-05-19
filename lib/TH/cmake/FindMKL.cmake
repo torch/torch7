@@ -31,9 +31,9 @@ INCLUDE(CheckFunctionExists)
 MESSAGE(STATUS "INTEL_MKL_DIR: ${INTEL_MKL_DIR}")
 
 # Intel Compiler Suite
-SET(INTEL_COMPILER_DIR CACHE STRING
+SET(INTEL_COMPILER_DIR $ENV{INTEL_COMPILER_DIR} CACHE STRING
   "Root directory of the Intel Compiler Suite (contains ipp, mkl, etc.)")
-SET(INTEL_MKL_DIR CACHE STRING
+SET(INTEL_MKL_DIR $ENV{INTEL_MKL_DIR} CACHE STRING
   "Root directory of the Intel MKL (standalone)")
 SET(INTEL_MKL_SEQUENTIAL OFF CACHE BOOL
   "Force using the sequential (non threaded) libraries")
