@@ -245,7 +245,6 @@ IF (BLAS_LIBRARIES)
   IF (MKL_ILP64)
 	SET(CMAKE_REQUIRED_DEFINITIONS -DMKL_ILP64)
   ENDIF(MKL_ILP64)
-  SET(CMAKE_VERBOSE_MAKEFILE TRUE)
   
   set(f2c_code_d "
 #include <stdlib.h>
@@ -256,7 +255,7 @@ float y[4] = { .1, .01, .001, .0001 };
   #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
     typedef BLAS_INT __int64 
   #else
-    typedef BLAS_INT long long int
+    typedef BLAS_INT long long
  #endif
 #else
   typedef BLAS_INT int
@@ -285,7 +284,7 @@ float y[4] = { .1, .01, .001, .0001 };
   #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
     typedef BLAS_INT __int64 
   #else
-    typedef BLAS_INT long long int
+    typedef BLAS_INT long long
  #endif
 #else
   typedef BLAS_INT int
