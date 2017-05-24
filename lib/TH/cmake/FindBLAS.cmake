@@ -242,16 +242,23 @@ endif()
 # Determine if blas was compiled with the f2c conventions
 IF (BLAS_LIBRARIES)
   SET(CMAKE_REQUIRED_LIBRARIES ${BLAS_LIBRARIES})
+  IF (MKL_ILP64)
+	SET(CMAKE_REQUIRED_DEFINITIONS -DMKL_ILP64)
+  ENDIF(MKL_ILP64)
   
   CHECK_C_SOURCE_RUNS("
 #include <stdlib.h>
 #include <stdio.h>
 float x[4] = { 1, 2, 3, 4 };
 float y[4] = { .1, .01, .001, .0001 };
-#ifdef WIN32
-  typedef __int64 BLINT;
+#ifdef MKL_ILP64
+  #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
+    typedef BLAS_INT __int64 
+  #else
+    typedef BLAS_INT long long int
+ #endif
 #else
-  typedef long BLINT;
+  typedef BLAS_INT int
 #endif
 BLINT four = 4;
 BLINT one = 1;
@@ -266,10 +273,14 @@ int main() {
 #include <stdio.h>
 float x[4] = { 1, 2, 3, 4 };
 float y[4] = { .1, .01, .001, .0001 };
-#ifdef WIN32
-  typedef __int64 BLINT;
+#ifdef MKL_ILP64
+  #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
+    typedef BLAS_INT __int64 
+  #else
+    typedef BLAS_INT long long int
+ #endif
 #else
-  typedef long BLINT;
+  typedef BLAS_INT int
 #endif
 BLINT four = 4;
 BLINT one = 1;
