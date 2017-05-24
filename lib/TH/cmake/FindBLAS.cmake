@@ -246,26 +246,26 @@ IF (BLAS_LIBRARIES)
 	SET(CMAKE_REQUIRED_DEFINITIONS -DMKL_ILP64)
   ENDIF(MKL_ILP64)
   
-  set(f2c_code_d "
-#include <stdlib.h>
-#include <stdio.h>
-float x[4] = { 1, 2, 3, 4 };
-float y[4] = { .1, .01, .001, .0001 };
-#ifdef MKL_ILP64
-  #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
-    #define BLAS_INT __int64; 
-  #else
-    #define BLAS_INT long long;
- #endif
-#else
-  typedef BLAS_INT int;
-#endif
-BLAS_INT four = 4;
-BLAS_INT one = 1;
-extern double sdot_();
-int main() {
-  double r = sdot_(&four, x, &one, y, &one);
-  exit((float)r != (float).1234);
+  set(f2c_code_d "\
+#include <stdlib.h>\
+#include <stdio.h>\
+float x[4] = { 1, 2, 3, 4 };\
+float y[4] = { .1, .01, .001, .0001 };\
+#ifdef MKL_ILP64 \
+  #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) \
+    #define BLAS_INT __int64; \
+  #else \
+    #define BLAS_INT long long; \
+ #endif \
+#else \
+  #define BLAS_INT int; \
+#endif \
+BLAS_INT four = 4; \
+BLAS_INT one = 1; \
+extern double sdot_(); \
+int main() { \
+  double r = sdot_(&four, x, &one, y, &one); \
+  exit((float)r != (float).1234); \
 }" )
 
   CHECK_C_SOURCE_COMPILES(${f2c_code_d} BLAS_F2C_DOUBLE_COMPILES )
@@ -276,26 +276,26 @@ int main() {
   
   CHECK_C_SOURCE_RUNS(${f2c_code_d} BLAS_F2C_DOUBLE_WORKS )
 
-  set(f2c_code_f "
-#include <stdlib.h>
-#include <stdio.h>
-float x[4] = { 1, 2, 3, 4 };
-float y[4] = { .1, .01, .001, .0001 };
-#ifdef MKL_ILP64
-  #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
-    #define BLAS_INT __int64;
-  #else
-    #define BLAS_INT long long;
- #endif
-#else
-  #define BLAS_INT int;
-#endif
-BLAS_INT four = 4;
-BLAS_INT one = 1;
-extern float sdot_();
-int main() {
-  double r = sdot_(&four, x, &one, y, &one);
-  exit((float)r != (float).1234);
+  set(f2c_code_f "\
+#include <stdlib.h>\
+#include <stdio.h>\
+float x[4] = { 1, 2, 3, 4 };\
+float y[4] = { .1, .01, .001, .0001 };\
+#ifdef MKL_ILP64\
+  #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) \
+    #define BLAS_INT __int64;\
+  #else\
+    #define BLAS_INT long long;\
+ #endif\
+#else\
+  #define BLAS_INT int;\
+#endif\
+BLAS_INT four = 4;\
+BLAS_INT one = 1;\
+extern float sdot_();\
+int main() {\
+  double r = sdot_(&four, x, &one, y, &one);\
+  exit((float)r != (float).1234);\
 }" )
 
   CHECK_C_SOURCE_COMPILES(${f2c_code_f} BLAS_F2C_FLOAT_COMPILES )
