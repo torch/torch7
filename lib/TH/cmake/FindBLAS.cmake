@@ -253,12 +253,12 @@ float x[4] = { 1, 2, 3, 4 };
 float y[4] = { .1, .01, .001, .0001 };
 #ifdef MKL_ILP64
   #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
-    typedef BLAS_INT __int64 
+    typedef BLAS_INT __int64; 
   #else
-    typedef BLAS_INT long long
+    typedef BLAS_INT long long;
  #endif
 #else
-  typedef BLAS_INT int
+  typedef BLAS_INT int;
 #endif
 BLAS_INT four = 4;
 BLAS_INT one = 1;
@@ -282,12 +282,12 @@ float x[4] = { 1, 2, 3, 4 };
 float y[4] = { .1, .01, .001, .0001 };
 #ifdef MKL_ILP64
   #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
-    typedef BLAS_INT __int64 
+    typedef BLAS_INT __int64;
   #else
-    typedef BLAS_INT long long
+    typedef BLAS_INT long long;
  #endif
 #else
-  typedef BLAS_INT int
+  typedef BLAS_INT int;
 #endif
 BLAS_INT four = 4;
 BLAS_INT one = 1;
