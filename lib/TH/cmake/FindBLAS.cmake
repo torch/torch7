@@ -264,7 +264,7 @@ BLAS_INT four = 4;
 BLAS_INT one = 1;
 extern double sdot_();
 int main() {
-  double r = sdot_(&four, x, &one, y, &one);
+  //double r = sdot_(&four, x, &one, y, &one);
   //exit((float)r != (float).1234);
   exit(1);
 }" )
@@ -295,7 +295,7 @@ BLAS_INT four = 4;
 BLAS_INT one = 1;
 extern float sdot_();
 int main() {
-  double r = sdot_(&four, x, &one, y, &one);
+  //double r = sdot_(&four, x, &one, y, &one);
   //exit((float)r != (float).1234);
   exit(0);
 }" )
