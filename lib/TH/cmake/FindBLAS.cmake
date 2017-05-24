@@ -246,7 +246,7 @@ IF (BLAS_LIBRARIES)
 	SET(CMAKE_REQUIRED_DEFINITIONS -DMKL_ILP64)
   ENDIF(MKL_ILP64)
   
-  CHECK_C_SOURCE_RUNS("
+  set(f2c_code_d "
 #include <stdlib.h>
 #include <stdio.h>
 float x[4] = { 1, 2, 3, 4 };
@@ -266,9 +266,16 @@ extern double sdot_();
 int main() {
   double r = sdot_(&four, x, &one, y, &one);
   exit((float)r != (float).1234);
-}" BLAS_F2C_DOUBLE_WORKS )
+}" )
 
-  CHECK_C_SOURCE_RUNS("
+  CHECK_C_SOURCE_COMPILES(${f2c_code_d} BLAS_F2C_DOUBLE_COMPILES )
+  IF (NOT BLAS_F2C_DOUBLE_COMPILES)
+    MESSAGE(STATUS "Warning F2C double check did not compile!!")
+  ENDIF(NOT BLAS_F2C_DOUBLE_COMPILES)
+  
+  CHECK_C_SOURCE_RUNS(${f2c_code_d} BLAS_F2C_DOUBLE_WORKS )
+
+  set(f2c_code_f "
 #include <stdlib.h>
 #include <stdio.h>
 float x[4] = { 1, 2, 3, 4 };
@@ -288,7 +295,14 @@ extern float sdot_();
 int main() {
   double r = sdot_(&four, x, &one, y, &one);
   exit((float)r != (float).1234);
-}" BLAS_F2C_FLOAT_WORKS )
+}" )
+
+  CHECK_C_SOURCE_COMPILES(${f2c_code_f} BLAS_F2C_FLOAT_COMPILES )
+  IF (NOT BLAS_F2C_FLOAT_COMPILES)
+    MESSAGE(STATUS "Warning F2C float check did not compile!!")
+  ENDIF(NOT BLAS_F2C_FLOAT_COMPILES)
+  
+  CHECK_C_SOURCE_RUNS(${f2c_code_f} BLAS_F2C_FLOAT_WORKS )
 
   IF (BLAS_F2C_DOUBLE_WORKS AND NOT BLAS_F2C_FLOAT_WORKS)
     MESSAGE(STATUS "This BLAS uses the F2C return conventions")
