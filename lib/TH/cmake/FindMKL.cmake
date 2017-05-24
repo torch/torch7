@@ -33,6 +33,8 @@ SET(INTEL_COMPILER_DIR $ENV{INTEL_COMPILER_DIR} CACHE STRING
   "Root directory of the Intel Compiler Suite (contains ipp, mkl, etc.)")
 SET(INTEL_MKL_DIR $ENV{INTEL_MKL_DIR} CACHE STRING
   "Root directory of the Intel MKL (standalone)")
+SET(MKL_ILP64 $ENV{MKL_ILP64} CACHE STRING
+  "Link with 64bit-interger version of MKL (_ilp64 instead of _lp64)")
 SET(INTEL_MKL_SEQUENTIAL OFF CACHE BOOL
   "Force using the sequential (non threaded) libraries")
 
