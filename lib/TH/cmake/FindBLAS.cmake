@@ -258,14 +258,15 @@ float y[4] = { .1, .01, .001, .0001 };
     #define BLAS_INT long long;
  #endif
 #else
-  typedef BLAS_INT int;
+  #define BLAS_INT int;
 #endif
 BLAS_INT four = 4;
 BLAS_INT one = 1;
 extern double sdot_();
 int main() {
   double r = sdot_(&four, x, &one, y, &one);
-  exit((float)r != (float).1234);
+  //exit((float)r != (float).1234);
+  exit(1);
 }" )
 
   CHECK_C_SOURCE_COMPILES("${f2c_code_d}" BLAS_F2C_DOUBLE_COMPILES )
@@ -295,7 +296,8 @@ BLAS_INT one = 1;
 extern float sdot_();
 int main() {
   double r = sdot_(&four, x, &one, y, &one);
-  exit((float)r != (float).1234);
+  //exit((float)r != (float).1234);
+  exit(0);
 }" )
 
   CHECK_C_SOURCE_COMPILES("${f2c_code_f}" BLAS_F2C_FLOAT_COMPILES )
