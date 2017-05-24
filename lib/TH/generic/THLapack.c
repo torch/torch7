@@ -2,43 +2,42 @@
 #define TH_GENERIC_FILE "generic/THLapack.c"
 #else
 
-
-TH_EXTERNC void dgesv_(int *n, int *nrhs, double *a, int *lda, int *ipiv, double *b, int *ldb, int *info);
-TH_EXTERNC void sgesv_(int *n, int *nrhs, float *a, int *lda, int *ipiv, float *b, int *ldb, int *info);
-TH_EXTERNC void dtrtrs_(char *uplo, char *trans, char *diag, int *n, int *nrhs, double *a, int *lda, double *b, int *ldb, int *info);
-TH_EXTERNC void strtrs_(char *uplo, char *trans, char *diag, int *n, int *nrhs, float *a, int *lda, float *b, int *ldb, int *info);
-TH_EXTERNC void dgels_(char *trans, int *m, int *n, int *nrhs, double *a, int *lda, double *b, int *ldb, double *work, int *lwork, int *info);
-TH_EXTERNC void sgels_(char *trans, int *m, int *n, int *nrhs, float *a, int *lda, float *b, int *ldb, float *work, int *lwork, int *info);
-TH_EXTERNC void dsyev_(char *jobz, char *uplo, int *n, double *a, int *lda, double *w, double *work, int *lwork, int *info);
-TH_EXTERNC void ssyev_(char *jobz, char *uplo, int *n, float *a, int *lda, float *w, float *work, int *lwork, int *info);
-TH_EXTERNC void dgeev_(char *jobvl, char *jobvr, int *n, double *a, int *lda, double *wr, double *wi, double* vl, int *ldvl, double *vr, int *ldvr, double *work, int *lwork, int *info);
-TH_EXTERNC void sgeev_(char *jobvl, char *jobvr, int *n, float *a, int *lda, float *wr, float *wi, float* vl, int *ldvl, float *vr, int *ldvr, float *work, int *lwork, int *info);
-TH_EXTERNC void dgesvd_(char *jobu, char *jobvt, int *m, int *n, double *a, int *lda, double *s, double *u, int *ldu, double *vt, int *ldvt, double *work, int *lwork, int *info);
-TH_EXTERNC void sgesvd_(char *jobu, char *jobvt, int *m, int *n, float *a, int *lda, float *s, float *u, int *ldu, float *vt, int *ldvt, float *work, int *lwork, int *info);
-TH_EXTERNC void dgetrf_(int *m, int *n, double *a, int *lda, int *ipiv, int *info);
-TH_EXTERNC void sgetrf_(int *m, int *n, float *a, int *lda, int *ipiv, int *info);
-TH_EXTERNC void dgetrs_(char *trans, int *n, int *nrhs, double *a, int *lda, int *ipiv, double *b, int *ldb, int *info);
-TH_EXTERNC void sgetrs_(char *trans, int *n, int *nrhs, float *a, int *lda, int *ipiv, float *b, int *ldb, int *info);
-TH_EXTERNC void dgetri_(int *n, double *a, int *lda, int *ipiv, double *work, int *lwork, int *info);
-TH_EXTERNC void sgetri_(int *n, float *a, int *lda, int *ipiv, float *work, int *lwork, int *info);
-TH_EXTERNC void dpotrf_(char *uplo, int *n, double *a, int *lda, int *info);
-TH_EXTERNC void spotrf_(char *uplo, int *n, float *a, int *lda, int *info);
-TH_EXTERNC void dpotri_(char *uplo, int *n, double *a, int *lda, int *info);
-TH_EXTERNC void spotri_(char *uplo, int *n, float *a, int *lda, int *info);
-TH_EXTERNC void dpotrs_(char *uplo, int *n, int *nrhs, double *a, int *lda, double *b, int *ldb, int *info);
-TH_EXTERNC void spotrs_(char *uplo, int *n, int *nrhs, float *a, int *lda, float *b, int *ldb, int *info);
-TH_EXTERNC void sgeqrf_(int *m, int *n, float *a, int *lda, float *tau, float *work, int *lwork, int *info);
-TH_EXTERNC void dgeqrf_(int *m, int *n, double *a, int *lda, double *tau, double *work, int *lwork, int *info);
-TH_EXTERNC void sorgqr_(int *m, int *n, int *k, float *a, int *lda, float *tau, float *work, int *lwork, int *info);
-TH_EXTERNC void dorgqr_(int *m, int *n, int *k, double *a, int *lda, double *tau, double *work, int *lwork, int *info);
-TH_EXTERNC void sormqr_(char *side, char *trans, int *m, int *n, int *k, float *a, int *lda, float *tau, float *c, int *ldc, float *work, int *lwork, int *info);
-TH_EXTERNC void dormqr_(char *side, char *trans, int *m, int *n, int *k, double *a, int *lda, double *tau, double *c, int *ldc, double *work, int *lwork, int *info);
-TH_EXTERNC void spstrf_(char *uplo, int *n, float *a, int *lda, int *piv, int *rank, float *tol, float *work, int *info);
-TH_EXTERNC void dpstrf_(char *uplo, int *n, double *a, int *lda, int *piv, int *rank, double *tol, double *work, int *info);
+TH_EXTERNC void dgesv_(LAPACK_INT *n, LAPACK_INT *nrhs, double *a, LAPACK_INT *lda, LAPACK_INT *ipiv, double *b, LAPACK_INT *ldb, LAPACK_INT *info);
+TH_EXTERNC void sgesv_(LAPACK_INT *n, LAPACK_INT *nrhs, float *a, LAPACK_INT *lda, LAPACK_INT *ipiv, float *b, LAPACK_INT *ldb, LAPACK_INT *info);
+TH_EXTERNC void dtrtrs_(char *uplo, char *trans, char *diag, LAPACK_INT *n, LAPACK_INT *nrhs, double *a, LAPACK_INT *lda, double *b, LAPACK_INT *ldb, LAPACK_INT *info);
+TH_EXTERNC void strtrs_(char *uplo, char *trans, char *diag, LAPACK_INT *n, LAPACK_INT *nrhs, float *a, LAPACK_INT *lda, float *b, LAPACK_INT *ldb, LAPACK_INT *info);
+TH_EXTERNC void dgels_(char *trans, LAPACK_INT *m, LAPACK_INT *n, LAPACK_INT *nrhs, double *a, LAPACK_INT *lda, double *b, LAPACK_INT *ldb, double *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void sgels_(char *trans, LAPACK_INT *m, LAPACK_INT *n, LAPACK_INT *nrhs, float *a, LAPACK_INT *lda, float *b, LAPACK_INT *ldb, float *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void dsyev_(char *jobz, char *uplo, LAPACK_INT *n, double *a, LAPACK_INT *lda, double *w, double *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void ssyev_(char *jobz, char *uplo, LAPACK_INT *n, float *a, LAPACK_INT *lda, float *w, float *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void dgeev_(char *jobvl, char *jobvr, LAPACK_INT *n, double *a, LAPACK_INT *lda, double *wr, double *wi, double* vl, LAPACK_INT *ldvl, double *vr, LAPACK_INT *ldvr, double *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void sgeev_(char *jobvl, char *jobvr, LAPACK_INT *n, float *a, LAPACK_INT *lda, float *wr, float *wi, float* vl, LAPACK_INT *ldvl, float *vr, LAPACK_INT *ldvr, float *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void dgesvd_(char *jobu, char *jobvt, LAPACK_INT *m, LAPACK_INT *n, double *a, LAPACK_INT *lda, double *s, double *u, LAPACK_INT *ldu, double *vt, LAPACK_INT *ldvt, double *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void sgesvd_(char *jobu, char *jobvt, LAPACK_INT *m, LAPACK_INT *n, float *a, LAPACK_INT *lda, float *s, float *u, LAPACK_INT *ldu, float *vt, LAPACK_INT *ldvt, float *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void dgetrf_(LAPACK_INT *m, LAPACK_INT *n, double *a, LAPACK_INT *lda, LAPACK_INT *ipiv, LAPACK_INT *info);
+TH_EXTERNC void sgetrf_(LAPACK_INT *m, LAPACK_INT *n, float *a, LAPACK_INT *lda, LAPACK_INT *ipiv, LAPACK_INT *info);
+TH_EXTERNC void dgetrs_(char *trans, LAPACK_INT *n, LAPACK_INT *nrhs, double *a, LAPACK_INT *lda, LAPACK_INT *ipiv, double *b, LAPACK_INT *ldb, LAPACK_INT *info);
+TH_EXTERNC void sgetrs_(char *trans, LAPACK_INT *n, LAPACK_INT *nrhs, float *a, LAPACK_INT *lda, LAPACK_INT *ipiv, float *b, LAPACK_INT *ldb, LAPACK_INT *info);
+TH_EXTERNC void dgetri_(LAPACK_INT *n, double *a, LAPACK_INT *lda, LAPACK_INT *ipiv, double *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void sgetri_(LAPACK_INT *n, float *a, LAPACK_INT *lda, LAPACK_INT *ipiv, float *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void dpotrf_(char *uplo, LAPACK_INT *n, double *a, LAPACK_INT *lda, LAPACK_INT *info);
+TH_EXTERNC void spotrf_(char *uplo, LAPACK_INT *n, float *a, LAPACK_INT *lda, LAPACK_INT *info);
+TH_EXTERNC void dpotri_(char *uplo, LAPACK_INT *n, double *a, LAPACK_INT *lda, LAPACK_INT *info);
+TH_EXTERNC void spotri_(char *uplo, LAPACK_INT *n, float *a, LAPACK_INT *lda, LAPACK_INT *info);
+TH_EXTERNC void dpotrs_(char *uplo, LAPACK_INT *n, LAPACK_INT *nrhs, double *a, LAPACK_INT *lda, double *b, LAPACK_INT *ldb, LAPACK_INT *info);
+TH_EXTERNC void spotrs_(char *uplo, LAPACK_INT *n, LAPACK_INT *nrhs, float *a, LAPACK_INT *lda, float *b, LAPACK_INT *ldb, LAPACK_INT *info);
+TH_EXTERNC void sgeqrf_(LAPACK_INT *m, LAPACK_INT *n, float *a, LAPACK_INT *lda, float *tau, float *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void dgeqrf_(LAPACK_INT *m, LAPACK_INT *n, double *a, LAPACK_INT *lda, double *tau, double *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void sorgqr_(LAPACK_INT *m, LAPACK_INT *n, LAPACK_INT *k, float *a, LAPACK_INT *lda, float *tau, float *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void dorgqr_(LAPACK_INT *m, LAPACK_INT *n, LAPACK_INT *k, double *a, LAPACK_INT *lda, double *tau, double *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void sormqr_(char *side, char *trans, LAPACK_INT *m, LAPACK_INT *n, LAPACK_INT *k, float *a, LAPACK_INT *lda, float *tau, float *c, LAPACK_INT *ldc, float *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void dormqr_(char *side, char *trans, LAPACK_INT *m, LAPACK_INT *n, LAPACK_INT *k, double *a, LAPACK_INT *lda, double *tau, double *c, LAPACK_INT *ldc, double *work, LAPACK_INT *lwork, LAPACK_INT *info);
+TH_EXTERNC void spstrf_(char *uplo, LAPACK_INT *n, float *a, LAPACK_INT *lda, LAPACK_INT *piv, LAPACK_INT *rank, float *tol, float *work, LAPACK_INT *info);
+TH_EXTERNC void dpstrf_(char *uplo, LAPACK_INT *n, double *a, LAPACK_INT *lda, LAPACK_INT *piv, LAPACK_INT *rank, double *tol, double *work, LAPACK_INT *info);
 
 
 /* Compute the solution to a real system of linear equations  A * X = B */
-void THLapack_(gesv)(int n, int nrhs, real *a, int lda, int *ipiv, real *b, int ldb, int* info)
+void THLapack_(gesv)(LAPACK_INT n, LAPACK_INT nrhs, real *a, LAPACK_INT lda, LAPACK_INT *ipiv, real *b, LAPACK_INT ldb, LAPACK_INT* info)
 {
 #ifdef USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -53,7 +52,7 @@ void THLapack_(gesv)(int n, int nrhs, real *a, int lda, int *ipiv, real *b, int 
 }
 
 /* Solve a triangular system of the form A * X = B  or A^T * X = B */
-void THLapack_(trtrs)(char uplo, char trans, char diag, int n, int nrhs, real *a, int lda, real *b, int ldb, int* info)
+void THLapack_(trtrs)(char uplo, char trans, char diag, LAPACK_INT n, LAPACK_INT nrhs, real *a, LAPACK_INT lda, real *b, LAPACK_INT ldb, LAPACK_INT* info)
 {
 #ifdef USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -69,7 +68,7 @@ void THLapack_(trtrs)(char uplo, char trans, char diag, int n, int nrhs, real *a
 
 /* Solve overdetermined or underdetermined real linear systems involving an
 M-by-N matrix A, or its transpose, using a QR or LQ factorization of A */
-void THLapack_(gels)(char trans, int m, int n, int nrhs, real *a, int lda, real *b, int ldb, real *work, int lwork, int *info)
+void THLapack_(gels)(char trans, LAPACK_INT m, LAPACK_INT n, LAPACK_INT nrhs, real *a, LAPACK_INT lda, real *b, LAPACK_INT ldb, real *work, LAPACK_INT lwork, LAPACK_INT *info)
 {
 #ifdef USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -84,7 +83,7 @@ void THLapack_(gels)(char trans, int m, int n, int nrhs, real *a, int lda, real 
 
 /* Compute all eigenvalues and, optionally, eigenvectors of a real symmetric
 matrix A */
-void THLapack_(syev)(char jobz, char uplo, int n, real *a, int lda, real *w, real *work, int lwork, int *info)
+void THLapack_(syev)(char jobz, char uplo, LAPACK_INT n, real *a, LAPACK_INT lda, real *w, real *work, LAPACK_INT lwork, LAPACK_INT *info)
 {
 #ifdef USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -99,7 +98,7 @@ void THLapack_(syev)(char jobz, char uplo, int n, real *a, int lda, real *w, rea
 
 /* Compute for an N-by-N real nonsymmetric matrix A, the eigenvalues and,
 optionally, the left and/or right eigenvectors */
-void THLapack_(geev)(char jobvl, char jobvr, int n, real *a, int lda, real *wr, real *wi, real* vl, int ldvl, real *vr, int ldvr, real *work, int lwork, int *info)
+void THLapack_(geev)(char jobvl, char jobvr, LAPACK_INT n, real *a, LAPACK_INT lda, real *wr, real *wi, real* vl, LAPACK_INT ldvl, real *vr, LAPACK_INT ldvr, real *work, LAPACK_INT lwork, LAPACK_INT *info)
 {
 #ifdef USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -114,7 +113,7 @@ void THLapack_(geev)(char jobvl, char jobvr, int n, real *a, int lda, real *wr, 
 
 /* Compute the singular value decomposition (SVD) of a real M-by-N matrix A,
 optionally computing the left and/or right singular vectors */
-void THLapack_(gesvd)(char jobu, char jobvt, int m, int n, real *a, int lda, real *s, real *u, int ldu, real *vt, int ldvt, real *work, int lwork, int *info)
+void THLapack_(gesvd)(char jobu, char jobvt, LAPACK_INT m, LAPACK_INT n, real *a, LAPACK_INT lda, real *s, real *u, LAPACK_INT ldu, real *vt, LAPACK_INT ldvt, real *work, LAPACK_INT lwork, LAPACK_INT *info)
 {
 #ifdef USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -128,7 +127,7 @@ void THLapack_(gesvd)(char jobu, char jobvt, int m, int n, real *a, int lda, rea
 }
 
 /* LU decomposition */
-void THLapack_(getrf)(int m, int n, real *a, int lda, int *ipiv, int *info)
+void THLapack_(getrf)(LAPACK_INT m, LAPACK_INT n, real *a, LAPACK_INT lda, LAPACK_INT *ipiv, LAPACK_INT *info)
 {
 #ifdef  USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -141,7 +140,7 @@ void THLapack_(getrf)(int m, int n, real *a, int lda, int *ipiv, int *info)
 #endif
 }
 
-void THLapack_(getrs)(char trans, int n, int nrhs, real *a, int lda, int *ipiv, real *b, int ldb, int *info)
+void THLapack_(getrs)(char trans, LAPACK_INT n, LAPACK_INT nrhs, real *a, LAPACK_INT lda, LAPACK_INT *ipiv, real *b, LAPACK_INT ldb, LAPACK_INT *info)
 {
 #ifdef  USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -155,7 +154,7 @@ void THLapack_(getrs)(char trans, int n, int nrhs, real *a, int lda, int *ipiv, 
 }
 
 /* Matrix Inverse */
-void THLapack_(getri)(int n, real *a, int lda, int *ipiv, real *work, int lwork, int* info)
+void THLapack_(getri)(LAPACK_INT n, real *a, LAPACK_INT lda, LAPACK_INT *ipiv, real *work, LAPACK_INT lwork, LAPACK_INT* info)
 {
 #ifdef  USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -169,7 +168,7 @@ void THLapack_(getri)(int n, real *a, int lda, int *ipiv, real *work, int lwork,
 }
 
 /* Cholesky factorization */
-void THLapack_(potrf)(char uplo, int n, real *a, int lda, int *info)
+void THLapack_(potrf)(char uplo, LAPACK_INT n, real *a, LAPACK_INT lda, LAPACK_INT *info)
 {
 #ifdef  USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -183,7 +182,7 @@ void THLapack_(potrf)(char uplo, int n, real *a, int lda, int *info)
 }
 
 /* Solve A*X = B with a symmetric positive definite matrix A using the Cholesky factorization */
-void THLapack_(potrs)(char uplo, int n, int nrhs, real *a, int lda, real *b, int ldb, int *info)
+void THLapack_(potrs)(char uplo, LAPACK_INT n, LAPACK_INT nrhs, real *a, LAPACK_INT lda, real *b, LAPACK_INT ldb, LAPACK_INT *info)
 {
 #ifdef  USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -197,7 +196,7 @@ void THLapack_(potrs)(char uplo, int n, int nrhs, real *a, int lda, real *b, int
 }
 
 /* Cholesky factorization based Matrix Inverse */
-void THLapack_(potri)(char uplo, int n, real *a, int lda, int *info)
+void THLapack_(potri)(char uplo, LAPACK_INT n, real *a, LAPACK_INT lda, LAPACK_INT *info)
 {
 #ifdef  USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -211,7 +210,7 @@ void THLapack_(potri)(char uplo, int n, real *a, int lda, int *info)
 }
 
 /* Cholesky factorization with complete pivoting */
-void THLapack_(pstrf)(char uplo, int n, real *a, int lda, int *piv, int *rank, real tol, real *work, int *info)
+void THLapack_(pstrf)(char uplo, LAPACK_INT n, real *a, LAPACK_INT lda, LAPACK_INT *piv, LAPACK_INT *rank, real tol, real *work, LAPACK_INT *info)
 {
 #ifdef  USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -225,7 +224,7 @@ void THLapack_(pstrf)(char uplo, int n, real *a, int lda, int *piv, int *rank, r
 }
 
 /* QR decomposition */
-void THLapack_(geqrf)(int m, int n, real *a, int lda, real *tau, real *work, int lwork, int *info)
+void THLapack_(geqrf)(LAPACK_INT m, LAPACK_INT n, real *a, LAPACK_INT lda, real *tau, real *work, LAPACK_INT lwork, LAPACK_INT *info)
 {
 #ifdef  USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -239,7 +238,7 @@ void THLapack_(geqrf)(int m, int n, real *a, int lda, real *tau, real *work, int
 }
 
 /* Build Q from output of geqrf */
-void THLapack_(orgqr)(int m, int n, int k, real *a, int lda, real *tau, real *work, int lwork, int *info)
+void THLapack_(orgqr)(LAPACK_INT m, LAPACK_INT n, LAPACK_INT k, real *a, LAPACK_INT lda, real *tau, real *work, LAPACK_INT lwork, LAPACK_INT *info)
 {
 #ifdef  USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)
@@ -253,7 +252,7 @@ void THLapack_(orgqr)(int m, int n, int k, real *a, int lda, real *tau, real *wo
 }
 
 /* Multiply Q with a matrix using the output of geqrf */
-void THLapack_(ormqr)(char side, char trans, int m, int n, int k, real *a, int lda, real *tau, real *c, int ldc, real *work, int lwork, int *info)
+void THLapack_(ormqr)(char side, char trans, LAPACK_INT m, LAPACK_INT n, LAPACK_INT k, real *a, LAPACK_INT lda, real *tau, real *c, LAPACK_INT ldc, real *work, LAPACK_INT lwork, LAPACK_INT *info)
 {
 #ifdef  USE_LAPACK
 #if defined(TH_REAL_IS_DOUBLE)

@@ -9,12 +9,12 @@
 # define ffloat float
 #endif
 
-// set BLAS interface according to MKL 32/64 bit
 #ifdef MKL_ILP64
-  #ifdef WIN32 
+  // set  64 bit MKL integer type
+  #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
     #define BLAS_INT __int64 
   #else
-    #define BLAS_INT long 
+    #define BLAS_INT long long int
  #endif
 #else
   #define BLAS_INT int

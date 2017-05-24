@@ -609,11 +609,11 @@ void THTensor_(div)(THTensor *r_, THTensor *t, real value)
 void THTensor_(lshift)(THTensor *r_, THTensor *t, real value)
 {
 #if defined(TH_REAL_IS_FLOAT)
-  return THTensor_(mul)(r_, t, powf(2, value));
+   THTensor_(mul)(r_, t, powf(2, value));
 #elif defined(TH_REAL_IS_DOUBLE)
-  return THTensor_(mul)(r_, t, pow(2, value));
+   THTensor_(mul)(r_, t, pow(2, value));
 #elif defined(TH_REAL_IS_HALF)
-  return THError("lshift is not supported for torch.HalfTensor");
+   THError("lshift is not supported for torch.HalfTensor");
 #else
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) &&
@@ -644,11 +644,11 @@ void THTensor_(lshift)(THTensor *r_, THTensor *t, real value)
 void THTensor_(rshift)(THTensor *r_, THTensor *t, real value)
 {
 #if defined(TH_REAL_IS_FLOAT)
-  return THTensor_(div)(r_, t, powf(2, value));
+   THTensor_(div)(r_, t, powf(2, value));
 #elif defined(TH_REAL_IS_DOUBLE)
-  return THTensor_(div)(r_, t, pow(2, value));
+   THTensor_(div)(r_, t, pow(2, value));
 #elif defined(TH_REAL_IS_HALF)
-  return THError("rshift is not supported for torch.HalfTensor");
+   THError("rshift is not supported for torch.HalfTensor");
 #else
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) &&
@@ -735,7 +735,7 @@ void THTensor_(remainder)(THTensor *r_, THTensor *t, real value)
 void THTensor_(bitand)(THTensor *r_, THTensor *t, real value)
 {
 #if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
-  return THError("bitand is only supported for integer type tensors");
+   THError("bitand is only supported for integer type tensors");
 #else
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) &&
@@ -758,7 +758,7 @@ void THTensor_(bitand)(THTensor *r_, THTensor *t, real value)
 void THTensor_(bitor)(THTensor *r_, THTensor *t, real value)
 {
 #if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
-  return THError("bitor is only supported for integer type tensors");
+   THError("bitor is only supported for integer type tensors");
 #else
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) &&
@@ -781,7 +781,7 @@ void THTensor_(bitor)(THTensor *r_, THTensor *t, real value)
 void THTensor_(bitxor)(THTensor *r_, THTensor *t, real value)
 {
 #if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
-  return THError("bitxor is only supported for integer type tensors");
+   THError("bitxor is only supported for integer type tensors");
 #else
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) &&
@@ -1016,7 +1016,7 @@ void THTensor_(cremainder)(THTensor *r_, THTensor *t, THTensor *src)
 void THTensor_(cbitand)(THTensor *r_, THTensor *t, THTensor *src)
 {
 #if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
-  return THError("cbitand is only supported for integer type tensors");
+   THError("cbitand is only supported for integer type tensors");
 #else
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) &&
@@ -1041,7 +1041,7 @@ void THTensor_(cbitand)(THTensor *r_, THTensor *t, THTensor *src)
 void THTensor_(cbitor)(THTensor *r_, THTensor *t, THTensor *src)
 {
 #if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
-  return THError("cbitor is only supported for integer type tensors");
+   THError("cbitor is only supported for integer type tensors");
 #else
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) &&
@@ -1066,7 +1066,7 @@ void THTensor_(cbitor)(THTensor *r_, THTensor *t, THTensor *src)
 void THTensor_(cbitxor)(THTensor *r_, THTensor *t, THTensor *src)
 {
 #if defined(TH_REAL_IS_FLOAT) || defined(TH_REAL_IS_DOUBLE) || defined(TH_REAL_IS_HALF)
-  return THError("cbitxor is only supported for integer type tensors");
+   THError("cbitxor is only supported for integer type tensors");
 #else
   THTensor_(resizeAs)(r_, t);
   if (THTensor_(isContiguous)(r_) &&
