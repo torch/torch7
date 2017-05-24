@@ -260,8 +260,8 @@ float y[4] = { .1, .01, .001, .0001 };
 #else
   typedef BLAS_INT int
 #endif
-BLINT four = 4;
-BLINT one = 1;
+BLAS_INT four = 4;
+BLAS_INT one = 1;
 extern double sdot_();
 int main() {
   double r = sdot_(&four, x, &one, y, &one);
@@ -282,11 +282,10 @@ float y[4] = { .1, .01, .001, .0001 };
 #else
   typedef BLAS_INT int
 #endif
-BLINT four = 4;
-BLINT one = 1;
+BLAS_INT four = 4;
+BLAS_INT one = 1;
 extern float sdot_();
 int main() {
-  int i;
   double r = sdot_(&four, x, &one, y, &one);
   exit((float)r != (float).1234);
 }" BLAS_F2C_FLOAT_WORKS )
