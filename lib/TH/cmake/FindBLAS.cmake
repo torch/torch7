@@ -254,18 +254,18 @@ float x[4] = { 1, 2, 3, 4 };
 float y[4] = { .1, .01, .001, .0001 };
 #ifdef MKL_ILP64
   #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
-    #define BLAS_INT __int64; 
+    #define BLAS_INT __int64
   #else
-    #define BLAS_INT long long;
+    #define BLAS_INT long long
  #endif
 #else
-  #define BLAS_INT int;
+  #define BLAS_INT int
 #endif
 BLAS_INT four = 4;
 BLAS_INT one = 1;
-extern double sdot();
+extern double sdot_();
 int main() {
-  double r = sdot(&four, x, &one, y, &one);
+  double r = sdot_(&four, x, &one, y, &one);
   exit((float)r != (float).1234);
 }" )
 
@@ -284,18 +284,18 @@ float x[4] = { 1, 2, 3, 4 };
 float y[4] = { .1, .01, .001, .0001 };
 #ifdef MKL_ILP64
   #if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
-    #define BLAS_INT __int64;
+    #define BLAS_INT __int64
   #else
-    #define BLAS_INT long long;
+    #define BLAS_INT long long
  #endif
 #else
-  #define BLAS_INT int;
+  #define BLAS_INT int
 #endif
 BLAS_INT four = 4;
 BLAS_INT one = 1;
-extern float sdot();
+extern float sdot_();
 int main() {
-  double r = sdot(&four, x, &one, y, &one);
+  double r = sdot_(&four, x, &one, y, &one);
   exit((float)r != (float).1234);
 }" )
 
