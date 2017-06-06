@@ -102,6 +102,7 @@ The roadmap focuses on five separate things
 - **[needs discussion]** how about Moses? New lean functional package that's pretty useful
 - **[definite]** A style guide
   - Guidelines are super important:
+    - for Torch: consistent naming for target outputs vs predicted outputs. Some projects use "y" for one or the other.
     - for Lua: at least impose strict camel case + 3 spaces (no tab)
     - for C: camel case + use of underscore to represent namespace scoping + 2 spaces
 
