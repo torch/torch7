@@ -217,7 +217,7 @@ function torchtest.sigmoid()
    local inputValues = {-1000,-1,0,0.5,1,2,1000}
    local expectedOutput = {0.0000, 0.2689, 0.5, 0.6225, 0.7311, 0.8808, 1.000}
 
-   local precision_4dps = 0.0002
+   local precision_4dps = 0.002
 
    -- float
    local inputFT = torch.FloatTensor(inputValues)
