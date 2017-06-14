@@ -1269,16 +1269,30 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
       wrap("multinomial",
            cname("multinomial"),
            {{name="IndexTensor", default=true, returned=true, method={default='nil'}},
-            {name='Generator', default=true},
-            {name=Tensor},
-            {name="int"},
-            {name="boolean", default=false}})
-
+              {name='Generator', default=true},
+              {name=Tensor},
+              {name="int"},
+              {name="boolean", default=false}})
+      
+      wrap("multinomialAliasSetup_",
+           cname("multinomialAliasSetup"),
+           {{name=Tensor},
+              {name="IndexTensor", default=true, returned=true, method={default='nil'}},
+              {name=Tensor, default=true, returned=true, method={default='nil'}}})
+      
+      wrap("multinomialAlias_",
+           cname("multinomialAliasDraw"),
+           {{name="IndexTensor", default=true, returned=true, method={default='nil'}},
+              {name='Generator', default=true},
+              {name="IndexTensor"},
+              {name=Tensor}
+              })
+      
       for _,f in ipairs({{name='uniform', a=0, b=1},
-                         {name='normal', a=0, b=1},
-                         {name='cauchy', a=0, b=1},
-                         {name='logNormal', a=1, b=2}}) do
-
+            {name='normal', a=0, b=1},
+            {name='cauchy', a=0, b=1},
+            {name='logNormal', a=1, b=2}}) do
+         
          wrap(f.name,
               string.format("THRandom_%s", f.name),
               {{name='Generator', default=true},
