@@ -21,6 +21,17 @@ if (info < 0) {                                                     \
   THError(fmt, func, info, ##__VA_ARGS__);                          \
 }
 
+#ifdef MKL_ILP64
+// set  64 bit MKL integer type
+#if (!defined(__INTEL_COMPILER)) & defined(_MSC_VER) 
+#define LAPACK_INT __int64 
+#else
+#define LAPACK_INT long long int
+#endif
+#else
+#define LAPACK_INT int
+#endif
+
 #include "generic/THLapack.h"
 #include "THGenerateAllTypes.h"
 

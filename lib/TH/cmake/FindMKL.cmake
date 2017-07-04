@@ -29,19 +29,27 @@ INCLUDE(CheckTypeSize)
 INCLUDE(CheckFunctionExists)
 
 # Intel Compiler Suite
-SET(INTEL_COMPILER_DIR CACHE STRING
+SET(INTEL_COMPILER_DIR $ENV{INTEL_COMPILER_DIR} CACHE STRING
   "Root directory of the Intel Compiler Suite (contains ipp, mkl, etc.)")
-SET(INTEL_MKL_DIR CACHE STRING
+SET(INTEL_MKL_DIR $ENV{INTEL_MKL_DIR} CACHE STRING
   "Root directory of the Intel MKL (standalone)")
+SET(MKL_ILP64 $ENV{MKL_ILP64} CACHE STRING
+  "Link with 64bit-interger version of MKL (_ilp64 instead of _lp64)")
 SET(INTEL_MKL_SEQUENTIAL OFF CACHE BOOL
   "Force using the sequential (non threaded) libraries")
+
+MESSAGE(STATUS "INTEL_MKL_DIR: ${INTEL_MKL_DIR}")
 
 # Checks
 CHECK_TYPE_SIZE("void*" SIZE_OF_VOIDP)
 IF ("${SIZE_OF_VOIDP}" EQUAL 8)
-  SET(mklvers "em64t")
+  SET(mklvers "intel64")
   SET(iccvers "intel64")
-  SET(mkl64s "_lp64")
+  IF (MKL_ILP64)
+	SET(mkl64s "_ilp64")
+  ELSE(MKL_ILP64)
+	SET(mkl64s "_lp64")
+  ENDIF(MKL_ILP64)
 ELSE ("${SIZE_OF_VOIDP}" EQUAL 8)
   SET(mklvers "32")
   SET(iccvers "ia32")
@@ -80,14 +88,25 @@ ENDIF (INTEL_COMPILER_DIR)
 IF (INTEL_MKL_DIR)
   # TODO: diagnostic if dir does not exist
   SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH}
-    "${INTEL_MKL_DIR}/include")
+    "${INTEL_MKL_DIR}/include/")
   SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}
-    "${INTEL_MKL_DIR}/lib/${mklvers}")
+    "${INTEL_MKL_DIR}/lib/${mklvers}/")
   IF (MSVC)
     SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH}
-      "${INTEL_MKL_DIR}/lib/${iccvers}")
+      "${INTEL_MKL_DIR}/lib/${iccvers}/")
   ENDIF (MSVC)
 ENDIF (INTEL_MKL_DIR)
+
+# lib prefix
+IF (MSVC)
+  SET(CMAKE_FIND_LIBRARY_PREFIXES "")
+  SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".dll")
+ELSE(MSVC)
+  SET(CMAKE_FIND_LIBRARY_PREFIXES "lib")
+  SET(CMAKE_FIND_LIBRARY_SUFFIXES ".so" ".a")
+ENDIF (MSVC)
+
+MESSAGE(STATUS "Searching for MKL in ${CMAKE_LIBRARY_PATH} ...")
 
 # Try linking multiple libs
 MACRO(CHECK_ALL_LIBRARIES LIBRARIES _name _list _flags)
@@ -258,9 +277,15 @@ ENDIF (MKL_LIBRARIES)
 IF(NOT MKL_FOUND AND MKL_FIND_REQUIRED)
   MESSAGE(FATAL_ERROR "MKL library not found. Please specify library  location")
 ENDIF(NOT MKL_FOUND AND MKL_FIND_REQUIRED)
+
+
 IF(NOT MKL_FIND_QUIETLY)
   IF(MKL_FOUND)
-    MESSAGE(STATUS "MKL library found")
+	IF (mkl64s)
+	  MESSAGE(STATUS "MKL 64bit library found: ${mkl64s}")
+	ELSE(mkl64s)
+	  MESSAGE(STATUS "MKL 32bit library found: ${mkl64s}")
+	ENDIF(mkl64s)
   ELSE(MKL_FOUND)
     MESSAGE(STATUS "MKL library not found")
   ENDIF(MKL_FOUND)
