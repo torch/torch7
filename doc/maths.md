@@ -255,7 +255,7 @@ p.multinomial(res, p, n, replacement) -- p.multinomial instead of torch.multinom
 
 This is due to the fact that the result here is of a `LongTensor` type, and we do not define a `torch.multinomial` over long `Tensor`s.
 
-<a name="torch.AliasMultinomial()"></a>
+<a name="torch.multinomialAlias()"></a>
 ### [state] torch.multinomialAliasSetup(probs) ###
 ### [res] torch.multinomialAlias(output, state)
 `state = torch.multinomialAliasSetup(probs)` returns a table `state` consisting of two `tensors` : `probability table` and an `alias table`. This is required once for each `probs` vectors. We can then sample from the multinomial distribution multiple times by consulting these tensors `state` table.
@@ -267,43 +267,13 @@ The sampling is done through a technique defined in a very simple way in this bl
 The `output` `Tensor` that is fed into the `multinomialAlias` method need not be contiguous. The `output` tensor can only be a 1d tensor. If you are required to fill a nd tensor enter a 1d view of the same tensor. This method is exceptionally faster than `torch.multinomial` when you want to sample a lot of samples from the same distrbution or sample from the same distribution a large number of times. `torch.multinomial` is faster for sampling few samples from a distribution once because the `multinomialAliasSetup` method takes some time in this case. To see and compare how these two methods differ in speed run `th test/test_aliasMultinomial.lua`.
 
 ```lua
-th> probs = torch.DoubleTensor({0.2, 0.2, 0.3, 0.3})
-                                                                      [0.0001s]
-                                                                      
-th> prob_tbl, alias_tbl = torch.multinomialAliasSetup(probs)
-                                                                      [0.0002s]
-                                                                      
-th> output = torch.LongTensor(2,3)
-                                                                      [0.0001s]
-                                                                      
-
-th> alias_tbl.multinomialAliasDraw(output:view(-1), prob_tbl, alias_tbl)
- 3
- 4
- 3
- 1
- 2
- 3
-[torch.LongTensor of size 6]
-
-                                                                      [0.0003s]
-                                                                      
-th> output
- 3  4  3
- 1  2  3
-[torch.LongTensor of size 2x3]th> probs = torch.DoubleTensor({0.2, 0.2, 0.3, 0.3})
-                                                                      [0.0001s]
 th> state = torch.multinomialAliasSetup(probs)
-                                                                      [0.0001s]
 th> state
 {
   1 : LongTensor - size: 4
   2 : DoubleTensor - size: 4
 }
-                                                                      [0.0002s]
 th> output = torch.LongTensor(2,3)
-   
-                                                                      [0.0003s]
 th> torch.multinomialAlias(output:view(-1), state)
  4
  1
@@ -312,35 +282,23 @@ th> torch.multinomialAlias(output:view(-1), state)
  2
  2
 [torch.LongTensor of size 6]
-
-                                                                      [0.0002s]
 th> output
  4  1  2
  3  2  2
 [torch.LongTensor of size 2x3]
-
-                                                                      [0.0001s]
-th>
-
 ```
 
 You can also allocate memory and reuse it for the state table.
 
 ```
 th> state = {torch.LongTensor(), torch.DoubleTensor()}
-                                                                      [0.0001s]
-th> probs = torch.Double
-torch.DoubleStorage. torch.DoubleTensor.
 th> probs = torch.DoubleTensor({0.2, 0.3, 0.5})
-                                                                      [0.0001s]
 th> state = torch.multinomialAliasSetup(probs, state)
-                                                                      [0.0001s]
 th> state
 {
   1 : LongTensor - size: 3
   2 : DoubleTensor - size: 3
 }
-                                                                      [0.0002s]
 th> output = torch.LongTensor(7)
 th> torch.multinomialAlias(output, state)
  2
