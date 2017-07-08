@@ -81,13 +81,13 @@ void THTensor_(multinomialAliasSetup)(THTensor *probs, THLongTensor *J, THTensor
   long large_c = 0;
   THLongTensor_resize1d(J, inputsize);
   THTensor_(resize1d)(q, inputsize);
-  
+  real *q_data = THTensor_(data)(q);
+  long *J_data = THLongTensor_data(J);
+      
   for(i = 0; i < inputsize; i++)
     {
       THTensor_fastSet1d(J, i, 0L);
-      
-      real val = THStorage_(get)(probs->storage,
-                                 probs->storageOffset+i*probs->stride[0]);
+      real val = THTensor_fastGet1d(probs, i);
       THTensor_fastSet1d(q, i, inputsize*val);
       
       if (inputsize * val < 1.0)
@@ -112,10 +112,9 @@ void THTensor_(multinomialAliasSetup)(THTensor *probs, THLongTensor *J, THTensor
       small = THTensor_fastGet1d(smaller, small_c-1);
       
       THTensor_fastSet1d(J, small, large);
-      
-       THTensor_(data)(q)[large*q->stride[0]] -= 1.0 - THTensor_fastGet1d(q, small);
-      
-      if(q->storage->data[large] < 1.0)
+      q_data[large * q->stride[0]] -= 1.0 - THTensor_fastGet1d(q, small);
+
+      if(q_data[large] < 1.0)
         {
           THTensor_fastSet1d(smaller, small_c-1, large);
           large_c -= 1;
@@ -146,15 +145,15 @@ void THTensor_(multinomialAliasSetup)(THTensor *probs, THLongTensor *J, THTensor
     {
       for(i=0; i < inputsize; i++)
         {
-          THTensor_(data)(q)[i*q->stride[0]] /= q_max;
+          q_data[i*q->stride[0]] /= q_max;
         }
     }
   for(i=0; i<inputsize; i++)
     {
       // sometimes an large index isn't added to J. 
       // fix it by making the probability 1 so that J isn't indexed.
-      if(J->storage->data[i] <= 0)
-        q->storage->data[i] = 1.0;
+      if(J_data[i] <= 0)
+        q_data[i] = 1.0;
     }
   THLongTensor_free(smaller);
   THLongTensor_free(larger);
@@ -163,17 +162,16 @@ void THTensor_(multinomialAliasDraw)(THLongTensor *self, THGenerator *_generator
 {
   long K = THLongTensor_nElement(J);
   long output_nelem = THLongTensor_nElement(self);
-  THGenerator* gen = THGenerator_new();
   
   int i = 0, _mask=0;
   real _q;
   long rand_ind, sample_idx, J_sample, kk_sample;
   for(i=0; i< output_nelem; i++)
     {
-      rand_ind = (long)THRandom_uniform(gen, 0, K) ;
+      rand_ind = (long)THRandom_uniform(_generator, 0, K) ;
       _q = THTensor_fastGet1d(q, rand_ind);
 
-      _mask = THRandom_bernoulli(gen, _q);
+      _mask = THRandom_bernoulli(_generator, _q);
       
       J_sample = THTensor_fastGet1d(J, rand_ind);
 
