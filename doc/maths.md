@@ -467,7 +467,8 @@ For more than 4 dimensions, you can use a storage: `y = torch.zeros(torch.LongSt
 ### [res] torch.atan2([res,] x, y) ###
 <a name="torch.atan2"></a>
 
-`y = torch.atan2(x, y)` returns a new `Tensor` with the arctangent of the elements of `x` and `y`.
+`y = torch.atan2(x, y)` returns a new `Tensor` with the arctangent of the elements of `x` and `y`. 
+Note that the arctangent of the elements `x` and `y` refers to the signed angle in radians between the rays ending at origin where the first one starts at (1, 0) and the second at (y, x).
 
 `x:atan2()` replaces all elements in-place with the arctangent of the elements of `x` and `y`.
 
