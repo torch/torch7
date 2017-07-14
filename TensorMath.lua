@@ -1096,7 +1096,9 @@ static void THTensor_random1__(THTensor *self, THGenerator *gen, long b)
          wrap(name,
               cname(name .. "all"),
               {{name=Tensor},
-               {name=accreal, creturned=true}},
+               {name="boolean", default=false},
+               {name=accreal, creturned=true}
+              },
               cname(name),
               {{name=Tensor, default=true, returned=true},
                {name=Tensor},
