@@ -2122,7 +2122,7 @@ for i=1,7 do x[i] = i end
 
 These functions apply a function to each element of the tensor on which called the
 method (self). These methods are much faster than using a `for`
-loop in `Lua`. The results is stored in `self` (if the function returns
+loop in `Lua`. The results are stored in `self` (if the function returns
 something).
 
 <a name="torch.Tensor.apply"></a>
