@@ -89,7 +89,7 @@ Returns a new instance of `torch.Tester` class.
 <a name="torch.Tester.add"></a>
 ### add(f, 'name') ###
 
-Add `f`, either a test function or a table of test functions, to the tester.
+Adds `f`, either a test function or a table of test functions, to the tester.
 
 If `f` is a function then names should be unique. There are a couple of special
 values for `name`: if it is `_setUp` or `_tearDown`, then the function will be
@@ -105,7 +105,7 @@ Returns the torch.Tester instance.
 <a name="torch.Tester.run"></a>
 ### run(testNames) ###
 
-Run tests that have been added by [add(f, 'name')](#torch.Tester.add).
+Runs tests that have been added by [add(f, 'name')](#torch.Tester.add).
 While running it reports progress, and at the end gives a summary of all errors.
 
 If a list of names `testNames` is passed, then all tests matching these names
@@ -120,7 +120,7 @@ tester:run({"test2", "test3"}) -- runs the tests named "test2" and "test3"
 <a name="torch.Tester.disable"></a>
 ### disable(testNames) ###
 
-Prevent the given tests from running, where `testNames` can be a single string
+Prevents the given tests from running, where `testNames` can be a single string
 or list of strings. More precisely, when [run](#torch.Tester.run)
 is invoked, it will skip these tests, while still printing out an indication of
 skipped tests. This is useful for temporarily disabling tests without
@@ -149,7 +149,7 @@ Completed 0 asserts in 1 test with 0 failures and 0 errors and 1 disabled
 <a name="torch.Tester.assert"></a>
 ### assert(condition [, message]) ###
 
-Check that `condition` is true (using the optional `message` if the test
+Checks that `condition` is true (using the optional `message` if the test
 fails).
 Returns whether the test passed.
 
@@ -159,7 +159,7 @@ Returns whether the test passed.
 General equality check between numbers, tables, strings, `torch.Tensor`
 objects, `torch.Storage` objects, etc.
 
-Check that `got` and `expected` have the same contents, where tables are
+Checks that `got` and `expected` have the same contents, where tables are
 compared recursively, tensors and storages are compared elementwise, and numbers
 are compared within `tolerance` (default value `0`). Other types are compared by
 strict equality. The optional `message` is used if the test fails.
@@ -177,7 +177,7 @@ Convenience function; does the same as
 General inequality check between numbers, tables, strings, `torch.Tensor`
 objects, `torch.Storage` objects, etc.
 
-Check that `got` and `unexpected` have different contents, where tables are
+Checks that `got` and `unexpected` have different contents, where tables are
 compared recursively, tensors and storages are compared elementwise, and numbers
 are compared within `tolerance` (default value `0`). Other types are compared by
 strict equality. The optional `message` is used if the test fails.
@@ -192,35 +192,35 @@ Convenience function; does the same as
 <a name="torch.Tester.assertlt"></a>
 ### assertlt(a, b [, message]) ###
 
-Check that `a < b` (using the optional `message` if the test fails),
+Checks that `a < b` (using the optional `message` if the test fails),
 where `a` and `b` are numbers.
 Returns whether the test passed.
 
 <a name="torch.Tester.assertgt"></a>
 ### assertgt(a, b [, message]) ###
 
-Check that `a > b` (using the optional `message` if the test fails),
+Checks that `a > b` (using the optional `message` if the test fails),
 where `a` and `b` are numbers.
 Returns whether the test passed.
 
 <a name="torch.Tester.assertle"></a>
 ### assertle(a, b [, message]) ###
 
-Check that `a <= b` (using the optional `message` if the test fails),
+Checks that `a <= b` (using the optional `message` if the test fails),
 where `a` and `b` are numbers.
 Returns whether the test passed.
 
 <a name="torch.Tester.assertge"></a>
 ### assertge(a, b [, message]) ###
 
-Check that `a >= b` (using the optional `message` if the test fails),
+Checks that `a >= b` (using the optional `message` if the test fails),
 where `a` and `b` are numbers.
 Returns whether the test passed.
 
 <a name="torch.Tester.asserteq"></a>
 ### asserteq(a, b [, message]) ###
 
-Check that `a == b` (using the optional `message` if the test fails).
+Checks that `a == b` (using the optional `message` if the test fails).
 Note that this uses the generic lua equality check, so objects such as tensors
 that have the same content but are distinct objects will fail this test;
 consider using [assertGeneralEq()](#torch.Tester.assertGeneralEq) instead.
@@ -229,7 +229,7 @@ Returns whether the test passed.
 <a name="torch.Tester.assertne"></a>
 ### assertne(a, b [, message]) ###
 
-Check that `a ~= b` (using the optional `message` if the test fails).
+Checks that `a ~= b` (using the optional `message` if the test fails).
 Note that this uses the generic lua inequality check, so objects such as tensors
 that have the same content but are distinct objects will pass this test;
 consider using [assertGeneralNe()](#torch.Tester.assertGeneralNe) instead.
@@ -238,7 +238,7 @@ Returns whether the test passed.
 <a name="torch.Tester.assertalmosteq"></a>
 ### assertalmosteq(a, b [, tolerance] [, message]) ###
 
-Check that `|a - b| <= tolerance` (using the optional `message` if the
+Checks that `|a - b| <= tolerance` (using the optional `message` if the
 test fails), where `a` and `b` are numbers, and `tolerance` is an optional
 number (default `1e-16`).
 Returns whether the test passed.
@@ -246,7 +246,7 @@ Returns whether the test passed.
 <a name="torch.Tester.assertTensorEq"></a>
 ### assertTensorEq(ta, tb [, tolerance] [, message]) ###
 
-Check that `max(abs(ta - tb)) <= tolerance` (using the optional `message`
+Checks that `max(abs(ta - tb)) <= tolerance` (using the optional `message`
 if the test fails), where `ta` and `tb` are tensors, and `tolerance` is an
 optional number (default `1e-16`). Tensors that are different types or sizes
 will cause this check to fail.
@@ -255,7 +255,7 @@ Returns whether the test passed.
 <a name="torch.Tester.assertTensorNe"></a>
 ### assertTensorNe(ta, tb [, tolerance] [, message]) ###
 
-Check that `max(abs(ta - tb)) > tolerance` (using the optional `message`
+Checks that `max(abs(ta - tb)) > tolerance` (using the optional `message`
 if the test fails), where `ta` and `tb` are tensors, and `tolerance` is an
 optional number (default `1e-16`). Tensors that are different types or sizes
 will cause this check to pass.
@@ -264,7 +264,7 @@ Returns whether the test passed.
 <a name="torch.Tester.assertTableEq"></a>
 ### assertTableEq(ta, tb [, tolerance] [, message]) ###
 
-Check that the two tables have the same contents, comparing them
+Checks that the two tables have the same contents, comparing them
 recursively, where objects such as tensors are compared using their contents.
 Numbers (such as those appearing in tensors) are considered equal if
 their difference is at most the given tolerance.
@@ -272,7 +272,7 @@ their difference is at most the given tolerance.
 <a name="torch.Tester.assertTableNe"></a>
 ### assertTableNe(ta, tb [, tolerance] [, message]) ###
 
-Check that the two tables have distinct contents, comparing them
+Checks that the two tables have distinct contents, comparing them
 recursively, where objects such as tensors are compared using their contents.
 Numbers (such as those appearing in tensors) are considered equal if
 their difference is at most the given tolerance.
@@ -280,7 +280,7 @@ their difference is at most the given tolerance.
 <a name="torch.Tester.assertError"></a>
 ### assertError(f [, message]) ###
 
-Check that calling `f()` (via `pcall`) raises an error (using the
+Checks that calling `f()` (via `pcall`) raises an error (using the
 optional `message` if the test fails).
 Returns whether the test passed.
 
@@ -294,14 +294,14 @@ Returns whether the test passed.
 <a name="torch.Tester.assertErrorMsg"></a>
 ### assertErrorMsg(f, errmsg [, message]) ###
 
-Check that calling `f()` (via `pcall`) raises an error with the specific error
+Checks that calling `f()` (via `pcall`) raises an error with the specific error
 message `errmsg` (using the optional `message` if the test fails).
 Returns whether the test passed.
 
 <a name="torch.Tester.assertErrorPattern"></a>
 ### assertErrorPattern(f, errPattern [, message]) ###
 
-Check that calling `f()` (via `pcall`) raises an error matching `errPattern`
+Checks that calling `f()` (via `pcall`) raises an error matching `errPattern`
 (using the optional `message` if the test fails).
 The matching is done using `string.find`; in particular substrings will match.
 Returns whether the test passed.
@@ -309,7 +309,7 @@ Returns whether the test passed.
 <a name="torch.Tester.assertErrorObj"></a>
 ### assertErrorObj(f, errcomp [, message]) ###
 
-Check that calling `f()` (via `pcall`) raises an error object `err` such that
+Checks that calling `f()` (via `pcall`) raises an error object `err` such that
 calling `errcomp(err)` returns true (using the optional `message` if the test
 fails).
 Returns whether the test passed.
