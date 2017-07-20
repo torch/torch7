@@ -127,8 +127,8 @@ Serializable objects are `Torch` objects having a `read()` and
 
 If the object to save contains several other objects (let say it is a tree
 of objects), then objects appearing several times in this tree will be
-_saved only once_. This saves disk space, speedup loading/saving and
-respect the dependencies between objects.
+_saved only once_. This saves disk space, speeds up loading/saving and
+respects the dependencies between objects.
 
 Interestingly, if the `File` is a [MemoryFile](memoryfile.md), it allows
 the user to easily make a _clone_ of any serializable object:
@@ -188,7 +188,7 @@ If the object has been already written in the file, only a _reference_ to
 this already saved object will be written: this saves space an speed-up
 writing; it also allows to keep the dependencies between objects intact.
 
-In returns, if one writes an object, modify its member, and write the
+In returns, if one writes an object, modifies its member, and writes the
 object again in the same file, the modifications will not be recorded
 in the file, as only a reference to the original will be written. See
 [readObject()](#torch.File.readObject) for an example.
@@ -196,14 +196,14 @@ in the file, as only a reference to the original will be written. See
 <a name="torch.File.readString"></a>
 ### [string] readString(format) ###
 
-If `format` starts with ''"*l"` then returns the next line in the `File''. The end-of-line character is skipped.
+If `format` starts with `"*l"` then returns the next line in the `File`. The end-of-line character is skipped.
 
-If `format` starts with ''"*a"` then returns all the remaining contents of the `File''.
+If `format` starts with `"*a"` then returns all the remaining contents of the `File`.
 
 If no data is available, then an error is raised, except if `File` is in [quiet()](#torch.File.quiet) mode where
 it then returns an empty string `''` and after that you'll be able to see that last reading failed due to end of file with your_file:[hasError()](#torch.File.hasError).
 
-Because Torch is more precise on number typing, the `Lua` format ''"*n"'' is not supported:
+Because Torch is more precise on number typing, the `Lua` format `"*n"` is not supported:
 instead use one of the [number read methods](#torch.File.read).
 
 <a name="torch.File.writeString"></a>
@@ -361,4 +361,4 @@ behaviour.
 <a name="torch.File.isReferenced"></a>
 ### isReferenced() ###
 
-Return the state set by [referenced](#torch.File.referenced).
+Returns the state set by [referenced](#torch.File.referenced).

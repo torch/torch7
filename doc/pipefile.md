@@ -13,8 +13,8 @@ given to the [torch.PipeFile(fileName, mode)](#torch.PipeFile). Read-write mode 
 <a name="torch.PipeFile"></a>
 ### torch.PipeFile(command, [mode], [quiet]) ###
 
-_Constructor_ which execute `command` by opening a pipe in read or write
-`mode`. Valid `mode` are `"r"` (read) or `"w"` (write). Default is read
+_Constructor_ which executes `command` by opening a pipe in read or write
+`mode`. Valid `mode`s are `"r"` (read) or `"w"` (write). Default is read
 mode.
 
 If (and only if) `quiet` is `true`, no error will be raised in case of

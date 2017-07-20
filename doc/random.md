@@ -120,10 +120,10 @@ random numbers is produced.
 
 <a name="torch.setRNGState"></a>
 ### [Tensor] setRNGState([gen,] state) ###
-Set the state of the random number generator. If `state` was obtained earlier
+Sets the state of the random number generator. If `state` was obtained earlier
 using `getRNGState` then the random number generator should now generate the
 same numbers as it did from the point where `state` was obtained. This function
-returns its argument, `state`.
+returns its argument `state`.
 
 <a name="torch.random"></a>
 ### [number] random([gen,] [a], [b]) ###
