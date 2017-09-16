@@ -264,7 +264,7 @@ This is due to the fact that the result here is of a `LongTensor` type, and we d
 
 The sampling is done through a technique defined in a very simple way in this blog about [The Alias Method](https://hips.seas.harvard.edu/blog/2013/03/03/the-alias-method-efficient-sampling-with-many-discrete-outcomes/). The paper that describes this technique is present [here](http://www.tandfonline.com/doi/abs/10.1080/00031305.1979.10482697). This can only sample with replacement.
 
-The `output` `Tensor` that is fed into the `multinomialAlias` method need not be contiguous. The `output` tensor can only be a 1d tensor. If you are required to fill a nd tensor enter a 1d view of the same tensor. This method is exceptionally faster than `torch.multinomial` when you want to sample a lot of samples from the same distrbution or sample from the same distribution a large number of times. `torch.multinomial` is faster for sampling few samples from a distribution once because the `multinomialAliasSetup` method takes some time in this case. To see and compare how these two methods differ in speed run `th test/test_aliasMultinomial.lua`.
+The `output` `Tensor` that is fed into the `multinomialAlias` method need not be contiguous. The `output` tensor can only be a 1d tensor. If you are required to fill a nd tensor enter a 1d view of the same tensor. This method is exceptionally faster than `torch.multinomial` when you want to sample a lot of samples from the same distribution or sample from the same distribution a large number of times. `torch.multinomial` is faster for sampling few samples from a distribution once because the `multinomialAliasSetup` method takes some time in this case. To see and compare how these two methods differ in speed run `th test/test_aliasMultinomial.lua`.
 
 ```lua
 > state = torch.multinomialAliasSetup(probs)
@@ -1029,7 +1029,7 @@ The number of elements must match, but sizes do not matter.
 <a name="torch.fmod"></a>
 
 Computes remainder of division (rounded towards zero) of all elements in the `Tensor` by `value`.
-This works both for integer and floating point numbers. It behaves the same as Lua bulit-in function `math.fmod()` and a little bit different from `torch.remainder()` and `%` operator. For example:
+This works both for integer and floating point numbers. It behaves the same as Lua built-in function `math.fmod()` and a little bit different from `torch.remainder()` and `%` operator. For example:
 
 ```lua
 > x = torch.Tensor({-3, 3})
