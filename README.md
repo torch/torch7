@@ -33,6 +33,9 @@ useful utilities.
     * [Timer](doc/timer.md) provides functionality for _measuring time_.
     * [Tester](doc/tester.md) is a generic tester framework.
     * [CmdLine](doc/cmdline.md) is a command line argument parsing utility.
+    
+  # For Ubuntu 16.04
+  Install the library `libreadline-dev`
     * [Random](doc/random.md) defines a random number generator package with various distributions.
     * Finally useful [utility](doc/utility.md) functions are provided for easy handling of torch tensor types and class inheritance.
 
