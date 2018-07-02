@@ -3,14 +3,13 @@
 
 ## Development Status
 
-The core development team now works on unifying Torch with the ATen library which is the backbone of PyTorch ([source](https://github.com/pytorch/pytorch/tree/master/aten), [mirror](https://github.com/zdevito/ATen/)).
-ATen exposes all operators from torch7, nn, cutorch, and cunn directly in C++11 and includes additional support for sparse tensors and distributed operations.
-For information on building the latest Torch libraries in C, refer to ["The C interface" in pytorch/aten/src/README.md](https://github.com/pytorch/pytorch/tree/master/aten/src#the-c-interface).
+Torch is not in active developement. The functionality provided by the C backend of Torch, which are the TH, THNN, THC, THCUNN libraries is actively extended and re-written in the ATen C++11 library ([source](https://github.com/pytorch/pytorch/tree/master/aten), [mirror](https://github.com/zdevito/ATen/)).
+ATen exposes all operators you would expect from torch7, nn, cutorch, and cunn directly in C++11 and includes additional support for sparse tensors and distributed operations. It is to note however that the API and semantics of the backend libraries in Torch-7 are different from the semantice provided by ATen. For example ATen provides numpy-style broadcasting while TH* dont. For information on building the forked Torch-7 libraries in C, refer to ["The C interface" in pytorch/aten/src/README.md](https://github.com/pytorch/pytorch/tree/master/aten/src#the-c-interface).
 
 
 ## Need help? ##
 
-Torch7 community support can be found at the following locations. In general it is both easier and faster to seek help through [PyTorch channels](https://github.com/pytorch/pytorch/#communication).
+Torch7 community support can be found at the following locations. However Torch7 has a much smaller active community than it used to. If you have questions about the C backend of Torch-7, you can try asking in the [PyTorch communication channels](https://github.com/pytorch/pytorch/#communication), as the developers are familiar with it.
 * Questions, Support, Install issues: [Google groups](https://groups.google.com/forum/#!forum/torch7)
 * Reporting bugs: [torch7](https://github.com/torch/torch7/issues) [nn](https://github.com/torch/nn/issues) [cutorch](https://github.com/torch/cutorch/issues) [cunn](https://github.com/torch/cutorch/issues) [optim](https://github.com/torch/optim/issues) [threads](https://github.com/torch/threads/issues)
 * Hanging out with other developers and users (strictly no install issues, no large blobs of text): [Gitter Chat](https://gitter.im/torch/torch7)
