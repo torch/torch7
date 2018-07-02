@@ -1,8 +1,16 @@
 [![Join the chat at https://gitter.im/torch/torch7](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/torch/torch7?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/torch/torch7.svg)](https://travis-ci.org/torch/torch7)
 
+## Development Status
+
+The core development team now works on unifying Torch with the ATen library which is the backbone of PyTorch ([source](https://github.com/pytorch/pytorch/tree/master/aten), [mirror](https://github.com/zdevito/ATen/)).
+ATen exposes all operators from torch7, nn, cutorch, and cunn directly in C++11 and includes additional support for sparse tensors and distributed operations.
+For information on building the latest Torch libraries in C, refer to ["The C interface" in pytorch/aten/src/README.md](https://github.com/pytorch/pytorch/tree/master/aten/src#the-c-interface).
+
+
 ## Need help? ##
 
+Torch7 community support can be found at the following locations. In general it is both easier and faster to seek help through [PyTorch channels](https://github.com/pytorch/pytorch/#communication).
 * Questions, Support, Install issues: [Google groups](https://groups.google.com/forum/#!forum/torch7)
 * Reporting bugs: [torch7](https://github.com/torch/torch7/issues) [nn](https://github.com/torch/nn/issues) [cutorch](https://github.com/torch/cutorch/issues) [cunn](https://github.com/torch/cutorch/issues) [optim](https://github.com/torch/optim/issues) [threads](https://github.com/torch/threads/issues)
 * Hanging out with other developers and users (strictly no install issues, no large blobs of text): [Gitter Chat](https://gitter.im/torch/torch7)
