@@ -215,6 +215,7 @@ ENDIF()
 # IF ANY SIMD FOUND
 IF(C_AVX2_FOUND OR C_AVX_FOUND OR C_SSE4_2_FOUND OR C_SSE4_1_FOUND)
   SET(simd generic/simd/convolve.c)
+  SET(simd ${simd} generic/simd/convolve5x5_sse.c)
 ENDIF(C_AVX2_FOUND OR C_AVX_FOUND OR C_SSE4_2_FOUND OR C_SSE4_1_FOUND)
 
 # IF SSE4 FOUND
