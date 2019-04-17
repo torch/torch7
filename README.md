@@ -9,7 +9,8 @@ ATen exposes all operators you would expect from torch7, nn, cutorch, and cunn d
 
 ## Need help? ##
 
-Torch7 community support can be found at the following locations. However Torch7 has a much smaller active community than it used to. If you have questions about the C backend of Torch-7, you can try asking in the [PyTorch communication channels](https://github.com/pytorch/pytorch/#communication), as the developers are familiar with it.
+Torch7 community support can be found at the following locations. As of 2019, the Torch-7 community is close to non-existent.
+
 * Questions, Support, Install issues: [Google groups](https://groups.google.com/forum/#!forum/torch7)
 * Reporting bugs: [torch7](https://github.com/torch/torch7/issues) [nn](https://github.com/torch/nn/issues) [cutorch](https://github.com/torch/cutorch/issues) [cunn](https://github.com/torch/cutorch/issues) [optim](https://github.com/torch/optim/issues) [threads](https://github.com/torch/threads/issues)
 * Hanging out with other developers and users (strictly no install issues, no large blobs of text): [Gitter Chat](https://gitter.im/torch/torch7)
