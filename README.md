@@ -3,8 +3,8 @@
 
 ## Development Status
 
-Torch is not in active developement. The functionality provided by the C backend of Torch, which are the TH, THNN, THC, THCUNN libraries is actively extended and re-written in the ATen C++11 library ([source](https://github.com/pytorch/pytorch/tree/master/aten), [mirror](https://github.com/zdevito/ATen/)).
-ATen exposes all operators you would expect from torch7, nn, cutorch, and cunn directly in C++11 and includes additional support for sparse tensors and distributed operations. It is to note however that the API and semantics of the backend libraries in Torch-7 are different from the semantice provided by ATen. For example ATen provides numpy-style broadcasting while TH* dont. For information on building the forked Torch-7 libraries in C, refer to ["The C interface" in pytorch/aten/src/README.md](https://github.com/pytorch/pytorch/tree/master/aten/src#the-c-interface).
+Torch is not in active development. The functionality provided by the C backend of Torch, which are the TH, THNN, THC, THCUNN libraries is actively extended and re-written in the ATen C++11 library ([source](https://github.com/pytorch/pytorch/tree/master/aten), [mirror](https://github.com/zdevito/ATen/)).
+ATen exposes all operators you would expect from torch7, nn, cutorch, and cunn directly in C++11 and includes additional support for sparse tensors and distributed operations. It is to note however that the API and semantics of the backend libraries in Torch-7 are different from the semantice provided by ATen. For example ATen provides numpy-style broadcasting while TH* don't. For information on building the forked Torch-7 libraries in C, refer to ["The C interface" in pytorch/aten/src/README.md](https://github.com/pytorch/pytorch/tree/master/aten/src#the-c-interface).
 
 
 ## Need help? ##
