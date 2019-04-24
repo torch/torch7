@@ -1607,7 +1607,7 @@ x = torch.range(1,4):double():resize(2,2)
 > x
  1  2
  3  4
-[torch.DoubleTensor of dimension 2x4]
+[torch.DoubleTensor of dimension 2x2]
 
 mask = torch.ByteTensor(1,8):bernoulli()
 > mask
