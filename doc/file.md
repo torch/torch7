@@ -68,6 +68,9 @@ If a `Storage` is given, the method will attempt to read a number of elements
 equals to the size of the given storage, and fill up the storage with these elements.
 The number of elements actually read is returned.
 
+A convenient method exists to read one pointer as a integer: `[integer] readPointer()`. It reads
+in `"%p"` format if `File` is of ascii encoding. This method does not support `n` or `Storage`.
+
 In case of read error, these methods will call the `Lua` error function using the default
 [pedantic](#torch.File.pedantic) option, or stay quiet with the [quiet](#torch.File.quiet)
 option. In the latter case, one can check if an error occurred with
@@ -108,6 +111,9 @@ If a `Storage` is given, the method will attempt to write all the elements conta
 in the storage.
 
 These methods return the number of elements actually written.
+
+A convenient method exists to write one pointer: `writePointer(integer)`. It writes
+in `"%p"` format if `File` is of ascii encoding. This method does not support `Storage`.
 
 In case of write error, these methods will call the `Lua` error function using the default
 [pedantic](#torch.File.pedantic) option, or stay quiet with the [quiet](#torch.File.quiet)

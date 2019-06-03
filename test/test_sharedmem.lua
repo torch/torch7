@@ -88,5 +88,26 @@ function tests.testSharing()
   removeShmFile(shmFileName)
 end
 
+function tests.readWritePointer()
+  local tensor = torch.rand(2,3)
+  local addr1 = torch.pointer(tensor)
+  tester:assert(type(addr1)=='number')
+
+  local f = torch.MemoryFile()
+  f:binary()
+  f:writePointer(addr1)
+  f:seek(1)
+  local addr2 = f:readPointer()
+  f:close()
+  tester:assert(addr1 == addr2)
+
+  local f = torch.MemoryFile()
+  f:writePointer(addr1)
+  f:seek(1)
+  local addr2 = f:readPointer()
+  f:close()
+  tester:assert(addr1 == addr2)
+end
+
 tester:add(tests)
 tester:run()

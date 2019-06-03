@@ -31,6 +31,16 @@ size_t THFile_writeStringRaw(THFile *self, const char *str, size_t size)
   return self->vtable->writeString(self, str, size);
 }
 
+size_t THFile_readPointerRaw(THFile *self, intptr_t *data)
+{
+  return self->vtable->readPointer(self, data, 1);
+}
+
+size_t THFile_writePointerRaw(THFile *self, intptr_t data)
+{
+  return self->vtable->writePointer(self, &data, 1);
+}
+
 void THFile_synchronize(THFile *self)
 {
   self->vtable->synchronize(self);
