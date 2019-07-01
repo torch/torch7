@@ -1218,6 +1218,13 @@ x[{ 1,3 }] = 1 -- sets element at (i=1,j=3) to 1
  0  0  0  0  0  0
 [torch.DoubleTensor of dimension 5x6]
 
+> x[{ 1,3 }] -- returns a number
+ 1
+ 
+> x[{ {1},{3} }] -- returns a tensor
+ 1
+[torch.DoubleTensor of dimension 1x1]
+
 x[{ 2,{2,4} }] = 2  -- sets a slice of 3 elements to 2
 > x
  0  0  1  0  0  0
