@@ -8,6 +8,35 @@ local function pad(str, sz)
    return str .. string.rep(' ', sz-#str)
 end
 
+--[[
+This function takes a string, and inserts newlines wherever it exceeds a
+the given block_sz. It also pads each new line with pre_pad number of
+spaces.
+--]]
+local function block_txt(str, pre_pad, block_sz)
+   local ret_str = ""
+   local txt_width = block_sz - pre_pad
+   local start_i = 0
+   local end_i = 0
+
+   while end_i and str do
+      -- start search for text ahead of previous last position
+      start_i = end_i + 1
+      -- newline if the string already has text
+      if #ret_str > 0 then
+         ret_str = ret_str .. "\n" .. string.rep(' ', pre_pad)
+      end
+      -- find the first non-space character
+      local start_i = string.find(str, "[^%s]", start_i)
+      if not start_i then break end
+      -- find the first space character after allowed width is run over
+      end_i = string.find(str, "%s", start_i + txt_width - 1)
+      ret_str = ret_str .. string.sub(str, start_i, end_i)
+   end
+
+   return ret_str
+end
+
 function CmdLine:error(msg)
    print('')
    io.stderr:write(msg)
@@ -249,17 +278,24 @@ function CmdLine:help(arg)
       end
    end
 
+   -- set the allowable width of each option help
+   local opt_str_width = 80
+   if optsz > 70 then
+      opt_str_width = optsz + 30
+   end
+
    -- second pass to print
    for _,option in ipairs(self.helplines) do
       if type(option) == 'table' then
          io.write('  ')
+         local opt_help = block_txt(option.help, optsz+3, opt_str_width)
          if option.default ~= nil then -- it is an option
             io.write(pad(option.key, optsz))
-            if option.help then io.write(' ' .. option.help) end
+            if option.help then io.write(' ' .. opt_help) end
             io.write(' [' .. tostring(option.default) .. ']')
          else -- it is an argument
             io.write(pad('<' .. strip(option.key) .. '>', optsz))
-            if option.help then io.write(' ' .. option.help) end
+            if option.help then io.write(' ' .. opt_help) end
          end
       else
          io.write(option) -- just some additional help
